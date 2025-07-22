@@ -16,7 +16,7 @@ def handle_fetch(args: argparse.Namespace) -> None:
     client_id, client_secret = get_client_credentials(args)
     print(f"Fetch command called:")
     print(f"  Endpoint: {args.endpoint}")
-    print(f"  Directory: {args.dir}")
+    print(f"  Query: {args.query}")
     print(f"  Client ID: {client_id}")
     print(f"  Client Secret: {'***' if client_secret else None}")
 
@@ -63,9 +63,9 @@ def main() -> None:
         help="The IGDB API endpoint to fetch data from"
     )
     fetch_parser.add_argument(
-        "dir",
+        "query",
         type=str,
-        help="The directory to save the fetched data"
+        help="The Apicalypse query to fetch data from"
     )
     fetch_parser.set_defaults(func=handle_fetch)
 
