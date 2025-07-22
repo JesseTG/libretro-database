@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 import argparse
 import os
-from typing import Optional
+import json
+import requests
+from typing import Optional, Dict, Any
+from requests_oauthlib import OAuth2Session
+from oauthlib.oauth2 import BackendApplicationClient
 
 
 def get_client_credentials(args: argparse.Namespace) -> tuple[Optional[str], Optional[str]]:
@@ -11,14 +15,111 @@ def get_client_credentials(args: argparse.Namespace) -> tuple[Optional[str], Opt
     return client_id, client_secret
 
 
+def authenticate_igdb(client_id: str, client_secret: str) -> dict[str, Any]:
+    """
+    Authenticate with IGDB API using OAuth 2.0 Client Credentials flow.
+
+    Args:
+        client_id: The IGDB API client ID
+        client_secret: The IGDB API client secret
+
+    Returns:
+        A dictionary containing the authentication token and related information
+
+    Raises:
+        ValueError: If authentication fails
+    """
+    if not client_id or not client_secret:
+        raise ValueError("Client ID and Client Secret are required for authentication")
+
+    # Set up OAuth 2.0 client with client credentials flow
+    client = BackendApplicationClient(client_id=client_id)
+    oauth = OAuth2Session(client=client)
+
+    # Get token from Twitch API (IGDB uses Twitch authentication)
+    token_url = "https://id.twitch.tv/oauth2/token"
+
+    try:
+        token = oauth.fetch_token(
+            token_url=token_url,
+            client_id=client_id,
+            client_secret=client_secret,
+            force_querystring=True,
+            include_client_id=True,
+        )
+        return token
+    except Exception as e:
+        raise ValueError(f"Authentication failed: {str(e)}")
+
+
+def query_igdb(endpoint: str, query: str, access_token: str, client_id: str) -> requests.Response:
+    """
+    Query the IGDB API with the given endpoint and query.
+
+    Args:
+        endpoint: The IGDB API endpoint to query
+        query: The Apicalypse query to send
+        access_token: The OAuth access token
+        client_id: The IGDB API client ID
+
+    Returns:
+        The HTTP response from the API
+
+    Raises:
+        requests.exceptions.RequestException: If the request fails
+    """
+    base_url = "https://api.igdb.com/v4"
+    url = f"{base_url}/{endpoint}"
+
+    headers = {
+        'Client-ID': client_id,
+        'Authorization': f'Bearer {access_token}',
+        'Accept': 'application/json'
+    }
+
+    response = requests.post(url, headers=headers, data=query)
+    return response
+
+
 def handle_query(args: argparse.Namespace) -> None:
     """Handle the query subcommand."""
     client_id, client_secret = get_client_credentials(args)
-    print(f"Query command called:")
-    print(f"  Endpoint: {args.endpoint}")
-    print(f"  Query: {args.query}")
-    print(f"  Client ID: {client_id}")
-    print(f"  Client Secret: {'***' if client_secret else None}")
+
+    if not client_id or not client_secret:
+        print("Error: Client ID and Client Secret are required. Provide them as arguments or environment variables.")
+        return
+
+    try:
+        # Authenticate with IGDB
+        print("Authenticating with IGDB...")
+        token = authenticate_igdb(client_id, client_secret)
+        access_token = token['access_token']
+        print(f"Authentication successful! Token expires in {token.get('expires_in', 'unknown')} seconds.")
+
+        # Submit the query to IGDB
+        print(f"Querying endpoint: {args.endpoint}")
+        print(f"Query: {args.query}")
+
+        response = query_igdb(args.endpoint, args.query, access_token, client_id)
+
+        # Print the response
+        print(f"Response status code: {response.status_code}")
+        if response.status_code == 200:
+            try:
+                # Pretty print JSON response
+                json_response = response.json()
+                print("Response:")
+                print(json.dumps(json_response, indent=2))
+            except ValueError:
+                # If response is not JSON
+                print("Response (not JSON):")
+                print(response.text)
+        else:
+            print("Error response:")
+            print(response.text)
+
+    except Exception as e:
+        print(f"Error: {str(e)}")
 
 
 def handle_process(args: argparse.Namespace) -> None:
