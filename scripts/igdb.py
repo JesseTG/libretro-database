@@ -11,10 +11,10 @@ def get_client_credentials(args: argparse.Namespace) -> tuple[Optional[str], Opt
     return client_id, client_secret
 
 
-def handle_fetch(args: argparse.Namespace) -> None:
-    """Handle the fetch subcommand."""
+def handle_query(args: argparse.Namespace) -> None:
+    """Handle the query subcommand."""
     client_id, client_secret = get_client_credentials(args)
-    print(f"Fetch command called:")
+    print(f"Query command called:")
     print(f"  Endpoint: {args.endpoint}")
     print(f"  Query: {args.query}")
     print(f"  Client ID: {client_id}")
@@ -42,32 +42,32 @@ def main() -> None:
         required=True
     )
 
-    # Fetch subcommand
-    fetch_parser = subparsers.add_parser(
-        "fetch",
+    # Query subcommand
+    query_parser = subparsers.add_parser(
+        "query",
         help="Fetch data from the specified IGDB API endpoint and save it to the specified directory"
     )
-    fetch_parser.add_argument(
+    query_parser.add_argument(
         "--client-id",
         type=str,
         help="The IGDB API client ID. Overrides the TWITCH_CLIENT_ID environment variable if provided."
     )
-    fetch_parser.add_argument(
+    query_parser.add_argument(
         "--client-secret",
         type=str,
         help="The IGDB API client secret. Overrides the TWITCH_CLIENT_SECRET environment variable if provided."
     )
-    fetch_parser.add_argument(
+    query_parser.add_argument(
         "endpoint",
         type=str,
-        help="The IGDB API endpoint to fetch data from"
+        help="The IGDB API endpoint to query data from"
     )
-    fetch_parser.add_argument(
+    query_parser.add_argument(
         "query",
         type=str,
-        help="The Apicalypse query to fetch data from"
+        help="The Apicalypse query to query data from"
     )
-    fetch_parser.set_defaults(func=handle_fetch)
+    query_parser.set_defaults(func=handle_query)
 
     # Process subcommand
     process_parser = subparsers.add_parser(
