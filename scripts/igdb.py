@@ -2,6 +2,8 @@
 import argparse
 import os
 import json
+import sys
+
 import requests
 from typing import Optional, Dict, Any
 from requests_oauthlib import OAuth2Session
@@ -86,40 +88,33 @@ def handle_query(args: argparse.Namespace) -> None:
     client_id, client_secret = get_client_credentials(args)
 
     if not client_id or not client_secret:
-        print("Error: Client ID and Client Secret are required. Provide them as arguments or environment variables.")
+        print("Error: Client ID and Client Secret are required. Provide them as arguments or environment variables.", file=sys.stderr)
         return
 
     try:
         # Authenticate with IGDB
-        print("Authenticating with IGDB...")
         token = authenticate_igdb(client_id, client_secret)
         access_token = token['access_token']
-        print(f"Authentication successful! Token expires in {token.get('expires_in', 'unknown')} seconds.")
 
         # Submit the query to IGDB
-        print(f"Querying endpoint: {args.endpoint}")
-        print(f"Query: {args.query}")
-
         response = query_igdb(args.endpoint, args.query, access_token, client_id)
 
         # Print the response
-        print(f"Response status code: {response.status_code}")
         if response.status_code == 200:
             try:
                 # Pretty print JSON response
                 json_response = response.json()
-                print("Response:")
                 print(json.dumps(json_response, indent=2))
             except ValueError:
                 # If response is not JSON
-                print("Response (not JSON):")
-                print(response.text)
+                print("Response (not JSON):", file=sys.stderr)
+                print(response.text, file=sys.stderr)
         else:
-            print("Error response:")
+            print("Error response:", file=sys.stderr)
             print(response.text)
 
     except Exception as e:
-        print(f"Error: {str(e)}")
+        print(f"Error: {str(e)}", file=sys.stderr)
 
 
 def handle_process(args: argparse.Namespace) -> None:
