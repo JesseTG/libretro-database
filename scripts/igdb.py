@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 import argparse
+import asyncio
 import os
 import json
 import sys
+from typing import Optional
 
-import requests
-from typing import Optional, Dict, Any
-from requests_oauthlib import OAuth2Session
-from oauthlib.oauth2 import BackendApplicationClient
+from authlib.integrations.httpx_client import AsyncOAuth2Client
+from httpx import Response
 
 
 def get_client_credentials(args: argparse.Namespace) -> tuple[Optional[str], Optional[str]]:
@@ -17,7 +17,7 @@ def get_client_credentials(args: argparse.Namespace) -> tuple[Optional[str], Opt
     return client_id, client_secret
 
 
-def authenticate_igdb(client_id: str, client_secret: str) -> dict[str, Any]:
+async def authenticate_igdb(client_id: str, client_secret: str) -> AsyncOAuth2Client:
     """
     Authenticate with IGDB API using OAuth 2.0 Client Credentials flow.
 
@@ -26,7 +26,7 @@ def authenticate_igdb(client_id: str, client_secret: str) -> dict[str, Any]:
         client_secret: The IGDB API client secret
 
     Returns:
-        A dictionary containing the authentication token and related information
+        An authenticated AsyncOAuth2Client instance
 
     Raises:
         ValueError: If authentication fails
@@ -35,34 +35,33 @@ def authenticate_igdb(client_id: str, client_secret: str) -> dict[str, Any]:
         raise ValueError("Client ID and Client Secret are required for authentication")
 
     # Set up OAuth 2.0 client with client credentials flow
-    client = BackendApplicationClient(client_id=client_id)
-    oauth = OAuth2Session(client=client)
+    oauth = AsyncOAuth2Client(client_id=client_id, client_secret=client_secret)
 
     # Get token from Twitch API (IGDB uses Twitch authentication)
-    token_url = "https://id.twitch.tv/oauth2/token"
+    token_url = f"https://id.twitch.tv/oauth2/token?client_id={client_id}&client_secret={client_secret}"
 
     try:
-        token = oauth.fetch_token(
-            token_url=token_url,
-            client_id=client_id,
-            client_secret=client_secret,
-            force_querystring=True,
-            include_client_id=True,
+        await oauth.fetch_token(
+            token_url,
+            grant_type='client_credentials',
         )
-        return token
+        if not oauth.token:
+            raise ValueError("Failed to obtain access token")
+
+        return oauth
+
     except Exception as e:
         raise ValueError(f"Authentication failed: {str(e)}")
 
 
-def query_igdb(endpoint: str, query: str, access_token: str, client_id: str) -> requests.Response:
+async def query_igdb(client: AsyncOAuth2Client, endpoint: str, query: str) -> Response:
     """
     Query the IGDB API with the given endpoint and query.
 
     Args:
+        client: The authenticated AsyncOAuth2Client instance
         endpoint: The IGDB API endpoint to query
-        query: The Apicalypse query to send
-        access_token: The OAuth access token
-        client_id: The IGDB API client ID
+        query: The Apicalypse query string to send to the endpoint
 
     Returns:
         The HTTP response from the API
@@ -70,20 +69,19 @@ def query_igdb(endpoint: str, query: str, access_token: str, client_id: str) -> 
     Raises:
         requests.exceptions.RequestException: If the request fails
     """
-    base_url = "https://api.igdb.com/v4"
-    url = f"{base_url}/{endpoint}"
+    url = f"https://api.igdb.com/v4/{endpoint}"
+    access_token = client.token["access_token"]
 
     headers = {
-        'Client-ID': client_id,
+        'Client-ID': client.client_id,
         'Authorization': f'Bearer {access_token}',
         'Accept': 'application/json'
     }
 
-    response = requests.post(url, headers=headers, data=query)
-    return response
+    return await client.post(url, headers=headers, content=query)
 
 
-def handle_query(args: argparse.Namespace) -> None:
+async def handle_query(args: argparse.Namespace) -> None:
     """Handle the query subcommand."""
     client_id, client_secret = get_client_credentials(args)
 
@@ -93,11 +91,10 @@ def handle_query(args: argparse.Namespace) -> None:
 
     try:
         # Authenticate with IGDB
-        token = authenticate_igdb(client_id, client_secret)
-        access_token = token['access_token']
+        client = await authenticate_igdb(client_id, client_secret)
 
         # Submit the query to IGDB
-        response = query_igdb(args.endpoint, args.query, access_token, client_id)
+        response = await query_igdb(client, args.endpoint, args.query)
 
         # Print the response
         if response.status_code == 200:
@@ -124,7 +121,7 @@ def handle_process(args: argparse.Namespace) -> None:
     print(f"  Output directory: {args.outdir}")
 
 
-def main() -> None:
+async def main():
     """Main entry point for the script."""
     parser = argparse.ArgumentParser(
         description="Fetch and process game data from IGDB into RetroArch's DAT format.",
@@ -184,8 +181,8 @@ def main() -> None:
 
     # Parse arguments and call appropriate handler
     args = parser.parse_args()
-    args.func(args)
+    await args.func(args)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

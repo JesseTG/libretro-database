@@ -1,4 +1,4 @@
 igdb-api-v4==0.3.*
 requests==2.32.*
-requests-oauthlib==2.0.*
-oauthlib==3.3.*
+httpx==0.28.*
+Authlib==1.6.*
