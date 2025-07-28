@@ -75,7 +75,8 @@ async def query_igdb(client: AsyncOAuth2Client, endpoint: str, query: str) -> Re
     headers = {
         'Client-ID': client.client_id,
         'Authorization': f'Bearer {access_token}',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'Accept-Encoding': 'gzip, deflate'
     }
 
     return await client.post(url, headers=headers, content=query)
