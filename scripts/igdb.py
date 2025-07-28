@@ -139,7 +139,7 @@ async def main():
     # Query subcommand
     query_parser = subparsers.add_parser(
         "query",
-        help="Fetch data from the specified IGDB API endpoint and save it to the specified directory"
+        help="Fetch data from the specified IGDB API endpoint and print it to stdout"
     )
     query_parser.add_argument(
         "--client-id",
