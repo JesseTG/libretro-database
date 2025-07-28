@@ -51,7 +51,7 @@ async def authenticate_igdb(client_id: str, client_secret: str) -> AsyncOAuth2Cl
         return oauth
 
     except Exception as e:
-        raise ValueError(f"Authentication failed: {str(e)}")
+        raise ValueError(f"Authentication failed: {str(e)}") from e
 
 
 async def query_igdb(client: AsyncOAuth2Client, endpoint: str, query: str) -> Response:
