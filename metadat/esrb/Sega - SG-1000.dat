@@ -802,12 +802,6 @@ game (
 )
 
 game (
-	comment "SG-1000 M2 Test Cartridge (Japan)"
-	esrb_rating "E"
-	rom ( crc 207E7E99 )
-)
-
-game (
 	comment "Shinnyushain Tooru-kun (Japan)"
 	esrb_rating "E"
 	rom ( crc 5A917E06 )
@@ -937,12 +931,6 @@ game (
 	comment "Tank Battalion (Taiwan) (Unl)"
 	esrb_rating "E"
 	rom ( crc 5CBD1163 )
-)
-
-game (
-	comment "Terebi Oekaki (Japan) (Program)"
-	esrb_rating "E"
-	rom ( crc DD4A661B )
 )
 
 game (
