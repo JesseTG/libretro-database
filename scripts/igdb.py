@@ -94,8 +94,19 @@ async def handle_query(args: argparse.Namespace) -> None:
         # Authenticate with IGDB
         client = await authenticate_igdb(client_id, client_secret)
 
+        if args.endpoint == "multiquery":
+            # Read multiquery definitions from file or stdin
+            if args.query == '-':
+                body = sys.stdin.read()
+            else:
+                with open(args.query, 'r') as f:
+                    body = f.read()
+        else:
+            # Just pass the argument directly to the API and say it's a query
+            body = args.query
+
         # Submit the query to IGDB
-        response = await query_igdb(client, args.endpoint, args.query)
+        response = await query_igdb(client, args.endpoint, body)
 
         # Print the response
         if response.status_code == 200:
@@ -159,7 +170,7 @@ async def main():
     query_parser.add_argument(
         "query",
         type=str,
-        help="The Apicalypse query to query data from"
+        help="The Apicalypse query to query data from. If 'endpoint' is 'multiquery', this should be a path to a query file or '-' to read from stdin."
     )
     query_parser.set_defaults(func=handle_query)
 
