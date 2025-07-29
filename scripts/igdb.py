@@ -136,7 +136,7 @@ def handle_process(args: argparse.Namespace) -> None:
 async def main():
     """Main entry point for the script."""
     parser = argparse.ArgumentParser(
-        description="Fetch and process game data from IGDB into RetroArch's DAT format.",
+        description="Fetch and process game data from IGDB into the DAT format used by ClrMamePro and libretro.",
         prog="igdb"
     )
 
