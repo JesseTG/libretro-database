@@ -194,6 +194,7 @@ PlatformVersionId = NewType("PlatformVersionId", int)
 EngineId = NewType("EngineId", int)
 PlaylistQuery = str | Query
 
+# TODO: Write a constructor that forwards kwargs to the Query constructor
 @dataclass
 class Playlist:
     title: str
@@ -217,19 +218,18 @@ PLAYLISTS = (
     Playlist("Atari - 5200", Query(where="platforms = (66)")),
     Playlist("Atari - 7800", Query(where="platforms = (60)")),
     Playlist("Atari - 8-bit", Query(where="platforms = (65)")),
-    Playlist(
-        title="Atomiswave",
-        platform_id=PlatformId(52),  # Arcade games
-        platform_version_id=PlatformVersionId(652),
-    ),
+
+    # TODO: IGDB hasn't tagged all Atomiswave games with the Atomiswave platform, this query is incomplete
+    Playlist("Atomiswave", Query(where="game_engines = (970)")),
+
     Playlist("Bandai - WonderSwan", Query(where="platforms = (57)")),
     Playlist("Bandai - WonderSwan Color", Query(where="platforms = (123)")),
-    # TODO: "Cannonball" playlist
+    Playlist("Cannonball", Query(where="id = 2051")),
     Playlist("Casio - Loopy", Query(where="platforms = (380)")),
     # IGDB lacks a `platforms` entry for the Casio PV-1000
-    # TODO: "Cave Story" playlist
-    # TODO: "ChaiLove" playlist
-    # TODO: "CHIP-8" playlist
+    Playlist("Cave Story", Query(where="id = 6189")),
+    # IGDB lacks an entry for ChaiLove
+    # IGDB lacks an entry for the CHIP-8
     Playlist("Coleco - ColecoVision", Query(where="platforms = (68)")),
     Playlist("Commodore - Amiga", Query(where="platforms = (16)")),
     Playlist("Commodore - CD32", Query(where="platforms = (114)")),
@@ -239,55 +239,44 @@ PLAYLISTS = (
     Playlist("Commodore - VIC-20", Query(where="platforms = (71)")),
     Playlist("Commodore - 64", Query(where="platforms = (15)")),
     # TODO: "DICE" playlist
-    # TODO: "Dinothawr" playlist
-    # TODO: "DOOM" playlist
+
+    # Dinothawr or the Sokoban mod
+    Playlist("Dinothawr", Query(where="id = (62332, 305555)")),
+    Playlist("DOOM", Query(where="game_engines = (116)")),
     Playlist("DOS", Query(where="platforms = (13)")),
     Playlist("Emerson - Arcadia 2001", Query(where="platforms = (473)")),
-    # TODO: "Entex - Adventure Vision" playlist
-    # TODO: "Enterprise - 128" playlist
+    # IGDB lacks a `platforms` entry for the Entex Adventure Vision
+    # IGDB lacks a `platforms` entry for the Enterprise 128
     Playlist("Epoch - Super Cassette Vision", Query(where="platforms = (376)")),
     Playlist("Fairchild - Channel F", Query(where="platforms = (127)")),
-    Playlist(
-        title="FBNeo - Arcade Games",
-        platform_id=(PlatformId(52), PlatformId(79), PlatformId(80)),
-        # Arcade games, Neo Geo MVS, Neo Geo AES
-    ),
-    # TODO: "Flashback" playlist
-    Playlist("Funtech - Super Acan", Query(where="platforms = (480)")),
-    # TODO: "GamePark - GP32" playlist
-    Playlist("GCE - Vectrex", Query(where="platforms = (70)")),
-    Playlist(
-        title="Handheld Electronic Game",
-        platform_id=(PlatformId(307), PlatformId(411)),
-        # Game & Watch, Handheld LCD games
-    ),
-    Playlist(
-        title="Infocom - Z-Machine",
-        engine_id=EngineId(71),
-    ),
-    # TODO: "Hartung - Game Master" playlist
-    # TODO: all the MAME playlists
-    # TODO: "Jump 'n Bump" playlist
 
+    # Arcade games, Neo Geo MVS, Neo Geo AES
+    # TODO: FBNeo doesn't support ALL arcade games, need to refine the query
+    Playlist("FBNeo - Arcade Games", Query(where="platform = (52, 79, 80)")),
+    Playlist("Flashback", Query(where="id = 4275")),
+    Playlist("Funtech - Super Acan", Query(where="platforms = (480)")),
+    # IGDB lacks a `platforms` entry for the GP32
+    Playlist("GCE - Vectrex", Query(where="platforms = (70)")),
+
+    # TODO: Exclude those Mega Man Battle Network chips
+    # Game & Watch, Handheld LCD games
+    Playlist("Handheld Electronic Game", Query(where="platforms = (307, 411)")),
+
+    Playlist("Infocom - Z-Machine", Query(where="game_engines = (71)")),
+    # IGDB lacks a `platforms` entry for the Hartung Game Master
+    # TODO: all the MAME playlists
+    # TODO: Add the levels to the playlist somehow (individual level packs don't have IGDB entries)
+    Playlist("Jump 'n Bump", Query(where="id = 19226")),
     Playlist("LeapFrog - Leapster Learning Game System", Query(where="platforms = (412)")),
-    Playlist(
-        title="LowRes NX",
-        engine_id=EngineId(1672),
-    ),
+    Playlist("LowRes NX", Query(where="game_engines = (1672)")),
     Playlist("Magnavox - Odyssey2", Query(where="platforms = (133)")),
     Playlist("Mattel - Intellivision", Query(where="platforms = (67)")),
     Playlist("Microsoft - MSX", Query(where="platforms = (27)")),
     Playlist("Microsoft - MSX2", Query(where="platforms = (53)")),
     Playlist("Microsoft - Xbox", Query(where="platforms = (11)")),
-    Playlist(
-        title="MicroW8",
-        engine_id=EngineId(1671),
-    ),
-    # TODO: "MrBoom" playlist
-    Playlist(
-        title="Mobile - J2ME",
-        engine_id=EngineId(590)
-    ),
+    Playlist("MicroW8", Query(where="game_engines = (1671)")),
+    Playlist("Mobile - J2ME", Query(where="game_engines = (590)")),
+    Playlist("MrBoom", Query(where="id = 46621")),
     Playlist("NEC - PC Engine - TurboGrafx 16", Query(where="platforms = (86)")),
     Playlist("NEC - PC Engine CD - TurboGrafx-CD", Query(where="platforms = (150)")),
     Playlist("NEC - PC Engine SuperGrafx", Query(where="platforms = (128)")),
@@ -322,114 +311,103 @@ PLAYLISTS = (
 
     # SNES or Super Famicom, and does not have the "sufami turbo" keyword
     Playlist("Nintendo - Super Nintendo Entertainment System", Query(where='platforms = (19, 58) & keywords != (29241)')),
+
     Playlist("Nintendo - Virtual Boy", Query(where="platforms = (87)")),
-    Playlist(
-        "Nintendo - Wii",
-        platform_id=PlatformId(5),
-    ),
-    # TODO: "Nintendo - Wii (Digital)" playlist
+
+    # Released for the Wii and does not include the keywords listed in the comment below
+    Playlist("Nintendo - Wii", Query(where="platforms = (5) & keywords != (4134, 4522, 27078, 27629, 43725)")),
+
+    # Released for the Wii
+    # and includes the keywords "digital distribution" (4134), "virtual console" (4522),
+    # "wiiware" (27078), "wii virtual console" (27629), or "digital distribution only" (43725)
+    Playlist("Nintendo - Wii (Digital)", Query(where="platforms = (5) & keywords = (4134, 4522, 27078, 27629, 43725)")),
     Playlist("Nintendo - Wii U", Query(where="platforms = (41)")),
     Playlist("Philips - CD-i", Query(where="platforms = (117)")),
-    # Playlist("Philips - Videopac+", Query(where="platforms = (133)")),
+
     # TODO: How to identify Videopac+ games? They're counted as Odyssey2 games in IGDB.
-    Playlist(
-        title="PICO-8",
-        engine_id=EngineId(829),
-    ),
-    Playlist(
-        title="PuzzleScript",
-        engine_id=EngineId(831),
-    ),
+    # Playlist("Philips - Videopac+", Query(where="platforms = (133)")),
+
+    Playlist("PICO-8", Query(where="game_engines = (829)")),
+    Playlist("PuzzleScript", Query(where="game_engines = (831)")),
     # TODO: "Quake" playlist
     # TODO: "Quake II" playlist
     # TODO: "Quake III" playlist
-    # TODO: "RCA - Studio II" playlist
-    # TODO: "Rick Dangerous" playlist
-    Playlist(
-        title="RPG Maker",
-        engine_id=(EngineId(696), EngineId(765)),
-        # RPG Maker 2000, RPG Maker 2003
-    ),
-    Playlist(
-        title="ScummVM",
-        engine_id=EngineId(53),
-    ),
+    # IGDB lacks a `platforms` entry for the RCA Studio II
+
+    Playlist("Rick Dangerous", Query(where="id = 12202")),
+
+    # RPG Maker 2000, RPG Maker 2003
+    Playlist("RPG Maker", Query(where="game_engines = (696, 765)")),
+
+    # TODO: ScummVM supports more than just the SCUMM games,
+    #  this query needs to be significantly expanded
+    # Made with SCUMM, Z-Machine, or Cinematique
+    Playlist("ScummVM", Query(where="game_engines = (53, 71, 270)")),
     Playlist("Sega - Dreamcast", Query(where="platforms = (23)")),
     Playlist("Sega - Game Gear", Query(where="platforms = (35)")),
     Playlist("Sega - Master System - Mark III", Query(where="platforms = (64)")),
     Playlist("Sega - Mega Drive - Genesis", Query(where="platforms = (29)")),
-    Playlist(
-        title="Sega - Mega-CD - Sega CD",
-        platform_id=(PlatformId(78), PlatformId(482)),
-        # Sega CD, Sega Mega-CD 32X
-    ),
-    Playlist(
-        title="Sega - Naomi",
-        platform_id=PlatformId(52),
-        platform_version_id=PlatformVersionId(637),
-    ),
+
+    # Sega CD, Sega CD 32X (informal name for games that needed both the Sega CD and 32X)
+    # (libretro records Sega CD 32X games in the Sega CD playlist)
+    Playlist("Sega - Mega-CD - Sega CD", Query(where="platforms =  (78, 482)")),
+
+    # Naomi is a hardware platform but has a game engine entry for some reason
+    Playlist("Sega - Naomi", Query(where="game_engines = (940)")),
     Playlist("Sega - PICO", Query(where="platforms = (339)")),
     Playlist("Sega - Saturn", Query(where="platforms = (32)")),
-    Playlist(
-        title="Sega - ST-V",
-        engine_id=EngineId(1780),
-        # TODO: Get the PlatformId
-    ),
+
+    # Sega ST-V is a hardware platform but has a game engine entry for some reason
+    # TODO: IGDB's ST-V entry is incomplete, this query needs to be expanded
+    Playlist("Sega - ST-V", Query(where="game_engines = (1780)")),
     Playlist("Sega - SG-1000", Query(where="platforms = (84)")),
-    Playlist(
-        title="Sega - 32X",
-        platform_id=(PlatformId(30), PlatformId(482)),
-        # Sega 32X, Sega Mega-CD 32X
-    ),
-    Playlist(
-        title="Sega - Naomi 2",
-        platform_id=PlatformId(52),
-        platform_version_id=PlatformVersionId(651),
-    ),
+
+    # Games that need both the Sega CD and 32X are included in the Sega CD playlist
+    Playlist("Sega - 32X", Query(where="platforms = (30)")),
+
+    # TODO: IGDB lacks a `platforms` and `game_engines` entry for the Naomi 2,
+    #  and the games that used it aren't tagged properly
+
     Playlist("Sharp - X1", Query(where="platforms = (77)")),
     Playlist("Sharp - X68000", Query(where="platforms = (121)")),
     Playlist("Sinclair - ZX 81", Query(where="platforms = (373)")),
     Playlist("Sinclair - ZX Spectrum", Query(where="platforms = (26)")),
     # TODO: "Sinclair - ZX Spectrum +3" playlist
-    Playlist(
-        title="SNK - Neo Geo",
-        platform_id=(PlatformId(79), PlatformId(80)),
-        # Neo Geo MVS, Neo Geo AES
-    ),
+
+    # Neo Geo MVS, Neo Geo AES
+    Playlist("SNK - Neo Geo", Query(where="platforms = (79, 80)")),
     Playlist("SNK - Neo Geo Pocket", Query(where="platforms = (119)")),
     Playlist("SNK - Neo Geo Pocket Color", Query(where="platforms = (120)")),
     Playlist("SNK - Neo Geo CD", Query(where="platforms = (136)")),
     Playlist("Sony - PlayStation", Query(where="platforms = (7)")),
+
+    # TODO: Only include games that were released on UMDs
     Playlist("Sony - PlayStation Portable", Query(where="platforms = (38)")),
+
+    # TODO: Only include games that were released on the PlayStation Network
     Playlist("Sony - PlayStation Portable (PSN)", Query(where="platforms = (38)")),
+
     Playlist("Sony - PlayStation Vita", Query(where="platforms = (46)")),
     Playlist("Sony - PlayStation 2", Query(where="platforms = (8)")),
     Playlist("Sony - PlayStation 3", Query(where="platforms = (9)")),
     # TODO: "Sony - PlayStation 3 (PSN)" playlist
-    # TODO: "Spectravideo - SVI-318 - SVI-328" playlist
+
+    # IGDB lacks an entry for the Spectravideo SVI series
+
     Playlist("The 3DO Company - 3DO", Query(where="platforms = (50)")),
-    Playlist(
-        title="TIC-80",
-        engine_id=EngineId(975),
-    ),
-    # TODO: "Thomson - MOTO" playlist
+    Playlist("TIC-80", Query(where="game_engines = (975)")),
+    Playlist("Thomson - MOTO", Query(where="platforms = (156)")),
     Playlist("Tiger - Game.com", Query(where="platforms = (379)")),
     Playlist(
         title="Tomb Raider",
         engine_id=EngineId(1551),
         # TODO: Get the game IDs
     ),
-    # TODO: "VTech - CreatiVision" playlist
+    # IGDB lacks an entry for the VTech CreatiVision
     Playlist("VTech - V.Smile", Query(where="platforms = (439)")),
     Playlist("Uzebox", Query(where="platforms = (504)")),
-    Playlist(
-        title="Vircon32",
-        engine_id=EngineId(1632)
-    ),
-    Playlist(
-        title="WASM-4",
-        engine_id=EngineId(1556),
-    ),
+    Playlist("Vircon32", Query(where="game_engines = (1632)")),
+    Playlist("WASM-4", Query(where="game_engines = (1556)")),
     Playlist("Watara - Supervision", Query(where="platforms = (415)")),
     Playlist(
         title="Wolfenstein 3D",
@@ -437,5 +415,3 @@ PLAYLISTS = (
         # TODO: Get more game IDs, and get the engine ID for the original Wolfenstein 3D (1992) game
     )
 )
-# TODO: Look at what games are in platform IDs 409 (Legacy Computer), 112 (Microcomputer), 47 (Virtual Console)
-# TODO: Add platforms to the MAME playlists
