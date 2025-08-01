@@ -4,11 +4,18 @@ import asyncio
 import os
 import json
 import sys
-from typing import Optional
+from collections.abc import Coroutine
+from time import time_ns
+from typing import Optional, Any
 
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from httpx import Response
 
+import igdb_playlists
+
+# fields name, age_ratings.organization.name, age_ratings.rating_category.rating, age_ratings.rating_content_descriptions.description, aggregated_rating, aggregated_rating_count, alternative_names.name, alternative_names.comment, first_release_date, forks.name, franchise.name, franchises.name, game_localizations.name, game_localizations.region.name, game_localizations.region.identifier, game_localizations.region.category, game_modes.name, game_status.status, game_type.type, genres.name, involved_companies.company.name, involved_companies.company.country, involved_companies.company.description, involved_companies.company.status.name, involved_companies.developer, involved_companies.porting, involved_companies.publisher, involved_companies.supporting, keywords.name, language_supports.language.locale, language_supports.language.name, language_supports.language_support_type.name, multiplayer_modes.campaigncoop, multiplayer_modes.dropin, multiplayer_modes.lancoop, multiplayer_modes.lancoop, multiplayer_modes.offlinecoop, multiplayer_modes.offlinecoopmax, multiplayer_modes.offlinemax, multiplayer_modes.onlinecoop, multiplayer_modes.onlinecoopmax, multiplayer_modes.onlinemax, multiplayer_modes.splitscreen, multiplayer_modes.splitscreenonline, platforms.name, platforms.abbreviation, platforms.alternative_name, platforms.generation, platforms.platform_family.name, platforms.platform_type.name, platforms.slug, platforms.summary, platforms.versions.name, platforms.versions.connectivity, platforms.versions.cpu, player_perspectives.name, ports, release_dates.date, release_dates.human, release_dates.m, release_dates.y, release_dates.date_format.format, release_dates.release_region.region, release_dates.status.description, release_dates.status.name, remakes, remasters, similar_games, slug, standalone_expansions, dlcs, expanded_games, expansions, external_games, storyline, summary, tags, themes.name, version_title, websites.url, websites.type.type, websites.trusted;
+# TODO: Get game time to beat
+# TODO: Get game characters
 
 def get_client_credentials(args: argparse.Namespace) -> tuple[Optional[str], Optional[str]]:
     """Get client ID and secret from args or environment variables."""
@@ -123,6 +130,39 @@ async def handle_query(args: argparse.Namespace) -> None:
             print(response.text)
 
     except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+
+
+async def handle_scrape(args: argparse.Namespace) -> None:
+    """Handle the query subcommand."""
+    client_id, client_secret = get_client_credentials(args)
+
+    if not client_id or not client_secret:
+        print("Error: Client ID and Client Secret are required. Provide them as arguments or environment variables.", file=sys.stderr)
+        return
+
+    try:
+        # Authenticate with IGDB
+        client = await authenticate_igdb(client_id, client_secret)
+        last_request = time_ns()
+
+        # IGDB rate-limits us to 4 requests per second,
+        # and allows up to 8 in-flight requests (in case some take longer than a second).
+        semaphore = asyncio.BoundedSemaphore(8)  # Limit to 8 in-flight requests
+
+
+        job_queue: asyncio.Queue[Coroutine] = asyncio.Queue()
+        # IGDB rate-limits us to 4 requests per second
+
+
+        # TODO: Build the job queue
+
+        # TODO: for each named playlist:
+        #   - Query IGDB for the number of games
+        #   - Build a multiquery to fetch all games in the playlist
+        #   - Sort the games by name
+        #   - Save the games to the specified output directory as JSON files
+    except Exception as e:
         print(f"Error: {str(e)}", file=sys.stderr)
 
 
@@ -173,6 +213,34 @@ async def main():
         help="The Apicalypse query to query data from. If 'endpoint' is 'multiquery', this should be a path to a query file or '-' to read from stdin."
     )
     query_parser.set_defaults(func=handle_query)
+
+    # Scrape subcommand
+    scrape_parser = subparsers.add_parser(
+        "scrape",
+        help="Scrape data from IGDB and save it to the specified directory"
+    )
+    scrape_parser.add_argument(
+        "--client-id",
+        type=str,
+        help="The IGDB API client ID. Overrides the TWITCH_CLIENT_ID environment variable if provided."
+    )
+    scrape_parser.add_argument(
+        "--client-secret",
+        type=str,
+        help="The IGDB API client secret. Overrides the TWITCH_CLIENT_SECRET environment variable if provided."
+    )
+    scrape_parser.add_argument(
+        "--playlist",
+        type=str,
+        help="The name of the playlists to scrape. Can be given multiple times. If not provided, all playlists will be scraped.",
+        action="append"
+    )
+    scrape_parser.add_argument(
+        "outdir",
+        type=str,
+        help="The output directory for the scraped JSON files"
+    )
+    scrape_parser.set_defaults(func=handle_scrape)
 
     # Process subcommand
     process_parser = subparsers.add_parser(
