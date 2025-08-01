@@ -329,9 +329,11 @@ PLAYLISTS = (
 
     Playlist("PICO-8", Query(where="game_engines = (829)")),
     Playlist("PuzzleScript", Query(where="game_engines = (831)")),
-    # TODO: "Quake" playlist
-    # TODO: "Quake II" playlist
-    # TODO: "Quake III" playlist
+
+    # Quake (not the game engine, but the original game; Quake II uses the same engine)
+    Playlist("Quake", Query(where="id = 333")),
+    Playlist("Quake II", Query(where="id = 286")),
+    Playlist("Quake III", Query(where="id = 355")),
     # IGDB lacks a `platforms` entry for the RCA Studio II
 
     Playlist("Rick Dangerous", Query(where="id = 12202")),
@@ -381,11 +383,12 @@ PLAYLISTS = (
     Playlist("SNK - Neo Geo CD", Query(where="platforms = (136)")),
     Playlist("Sony - PlayStation", Query(where="platforms = (7)")),
 
-    # TODO: Only include games that were released on UMDs
-    Playlist("Sony - PlayStation Portable", Query(where="platforms = (38)")),
+    # PSP, without the "playstation minis" (4435) keyword
+    # (some PSP games were later released on other platforms' digital storefronts)
+    Playlist("Sony - PlayStation Portable", Query(where="platforms = (38) & keywords != (4435)")),
 
-    # TODO: Only include games that were released on the PlayStation Network
-    Playlist("Sony - PlayStation Portable (PSN)", Query(where="platforms = (38)")),
+    # PSP, with keywords "playstation network" (2543), "digital distribution" (4134), or "playstation minis" (4435)
+    Playlist("Sony - PlayStation Portable (PSN)", Query(where="platforms = (38) & keywords = (2543, 4134, 4435)")),
 
     Playlist("Sony - PlayStation Vita", Query(where="platforms = (46)")),
     Playlist("Sony - PlayStation 2", Query(where="platforms = (8)")),
@@ -398,20 +401,17 @@ PLAYLISTS = (
     Playlist("TIC-80", Query(where="game_engines = (975)")),
     Playlist("Thomson - MOTO", Query(where="platforms = (156)")),
     Playlist("Tiger - Game.com", Query(where="platforms = (379)")),
-    Playlist(
-        title="Tomb Raider",
-        engine_id=EngineId(1551),
-        # TODO: Get the game IDs
-    ),
+
+    # Tomb Raider, either using the OpenLara engine (1551) or the original games
+    Playlist("Tomb Raider", Query(where="game_engines = (1551) | id = (912, 1156, 1157);")),
+
     # IGDB lacks an entry for the VTech CreatiVision
     Playlist("VTech - V.Smile", Query(where="platforms = (439)")),
     Playlist("Uzebox", Query(where="platforms = (504)")),
     Playlist("Vircon32", Query(where="game_engines = (1632)")),
     Playlist("WASM-4", Query(where="game_engines = (1556)")),
     Playlist("Watara - Supervision", Query(where="platforms = (415)")),
-    Playlist(
-        title="Wolfenstein 3D",
-        engine_id=EngineId(1636),
-        # TODO: Get more game IDs, and get the engine ID for the original Wolfenstein 3D (1992) game
-    )
+
+    # Wolfenstein 3D, or any game that uses its engine
+    Playlist("Wolfenstein 3D", Query(where="game_engines = (246)")),
 )
