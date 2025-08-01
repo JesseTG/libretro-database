@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from typing import Optional, NewType, Literal, TypedDict, Required
-from collections.abc import Sequence, Iterable, Iterator
+from typing import Optional, Literal
+from collections.abc import Sequence, Iterable, Iterator, Mapping
 
 DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
     "name",
@@ -89,17 +89,6 @@ DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
 )
 DEFAULT_GAME_FIELDS = ''.join(DEFAULT_GAME_FIELD_TUPLE)
 
-class QueryArgs(TypedDict, total=False):
-    endpoint: Required[str]
-    fields: Sequence[str]
-    exclude: Sequence[str]
-    where: str
-    limit: int
-    offset: int
-    sort: tuple[str, Literal['asc', 'desc']]
-    search: str
-    looping: bool
-
 SortDirection = Literal['asc', 'desc']
 DEFAULT_SORT = ('name', 'asc')
 
@@ -124,7 +113,6 @@ class Query:
             sort: tuple[str, SortDirection] | None = None,
             search: Optional[str] = None,
     ):
-        # TODO: Default to the standard game fields if no fields are specified
         match fields:
             case str():
                 self.fields = tuple(f.strip() for f in fields.split(","))
@@ -188,11 +176,6 @@ class Query:
             clauses.append(f"search \"{self.search}\"")
 
         return '; '.join(clauses) + ';'
-
-PlatformId = NewType("PlatformId", int)
-PlatformVersionId = NewType("PlatformVersionId", int)
-EngineId = NewType("EngineId", int)
-PlaylistQuery = str | Query
 
 @dataclass
 class Playlist:
