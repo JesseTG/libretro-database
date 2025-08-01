@@ -229,6 +229,38 @@ class Playlist:
             search=search,
         )
 
+    def query_pages(self, count: int, limit: int = 500) -> Iterator[Query]:
+        for i in range(0, count, limit):
+            yield Query(
+                fields=self.query.fields,
+                exclude=self.query.exclude,
+                where=self.query.where,
+                limit=limit,
+                offset=i,
+                sort=self.query.sort,
+                search=self.query.search,
+            )
+
+MULTIQUERY_LIMIT = 10
+'''
+The maximum number of queries that IGDB allows in a single multiquery.
+'''
+
+
+class Multiquery:
+    def __init__(self, queries: Mapping[str, tuple[str, Query]]):
+        if len(queries) > MULTIQUERY_LIMIT:
+            raise ValueError(f"Multiquery can only contain up to {MULTIQUERY_LIMIT} queries; got {len(queries)}")
+
+        self.queries = dict(queries)
+
+    def __str__(self):
+        queries: list[str] = []
+        for name, (endpoint, query) in self.queries.items():
+            queries.append(f"query {endpoint} \"{name}\" {{ {query} }};")
+
+        return '\n'.join(queries)
+
 
 # NOTE: The "= (number)" syntax means "includes this value and possibly others"
 PLAYLISTS: tuple[Playlist, ...] = (
@@ -439,3 +471,33 @@ PLAYLISTS: tuple[Playlist, ...] = (
     # Wolfenstein 3D, or any game that uses its engine
     Playlist("Wolfenstein 3D", systemid="wolfenstein3d", where="game_engines = (246)"),
 )
+
+def get_by_title(title: str) -> Optional[Playlist]:
+    """
+    Get a playlist by its title.
+
+    :param title: The title of the playlist to search for.
+    :return: The Playlist object if found, otherwise None.
+    """
+
+    for playlist in PLAYLISTS:
+        if playlist.title.lower() == title.lower():
+            return playlist
+
+    return None
+
+_idtranstable = str.maketrans({'-': None, ' ': None, '_': None, '.': None, '\'': None, '"': None})
+def get_by_systemid(systemid: str) -> Optional[Playlist]:
+    """
+    Get a playlist by its system ID, normalizing the ID to lowercase and removing special characters.
+
+    :param systemid: The system ID to search for.
+    :return: The Playlist object if found, otherwise None.
+    """
+
+    translated_sysid = systemid.translate(_idtranstable)
+    for playlist in PLAYLISTS:
+        if any(p.translate(_idtranstable) == translated_sysid for p in playlist.systemids):
+            return playlist
+
+    return None
