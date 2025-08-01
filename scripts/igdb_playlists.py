@@ -205,6 +205,8 @@ class Playlist:
 
     query: Query
 
+    # TODO: Add a field that indicates the .dat files to use for matching games to CRC32
+
     def __init__(
             self,
             title: str,
