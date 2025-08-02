@@ -312,7 +312,7 @@ PLAYLISTS: tuple[Playlist, ...] = (
 
     # Arcade games, Neo Geo MVS, Neo Geo AES
     # TODO: FBNeo doesn't support ALL arcade games, need to refine the query
-    Playlist("FBNeo - Arcade Games", systemid=("fb_alpha", "fba", "fbneo"), where="platform = (52, 79, 80)"),
+    Playlist("FBNeo - Arcade Games", systemid=("fb_alpha", "fba", "fbneo"), where="platforms = (52, 79, 80)"),
     Playlist("Flashback", systemid="flashback", where="id = 4275"),
     Playlist("Funtech - Super Acan", systemid="superacan", where="platforms = (480)"),
     # IGDB lacks a `platforms` entry for the GP32
