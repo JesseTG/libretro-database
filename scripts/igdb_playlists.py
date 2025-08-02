@@ -1,3 +1,4 @@
+from collections import ChainMap
 from dataclasses import dataclass
 from typing import Optional, Literal
 from collections.abc import Sequence, Iterable, Iterator, Mapping
@@ -115,9 +116,9 @@ class Query:
     ):
         match fields:
             case str():
-                self.fields = tuple(f.strip() for f in fields.split(","))
+                self.fields = tuple(f.strip(" ;") for f in fields.split(",") if f)
             case Iterable():
-                self.fields = tuple(f.strip() for f in fields)
+                self.fields = tuple(f.strip(" ;") for f in fields if f)
             case None:
                 self.fields = None
             case _:
@@ -155,27 +156,27 @@ class Query:
     def __str__(self):
         clauses: list[str] = []
         if self.fields:
-            clauses.append(f"fields {','.join(self.fields)}")
+            clauses.append(f"fields {','.join(self.fields)};")
 
         if self.exclude:
-            clauses.append(f"exclude {','.join(self.exclude)}")
+            clauses.append(f"exclude {','.join(self.exclude)};")
 
         if self.where:
-            clauses.append(f"where {self.where}")
+            clauses.append(f"where {self.where};")
 
         if self.limit is not None:
-            clauses.append(f"limit {self.limit}")
+            clauses.append(f"limit {self.limit};")
 
         if self.offset is not None:
-            clauses.append(f"offset {self.offset}")
+            clauses.append(f"offset {self.offset};")
 
         if self.sort:
-            clauses.append(f"sort {self.sort[0]} {self.sort[1]}")
+            clauses.append(f"sort {self.sort[0]} {self.sort[1]};")
 
         if self.search:
-            clauses.append(f"search \"{self.search}\"")
+            clauses.append(f"search \"{self.search}\";")
 
-        return '; '.join(clauses) + ';'
+        return ''.join(clauses)
 
 @dataclass
 class Playlist:
@@ -241,10 +242,13 @@ class Playlist:
                 search=self.query.search,
             )
 
-MULTIQUERY_LIMIT = 10
+MULTIQUERY_MAX = 10
+MULTIQUERY_LIMIT = MULTIQUERY_MAX
 '''
 The maximum number of queries that IGDB allows in a single multiquery.
 '''
+
+MAX_ACTIVE_QUERIES = 8
 
 
 class Multiquery:
@@ -472,6 +476,35 @@ PLAYLISTS: tuple[Playlist, ...] = (
     Playlist("Wolfenstein 3D", systemid="wolfenstein3d", where="game_engines = (246)"),
 )
 
+_idtranstable = str.maketrans({'-': None, ' ': None, '_': None, '.': None, '\'': None, '"': None})
+
+PLAYLISTS_BY_TITLE = {p.title: p for p in PLAYLISTS}
+PLAYLISTS_BY_TITLE_LOWER = {p.title.lower(): p for p in PLAYLISTS}
+PLAYLISTS_BY_NORMALIZED_TITLE = {t.translate(_idtranstable):p for (t, p) in PLAYLISTS_BY_TITLE_LOWER.items()}
+PLAYLISTS_BY_SYSTEMID = {sysid: p for p in PLAYLISTS for sysid in p.systemids}
+PLAYLISTS_BY_NORMALIZED_SYSTEMID = {
+    sysid.translate(_idtranstable): p for p in PLAYLISTS for sysid in p.systemids
+}
+PLAYLISTS_BY_ANY: Mapping[str, Playlist] = ChainMap(
+    PLAYLISTS_BY_TITLE,
+    PLAYLISTS_BY_TITLE_LOWER,
+    PLAYLISTS_BY_NORMALIZED_TITLE,
+    PLAYLISTS_BY_SYSTEMID,
+    PLAYLISTS_BY_NORMALIZED_SYSTEMID,
+)
+
+def get_playlist(identifier: str) -> Optional[Playlist]:
+    """
+    Get a playlist by its title or system ID, normalizing the identifier to lowercase and removing special characters.
+
+    :param identifier: The title or system ID of the playlist to search for.
+    :return: The Playlist object if found, otherwise None.
+    """
+
+    normalized_identifier = identifier.lower().translate(_idtranstable)
+    return PLAYLISTS_BY_ANY.get(normalized_identifier, None)
+
+
 def get_by_title(title: str) -> Optional[Playlist]:
     """
     Get a playlist by its title.
@@ -486,7 +519,6 @@ def get_by_title(title: str) -> Optional[Playlist]:
 
     return None
 
-_idtranstable = str.maketrans({'-': None, ' ': None, '_': None, '.': None, '\'': None, '"': None})
 def get_by_systemid(systemid: str) -> Optional[Playlist]:
     """
     Get a playlist by its system ID, normalizing the ID to lowercase and removing special characters.

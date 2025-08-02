@@ -4,42 +4,41 @@ import asyncio
 import os
 import json
 import sys
-from collections.abc import Coroutine
-from time import time_ns
-from typing import Optional, Any
+from typing import Any
 
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from httpx import Response
 
-import igdb_playlists
+from igdb_playlists import *
 
-# fields name, age_ratings.organization.name, age_ratings.rating_category.rating, age_ratings.rating_content_descriptions.description, aggregated_rating, aggregated_rating_count, alternative_names.name, alternative_names.comment, first_release_date, forks.name, franchise.name, franchises.name, game_localizations.name, game_localizations.region.name, game_localizations.region.identifier, game_localizations.region.category, game_modes.name, game_status.status, game_type.type, genres.name, involved_companies.company.name, involved_companies.company.country, involved_companies.company.description, involved_companies.company.status.name, involved_companies.developer, involved_companies.porting, involved_companies.publisher, involved_companies.supporting, keywords.name, language_supports.language.locale, language_supports.language.name, language_supports.language_support_type.name, multiplayer_modes.campaigncoop, multiplayer_modes.dropin, multiplayer_modes.lancoop, multiplayer_modes.lancoop, multiplayer_modes.offlinecoop, multiplayer_modes.offlinecoopmax, multiplayer_modes.offlinemax, multiplayer_modes.onlinecoop, multiplayer_modes.onlinecoopmax, multiplayer_modes.onlinemax, multiplayer_modes.splitscreen, multiplayer_modes.splitscreenonline, platforms.name, platforms.abbreviation, platforms.alternative_name, platforms.generation, platforms.platform_family.name, platforms.platform_type.name, platforms.slug, platforms.summary, platforms.versions.name, platforms.versions.connectivity, platforms.versions.cpu, player_perspectives.name, ports, release_dates.date, release_dates.human, release_dates.m, release_dates.y, release_dates.date_format.format, release_dates.release_region.region, release_dates.status.description, release_dates.status.name, remakes, remasters, similar_games, slug, standalone_expansions, dlcs, expanded_games, expansions, external_games, storyline, summary, tags, themes.name, version_title, websites.url, websites.type.type, websites.trusted;
 # TODO: Get game time to beat
 # TODO: Get game characters
 
-def get_client_credentials(args: argparse.Namespace) -> tuple[Optional[str], Optional[str]]:
+def get_client_credentials(args: argparse.Namespace) -> tuple[str, str]:
     """Get client ID and secret from args or environment variables."""
     client_id = args.client_id or os.getenv('TWITCH_CLIENT_ID')
     client_secret = args.client_secret or os.getenv('TWITCH_CLIENT_SECRET')
+
+    if not client_id or not client_secret:
+        raise ValueError("Client ID and Client Secret are required for authentication")
+
     return client_id, client_secret
 
 
-async def authenticate_igdb(client_id: str, client_secret: str) -> AsyncOAuth2Client:
+async def authenticate_igdb(args: argparse.Namespace) -> AsyncOAuth2Client:
     """
     Authenticate with IGDB API using OAuth 2.0 Client Credentials flow.
 
     Args:
-        client_id: The IGDB API client ID
-        client_secret: The IGDB API client secret
+        args: The parsed command line arguments containing client ID and secret.
 
     Returns:
         An authenticated AsyncOAuth2Client instance
 
     Raises:
-        ValueError: If authentication fails
+        An exception if authentication fails or if the client ID/secret are not provided.
     """
-    if not client_id or not client_secret:
-        raise ValueError("Client ID and Client Secret are required for authentication")
+    client_id, client_secret = get_client_credentials(args)
 
     # Set up OAuth 2.0 client with client credentials flow
     oauth = AsyncOAuth2Client(client_id=client_id, client_secret=client_secret)
@@ -47,21 +46,13 @@ async def authenticate_igdb(client_id: str, client_secret: str) -> AsyncOAuth2Cl
     # Get token from Twitch API (IGDB uses Twitch authentication)
     token_url = f"https://id.twitch.tv/oauth2/token?client_id={client_id}&client_secret={client_secret}"
 
-    try:
-        await oauth.fetch_token(
-            token_url,
-            grant_type='client_credentials',
-        )
-        if not oauth.token:
-            raise ValueError("Failed to obtain access token")
-
-        return oauth
-
-    except Exception as e:
-        raise ValueError(f"Authentication failed: {str(e)}") from e
+    return await oauth.fetch_token(
+        token_url,
+        grant_type='client_credentials',
+    )
 
 
-async def query_igdb(client: AsyncOAuth2Client, endpoint: str, query: str) -> Response:
+async def query_igdb(client: AsyncOAuth2Client, endpoint: str, query: str | Query) -> Response:
     """
     Query the IGDB API with the given endpoint and query.
 
@@ -86,65 +77,44 @@ async def query_igdb(client: AsyncOAuth2Client, endpoint: str, query: str) -> Re
         'Accept-Encoding': 'gzip, deflate'
     }
 
-    return await client.post(url, headers=headers, content=query)
+    return await client.post(url, headers=headers, content=str(query))
 
 
 async def handle_query(args: argparse.Namespace) -> None:
     """Handle the query subcommand."""
-    client_id, client_secret = get_client_credentials(args)
 
-    if not client_id or not client_secret:
-        print("Error: Client ID and Client Secret are required. Provide them as arguments or environment variables.", file=sys.stderr)
-        return
-
-    try:
-        # Authenticate with IGDB
-        client = await authenticate_igdb(client_id, client_secret)
-
-        if args.endpoint == "multiquery":
-            # Read multiquery definitions from file or stdin
-            if args.query == '-':
-                body = sys.stdin.read()
-            else:
-                with open(args.query, 'r') as f:
-                    body = f.read()
+    if args.endpoint == "multiquery":
+        # Read multiquery definitions from file or stdin
+        if args.query == '-':
+            body = sys.stdin.read()
         else:
-            # Just pass the argument directly to the API and say it's a query
-            body = args.query
+            with open(args.query, 'r') as f:
+                body = f.read()
+    else:
+        body = args.query
 
+    # Authenticate with IGDB
+    async with await authenticate_igdb(args) as client:
         # Submit the query to IGDB
         response = await query_igdb(client, args.endpoint, body)
-
-        # Print the response
-        if response.status_code == 200:
-            try:
-                # Pretty print JSON response
-                json_response = response.json()
-                print(json.dumps(json_response, indent=2))
-            except ValueError:
-                # If response is not JSON
-                print("Response (not JSON):", file=sys.stderr)
-                print(response.text, file=sys.stderr)
-        else:
-            print("Error response:", file=sys.stderr)
-            print(response.text)
-
-    except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
+        print(json.dumps(response.json(), indent=2))
 
 
 async def handle_scrape(args: argparse.Namespace) -> None:
     """Handle the query subcommand."""
-    client_id, client_secret = get_client_credentials(args)
 
-    if not client_id or not client_secret:
-        print("Error: Client ID and Client Secret are required. Provide them as arguments or environment variables.", file=sys.stderr)
-        return
+    playlist_args: Iterable[str] | None = args.playlist
+    if not playlist_args:
+        # If no playlists specified, use all known playlists
+        playlist_args = (p.title for p in PLAYLISTS)
 
-    try:
-        # Authenticate with IGDB
-        client = await authenticate_igdb(client_id, client_secret)
-        last_request = time_ns()
+    # Get all playlists to scrape (filter out the Nones)
+    playlists = tuple(filter(None, (get_playlist(p) for p in playlist_args)))
+    if not playlists:
+        raise ValueError("All listed playlists are unknown.")
+
+    # Limit to 8 in-flight requests
+    job_limit = asyncio.BoundedSemaphore(MAX_ACTIVE_QUERIES)
 
         # IGDB rate-limits us to 4 requests per second,
         # and allows up to 8 in-flight requests (in case some take longer than a second).
