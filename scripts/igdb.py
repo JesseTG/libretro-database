@@ -4,15 +4,26 @@ import asyncio
 import os
 import json
 import sys
-from typing import Any
+from asyncio import get_event_loop
+from contextlib import asynccontextmanager
+from json import JSONDecodeError
+from typing import Any, TypeAlias, TypedDict
 
 from authlib.integrations.httpx_client import AsyncOAuth2Client
+from authlib.oauth2.rfc6749 import OAuth2Token
 from httpx import Response
 
 from igdb_playlists import *
 
 # TODO: Get game time to beat
 # TODO: Get game characters
+
+JsonPrimitive = str | int | float | bool | None
+JsonArray: TypeAlias = "Sequence[JsonPrimitive | JsonObject]"
+JsonObject: TypeAlias = "Mapping[str, JsonPrimitive | JsonArray | JsonObject]"
+
+class CountResponse(TypedDict, total=False):
+    count: int
 
 def get_client_credentials(args: argparse.Namespace) -> tuple[str, str]:
     """Get client ID and secret from args or environment variables."""
@@ -24,8 +35,8 @@ def get_client_credentials(args: argparse.Namespace) -> tuple[str, str]:
 
     return client_id, client_secret
 
-
-async def authenticate_igdb(args: argparse.Namespace) -> AsyncOAuth2Client:
+@asynccontextmanager
+async def authenticate_igdb(args: argparse.Namespace):
     """
     Authenticate with IGDB API using OAuth 2.0 Client Credentials flow.
 
@@ -41,15 +52,15 @@ async def authenticate_igdb(args: argparse.Namespace) -> AsyncOAuth2Client:
     client_id, client_secret = get_client_credentials(args)
 
     # Set up OAuth 2.0 client with client credentials flow
-    oauth = AsyncOAuth2Client(client_id=client_id, client_secret=client_secret)
+    async with AsyncOAuth2Client(client_id=client_id, client_secret=client_secret) as oauth:
+        # Get token from Twitch API (IGDB uses Twitch authentication)
+        token_url = f"https://id.twitch.tv/oauth2/token?client_id={client_id}&client_secret={client_secret}"
 
-    # Get token from Twitch API (IGDB uses Twitch authentication)
-    token_url = f"https://id.twitch.tv/oauth2/token?client_id={client_id}&client_secret={client_secret}"
-
-    return await oauth.fetch_token(
-        token_url,
-        grant_type='client_credentials',
-    )
+        token: OAuth2Token = await oauth.fetch_token(
+            token_url,
+            grant_type='client_credentials',
+        )
+        yield oauth, token
 
 
 async def query_igdb(client: AsyncOAuth2Client, endpoint: str, query: str | Query) -> Response:
@@ -93,17 +104,22 @@ async def handle_query(args: argparse.Namespace) -> None:
     else:
         body = args.query
 
-    # Authenticate with IGDB
-    async with await authenticate_igdb(args) as client:
-        # Submit the query to IGDB
-        response = await query_igdb(client, args.endpoint, body)
-        print(json.dumps(response.json(), indent=2))
+    # Get token from Twitch API (IGDB uses Twitch authentication)
+    async with authenticate_igdb(args) as (oauth, token):
+        response = await query_igdb(oauth, args.endpoint, body)
+        try:
+            print(json.dumps(response.json(), indent=2))
+        except JSONDecodeError as e:
+            print(response.text, file=sys.stderr)
+            print(e, file=sys.stderr)
+            raise e
+
 
 
 async def handle_scrape(args: argparse.Namespace) -> None:
     """Handle the query subcommand."""
 
-    playlist_args: Iterable[str] | None = args.playlist
+    playlist_args: Iterable[str] | None = args.playlists
     if not playlist_args:
         # If no playlists specified, use all known playlists
         playlist_args = (p.title for p in PLAYLISTS)
@@ -114,26 +130,44 @@ async def handle_scrape(args: argparse.Namespace) -> None:
         raise ValueError("All listed playlists are unknown.")
 
     # Limit to 8 in-flight requests
-    job_limit = asyncio.BoundedSemaphore(MAX_ACTIVE_QUERIES)
+    request_limit = asyncio.BoundedSemaphore(MAX_ACTIVE_QUERIES)
+    last_request_time = 0.0
 
-        # IGDB rate-limits us to 4 requests per second,
-        # and allows up to 8 in-flight requests (in case some take longer than a second).
-        semaphore = asyncio.BoundedSemaphore(8)  # Limit to 8 in-flight requests
+    # IGDB rate-limits us to 4 requests per second,
+    # and allows up to 8 in-flight requests (in case some take longer than a second).
+    async def query_endpoint(client: AsyncOAuth2Client, endpoint: str, query: Query) -> Response:
+        # IGDB limits us to 8 in-flight requests
+        # TODO: Honor the rate limit of 4 requests per second
+        now = get_event_loop().time()
+        async with request_limit:
+            return await query_igdb(client, endpoint, query)
 
+    async def fetch_playlist(client: AsyncOAuth2Client, playlist: Playlist) -> Sequence[Mapping[str, Any]]:
+        response = await query_endpoint(client, "games/count", playlist.query)
+        count_json: JsonObject = response.json()
 
-        job_queue: asyncio.Queue[Coroutine] = asyncio.Queue()
-        # IGDB rate-limits us to 4 requests per second
+        if not isinstance(count_json, Mapping):
+            raise ValueError(f"Expected count response to be a JSON object; got: {type(count_json)}")
 
+        if 'count' not in count_json:
+            response.raise_for_status() # Raise an error if the response is not successful
+            # But if the response is successful yet wrong, raise a ValueError
+            raise ValueError(f"Count response lacks a 'count' attribute; got: {count_json}")
 
-        # TODO: Build the job queue
+        print(f"'{playlist.title}' has {count_json['count']} games.")
 
-        # TODO: for each named playlist:
-        #   - Query IGDB for the number of games
-        #   - Build a multiquery to fetch all games in the playlist
-        #   - Sort the games by name
-        #   - Save the games to the specified output directory as JSON files
-    except Exception as e:
-        print(f"Error: {str(e)}", file=sys.stderr)
+        # TODO: Build a series of multiqueries to fetch all games in the playlist (navigate all pages)
+        # TODO: Fetch these multiqueries in parallel, using the semaphore to maintain the job limit
+        # TODO: Keep these responses in memory until all queries are done
+        # TODO: Sort the list by name
+        # TODO: Save the playlist JSON to the specified output directory, in a file named after the playlist title
+        pass
+
+    async with authenticate_igdb(args) as (oauth, token):
+        #response = await query_igdb(oauth, args.endpoint, body)
+
+        async with asyncio.TaskGroup() as group:
+            tasks = tuple(group.create_task(fetch_playlist(oauth, p)) for p in playlists)
 
 
 def handle_process(args: argparse.Namespace) -> None:
@@ -200,10 +234,12 @@ async def main():
         help="The IGDB API client secret. Overrides the TWITCH_CLIENT_SECRET environment variable if provided."
     )
     scrape_parser.add_argument(
-        "--playlist",
+        "--playlists",
         type=str,
-        help="The name of the playlists to scrape. Can be given multiple times. If not provided, all playlists will be scraped.",
-        action="append"
+        help="The title or system IDs of the playlists to scrape. If not provided, all known playlists will be scraped.",
+        action="extend",
+        nargs="*",
+        default=PLAYLISTS_BY_TITLE.keys()  # Default to all known playlists
     )
     scrape_parser.add_argument(
         "outdir",
