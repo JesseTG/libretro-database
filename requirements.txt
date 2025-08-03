@@ -2,3 +2,5 @@ igdb-api-v4==0.3.*
 requests==2.32.*
 httpx==0.28.*
 Authlib==1.6.*
+aiofiles==24.1.*
+asynciolimiter==1.2.*

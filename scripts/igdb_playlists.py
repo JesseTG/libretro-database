@@ -250,6 +250,9 @@ The maximum number of queries that IGDB allows in a single multiquery.
 
 MAX_ACTIVE_QUERIES = 8
 
+MAX_QUERY_RATE = 4
+MAX_QUERY_PERIOD = 1.0 / MAX_QUERY_RATE
+
 
 class Multiquery:
     def __init__(self, queries: Mapping[str, tuple[str, Query]]):

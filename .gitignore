@@ -1,3 +1,5 @@
 /libretro-super
 .DS_Store
 .venv
+.env
+out

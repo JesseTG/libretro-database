@@ -1,17 +1,25 @@
 #!/usr/bin/env python3
 import argparse
 import asyncio
+import itertools
 import os
 import json
 import sys
-from asyncio import get_event_loop
+
+from asyncio import TaskGroup
 from contextlib import asynccontextmanager
 from json import JSONDecodeError
+from numbers import Number
 from typing import Any, TypeAlias, TypedDict
 
+import aiofiles
+import aiofiles.os
+import aiofiles.ospath
+import asynciolimiter
+import httpx
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
-from httpx import Response
+from httpx import Response, HTTPStatusError
 
 from igdb_playlists import *
 
@@ -19,8 +27,12 @@ from igdb_playlists import *
 # TODO: Get game characters
 
 JsonPrimitive = str | int | float | bool | None
-JsonArray: TypeAlias = "Sequence[JsonPrimitive | JsonObject]"
+JsonArray: TypeAlias = "Sequence[JsonPrimitive | JsonObject | JsonArray]"
 JsonObject: TypeAlias = "Mapping[str, JsonPrimitive | JsonArray | JsonObject]"
+
+class MultiqueryResponse(TypedDict):
+    name: str
+    result: list[JsonObject]
 
 class CountResponse(TypedDict, total=False):
     count: int
@@ -52,7 +64,8 @@ async def authenticate_igdb(args: argparse.Namespace):
     client_id, client_secret = get_client_credentials(args)
 
     # Set up OAuth 2.0 client with client credentials flow
-    async with AsyncOAuth2Client(client_id=client_id, client_secret=client_secret) as oauth:
+    # TODO: Make the timeout configurable
+    async with AsyncOAuth2Client(client_id=client_id, client_secret=client_secret, timeout=httpx.Timeout(None)) as oauth:
         # Get token from Twitch API (IGDB uses Twitch authentication)
         token_url = f"https://id.twitch.tv/oauth2/token?client_id={client_id}&client_secret={client_secret}"
 
@@ -63,7 +76,7 @@ async def authenticate_igdb(args: argparse.Namespace):
         yield oauth, token
 
 
-async def query_igdb(client: AsyncOAuth2Client, endpoint: str, query: str | Query) -> Response:
+async def query_igdb(client: AsyncOAuth2Client, endpoint: str, query: str | Query | Multiquery) -> Response:
     """
     Query the IGDB API with the given endpoint and query.
 
@@ -115,7 +128,6 @@ async def handle_query(args: argparse.Namespace) -> None:
             raise e
 
 
-
 async def handle_scrape(args: argparse.Namespace) -> None:
     """Handle the query subcommand."""
 
@@ -131,43 +143,85 @@ async def handle_scrape(args: argparse.Namespace) -> None:
 
     # Limit to 8 in-flight requests
     request_limit = asyncio.BoundedSemaphore(MAX_ACTIVE_QUERIES)
-    last_request_time = 0.0
+    rate_limit = asynciolimiter.StrictLimiter(MAX_QUERY_RATE) # 4 requests per second
+    outdir: str = args.outdir
 
-    # IGDB rate-limits us to 4 requests per second,
-    # and allows up to 8 in-flight requests (in case some take longer than a second).
-    async def query_endpoint(client: AsyncOAuth2Client, endpoint: str, query: Query) -> Response:
-        # IGDB limits us to 8 in-flight requests
-        # TODO: Honor the rate limit of 4 requests per second
-        now = get_event_loop().time()
+    async def query_endpoint(client: AsyncOAuth2Client, endpoint: str, query: Query | Multiquery) -> Response:
         async with request_limit:
-            return await query_igdb(client, endpoint, query)
+            try:
+                await rate_limit.wait()
+                return await query_igdb(client, endpoint, query)
+            except HTTPStatusError as e:
+                print(e.response.headers, file=sys.stderr)
+                raise
 
-    async def fetch_playlist(client: AsyncOAuth2Client, playlist: Playlist) -> Sequence[Mapping[str, Any]]:
+    async def fetch_playlist(client: AsyncOAuth2Client, playlist: Playlist, group: TaskGroup) -> Sequence[Mapping[str, Any]]:
         response = await query_endpoint(client, "games/count", playlist.query)
+        content_type = response.headers.get("Content-Type")
+        if response.headers.get('content-type') != 'application/json':
+            raise ValueError(f"Expected games/count response to be JSON for query to playlist {playlist.title}, got: {content_type} ({response.text})")
         count_json: JsonObject = response.json()
 
         if not isinstance(count_json, Mapping):
-            raise ValueError(f"Expected count response to be a JSON object; got: {type(count_json)}")
+            raise ValueError(f"Expected count response for '{playlist.title}' query to be a JSON object; got: {type(count_json)} ({count_json})")
 
         if 'count' not in count_json:
             response.raise_for_status() # Raise an error if the response is not successful
             # But if the response is successful yet wrong, raise a ValueError
-            raise ValueError(f"Count response lacks a 'count' attribute; got: {count_json}")
+            raise ValueError(f"Count response for '{playlist.title}' lacks a 'count' attribute; got: {count_json} (Headers: {response.headers})")
 
-        print(f"'{playlist.title}' has {count_json['count']} games.")
+        if not isinstance(count_json['count'], Number):
+            raise ValueError(f"Expected response['count'] to be a number, got {type(count_json['count'])}")
 
-        # TODO: Build a series of multiqueries to fetch all games in the playlist (navigate all pages)
-        # TODO: Fetch these multiqueries in parallel, using the semaphore to maintain the job limit
-        # TODO: Keep these responses in memory until all queries are done
-        # TODO: Sort the list by name
-        # TODO: Save the playlist JSON to the specified output directory, in a file named after the playlist title
-        pass
+        count = int(count_json['count'])
+        print(f"{playlist.title}: Fetching {count} games...")
+        multiqueries: list[Multiquery] = []
+        for batch in itertools.batched(playlist.query_pages(count), MULTIQUERY_MAX):
+            multiqueries.append(Multiquery({f"{playlist.title} ({q.offset}-{q.offset + q.limit - 1})": ('games', q) for q in batch}))
+
+        playlist_tasks = tuple(group.create_task(query_endpoint(client, "multiquery", m)) for m in multiqueries)
+
+        responses: Sequence[Response]  = await asyncio.gather(*playlist_tasks)
+        games: list[JsonObject] = []
+
+        for r in responses:
+            if r.is_error:
+                print(f"Error fetching playlist {playlist.title}: {r.status_code} {r.reason_phrase}", file=sys.stderr)
+                r.raise_for_status()
+
+            content_type: str | None = r.headers.get('content-type')
+            if content_type != 'application/json':
+                raise ValueError(f"Expected multiquery response to be JSON for query to playlist {playlist.title}, got: {r.headers.get('content-type')} ({r.text})")
+
+            try:
+                response_json: Sequence[MultiqueryResponse] = r.json()
+                if not isinstance(response_json, Sequence):
+                    raise ValueError(f"Expected multiquery response for '{playlist.title}' to be a JSON array; got: {type(response_json)} ({response_json})")
+
+                for g in response_json:
+                    games.extend(g['result'])
+
+            except JSONDecodeError as e:
+                raise ValueError(f"Failed to decode JSON response for playlist {playlist.title}") from e
+            except TypeError as e:
+                raise ValueError(f"Unexpected response format for playlist {playlist.title}: {e}") from e
+
+        print(f"{playlist.title}: Fetched {len(games)} games.")
+        games.sort(key=lambda g: g['name'])
+        # Now that we have all the games, sort them by name
+
+        # Create the output directory if it doesn't exist
+        await aiofiles.os.makedirs(outdir, exist_ok=True)
+        outpath = os.path.join(outdir, f"{playlist.title}.json")
+        async with aiofiles.open(outpath, 'w', encoding='utf-8') as outfile:
+            await outfile.write(json.dumps(games, indent=2, ensure_ascii=False))
+            print(f"Saved {len(games)} games to {outpath}")
+
+        return games
 
     async with authenticate_igdb(args) as (oauth, token):
-        #response = await query_igdb(oauth, args.endpoint, body)
-
         async with asyncio.TaskGroup() as group:
-            tasks = tuple(group.create_task(fetch_playlist(oauth, p)) for p in playlists)
+            tasks = tuple(group.create_task(fetch_playlist(oauth, p, group), name=p.title) for p in playlists)
 
 
 def handle_process(args: argparse.Namespace) -> None:
@@ -177,7 +231,7 @@ def handle_process(args: argparse.Namespace) -> None:
     print(f"  Output directory: {args.outdir}")
 
 
-async def main():
+def main():
     """Main entry point for the script."""
     parser = argparse.ArgumentParser(
         description="Fetch and process game data from IGDB into the DAT format used by ClrMamePro and libretro.",
@@ -266,9 +320,9 @@ async def main():
     process_parser.set_defaults(func=handle_process)
 
     # Parse arguments and call appropriate handler
-    args = parser.parse_args()
-    await args.func(args)
 
+    args = parser.parse_args()
+    asyncio.run(args.func(args))
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
