@@ -16,6 +16,7 @@ import aiofiles
 import aiofiles.os
 import aiofiles.ospath
 import asynciolimiter
+import backoff
 import httpx
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
@@ -127,6 +128,14 @@ async def handle_query(args: argparse.Namespace) -> None:
             print(e, file=sys.stderr)
             raise e
 
+RETRY_CODES = (
+    httpx.codes.REQUEST_TIMEOUT,
+    httpx.codes.TOO_MANY_REQUESTS,
+    httpx.codes.INTERNAL_SERVER_ERROR,
+    httpx.codes.BAD_GATEWAY,
+    httpx.codes.SERVICE_UNAVAILABLE,
+    httpx.codes.GATEWAY_TIMEOUT,
+)
 
 async def handle_scrape(args: argparse.Namespace) -> None:
     """Handle the query subcommand."""
@@ -146,6 +155,33 @@ async def handle_scrape(args: argparse.Namespace) -> None:
     rate_limit = asynciolimiter.StrictLimiter(MAX_QUERY_RATE) # 4 requests per second
     outdir: str = args.outdir
 
+    def giveup(e: Exception):
+        print("Exception raised during query:", e, file=sys.stderr)
+        if not isinstance(e, HTTPStatusError):
+            # Give up if query_endpoint failed with something besides HTTPStatusError
+            return True
+
+        if e.response.status_code in RETRY_CODES:
+            # Don't give up on server errors (5xx), we might just be unlucky
+            # or rate-limited (429), so we should back off and retry.
+            return False
+
+        return e.response.is_error
+
+    def on_backoff(details):
+        print("Retrying after backoff:", details['target'].__name__, "with args:", details['args'], "and kwargs:", details['kwargs'], file=sys.stderr)
+
+    def on_predicate(response: Response) -> bool:
+        status = response.status_code
+        if status in RETRY_CODES:
+            # If the response is a retryable error, we want to retry
+            print(f"Retrying due to status code {status} ({response.reason_phrase})", file=sys.stderr)
+            return True
+
+        return False
+
+    @backoff.on_exception(backoff.expo, HTTPStatusError, max_tries=5, giveup=giveup, on_backoff=on_backoff)
+    @backoff.on_predicate(backoff.expo, on_predicate)
     async def query_endpoint(client: AsyncOAuth2Client, endpoint: str, query: Query | Multiquery) -> Response:
         async with request_limit:
             try:
@@ -156,6 +192,7 @@ async def handle_scrape(args: argparse.Namespace) -> None:
                 raise
 
     async def fetch_playlist(client: AsyncOAuth2Client, playlist: Playlist, group: TaskGroup) -> Sequence[Mapping[str, Any]]:
+        print(f"{playlist.title}: Fetching game count in query...")
         response = await query_endpoint(client, "games/count", playlist.query)
         content_type = response.headers.get("Content-Type")
         if response.headers.get('content-type') != 'application/json':
@@ -174,12 +211,12 @@ async def handle_scrape(args: argparse.Namespace) -> None:
             raise ValueError(f"Expected response['count'] to be a number, got {type(count_json['count'])}")
 
         count = int(count_json['count'])
-        print(f"{playlist.title}: Fetching {count} games...")
         multiqueries: list[Multiquery] = []
         for batch in itertools.batched(playlist.query_pages(count), MULTIQUERY_MAX):
             multiqueries.append(Multiquery({f"{playlist.title} ({q.offset}-{q.offset + q.limit - 1})": ('games', q) for q in batch}))
 
         playlist_tasks = tuple(group.create_task(query_endpoint(client, "multiquery", m)) for m in multiqueries)
+        print(f"{playlist.title}: Scheduled to fetch {count} games...")
 
         responses: Sequence[Response]  = await asyncio.gather(*playlist_tasks)
         games: list[JsonObject] = []
@@ -215,7 +252,7 @@ async def handle_scrape(args: argparse.Namespace) -> None:
         outpath = os.path.join(outdir, f"{playlist.title}.json")
         async with aiofiles.open(outpath, 'w', encoding='utf-8') as outfile:
             await outfile.write(json.dumps(games, indent=2, ensure_ascii=False))
-            print(f"Saved {len(games)} games to {outpath}")
+            print(f"{playlist.title}: Saved {len(games)} games to {outpath}")
 
         return games
 
