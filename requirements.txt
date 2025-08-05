@@ -4,3 +4,4 @@ Authlib==1.6.*
 aiofiles==24.1.*
 asynciolimiter==1.2.*
 backoff==2.2.*
+pyparsing==3.2.*
