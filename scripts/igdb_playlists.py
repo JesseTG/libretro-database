@@ -84,7 +84,7 @@ DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
     "release_dates.date_format.format",
     "release_dates.human",
     "release_dates.m",
-    "release_dates.platforms.name",
+    "release_dates.platform.name",
     "release_dates.release_region.region",
     "release_dates.status.description",
     "release_dates.status.name",
