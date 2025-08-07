@@ -1,6 +1,6 @@
 from collections import ChainMap
 from dataclasses import dataclass
-from typing import Optional, Literal, TypedDict, Required
+from typing import Optional, Literal, TypedDict, Required, NewType
 from collections.abc import Sequence, Iterable, Iterator, Mapping
 
 DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
@@ -106,6 +106,219 @@ DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
     "version_parent.platforms.name",
 )
 DEFAULT_GAME_FIELDS = ''.join(DEFAULT_GAME_FIELD_TUPLE)
+
+IgdbId = NewType('IgdbId', int)
+
+class IgdbObject(TypedDict):
+    checksum: Optional[str] # For the object itself, *not* for a specific game
+    id: Required[IgdbId]
+
+class AgeRatingCategory(IgdbObject, total=False):
+    organization: 'AgeRatingOrganization'
+    rating: str
+
+class AgeRatingContentDescriptionType(IgdbObject, total=False):
+    name: str
+
+class AgeRatingContentDescriptionV2(IgdbObject, total=False):
+    description: str
+    description_type: 'AgeRatingContentDescriptionType'
+
+class AgeRatingOrganization(IgdbObject, total=False):
+    name: str
+
+class AgeRating(IgdbObject, total=False):
+    content_descriptions: Sequence['AgeRatingContentDescriptionV2']
+    organization: AgeRatingOrganization
+    rating_category: 'AgeRatingCategory'
+    rating_content_descriptions: Sequence['AgeRatingContentDescriptionV2']
+    rating_cover_url: str
+    synopsis: str
+
+class AlternativeName(IgdbObject, total=False):
+    name: str
+    comment: str
+
+class Franchise(IgdbObject, total=False):
+    name: str
+    slug: str
+
+class GameEngine(IgdbObject, total=False):
+    name: str
+    slug: str
+
+class GameLocalization(IgdbObject, total=False):
+    name: str
+    region: 'Region'
+
+class GameMode(IgdbObject, total=False):
+    name: str
+    slug: str
+
+class GameStatus(IgdbObject, total=False):
+    status: str
+
+class GameType(IgdbObject, total=False):
+    type: str
+
+class Genre(IgdbObject, total=False):
+    name: str
+    slug: str
+
+class CompanyStatus(IgdbObject, total=False):
+    name: str
+
+class Company(IgdbObject, total=False):
+    country: int # ISO 3166-1 code
+    name: str
+    slug: str
+    status: CompanyStatus
+
+class InvolvedCompany(IgdbObject, total=False):
+    company: Company
+    developer: bool
+    porting: bool
+    publisher: bool
+    supporting: bool
+
+class Region(IgdbObject, total=False):
+    identifier: str
+    name: str
+    category: Literal['locale', 'continent']
+
+class Keyword(IgdbObject, total=False):
+    name: str
+    slug: str
+
+class Language(IgdbObject, total=False):
+    locale: str
+    name: str
+    native_name: str
+
+class LanguageSupportType(IgdbObject, total=False):
+    name: str
+
+class LanguageSupport(IgdbObject, total=False):
+    language: Language
+    language_support_type: LanguageSupportType
+
+class MultiplayerMode(IgdbObject, total=False):
+    campaigncoop: bool
+    dropin: bool
+    lancoop: bool
+    offlinecoop: bool
+    offlinecoopmax: int
+    offlinemax: int
+    onlinecoop: bool
+    onlinecoopmax: int
+    onlinemax: int
+    platform: 'Platform'
+    splitscreen: bool
+    splitscreenonline: bool
+
+class PlatformFamily(IgdbObject, total=False):
+    name: str
+    slug: str
+
+class PlatformType(IgdbObject, total=False):
+    name: str
+
+class PlatformVersion(IgdbObject, total=False):
+    name: str
+    slug: str
+
+class Platform(IgdbObject, total=False):
+    abbreviation: str
+    alternative_name: str
+    generation: int
+    name: str
+    platform_family: 'PlatformFamily'
+    platform_type: 'PlatformType'
+    slug: str
+    summary: str
+    versions: Sequence['PlatformVersion']
+
+class PlayerPerspective(IgdbObject, total=False):
+    name: str
+    slug: str
+
+class DateFormat(IgdbObject, total=False):
+    format: str
+
+class ReleaseDateRegion(IgdbObject, total=False):
+    region: str
+
+class ReleaseDateStatus(IgdbObject, total=False):
+    description: str
+    name: str
+
+class ReleaseDate(IgdbObject, total=False):
+    date: int # TODO: Parse with date.fromtimestamp()
+    date_format: 'DateFormat'
+    human: str
+    m: Literal[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] # Month (1-12)
+    platform: Platform
+    release_region: 'ReleaseDateRegion'
+    status: 'ReleaseDateStatus'
+    y: int
+
+class Theme(IgdbObject, total=False):
+    name: str
+    slug: str
+
+class Game(IgdbObject, total=False):
+    age_ratings: Sequence[AgeRating]
+    aggregated_rating: float
+    aggregated_rating_count: int
+    alternative_names: Sequence[AlternativeName]
+    #artworks: Sequence[IgdbId | IgdbObject]
+    bundles: Sequence['Game'] # name, ID, and platform
+    collections: Sequence['Game'] # name, ID, and platform
+    #cover: IgdbId | IgdbObject
+    #created_at: datetime
+    dlcs: Sequence['Game'] # name, ID, and platform
+    expanded_games: Sequence['Game'] # name, ID, and platform
+    expansions: Sequence['Game'] # name, ID, and platform
+    #external_games: Sequence['ExternalGame']
+    first_release_date: int # TODO: Parse with date.fromtimestamp()
+    forks: Sequence['Game'] # name, ID, and platform
+    franchise: Franchise
+    franchises: Sequence[Franchise]
+    game_engines: Sequence[GameEngine]
+    game_localizations: Sequence[GameLocalization]
+    game_modes: Sequence[GameMode]
+    game_status: GameStatus
+    game_type: GameType
+    genres: Sequence[Genre]
+    involved_companies: Sequence[InvolvedCompany]
+    keywords: Sequence[Keyword]
+    language_supports: Sequence[LanguageSupport]
+    multiplayer_modes: Sequence[MultiplayerMode]
+    name: str
+    parent_game: 'Game'
+    platforms: Sequence[Platform]
+    player_perspectives: Sequence[PlayerPerspective]
+    ports: Sequence['Game'] # name, ID, and platform
+    rating: float
+    rating_count: int
+    release_dates: Sequence[ReleaseDate]
+    remakes: Sequence['Game'] # name, ID, and platform
+    remasters: Sequence['Game'] # name, ID, and platform
+    #screenshots: Sequence['Screenshot']
+    #similar_games: Sequence['Game'] # name, ID, and platform
+    slug: str
+    standalone_expansions: Sequence['Game'] # name, ID, and platform
+    storyline: str
+    summary: str
+    tags: Sequence[int]
+    themes: Sequence['Theme']
+    total_rating: float
+    total_rating_count: int
+    url: str # TODO: Parse with urllib
+    version_parent: 'Game' # name, ID, and platform
+    version_title: str
+    #videos: Sequence['Video']
+    #websites: Sequence['Website']
 
 SortDirection = Literal['asc', 'desc']
 DEFAULT_SORT = ('name', 'asc')
