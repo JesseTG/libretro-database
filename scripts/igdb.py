@@ -285,7 +285,7 @@ def main():
     # Query subcommand
     query_parser = subparsers.add_parser(
         "query",
-        help="Fetch data from the specified IGDB API endpoint and print it to stdout"
+        help="Make a request to an IGDB API endpoint and print the response to stdout."
     )
     query_parser.add_argument(
         "--client-id",
