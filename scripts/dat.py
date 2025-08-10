@@ -116,12 +116,12 @@ def _init_parse_results(dat: ParseResults) -> tuple[ClrMamePro, Sequence[Game]]:
 
         return Rom(rom, **kwargs)
 
-    def init_game(game: ParseResults) -> Game:
+    def init_game(game: ParseResults) -> Game | None:
         if game[0] != "game":
             raise ValueError("Expected a 'game' record.")
 
         if 'rom' not in game:
-            raise ValueError("Games must have at least one 'rom' record.")
+            return None
 
         roms = tuple(init_rom(r) for r in game if r[0] == "rom")
 
