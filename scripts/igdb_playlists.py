@@ -425,6 +425,9 @@ class Playlist:
     '''
 
     query: Query
+    '''
+    The IGDB query to use to fetch games for this playlist.
+    '''
 
     # TODO: Add a field that indicates the .dat files to use for matching games to CRC32
 
