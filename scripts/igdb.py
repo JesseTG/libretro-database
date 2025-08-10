@@ -2,27 +2,32 @@
 import argparse
 import asyncio
 import itertools
+import multiprocessing
 import os
 import json
 import sys
+import time
 
 from asyncio import TaskGroup
+from concurrent.futures import ProcessPoolExecutor
 from contextlib import asynccontextmanager
 from json import JSONDecodeError
 from numbers import Number
-from typing import Any, TypeAlias, TypedDict
+from typing import Any, TypeAlias
 
 import aiofiles
 import aiofiles.os
-import aiofiles.ospath
+import aiofiles.ospath as aiopath
 import asynciolimiter
 import backoff
 import httpx
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
 from httpx import Response, HTTPStatusError
+from pyparsing import ParseException
 
 from igdb_playlists import *
+from dat import DatFile
 
 # TODO: Get game time to beat
 # TODO: Get game characters
@@ -260,12 +265,84 @@ async def handle_scrape(args: argparse.Namespace) -> None:
         async with asyncio.TaskGroup() as group:
             tasks = tuple(group.create_task(fetch_playlist(oauth, p, group), name=p.title) for p in playlists)
 
+def load_dat_file(dat_path: str) -> DatFile | None:
+    start = time.perf_counter_ns()
+    try:
 
-def handle_process(args: argparse.Namespace) -> None:
+        with open(dat_path, 'r', encoding='utf-8') as infile:
+            dat = DatFile(infile)
+    except ParseException as e:
+        return None
+
+    finish = time.perf_counter_ns()
+    print(f"Loaded DAT file from {dat_path} with {len(dat.games)} games in {(finish - start) / 1_000_000:.2f} ms")
+
+    return dat
+
+def get_existing_dat_files(datdir: str) -> Iterator[str]:
+    for (dirpath, dirnames, filenames) in os.walk(datdir):
+        for file in filter(lambda f: f.endswith('.dat'), filenames):
+            yield os.path.join(dirpath, file)
+
+async def load_scraped_json(paths: Sequence[str]) -> dict[str, JsonArray]:
+    async def _load_file(path: str) -> tuple[str, JsonArray]:
+        async with aiofiles.open(path, encoding='utf-8') as infile:
+            return path, json.loads(await infile.read())
+
+    async with TaskGroup() as group:
+        tasks = tuple(group.create_task(_load_file(p), name=os.path.basename(p)) for p in paths)
+        result: Sequence[tuple[str, JsonArray]] = await asyncio.gather(*tasks)
+        print(f"Loaded {len(result)} JSON files from {len(paths)} paths.")
+        return dict(result)
+
+async def handle_process(args: argparse.Namespace) -> None:
     """Handle the process subcommand."""
-    print(f"Process command called:")
-    print(f"  Input directory: {args.indir}")
-    print(f"  Output directory: {args.outdir}")
+    inpath: str = args.inpath
+    outpath: str = args.outpath
+
+    if not inpath:
+        raise ValueError("Input path must be specified for processing.")
+
+    playlists: list[str] = []
+    if await aiopath.isfile(inpath):
+        playlists.append(inpath)
+    elif await aiopath.isdir(inpath):
+        # If the input path is a directory, list all JSON files in it
+        for dirpath, dirnames, filenames in os.walk(inpath):
+            for filename in filenames:
+                if filename.endswith('.json'):
+                    playlists.append(os.path.join(dirpath, filename))
+    else:
+        raise FileNotFoundError(f"Input path '{inpath}' is neither a file nor a directory.")
+
+    playlist_dat_targets = {os.path.realpath(os.path.join(outpath, os.path.splitext(os.path.basename(p))[0] + '.dat')) for p in playlists}
+    existing_dat_paths = {os.path.realpath(p) for p in itertools.chain(get_existing_dat_files("dat"), get_existing_dat_files("metadat"))}
+
+    print(f"Found {len(playlist_dat_targets)} target DAT files to generate from playlists")
+    print(f"Found {len(existing_dat_paths)} existing DAT files")
+
+    dats_to_scan = existing_dat_paths - playlist_dat_targets
+
+    print(f"In total, will scan {len(existing_dat_paths - playlist_dat_targets)} existing DAT files for games to process.")
+    loop = asyncio.get_running_loop()
+    ctx = multiprocessing.get_context('spawn')
+    async with TaskGroup() as group:
+        async def _wait(future: asyncio.Future[DatFile | None]) -> DatFile | None:
+            return await future
+
+        loaded_json_task = group.create_task(load_scraped_json(playlists))
+        with ProcessPoolExecutor(mp_context=ctx) as executor:
+            tasks: list[asyncio.Task[DatFile | None]] = []
+            for d in dats_to_scan:
+                coro = _wait(loop.run_in_executor(executor, load_dat_file, d))
+                task = group.create_task(coro, name=d)
+                tasks.append(task)
+
+            loaded_json = await loaded_json_task
+            dat_playlists: tuple[DatFile] = tuple(filter(None, await asyncio.gather(*tasks)))
+
+    # TODO: Implement the actual processing of the JSON files into DAT format
+    # TODO: Make sure that the DAT generator doesn't read from previously-generated DAT files
 
 
 def main():
@@ -342,17 +419,16 @@ def main():
     # Process subcommand
     process_parser = subparsers.add_parser(
         "process",
-        help="Process saved data into RetroArch DAT format"
+        help="Process JSON data fetched with the scrape command into DAT format."
     )
     process_parser.add_argument(
-        "indir",
+        "inpath",
         type=str,
-        help="The input directory containing saved data"
+        help="Path to an input directory containing scraped JSON files, or to a single file."
     )
     process_parser.add_argument(
-        "outdir",
-        type=str,
-        help="The output directory for the processed DAT files"
+        "outpath",
+        help="The output directory for the processed DAT files. If processing a single file, can be either a file path or - for stdout.",
     )
     process_parser.set_defaults(func=handle_process)
 
