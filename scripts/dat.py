@@ -154,7 +154,9 @@ class DatFile:
                 dat = dat_file.parse_file(dat_io)
                 self._clrmamepro, self._games = _init_parse_results(dat)
             case Iterable() as dat_records:
-                raise NotImplementedError("Implement this once we start generating DAT files from records.")
+                dats = tuple(dat_records)
+                self._clrmamepro = dats[0]
+                self._games = tuple(dats[1:])
             case _:
                 raise TypeError(f"Unsupported type for records: {type(records)}")
 
