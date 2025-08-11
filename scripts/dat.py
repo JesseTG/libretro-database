@@ -48,6 +48,7 @@ class Game(TypedDict, total=False):
     edge_rating: int
     elspa_rating: str
     enhancement_hardware: str
+    esrb_rating: str
     famitsu_rating: int
     franchise: str
     genre: str
