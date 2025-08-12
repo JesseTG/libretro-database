@@ -2,7 +2,7 @@
 
 import argparse
 import json
-from collections.abc import Iterable, Sequence, Mapping
+from collections.abc import Iterable, Sequence, Mapping, Iterator
 from io import TextIOWrapper
 from typing import TypedDict, Required, TypeAlias, TextIO
 import sys
@@ -136,7 +136,7 @@ def _init_parse_results(dat: ParseResults) -> tuple[ClrMamePro, Sequence[Game]]:
 
     return clrmamepro, games
 
-class DatFile:
+class DatFile(Iterable[Game]):
     @property
     def clrmamepro(self) -> ClrMamePro:
         return self._clrmamepro
@@ -158,7 +158,7 @@ class DatFile:
             case Iterable() as dat_records:
                 dats = tuple(dat_records)
                 self._clrmamepro = dats[0]
-                self._games = tuple(dats[1:])
+                self._games = tuple(Game(d) for d in dats[1:])
             case _:
                 raise TypeError(f"Unsupported type for records: {type(records)}")
 
@@ -167,6 +167,9 @@ class DatFile:
             "clrmamepro": self._clrmamepro,
             "games": tuple(game for game in self._games)
         }
+
+    def __iter__(self) -> Iterator[Game]:
+        return self._games.__iter__()
 
 def main():
     parser = argparse.ArgumentParser(
