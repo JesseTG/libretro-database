@@ -27,7 +27,8 @@ from httpx import Response, HTTPStatusError
 from pyparsing import ParseException
 
 from igdb_playlists import *
-from dat import DatFile
+from igdb_playlists import Game as IgdbGame
+from dat import DatFile, Game as DatGame
 
 # TODO: Get game time to beat
 # TODO: Get game characters
@@ -42,6 +43,13 @@ class MultiqueryResponse(TypedDict):
 
 class CountResponse(TypedDict, total=False):
     count: int
+
+class DatRepository:
+    def __init__(self, dats: Iterable[DatFile]):
+        self.dats: tuple[DatGame, ...] = tuple(g for g in itertools.chain.from_iterable(dats))
+        self.by_crc = {g['rom'][0]['crc'].lower(): g for g in self.dats if 'rom' in g and g['rom'] and 'crc' in g['rom'][0]}
+        self.by_serial = {g['rom'][0]['serial'].lower(): g for g in self.dats if 'rom' in g and g['rom'] and 'serial' in g['rom'][0]}
+
 
 def get_client_credentials(args: argparse.Namespace) -> tuple[str, str]:
     """Get client ID and secret from args or environment variables."""
@@ -316,14 +324,15 @@ async def handle_process(args: argparse.Namespace) -> None:
         raise FileNotFoundError(f"Input path '{inpath}' is neither a file nor a directory.")
 
     playlist_dat_targets = {os.path.realpath(os.path.join(outpath, os.path.splitext(os.path.basename(p))[0] + '.dat')) for p in playlists}
-    existing_dat_paths = {os.path.realpath(p) for p in itertools.chain(get_existing_dat_files("dat"), get_existing_dat_files("metadat"))}
+    existing_dat_paths = [os.path.realpath(p) for p in itertools.chain(get_existing_dat_files("dat"), get_existing_dat_files("metadat"))]
+    existing_dat_paths = sorted(existing_dat_paths, key=lambda f: os.stat(f).st_size, reverse=True)
 
     print(f"Found {len(playlist_dat_targets)} target DAT files to generate from playlists")
     print(f"Found {len(existing_dat_paths)} existing DAT files")
 
-    dats_to_scan = existing_dat_paths - playlist_dat_targets
+    dats_to_scan = set(existing_dat_paths) - playlist_dat_targets
 
-    print(f"In total, will scan {len(existing_dat_paths - playlist_dat_targets)} existing DAT files for games to process.")
+    print(f"In total, will scan {len(dats_to_scan)} existing DAT files for games to process.")
     loop = asyncio.get_running_loop()
     ctx = multiprocessing.get_context('spawn')
     async with TaskGroup() as group:
@@ -340,9 +349,10 @@ async def handle_process(args: argparse.Namespace) -> None:
 
             loaded_json = await loaded_json_task
             dat_playlists: tuple[DatFile] = tuple(filter(None, await asyncio.gather(*tasks)))
+            now = time.perf_counter_ns()
+            print(f"Loaded {len(dat_playlists)} existing DAT files in {(now - start) / 1_000_000:.2f} ms")
+            dat_repo = DatRepository(dat_playlists)
 
-    # TODO: Implement the actual processing of the JSON files into DAT format
-    # TODO: Make sure that the DAT generator doesn't read from previously-generated DAT files
 
 
 def main():
