@@ -10,6 +10,8 @@ import sys
 import pyparsing as pp
 from pyparsing import ParseResults
 
+pp.ParserElement.enable_packrat()
+
 
 class ClrMamePro(TypedDict, total=False):
     name: Required[str]
