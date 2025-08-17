@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 
 import argparse
+import itertools
 import json
-from collections.abc import Iterable, Sequence, Mapping, Iterator
+from collections.abc import Iterable, Sequence, Iterator, Mapping
 from io import TextIOWrapper
-from typing import TypedDict, Required, TypeAlias, TextIO
+from typing import TypedDict, Required, TypeAlias, TextIO, Union
 import sys
 
-import pyparsing as pp
-from pyparsing import ParseResults
-
-pp.ParserElement.enable_packrat()
+import pe
+from pe import OPTIMIZE
+from pe.operators import Class, Star
 
 
 class ClrMamePro(TypedDict, total=False):
@@ -69,70 +69,135 @@ class Game(TypedDict, total=False):
     users: int
     year: int
 
-DatRecord: TypeAlias = "Mapping[str, str | Sequence['DatRecord'] | 'DatRecord']"
+DatRecord: TypeAlias = Union[Mapping[str, Union[str, Sequence["DatRecord"], "DatRecord"]], dict]
 
-# Forward declaration for recursive grammar
-dat_record = pp.Forward()
+# PEG grammar for DAT file format
+DAT_GRAMMAR = r'''
+# Main entry points
+DatFile < (Record)* EndOfFile
 
-# Basic components
-key = pp.Word(pp.alphanums + "_-")
-quoted_string = pp.QuotedString('"')
-unquoted_string = pp.Word(pp.printables, excludeChars='() \t\n\r')
+# Record structure
+Record < type:(~RecordType) Open RecordContent Close
+RecordType <- [a-zA-Z_][-a-zA-Z0-9_]*
+RecordContent <- (KeyValue)*
+KeyValue < key:(~Key) value:Value
 
-# Value can be quoted string, unquoted string, or nested record
-value = quoted_string | unquoted_string | dat_record
+# Keys and Values
+Key <- [a-zA-Z_][-a-zA-Z0-9_]*
+Value <- (Open RecordContent Close) / QuotedString / UnquotedString
+RecordValue < Open ~RecordContent Close
 
-# Record content can be either key-value pairs or nested records
+# Characters
+QuotedString <- ["] ~((!["\\] Char)*) ["]
+UnquotedString <- ~([-a-zA-Z0-9_]+)
+Char <- ("\\" ['"\\] / !["] .)
 
-# Record structure: record_type ( content )
-record_type = pp.Word(pp.alphanums + "_-")
-dat_record <<= pp.Suppress('(') + pp.dict_of(key, value) + pp.Suppress(')')
+Open <- "("
+Close <- ")"
 
-# Complete DAT file parser (multiple records)
-dat_file = pp.dict_of(key, dat_record)
+# Whitespace and comments
+Space <- [ \t\r\n]
+EndOfLine <- '\r\n' / '\n' / '\r'
+EndOfFile <- !.
+'''
 
-# For convenience, also provide a single record parser
-single_record = dat_record
+def _flatten(data):
+    result = tuple(data)
+    return result if len(result) > 1 else result[0]
 
-def _init_parse_results(dat: ParseResults) -> tuple[ClrMamePro, Sequence[Game]]:
-    if not dat or len(dat) == 0:
+def _build_record(*args, **kwargs):
+    """Build a record dictionary from parsed data."""
+    record_type = kwargs.get('type', '')
+
+
+    if record_type == 'clrmamepro':
+        clrmamepro_args = args[0]
+        return ClrMamePro(**clrmamepro_args)
+
+    return dict(**(args[0]))
+
+def _build_record_content(*args, **kwargs):
+    """Build record content from key-value pairs."""
+
+    # group items with duplicate keys together, and put them in a tuple
+    def flatten_kv(key, value):
+        return key, _flatten(v[1] for v in value)
+
+    return dict(flatten_kv(k, v) for k, v in itertools.groupby(args, lambda x: x[0]))
+
+def _build_keyvalue(*args, **kwargs):
+    """Build a key-value pair."""
+    return kwargs['key'], kwargs['value']
+
+def _build_datfile(*args, **kwargs):
+    """Build the top-level DAT file structure."""
+    return args
+
+# Actions for semantic processing
+ACTIONS = {
+    'Record': _build_record,
+    'RecordContent': _build_record_content,
+    'KeyValue': _build_keyvalue,
+    'DatFile': _build_datfile,
+    #'QuotedString': _build_quoted_string,
+    #'UnquotedString': _build_unquoted_string,
+    #'RecordType': _build_record_type,
+    #'Key': _build_key,
+}
+
+# Compile the parser
+dat_parser = pe.compile(DAT_GRAMMAR, actions=ACTIONS, ignore=Star(Class(" \t\n\r\v\f")), flags=OPTIMIZE)
+
+def _init_parse_results(records: list) -> tuple[ClrMamePro, Sequence[Game]]:
+    """Initialize ClrMamePro and Game objects from parsed records."""
+    if not records:
         raise ValueError("No records found in the DAT file.")
 
-    dat_clrmamepro: ParseResults = dat[0]
-    if dat_clrmamepro[0] != "clrmamepro":
-        raise ValueError("First record must be of type 'clrmamepro'.")
-
-    clrmamepro = ClrMamePro(**dat_clrmamepro)
+    # Find clrmamepro record
+    clrmamepro = ClrMamePro(records[0])
     if 'name' not in clrmamepro:
         raise ValueError("clrmamepro record must have a 'name' field.")
 
-    def init_rom(rom: ParseResults) -> Rom:
-        if rom[0] != "rom":
-            raise ValueError("Expected a 'rom' record.")
+    game_records = records[1:]
 
-        kwargs = dict()
-        if 'size' in rom:
+    def init_rom(rom_data: dict) -> Rom:
+        """Initialize a Rom object from parsed data."""
+        kwargs = dict(rom_data)
+        if 'size' in kwargs:
             try:
-                kwargs['size'] = int(rom['size'])
+                kwargs['size'] = int(kwargs['size'])
             except ValueError as e:
-                raise ValueError(f"Invalid size value in rom record: {rom['size']}") from e
+                raise ValueError(f"Invalid size value in rom record: {kwargs['size']}") from e
+        return Rom(**kwargs)
 
-        return Rom(rom, **kwargs)
-
-    def init_game(game: ParseResults) -> Game | None:
-        if game[0] != "game":
-            raise ValueError("Expected a 'game' record.")
-
-        if 'rom' not in game:
+    def init_game(game_data: dict) -> Game | None:
+        """Initialize a Game object from parsed data."""
+        if 'rom' not in game_data:
             return None
 
-        roms = tuple(init_rom(r) for r in game if r[0] == "rom")
+        # Handle rom data
+        rom_data = game_data.pop('rom')
+        if not isinstance(rom_data, list):
+            rom_data = [rom_data]
 
-        return Game(game, rom=roms)
+        roms = tuple(init_rom(r) for r in rom_data)
 
+        # Handle other game properties
+        kwargs = dict(game_data)
+        for key in ['edge_issue', 'edge_rating', 'famitsu_rating', 'releaseday', 'releasemonth', 'releaseyear', 'users', 'year']:
+            if key in kwargs:
+                try:
+                    kwargs[key] = int(kwargs[key])
+                except ValueError:
+                    pass
 
-    dat_games = dat[1:]
-    games = tuple(init_game(g) for g in dat_games if g[0] == "game")
+        for key in ['analog', 'rumble']:
+            if key in kwargs:
+                kwargs[key] = kwargs[key].lower() in ('true', 'yes', '1')
+
+        return Game(rom=roms, **kwargs)
+
+    games = tuple(g for g in (init_game(game_data) for game_data in game_records) if g is not None)
 
     return clrmamepro, games
 
@@ -145,16 +210,21 @@ class DatFile(Iterable[Game]):
     def games(self) -> Sequence[Game]:
         return self._games
 
-    def __init__(self, records: Iterable[DatRecord] | str | TextIO | ParseResults):
+    def __init__(self, records: Iterable[DatRecord] | str | TextIO):
         match records:
             case str() as dat_string:
-                dat = dat_file.parse_string(dat_string)
-                self._clrmamepro, self._games = _init_parse_results(dat)
-            case ParseResults() as parsed_dat:
-                self._clrmamepro, self._games = _init_parse_results(parsed_dat)
+                match_result = dat_parser.match(dat_string)
+                if match_result is None:
+                    raise ValueError("Failed to parse DAT string")
+                parsed_records = match_result.value()
+                self._clrmamepro, self._games = _init_parse_results(parsed_records)
             case TextIO() | TextIOWrapper() as dat_io:
-                dat = dat_file.parse_file(dat_io)
-                self._clrmamepro, self._games = _init_parse_results(dat)
+                dat_content = dat_io.read()
+                match_result = dat_parser.match(dat_content)
+                if match_result is None:
+                    raise ValueError("Failed to parse DAT file")
+                parsed_records = match_result.value()
+                self._clrmamepro, self._games = _init_parse_results(parsed_records)
             case Iterable() as dat_records:
                 dats = tuple(dat_records)
                 self._clrmamepro = dats[0]
