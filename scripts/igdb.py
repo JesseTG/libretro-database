@@ -290,7 +290,8 @@ def load_dat_file(dat_path: str) -> DatFile | None:
 def get_existing_dat_files(datdir: str) -> Iterator[str]:
     for (dirpath, dirnames, filenames) in os.walk(datdir):
         for file in filter(lambda f: f.endswith('.dat'), filenames):
-            yield os.path.join(dirpath, file)
+            if not ('xml' in file or 'XML' in file):  # Exclude XML files
+                yield os.path.join(dirpath, file)
 
 async def load_scraped_json(paths: Sequence[str]) -> dict[str, JsonArray]:
     async def _load_file(path: str) -> tuple[str, JsonArray]:
