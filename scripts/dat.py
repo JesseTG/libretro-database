@@ -85,7 +85,6 @@ KeyValue < key:(~Key) value:Value
 # Keys and Values
 Key <- [a-zA-Z_][-a-zA-Z0-9_]*
 Value <- (Open RecordContent Close) / QuotedString / UnquotedString
-RecordValue < Open ~RecordContent Close
 
 # Characters
 QuotedString <- ["] ~((!["\\] Char)*) ["]
@@ -139,10 +138,6 @@ ACTIONS = {
     'RecordContent': _build_record_content,
     'KeyValue': _build_keyvalue,
     'DatFile': _build_datfile,
-    #'QuotedString': _build_quoted_string,
-    #'UnquotedString': _build_unquoted_string,
-    #'RecordType': _build_record_type,
-    #'Key': _build_key,
 }
 
 # Compile the parser
