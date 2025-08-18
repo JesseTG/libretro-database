@@ -170,13 +170,6 @@ def _init_parse_results(records: list) -> tuple[ClrMamePro, Sequence[Game]]:
         if 'rom' not in game_data:
             return None
 
-        # Handle rom data
-        rom_data = game_data.pop('rom')
-        if not isinstance(rom_data, list):
-            rom_data = [rom_data]
-
-        roms = tuple(init_rom(r) for r in rom_data)
-
         # Handle other game properties
         kwargs = dict(game_data)
         for key in ['edge_issue', 'edge_rating', 'famitsu_rating', 'releaseday', 'releasemonth', 'releaseyear', 'users', 'year']:
@@ -190,7 +183,7 @@ def _init_parse_results(records: list) -> tuple[ClrMamePro, Sequence[Game]]:
             if key in kwargs:
                 kwargs[key] = kwargs[key].lower() in ('true', 'yes', '1')
 
-        return Game(rom=roms, **kwargs)
+        return Game(**kwargs)
 
     games = tuple(g for g in (init_game(game_data) for game_data in game_records) if g is not None)
 
