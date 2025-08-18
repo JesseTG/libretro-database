@@ -89,7 +89,7 @@ RecordValue < Open ~RecordContent Close
 
 # Characters
 QuotedString <- ["] ~((!["\\] Char)*) ["]
-UnquotedString <- ~([-a-zA-Z0-9_]+)
+UnquotedString <- ~(![" \r\t\n\\] Char)+
 Char <- ("\\" ['"\\] / !["] .)
 
 Open <- "("
