@@ -3,7 +3,8 @@
 import argparse
 import itertools
 import json
-from collections.abc import Iterable, Sequence, Iterator, Mapping
+import typing
+from collections.abc import Iterable, Sequence, Iterator, Mapping, Collection, Sized
 from io import TextIOWrapper
 from typing import TypedDict, Required, TypeAlias, TextIO, Union
 import sys
@@ -35,7 +36,7 @@ class Rom(TypedDict, total=False):
     sha1: str
 
 class Game(TypedDict, total=False):
-    rom: Required[Sequence[Rom]]
+    rom: Required[Rom | Sequence[Rom]]
     name: str
     comment: str
     description: str
@@ -189,7 +190,7 @@ def _init_parse_results(records: list) -> tuple[ClrMamePro, Sequence[Game]]:
 
     return clrmamepro, games
 
-class DatFile(Iterable[Game]):
+class DatFile(Sized, Iterable[Game]):
     @property
     def clrmamepro(self) -> ClrMamePro:
         return self._clrmamepro
@@ -233,8 +234,13 @@ class DatFile(Iterable[Game]):
             "games": tuple(game for game in self._games)
         }
 
+    @typing.override
     def __iter__(self) -> Iterator[Game]:
         return self._games.__iter__()
+
+    @typing.override
+    def __len__(self) -> int:
+        return len(self._games)
 
 def main():
     parser = argparse.ArgumentParser(
