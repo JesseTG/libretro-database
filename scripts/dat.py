@@ -87,7 +87,7 @@ Key <- [a-zA-Z_][-a-zA-Z0-9_]*
 Value <- (Open RecordContent Close) / QuotedString / UnquotedString
 
 # Characters
-QuotedString <- ["] ~((!["\\] Char)*) ["]
+QuotedString <- ["] ~(Char*) ["]
 UnquotedString <- ~(![" \r\t\n\\] Char)+
 Char <- ("\\" ['"\\] / !["] .)
 
@@ -141,7 +141,7 @@ ACTIONS = {
 }
 
 # Compile the parser
-dat_parser = pe.compile(DAT_GRAMMAR, actions=ACTIONS, ignore=Star(Class(" \t\n\r\v\f")), flags=OPTIMIZE)
+dat_parser = pe.compile(DAT_GRAMMAR, actions=ACTIONS, ignore=Star(Class(" \t\n\r\v\f")), flags=pe.OPTIMIZE | pe.MEMOIZE)
 
 def _init_parse_results(records: list) -> tuple[ClrMamePro, Sequence[Game]]:
     """Initialize ClrMamePro and Game objects from parsed records."""
