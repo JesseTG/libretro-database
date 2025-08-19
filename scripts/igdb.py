@@ -311,6 +311,7 @@ async def handle_process(args: argparse.Namespace) -> None:
     """Handle the process subcommand."""
     inpath: str = args.inpath
     outpath: str = args.outpath
+    verbose: bool = args.verbose
 
     if not inpath:
         raise ValueError("Input path must be specified for processing.")
@@ -357,6 +358,11 @@ def main():
         prog="igdb"
     )
 
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="show more logging output"
+    )
     # Create subparsers for commands
     subparsers = parser.add_subparsers(
         dest="command",
