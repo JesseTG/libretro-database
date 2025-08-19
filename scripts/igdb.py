@@ -280,7 +280,10 @@ def load_dat_file(dat_path: str) -> DatFile | None:
         with open(dat_path, 'r', encoding='utf-8') as infile:
             dat = DatFile(infile)
     except ParseException as e:
+        # Don't want to let one bad record crash the whole process
         return None
+    except Exception as e:
+        raise Exception(f"Failed to load DAT file {dat_path}: {e}") from e
 
     finish = time.perf_counter_ns()
     print(f"Loaded DAT file from {dat_path} with {len(dat.games)} games in {(finish - start) / 1_000_000:.2f} ms")
