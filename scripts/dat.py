@@ -198,7 +198,13 @@ class DatFile(Iterable[Game]):
     def games(self) -> Sequence[Game]:
         return self._games
 
+    @property
+    def path(self) -> str | None:
+        return self._path
+
     def __init__(self, records: Iterable[DatRecord] | str | TextIO):
+        self._path: str | None = None
+        self._clrmamepro: ClrMamePro
         match records:
             case str() as dat_string:
                 match_result = dat_parser.match(dat_string)
@@ -213,6 +219,7 @@ class DatFile(Iterable[Game]):
                     raise ValueError("Failed to parse DAT file")
                 parsed_records = match_result.value()
                 self._clrmamepro, self._games = _init_parse_results(parsed_records)
+                self._path = dat_io.name
             case Iterable() as dat_records:
                 dats = tuple(dat_records)
                 self._clrmamepro = dats[0]
