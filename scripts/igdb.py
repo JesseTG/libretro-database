@@ -334,26 +334,17 @@ async def handle_process(args: argparse.Namespace) -> None:
     dats_to_scan = set(existing_dat_paths) - playlist_dat_targets
 
     print(f"In total, will scan {len(dats_to_scan)} existing DAT files for games to process.")
-    loop = asyncio.get_running_loop()
-    ctx = multiprocessing.get_context('spawn')
+    start = time.perf_counter_ns()
     async with TaskGroup() as group:
-        async def _wait(future: asyncio.Future[DatFile | None]) -> DatFile | None:
-            return await future
-
         loaded_json_task = group.create_task(load_scraped_json(playlists))
-        with ProcessPoolExecutor(mp_context=ctx) as executor:
-            tasks: list[asyncio.Task[DatFile | None]] = []
-            for d in dats_to_scan:
-                coro = _wait(loop.run_in_executor(executor, load_dat_file, d))
-                task = group.create_task(coro, name=d)
-                tasks.append(task)
+        with ProcessPoolExecutor() as executor:
+            dat_playlists = tuple(f for f in executor.map(load_dat_file, dats_to_scan, chunksize=16) if f is not None)
 
-            loaded_json = await loaded_json_task
-            dat_playlists: tuple[DatFile] = tuple(filter(None, await asyncio.gather(*tasks)))
-            now = time.perf_counter_ns()
-            print(f"Loaded {len(dat_playlists)} existing DAT files in {(now - start) / 1_000_000:.2f} ms")
-            dat_repo = DatRepository(dat_playlists)
+        now = time.perf_counter_ns()
+        loaded_json = await loaded_json_task
+        print(f"Loaded {len(dat_playlists)} existing DAT files in {(now - start) / 1_000_000:.2f} ms")
 
+    dat_repo = DatRepository(d for d in dat_playlists if isinstance(d, DatFile))
 
 
 def main():
