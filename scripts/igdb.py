@@ -24,7 +24,7 @@ import httpx
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
 from httpx import Response, HTTPStatusError
-from pyparsing import ParseException
+from pe import ParseError
 
 from igdb_playlists import *
 from igdb_playlists import Game as IgdbGame
@@ -279,7 +279,7 @@ def load_dat_file(dat_path: str) -> DatFile | None:
 
         with open(dat_path, 'r', encoding='utf-8') as infile:
             dat = DatFile(infile)
-    except ParseException as e:
+    except ParseError as e:
         # Don't want to let one bad record crash the whole process
         return None
     except Exception as e:
