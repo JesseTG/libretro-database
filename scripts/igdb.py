@@ -2,18 +2,19 @@
 import argparse
 import asyncio
 import itertools
-import multiprocessing
 import os
 import json
 import sys
 import time
 
 from asyncio import TaskGroup
+from collections import ChainMap
+from collections.abc import Collection, Sequence, Iterable, Mapping, Iterator
 from concurrent.futures import ProcessPoolExecutor
 from contextlib import asynccontextmanager
 from json import JSONDecodeError
 from numbers import Number
-from typing import Any, TypeAlias
+from typing import Any, TypeAlias, TypedDict
 
 import aiofiles
 import aiofiles.os
@@ -24,11 +25,11 @@ import httpx
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
 from httpx import Response, HTTPStatusError
-from pe import ParseError
+from pe import ParseError  # type: ignore
 
 from igdb_playlists import *
 from igdb_playlists import Game as IgdbGame
-from dat import DatFile, Game as DatGame
+from dat import DatFile, Game as DatGame  # type: ignore
 
 # TODO: Get game time to beat
 # TODO: Get game characters
