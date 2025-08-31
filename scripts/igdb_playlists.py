@@ -429,12 +429,19 @@ class Playlist:
     The IGDB query to use to fetch games for this playlist.
     '''
 
+    hasheous_dirs: Sequence[str]
+    '''
+    The name of zero or more directories within a Hasheous dump.
+    Can have slashes for subdirectories (e.g. "Commodore Plus/4")
+    '''
+
     # TODO: Add a field that indicates the .dat files to use for matching games to CRC32
 
     def __init__(
             self,
             title: str,
             systemid: str | Sequence[str],
+            hasheous: str | Sequence[str] | None,
             *, # Force keyword arguments for clarity
             fields: Iterable[str] | str | None = DEFAULT_GAME_FIELD_TUPLE,
             exclude: Iterable[str] | str | None = None,
@@ -462,6 +469,17 @@ class Playlist:
             sort=sort,
             search=search,
         )
+
+        match hasheous:
+            case str():
+                self.hasheous_dirs = (hasheous,)
+            case Sequence():
+                self.hasheous_dirs = tuple(hasheous)
+            case None:
+                self.hasheous_dirs = ()
+            case _:
+                raise TypeError(f"Expected hasheous to be str, Sequence[str], or None; got {type(hasheous).__name__}")
+
 
     def query_pages(self, count: int, limit: int = 500) -> Iterator[Query]:
         for i in range(0, count, limit):
@@ -504,212 +522,212 @@ class Multiquery:
 
 # NOTE: The "= (number)" syntax means "includes this value and possibly others"
 PLAYLISTS: tuple[Playlist, ...] = (
-    Playlist("Amstrad - CPC", systemid="cpc", where="platforms = (25)"),
-    Playlist("Amstrad - GX4000", systemid="gx4000", where="platforms = (506)"),
-    Playlist("Arduboy Inc - Arduboy", systemid="arduboy", where="platforms = (438)"),
-    Playlist("Atari - Jaguar", systemid=("atari_jaguar", "jaguar"), where="platforms = (62)"),
-    Playlist("Atari - Lynx", systemid=("atari_lynx", "lynx"), where="platforms = (61)"),
-    Playlist("Atari - ST", systemid=("atari_st", "st"), where="platforms = (63)"),
-    Playlist("Atari - 2600", systemid=("atari_2600", "2600"), where="platforms = (59)"),
-    Playlist("Atari - 5200", systemid=("atari_5200", "5200"), where="platforms = (66)"),
-    Playlist("Atari - 7800", systemid=("atari_7800", "7800"), where="platforms = (60)"),
-    Playlist("Atari - 8-bit", systemid="atari_8bit", where="platforms = (65)"),
+    Playlist("Amstrad - CPC", systemid="cpc", where="platforms = (25)", hasheous="Amstrad CPC"),
+    Playlist("Amstrad - GX4000", systemid="gx4000", where="platforms = (506)", hasheous="Amstrad GX4000"),
+    Playlist("Arduboy Inc - Arduboy", systemid="arduboy", where="platforms = (438)", hasheous="Arduboy Inc - Arduboy"),
+    Playlist("Atari - Jaguar", systemid=("atari_jaguar", "jaguar"), where="platforms = (62)", hasheous="Atari Jaguar"),
+    Playlist("Atari - Lynx", systemid=("atari_lynx", "lynx"), where="platforms = (61)", hasheous="Atari Lynx"),
+    Playlist("Atari - ST", systemid=("atari_st", "st"), where="platforms = (63)", hasheous="Atari ST/STE"),
+    Playlist("Atari - 2600", systemid=("atari_2600", "2600"), where="platforms = (59)", hasheous="Atari 2600"),
+    Playlist("Atari - 5200", systemid=("atari_5200", "5200"), where="platforms = (66)", hasheous="Atari 5200"),
+    Playlist("Atari - 7800", systemid=("atari_7800", "7800"), where="platforms = (60)", hasheous="Atari 7800"),
+    Playlist("Atari - 8-bit", systemid="atari_8bit", where="platforms = (65)", hasheous="Atari 8-bit"),
 
     # TODO: IGDB hasn't tagged all Atomiswave games with the Atomiswave platform, this query is incomplete
-    Playlist("Atomiswave", systemid="atomiswave", where="game_engines = (970)"),
+    Playlist("Atomiswave", systemid="atomiswave", where="game_engines = (970)", hasheous=None),
 
-    Playlist("Bandai - WonderSwan", systemid=("wonderswan", "ws"), where="platforms = (57)"),
-    Playlist("Bandai - WonderSwan Color", systemid=("wonderswan_color", "wsc"), where="platforms = (123)"),
-    Playlist("Cannonball", systemid=("cannonball", "outrun"), where="id = 2051"),
-    Playlist("Casio - Loopy", systemid="loopy", where="platforms = (380)"),
+    Playlist("Bandai - WonderSwan", systemid=("wonderswan", "ws"), where="platforms = (57)", hasheous="Bandai WonderSwan"),
+    Playlist("Bandai - WonderSwan Color", systemid=("wonderswan_color", "wsc"), where="platforms = (123)", hasheous="Bandai WonderSwan Color"),
+    Playlist("Cannonball", systemid=("cannonball", "outrun"), where="id = 2051", hasheous=None),
+    Playlist("Casio - Loopy", systemid="loopy", where="platforms = (380)", hasheous="Casio Loopy"),
     # IGDB lacks a `platforms` entry for the Casio PV-1000
-    Playlist("Cave Story", systemid=("nxengine", "doukutsu-rs", "doukutsu", "cave-story"), where="id = 6189"),
+    Playlist("Cave Story", systemid=("nxengine", "doukutsu-rs", "doukutsu", "cave-story"), where="id = 6189", hasheous=None),
     # IGDB lacks an entry for ChaiLove
     # IGDB lacks an entry for the CHIP-8
-    Playlist("Coleco - ColecoVision", systemid="colecovision", where="platforms = (68)"),
-    Playlist("Commodore - Amiga", systemid=("amiga", "commodore_amiga"), where="platforms = (16)"),
-    Playlist("Commodore - CD32", systemid=("commodore_cd32", "cd32"), where="platforms = (114)"),
-    Playlist("Commodore - CDTV", systemid="cdtv", where="platforms = (158)"),
-    Playlist("Commodore - PET", systemid=("commodore_pet", "pet"), where="platforms = (90)"),
-    Playlist("Commodore - Plus-4", systemid="commodore_plus4", where="platforms = (94)"),
-    Playlist("Commodore - VIC-20", systemid=("commodore_vic20", "vic20"), where="platforms = (71)"),
-    Playlist("Commodore - 64", systemid=("commodore_64", "c64", "commodore_c64", "commodore_c128", "c128", "commodore_128", "commodore_c64dtv", "commodore_c64_supercpu"), where="platforms = (15)"),
+    Playlist("Coleco - ColecoVision", systemid="colecovision", where="platforms = (68)", hasheous="ColecoVision"),
+    Playlist("Commodore - Amiga", systemid=("amiga", "commodore_amiga"), where="platforms = (16)", hasheous="Commodore Amiga"),
+    Playlist("Commodore - CD32", systemid=("commodore_cd32", "cd32"), where="platforms = (114)", hasheous="Commodore CD32"),
+    Playlist("Commodore - CDTV", systemid="cdtv", where="platforms = (158)", hasheous="Commodore CDTV"),
+    Playlist("Commodore - PET", systemid=("commodore_pet", "pet"), where="platforms = (90)", hasheous="Commodore PET"),
+    Playlist("Commodore - Plus-4", systemid="commodore_plus4", where="platforms = (94)", hasheous="Commodore Plus/4"),
+    Playlist("Commodore - VIC-20", systemid=("commodore_vic20", "vic20"), where="platforms = (71)", hasheous="Commodore VIC20"),
+    Playlist("Commodore - 64", systemid=("commodore_64", "c64", "commodore_c64", "commodore_c128", "c128", "commodore_128", "commodore_c64dtv", "commodore_c64_supercpu"), where="platforms = (15)", hasheous="Commodore 64"),
     # TODO: "DICE" playlist
 
     # Dinothawr or the Sokoban mod
-    Playlist("Dinothawr", systemid="dinothawr", where="id = (62332, 305555)"),
-    Playlist("DOOM", systemid="doom", where="game_engines = (116)"),
-    Playlist("DOS", systemid="dos", where="platforms = (13)"),
-    Playlist("Emerson - Arcadia 2001", systemid="arcadia2001", where="platforms = (473)"),
+    Playlist("Dinothawr", systemid="dinothawr", where="id = (62332, 305555)", hasheous=None),
+    Playlist("DOOM", systemid="doom", where="game_engines = (116)", hasheous=None),
+    Playlist("DOS", systemid="dos", where="platforms = (13)", hasheous="Microsoft DOS"),
+    Playlist("Emerson - Arcadia 2001", systemid="arcadia2001", where="platforms = (473)", hasheous="Emerson Arcadia 2001"),
     # IGDB lacks a `platforms` entry for the Entex Adventure Vision
     # IGDB lacks a `platforms` entry for the Enterprise 128
-    Playlist("Epoch - Super Cassette Vision", systemid=("scv", "epoch_scv"), where="platforms = (376)"),
-    Playlist("Fairchild - Channel F", systemid="channelf", where="platforms = (127)"),
+    Playlist("Epoch - Super Cassette Vision", systemid=("scv", "epoch_scv"), where="platforms = (376)", hasheous="Epoch Super Cassette Vision"),
+    Playlist("Fairchild - Channel F", systemid="channelf", where="platforms = (127)", hasheous="Fairchild Channel F"),
 
     # Arcade games, Neo Geo MVS, Neo Geo AES
     # TODO: FBNeo doesn't support ALL arcade games, need to refine the query
-    Playlist("FBNeo - Arcade Games", systemid=("fb_alpha", "fba", "fbneo"), where="platforms = (52, 79, 80)"),
-    Playlist("Flashback", systemid="flashback", where="id = 4275"),
-    Playlist("Funtech - Super Acan", systemid="superacan", where="platforms = (480)"),
+    Playlist("FBNeo - Arcade Games", systemid=("fb_alpha", "fba", "fbneo"), where="platforms = (52, 79, 80)", hasheous="Arcade"),
+    Playlist("Flashback", systemid="flashback", where="id = 4275", hasheous=None),
+    Playlist("Funtech - Super Acan", systemid="superacan", where="platforms = (480)", hasheous=None),
     # IGDB lacks a `platforms` entry for the GP32
-    Playlist("GCE - Vectrex", systemid="vectrex", where="platforms = (70)"),
+    Playlist("GCE - Vectrex", systemid="vectrex", where="platforms = (70)", hasheous="Vectrex"),
 
     # TODO: Exclude those Mega Man Battle Network chips
     # Game & Watch, Handheld LCD games
-    Playlist("Handheld Electronic Game", systemid=("handheld", "g&w", "gameandwatch"), where="platforms = (307, 411)"),
+    Playlist("Handheld Electronic Game", systemid=("handheld", "g&w", "gameandwatch"), where="platforms = (307, 411)", hasheous="Nintendo Game & Watch"),
 
-    Playlist("Infocom - Z-Machine", systemid="zmachine", where="game_engines = (71)"),
+    Playlist("Infocom - Z-Machine", systemid="zmachine", where="game_engines = (71)", hasheous="Infocom Z-Machine"),
     # IGDB lacks a `platforms` entry for the Hartung Game Master
     # TODO: all the MAME playlists
     # TODO: Add the levels to the playlist somehow (individual level packs don't have IGDB entries)
-    Playlist("Jump 'n Bump", systemid="jumpnbump", where="id = 19226"),
-    Playlist("LeapFrog - Leapster Learning Game System", systemid="leapster", where="platforms = (412)"),
-    Playlist("LowRes NX", systemid="lowresnx", where="game_engines = (1672)"),
-    Playlist("Magnavox - Odyssey2", systemid="odyssey2", where="platforms = (133)"),
-    Playlist("Mattel - Intellivision", systemid=("intellivision", "intv"), where="platforms = (67)"),
-    Playlist("Microsoft - MSX", systemid="msx", where="platforms = (27)"),
-    Playlist("Microsoft - MSX2", systemid="msx2", where="platforms = (53)"),
-    Playlist("Microsoft - Xbox", systemid="xbox", where="platforms = (11)"),
-    Playlist("MicroW8", systemid=("uw8", "microw8"), where="game_engines = (1671)"),
-    Playlist("Mobile - J2ME", systemid="j2me", where="game_engines = (590)"),
-    Playlist("MrBoom", systemid=("bomberman", "mrboom"), where="id = 46621"),
-    Playlist("NEC - PC Engine - TurboGrafx 16", systemid=("pc_engine", "tg16"), where="platforms = (86)"),
-    Playlist("NEC - PC Engine CD - TurboGrafx-CD", systemid=("pc_engine_cd", "tgcd"), where="platforms = (150)"),
-    Playlist("NEC - PC Engine SuperGrafx", systemid=("pc_engine_supergrafx", "supergrafx"), where="platforms = (128)"),
-    Playlist("NEC - PC-8001 - PC-8801", systemid="pc_88", where="platforms = (125)"),
-    Playlist("NEC - PC-98", systemid="pc_98", where="platforms = (149)"),
-    Playlist("NEC - PC-FX", systemid="pc_fx", where="platforms = (274)"),
-    Playlist("Nintendo - e-Reader", systemid="ereader", where="platforms = (510)"),
-    Playlist("Nintendo - Family Computer Disk System", systemid="fds", where="platforms = (51)"),
-    Playlist("Nintendo - Game Boy", systemid=("game_boy", "gb"), where="platforms = (33)"),
-    Playlist("Nintendo - Game Boy Advance", systemid=("game_boy_advance", "gba"), where="platforms = (24)"),
-    Playlist("Nintendo - Game Boy Color", systemid=("game_boy_color", "gbc"), where="platforms = (22)"),
-    Playlist("Nintendo - GameCube", systemid=("gamecube", "gcn", "ngc"), where="platforms = (21)"),
-    Playlist("Nintendo - Nintendo DS", systemid="nds", where="platforms = (20)"),
-    Playlist("Nintendo - Nintendo DSi", systemid="dsi", where="platforms = (159)"),
+    Playlist("Jump 'n Bump", systemid="jumpnbump", where="id = 19226", hasheous=None),
+    Playlist("LeapFrog - Leapster Learning Game System", systemid="leapster", where="platforms = (412)", hasheous=None),
+    Playlist("LowRes NX", systemid="lowresnx", where="game_engines = (1672)", hasheous=None),
+    Playlist("Magnavox - Odyssey2", systemid="odyssey2", where="platforms = (133)", hasheous="Magnavox Odyssey 2"),
+    Playlist("Mattel - Intellivision", systemid=("intellivision", "intv"), where="platforms = (67)", hasheous="Mattel Intellivision"),
+    Playlist("Microsoft - MSX", systemid="msx", where="platforms = (27)", hasheous="MSX"),
+    Playlist("Microsoft - MSX2", systemid="msx2", where="platforms = (53)", hasheous="MSX 2"),
+    Playlist("Microsoft - Xbox", systemid="xbox", where="platforms = (11)", hasheous="Microsoft Xbox"),
+    Playlist("MicroW8", systemid=("uw8", "microw8"), where="game_engines = (1671)", hasheous=None),
+    Playlist("Mobile - J2ME", systemid="j2me", where="game_engines = (590)", hasheous="Mobile - J2ME"),
+    Playlist("MrBoom", systemid=("bomberman", "mrboom"), where="id = 46621", hasheous=None),
+    Playlist("NEC - PC Engine - TurboGrafx 16", systemid=("pc_engine", "tg16"), where="platforms = (86)", hasheous="TurboGrafx-16/PC Engine"),
+    Playlist("NEC - PC Engine CD - TurboGrafx-CD", systemid=("pc_engine_cd", "tgcd"), where="platforms = (150)", hasheous="TurboGrafx-16/PC Engine"),
+    Playlist("NEC - PC Engine SuperGrafx", systemid=("pc_engine_supergrafx", "supergrafx"), where="platforms = (128)", hasheous="NEC SuperGrafx"),
+    Playlist("NEC - PC-8001 - PC-8801", systemid="pc_88", where="platforms = (125)", hasheous="NEC PC-8001"),
+    Playlist("NEC - PC-98", systemid="pc_98", where="platforms = (149)", hasheous=None),
+    Playlist("NEC - PC-FX", systemid="pc_fx", where="platforms = (274)", hasheous=None),
+    Playlist("Nintendo - e-Reader", systemid="ereader", where="platforms = (510)", hasheous="Nintendo Game Boy Advance"),
+    Playlist("Nintendo - Family Computer Disk System", systemid="fds", where="platforms = (51)", hasheous=("Nintendo Famicom Disk System", "Family Computer Disk System")),
+    Playlist("Nintendo - Game Boy", systemid=("game_boy", "gb"), where="platforms = (33)", hasheous="Nintendo Game Boy"),
+    Playlist("Nintendo - Game Boy Advance", systemid=("game_boy_advance", "gba"), where="platforms = (24)", hasheous="Nintendo Game Boy Advance"),
+    Playlist("Nintendo - Game Boy Color", systemid=("game_boy_color", "gbc"), where="platforms = (22)", hasheous="Nintendo Game Boy Color"),
+    Playlist("Nintendo - GameCube", systemid=("gamecube", "gcn", "ngc"), where="platforms = (21)", hasheous="Nintendo GameCube"),
+    Playlist("Nintendo - Nintendo DS", systemid="nds", where="platforms = (20)", hasheous="Nintendo DS"),
+    Playlist("Nintendo - Nintendo DSi", systemid="dsi", where="platforms = (159)", hasheous="Nintendo DSi"),
 
     # NES or Famicom
-    Playlist("Nintendo - Nintendo Entertainment System", systemid="nes", where="platforms = (18, 99)"),
+    Playlist("Nintendo - Nintendo Entertainment System", systemid="nes", where="platforms = (18, 99)", hasheous="Nintendo Entertainment System"),
 
     # Nintendo 3DS or New Nintendo 3DS
-    Playlist("Nintendo - Nintendo 3DS", systemid="3ds", where="platforms = (37, 137)"),
+    Playlist("Nintendo - Nintendo 3DS", systemid="3ds", where="platforms = (37, 137)", hasheous="Nintendo 3DS"),
 
-    Playlist("Nintendo - Nintendo 64", systemid=("nintendo_64", "n64"), where="platforms = (4)"),
-    Playlist("Nintendo - Nintendo 64DD", systemid=("nintendo_64dd", "n64dd", "64dd"), where="platforms = (416)"),
-    Playlist("Nintendo - Pokemon Mini", systemid="pokemon_mini", where="platforms = (166)"),
-    Playlist("Nintendo - Satellaview", systemid="satellaview", where="platforms = (306)"),
+    Playlist("Nintendo - Nintendo 64", systemid=("nintendo_64", "n64"), where="platforms = (4)", hasheous="Nintendo 64"),
+    Playlist("Nintendo - Nintendo 64DD", systemid=("nintendo_64dd", "n64dd", "64dd"), where="platforms = (416)", hasheous="Nintendo 64DD"),
+    Playlist("Nintendo - Pokemon Mini", systemid="pokemon_mini", where="platforms = (166)", hasheous="Nintendo Pokemon Mini"),
+    Playlist("Nintendo - Satellaview", systemid="satellaview", where="platforms = (306)", hasheous="Nintendo - Satellaview"),
 
     # SNES or Super Famicom,
     # and has the "sufami turbo" keyword (and possibly others)
     # or its summary contains "sufami turbo" (any case) in the middle.
     # (IGDB has separate platform entries for the SNES (19) and Super Famicom (58))
-    Playlist("Nintendo - Sufami Turbo", systemid="sufami_turbo", where='platforms = (19, 58) & (keywords = (29241) | summary ~ *"sufami turbo"*)'),
+    Playlist("Nintendo - Sufami Turbo", systemid="sufami_turbo", where='platforms = (19, 58) & (keywords = (29241) | summary ~ *"sufami turbo"*)', hasheous="Nintendo Sufami Turbo"),
 
     # SNES or Super Famicom, and does not have the "sufami turbo" keyword
-    Playlist("Nintendo - Super Nintendo Entertainment System", systemid=("super_nes", "snes"), where='platforms = (19, 58) & keywords != (29241)'),
+    Playlist("Nintendo - Super Nintendo Entertainment System", systemid=("super_nes", "snes"), where='platforms = (19, 58) & keywords != (29241)', hasheous="Super Nintendo Entertainment System"),
 
-    Playlist("Nintendo - Virtual Boy", systemid=("virtual_boy", "vb"), where="platforms = (87)"),
+    Playlist("Nintendo - Virtual Boy", systemid=("virtual_boy", "vb"), where="platforms = (87)", hasheous="Nintendo Virtual Boy"),
 
     # Released for the Wii and does not include the keywords listed in the comment below
-    Playlist("Nintendo - Wii", systemid="wii", where="platforms = (5) & keywords != (4134, 4522, 27078, 27629, 43725)"),
+    Playlist("Nintendo - Wii", systemid="wii", where="platforms = (5) & keywords != (4134, 4522, 27078, 27629, 43725)", hasheous="Nintendo Wii"),
 
     # Released for the Wii
     # and includes the keywords "digital distribution" (4134), "virtual console" (4522),
     # "wiiware" (27078), "wii virtual console" (27629), or "digital distribution only" (43725)
-    Playlist("Nintendo - Wii (Digital)", systemid=("wii_digital", "wiiware"), where="platforms = (5) & keywords = (4134, 4522, 27078, 27629, 43725)"),
-    Playlist("Nintendo - Wii U", systemid="wiiu", where="platforms = (41)"),
-    Playlist("Philips - CD-i", systemid=("cdi2015", "cdi"), where="platforms = (117)"),
+    Playlist("Nintendo - Wii (Digital)", systemid=("wii_digital", "wiiware"), where="platforms = (5) & keywords = (4134, 4522, 27078, 27629, 43725)", hasheous="Nintendo Wii"),
+    Playlist("Nintendo - Wii U", systemid="wiiu", where="platforms = (41)", hasheous="Nintendo WiiU"),
+    Playlist("Philips - CD-i", systemid=("cdi2015", "cdi"), where="platforms = (117)", hasheous="Philips CD-i"),
 
     # TODO: How to identify Videopac+ games? They're counted as Odyssey2 games in IGDB.
-    # Playlist("Philips - Videopac+", where="platforms = (133)"),
+    # Playlist("Philips - Videopac+", where="platforms = (133)", hasheous="Philips Videopac+"),
 
-    Playlist("PICO-8", systemid="pico8", where="game_engines = (829)"),
-    Playlist("PuzzleScript", systemid="puzzlescript", where="game_engines = (831)"),
+    Playlist("PICO-8", systemid="pico8", where="game_engines = (829)", hasheous=None),
+    Playlist("PuzzleScript", systemid="puzzlescript", where="game_engines = (831)", hasheous=None),
 
     # Quake (not the game engine, but the original game; Quake II uses the same engine)
-    Playlist("Quake", systemid=("quake_1", "quake"), where="id = 333"),
-    Playlist("Quake II", systemid="quake_2", where="id = 286"),
-    Playlist("Quake III", systemid="quake_3", where="id = 355"),
+    Playlist("Quake", systemid=("quake_1", "quake"), where="id = 333", hasheous=None),
+    Playlist("Quake II", systemid="quake_2", where="id = 286", hasheous=None),
+    Playlist("Quake III", systemid="quake_3", where="id = 355", hasheous=None),
     # IGDB lacks a `platforms` entry for the RCA Studio II
 
-    Playlist("Rick Dangerous", systemid=("xrick", "rick_dangerous"), where="id = 12202"),
+    Playlist("Rick Dangerous", systemid=("xrick", "rick_dangerous"), where="id = 12202", hasheous=None),
 
     # RPG Maker 2000, RPG Maker 2003
-    Playlist("RPG Maker", systemid="rpgmaker", where="game_engines = (696, 765)"),
+    Playlist("RPG Maker", systemid="rpgmaker", where="game_engines = (696, 765)", hasheous=None),
 
     # TODO: ScummVM supports more than just the SCUMM games,
     #  this query needs to be significantly expanded
     # Made with SCUMM, Z-Machine, or Cinematique
-    Playlist("ScummVM", systemid=("scummvm", "scumm"), where="game_engines = (53, 71, 270)"),
-    Playlist("Sega - Dreamcast", systemid=("dreamcast", "dc"), where="platforms = (23)"),
-    Playlist("Sega - Game Gear", systemid=("game_gear", "gg"), where="platforms = (35)"),
-    Playlist("Sega - Master System - Mark III", systemid=("master_system", "sms", "mark3"), where="platforms = (64)"),
-    Playlist("Sega - Mega Drive - Genesis", systemid=("mega_drive", "md", "genesis"), where="platforms = (29)"),
+    Playlist("ScummVM", systemid=("scummvm", "scumm"), where="game_engines = (53, 71, 270)", hasheous=None),
+    Playlist("Sega - Dreamcast", systemid=("dreamcast", "dc"), where="platforms = (23)", hasheous="Sega Dreamcast"),
+    Playlist("Sega - Game Gear", systemid=("game_gear", "gg"), where="platforms = (35)", hasheous="Sega Game Gear"),
+    Playlist("Sega - Master System - Mark III", systemid=("master_system", "sms", "mark3"), where="platforms = (64)", hasheous="Sega Master System"),
+    Playlist("Sega - Mega Drive - Genesis", systemid=("mega_drive", "md", "genesis"), where="platforms = (29)", hasheous="Sega Mega Drive / Genesis"),
 
     # Sega CD, Sega CD 32X (informal name for games that needed both the Sega CD and 32X)
     # (libretro records Sega CD 32X games in the Sega CD playlist)
-    Playlist("Sega - Mega-CD - Sega CD", systemid=("mega_cd", "sega_cd", "scd", "mcd"), where="platforms =  (78, 482)"),
+    Playlist("Sega - Mega-CD - Sega CD", systemid=("mega_cd", "sega_cd", "scd", "mcd"), where="platforms =  (78, 482)", hasheous="Sega Mega CD / Sega CD"),
 
     # Naomi is a hardware platform but has a game engine entry for some reason
-    Playlist("Sega - Naomi", systemid="naomi", where="game_engines = (940)"),
-    Playlist("Sega - PICO", systemid=("sega_pico", "pico"), where="platforms = (339)"),
-    Playlist("Sega - Saturn", systemid=("sega_saturn", "saturn"), where="platforms = (32)"),
+    Playlist("Sega - Naomi", systemid="naomi", where="game_engines = (940)", hasheous=None),
+    Playlist("Sega - PICO", systemid=("sega_pico", "pico"), where="platforms = (339)", hasheous="Sega Pico"),
+    Playlist("Sega - Saturn", systemid=("sega_saturn", "saturn"), where="platforms = (32)", hasheous="Sega Saturn"),
 
     # Sega ST-V is a hardware platform but has a game engine entry for some reason
     # TODO: IGDB's ST-V entry is incomplete, this query needs to be expanded
-    Playlist("Sega - ST-V", systemid=("sega_stv", "stv"), where="game_engines = (1780)"),
-    Playlist("Sega - SG-1000", systemid=("sega_sg1000", "sg1000"), where="platforms = (84)"),
+    Playlist("Sega - ST-V", systemid=("sega_stv", "stv"), where="game_engines = (1780)", hasheous=None),
+    Playlist("Sega - SG-1000", systemid=("sega_sg1000", "sg1000"), where="platforms = (84)", hasheous=("Sega SG-1000", "SG-1000")),
 
     # Games that need both the Sega CD and 32X are included in the Sega CD playlist
-    Playlist("Sega - 32X", systemid=("32x", "sega_32x"), where="platforms = (30)"),
+    Playlist("Sega - 32X", systemid=("32x", "sega_32x"), where="platforms = (30)", hasheous="Sega 32X"),
 
     # TODO: IGDB lacks a `platforms` and `game_engines` entry for the Naomi 2,
     #  and the games that used it aren't tagged properly
 
-    Playlist("Sharp - X1", systemid=("sharp_x1", "x1"), where="platforms = (77)"),
-    Playlist("Sharp - X68000", systemid=("sharp_x68000", "x68000", "x86k", "sharp_x68k"), where="platforms = (121)"),
-    Playlist("Sinclair - ZX 81", systemid="zx81", where="platforms = (373)"),
-    Playlist("Sinclair - ZX Spectrum", systemid=("zx_spectrum", "spectrum", "zxs"), where="platforms = (26)"),
+    Playlist("Sharp - X1", systemid=("sharp_x1", "x1"), where="platforms = (77)", hasheous="Sharp X1"),
+    Playlist("Sharp - X68000", systemid=("sharp_x68000", "x68000", "x86k", "sharp_x68k"), where="platforms = (121)", hasheous="Sharp X68000"),
+    Playlist("Sinclair - ZX 81", systemid="zx81", where="platforms = (373)", hasheous="Sinclair ZX81"),
+    Playlist("Sinclair - ZX Spectrum", systemid=("zx_spectrum", "spectrum", "zxs"), where="platforms = (26)", hasheous="Sinclair ZX Spectrum"),
     # TODO: "Sinclair - ZX Spectrum +3" playlist
 
     # Neo Geo MVS, Neo Geo AES
-    Playlist("SNK - Neo Geo", systemid="neogeo", where="platforms = (79, 80)"),
-    Playlist("SNK - Neo Geo Pocket", systemid=("neo_geo_pocket", "ngp"), where="platforms = (119)"),
-    Playlist("SNK - Neo Geo Pocket Color", systemid=("neo_geo_pocket_color", "ngpc"), where="platforms = (120)"),
-    Playlist("SNK - Neo Geo CD", systemid=("neo_geo_cd", "ngcd"), where="platforms = (136)"),
-    Playlist("Sony - PlayStation", systemid=("playstation", "ps", "ps1", "psx"), where="platforms = (7)"),
+    Playlist("SNK - Neo Geo", systemid="neogeo", where="platforms = (79, 80)", hasheous=None),
+    Playlist("SNK - Neo Geo Pocket", systemid=("neo_geo_pocket", "ngp"), where="platforms = (119)", hasheous="Neo Geo Pocket"),
+    Playlist("SNK - Neo Geo Pocket Color", systemid=("neo_geo_pocket_color", "ngpc"), where="platforms = (120)", hasheous="Neo Geo Pocket Color"),
+    Playlist("SNK - Neo Geo CD", systemid=("neo_geo_cd", "ngcd"), where="platforms = (136)", hasheous="Neo Geo CD"),
+    Playlist("Sony - PlayStation", systemid=("playstation", "ps", "ps1", "psx"), where="platforms = (7)", hasheous="Sony PlayStation"),
 
     # PSP, without the "playstation minis" (4435) keyword
     # (some PSP games were later released on other platforms' digital storefronts)
-    Playlist("Sony - PlayStation Portable", systemid=("playstation_portable", "psp"), where="platforms = (38) & keywords != (4435)"),
+    Playlist("Sony - PlayStation Portable", systemid=("playstation_portable", "psp"), where="platforms = (38) & keywords != (4435)", hasheous="Sony PlayStation Portable"),
 
     # PSP, with keywords "playstation network" (2543), "digital distribution" (4134), or "playstation minis" (4435)
-    Playlist("Sony - PlayStation Portable (PSN)", systemid=("playstation_portable_digital", "playstation_portable_psn", "playstation_minis", "ps_minis"), where="platforms = (38) & keywords = (2543, 4134, 4435)"),
+    Playlist("Sony - PlayStation Portable (PSN)", systemid=("playstation_portable_digital", "playstation_portable_psn", "playstation_minis", "ps_minis"), where="platforms = (38) & keywords = (2543, 4134, 4435)", hasheous="Sony PlayStation Portable"),
 
-    Playlist("Sony - PlayStation Vita", systemid=("playstation_vita", "psvita", "vita"), where="platforms = (46)"),
-    Playlist("Sony - PlayStation 2", systemid=("playstation2", "ps2"), where="platforms = (8)"),
-    Playlist("Sony - PlayStation 3", systemid=("playstation3", "ps3"), where="platforms = (9)"),
+    Playlist("Sony - PlayStation Vita", systemid=("playstation_vita", "psvita", "vita"), where="platforms = (46)", hasheous="Sony PlayStation Vita"),
+    Playlist("Sony - PlayStation 2", systemid=("playstation2", "ps2"), where="platforms = (8)", hasheous="Sony PlayStation 2"),
+    Playlist("Sony - PlayStation 3", systemid=("playstation3", "ps3"), where="platforms = (9)", hasheous="Sony PlayStation 3"),
     # TODO: "Sony - PlayStation 3 (PSN)" playlist
 
     # IGDB lacks an entry for the Spectravideo SVI series
 
-    Playlist("The 3DO Company - 3DO", systemid="3do", where="platforms = (50)"),
-    Playlist("TIC-80", systemid="tic80", where="game_engines = (975)"),
-    Playlist("Thomson - MOTO", systemid="moto", where="platforms = (156)"),
-    Playlist("Tiger - Game.com", systemid="gamecom", where="platforms = (379)"),
+    Playlist("The 3DO Company - 3DO", systemid="3do", where="platforms = (50)", hasheous="3DO Interactive Multiplayer"),
+    Playlist("TIC-80", systemid="tic80", where="game_engines = (975)", hasheous=None),
+    Playlist("Thomson - MOTO", systemid="moto", where="platforms = (156)", hasheous=None),
+    Playlist("Tiger - Game.com", systemid="gamecom", where="platforms = (379)", hasheous="Tiger Electronics Game.com"),
 
     # Tomb Raider, either using the OpenLara engine (1551) or the original games
-    Playlist("Tomb Raider", systemid=("openlara", "tombraider"), where="game_engines = (1551) | id = (912, 1156, 1157)"),
+    Playlist("Tomb Raider", systemid=("openlara", "tombraider"), where="game_engines = (1551) | id = (912, 1156, 1157)", hasheous=None),
 
     # IGDB lacks an entry for the VTech CreatiVision
-    Playlist("VTech - V.Smile", systemid="vsmile", where="platforms = (439)"),
-    Playlist("Uzebox", systemid="uzebox", where="platforms = (504)"),
-    Playlist("Vircon32", systemid="vircon32", where="game_engines = (1632)"),
-    Playlist("WASM-4", systemid="wasm4", where="game_engines = (1556)"),
-    Playlist("Watara - Supervision", systemid="supervision", where="platforms = (415)"),
+    Playlist("VTech - V.Smile", systemid="vsmile", where="platforms = (439)", hasheous="VTech - V.Smile"),
+    Playlist("Uzebox", systemid="uzebox", where="platforms = (504)", hasheous=None),
+    Playlist("Vircon32", systemid="vircon32", where="game_engines = (1632)", hasheous=None),
+    Playlist("WASM-4", systemid="wasm4", where="game_engines = (1556)", hasheous=None),
+    Playlist("Watara - Supervision", systemid="supervision", where="platforms = (415)", hasheous="Watara Supervision"),
 
     # Wolfenstein 3D, or any game that uses its engine
-    Playlist("Wolfenstein 3D", systemid="wolfenstein3d", where="game_engines = (246)"),
+    Playlist("Wolfenstein 3D", systemid="wolfenstein3d", where="game_engines = (246)", hasheous=None),
 )
 
 _idtranstable = str.maketrans({'-': None, ' ': None, '_': None, '.': None, '\'': None, '"': None})
