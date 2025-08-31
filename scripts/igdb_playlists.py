@@ -321,7 +321,7 @@ class Game(IgdbObject, total=False):
     #websites: Sequence['Website']
 
 SortDirection = Literal['asc', 'desc']
-DEFAULT_SORT = ('name', 'asc')
+DEFAULT_SORT: tuple[str, SortDirection] = ('name', 'asc')
 
 @dataclass(kw_only=True, eq=True)
 class Query:
@@ -383,7 +383,7 @@ class Query:
         self.search = search
         self.sort = sort
 
-    def __str__(self):
+    def __str__(self) -> str:
         clauses: list[str] = []
         if self.fields:
             clauses.append(f"fields {','.join(self.fields)};")
@@ -494,7 +494,7 @@ class Multiquery:
 
         self.queries = dict(queries)
 
-    def __str__(self):
+    def __str__(self) -> str:
         queries: list[str] = []
         for name, (endpoint, query) in self.queries.items():
             queries.append(f"query {endpoint} \"{name}\" {{ {query} }};")
