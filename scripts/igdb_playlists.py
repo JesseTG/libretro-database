@@ -526,6 +526,7 @@ PLAYLISTS: tuple[Playlist, ...] = (
     Playlist("Amstrad - GX4000", systemid="gx4000", where="platforms = (506)", hasheous="Amstrad GX4000"),
     Playlist("Arduboy Inc - Arduboy", systemid="arduboy", where="platforms = (438)", hasheous="Arduboy Inc - Arduboy"),
     Playlist("Atari - Jaguar", systemid=("atari_jaguar", "jaguar"), where="platforms = (62)", hasheous="Atari Jaguar"),
+    Playlist("Atari - Jaguar CD", systemid=("atari_jaguar_cd", "jaguarcd"), where="platforms = (410)", hasheous="Atari Jaguar"),
     Playlist("Atari - Lynx", systemid=("atari_lynx", "lynx"), where="platforms = (61)", hasheous="Atari Lynx"),
     Playlist("Atari - ST", systemid=("atari_st", "st"), where="platforms = (63)", hasheous="Atari ST/STE"),
     Playlist("Atari - 2600", systemid=("atari_2600", "2600"), where="platforms = (59)", hasheous="Atari 2600"),
