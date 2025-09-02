@@ -6,30 +6,36 @@ import os
 import json
 import sys
 import time
+import zipfile
 
-from asyncio import TaskGroup
+from asyncio import TaskGroup, Task
 from collections import ChainMap
-from collections.abc import Collection, Sequence, Iterable, Mapping, Iterator
+from collections.abc import AsyncIterator, Collection, Sequence, Iterable, Mapping, Iterator
 from concurrent.futures import ProcessPoolExecutor
 from contextlib import asynccontextmanager
 from json import JSONDecodeError
 from numbers import Number
-from typing import Any, TypeAlias, TypedDict
+from os import PathLike
+from pprint import pprint
+from typing import Any, TypeAlias, TypedDict, cast
+from zipfile import ZipFile
 
 import aiofiles
 import aiofiles.os
-import aiofiles.ospath as aiopath
 import asynciolimiter
 import backoff
 import httpx
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
 from httpx import Response, HTTPStatusError
+from mypy.types import names
 from pe import ParseError  # type: ignore
 
 from igdb_playlists import *
 from igdb_playlists import Game as IgdbGame
-from dat import DatFile, Game as DatGame  # type: ignore
+from dat import DatFile, Game as DatGame, DatRecord, DatRepository, load_dat, load_dats, \
+    get_existing_dat_files
+from hasheous import DataObject
 
 # TODO: Get game time to beat
 # TODO: Get game characters
@@ -45,11 +51,26 @@ class MultiqueryResponse(TypedDict):
 class CountResponse(TypedDict, total=False):
     count: int
 
-class DatRepository:
-    def __init__(self, dats: Iterable[DatFile]):
-        self.dats: tuple[DatGame, ...] = tuple(g for g in itertools.chain.from_iterable(dats))
-        self.by_crc = {g['rom'][0]['crc'].lower(): g for g in self.dats if 'rom' in g and g['rom'] and 'crc' in g['rom'][0]}
-        self.by_serial = {g['rom'][0]['serial'].lower(): g for g in self.dats if 'rom' in g and g['rom'] and 'serial' in g['rom'][0]}
+class JsonRepository:
+    def __init__(self, playlists: Iterable[tuple[str, Collection[IgdbGame]]]):
+        self.playlists: dict[str, Collection[IgdbGame]] = {os.path.basename(path): games for (path, games) in playlists}
+        self.games: tuple[IgdbGame, ...] = tuple(itertools.chain.from_iterable(self.playlists.values()))
+        self.games_by_id = {g['id']: g for g in self.games}
+
+class HasheousRepository:
+    def __init__(self, metadata_path: str | PathLike, playlists: Iterable[Playlist]):
+        dirs: set[str] = set(itertools.chain.from_iterable(h.hasheous_dirs for h in playlists))
+        # Some of the Playlists are represented by the same Hasheous directories
+
+        with ZipFile(metadata_path) as metadata_zip:
+            paths = map(lambda d: zipfile.Path(metadata_zip, d), dirs)
+            for zippath in paths:
+                # For each relevant directory in the zip file...
+                for f in zippath.iterdir():
+                    if f.is_file() and f.suffix == '.json':
+                        data = json.loads(f.read_text())
+                        if isinstance(data, dict) and data.get('Id') is not None:
+                            dataobject = cast(DataObject, data)
 
 
 def get_client_credentials(args: argparse.Namespace) -> tuple[str, str]:
@@ -274,82 +295,112 @@ async def handle_scrape(args: argparse.Namespace) -> None:
         async with asyncio.TaskGroup() as group:
             tasks = tuple(group.create_task(fetch_playlist(oauth, p, group), name=p.title) for p in playlists)
 
-def load_dat_file(dat_path: str) -> DatFile | None:
+
+async def load_scraped_json(paths: Collection[str]) -> JsonRepository:
     start = time.perf_counter_ns()
-    try:
-
-        with open(dat_path, 'r', encoding='utf-8') as infile:
-            dat = DatFile(infile)
-    except ParseError as e:
-        # Don't want to let one bad record crash the whole process
-        return None
-    except Exception as e:
-        raise Exception(f"Failed to load DAT file {dat_path}: {e}") from e
-
-    finish = time.perf_counter_ns()
-    print(f"Loaded DAT file from {dat_path} with {len(dat.games)} games in {(finish - start) / 1_000_000:.2f} ms")
-
-    return dat
-
-def get_existing_dat_files(datdir: str) -> Iterator[str]:
-    for (dirpath, dirnames, filenames) in os.walk(datdir):
-        for file in filter(lambda f: f.endswith('.dat'), filenames):
-            if not ('xml' in file or 'XML' in file):  # Exclude XML files
-                yield os.path.join(dirpath, file)
-
-async def load_scraped_json(paths: Sequence[str]) -> dict[str, JsonArray]:
-    async def _load_file(path: str) -> tuple[str, JsonArray]:
+    async def _load_file(path: str) -> tuple[str, Sequence[IgdbGame]]:
         async with aiofiles.open(path, encoding='utf-8') as infile:
             return path, json.loads(await infile.read())
 
     async with TaskGroup() as group:
         tasks = tuple(group.create_task(_load_file(p), name=os.path.basename(p)) for p in paths)
-        result: Sequence[tuple[str, JsonArray]] = await asyncio.gather(*tasks)
-        print(f"Loaded {len(result)} JSON files from {len(paths)} paths.")
-        return dict(result)
+        result: Sequence[tuple[str, Sequence[IgdbGame]]] = await asyncio.gather(*tasks)
+        now = time.perf_counter_ns()
+        print(f"Loaded {len(result)} JSON files from {len(paths)} paths in {(now - start) / 1_000_000:.2f} ms")
+        return JsonRepository(result)
+
+async def load_metadata_map(metadata_path: str, playlists: Iterable[Playlist]) -> HasheousRepository:
+    # TODO: If metadata_map is not given, download it from https://hasheous.org/api/v1/Dumps/MetadataMap.zip
+
+    start = time.perf_counter_ns()
+    hasheous = HasheousRepository(metadata_path, playlists)
+    now = time.perf_counter_ns()
+    print(f"Loaded Hasheous metadata from {metadata_path} in {(now - start) / 1_000_000:.2f} ms")
+    return hasheous
+
+def get_playlists(playlistdir: str) -> Iterator[tuple[str, Playlist]]:
+    """Get the Playlist objects represented by the JSON files in the specified directory."""
+    for dirpath, dirnames, filenames in os.walk(playlistdir):
+        # Walking through each file inside the playlistdir...
+        for file in filenames:
+            # For each file in this directory...
+            name, ext = os.path.splitext(file)
+
+            if ext == '.json' and (playlist := PLAYLISTS_BY_TITLE.get(name, None)):
+                # If this is a JSON file and matches a known playlist title, yield it
+                path = os.path.join(dirpath, file)
+                yield (path, playlist)
+
+
+def get_target_dat_paths(outpath: str, playlists: Iterable[Playlist]) -> Iterator[str]:
+    """Get the paths to the DAT files that will be generated from the given playlists, rooted at the given directory."""
+    for p in playlists:
+        dat = p.title + '.dat'
+        yield os.path.realpath(os.path.join(outpath, dat))
+
+async def generate_dats(loaded_igdb: JsonRepository, loaded_dats: DatRepository, loaded_hasheous: HasheousRepository, playlists: Iterable[Playlist], outdir: str) -> None:
+    pass
+    for p in playlists:
+        clrmamepro = {
+            'name': p.title,
+            'description': p.title,
+            'comment': f"Games for {p.title} with metadata from IGDB",
+        }
+
+        games: Collection[DatGame] = loaded_dats
+        game = DatGame(
+
+        )
+    # TODO:
 
 async def handle_process(args: argparse.Namespace) -> None:
     """Handle the process subcommand."""
     inpath: str = args.inpath
     outpath: str = args.outpath
     verbose: bool = args.verbose
+    metadata_map: str = args.metadata_map
 
     if not inpath:
         raise ValueError("Input path must be specified for processing.")
 
-    playlists: list[str] = []
-    if await aiopath.isfile(inpath):
-        playlists.append(inpath)
-    elif await aiopath.isdir(inpath):
-        # If the input path is a directory, list all JSON files in it
-        for dirpath, dirnames, filenames in os.walk(inpath):
-            for filename in filenames:
-                if filename.endswith('.json'):
-                    playlists.append(os.path.join(dirpath, filename))
-    else:
-        raise FileNotFoundError(f"Input path '{inpath}' is neither a file nor a directory.")
+    playlists = dict(get_playlists(inpath))
+    if verbose:
+        playlist_titles = tuple(playlists.keys())
+        print(f"Found {len(playlists)} playlists in input path '{inpath}'")
+        pprint(playlist_titles, width=120)
 
-    playlist_dat_targets = {os.path.realpath(os.path.join(outpath, os.path.splitext(os.path.basename(p))[0] + '.dat')) for p in playlists}
+    if metadata_map and not zipfile.is_zipfile(metadata_map):
+        raise ValueError(f"Metadata map path '{metadata_map}' doesn't refer to a valid zip file.")
+
+    # TODO: Don't hardcode the dat and metadat directories
+    target_dat_paths = set(get_target_dat_paths(outpath, playlists.values()))
     existing_dat_paths = [os.path.realpath(p) for p in itertools.chain(get_existing_dat_files("dat"), get_existing_dat_files("metadat"))]
     existing_dat_paths = sorted(existing_dat_paths, key=lambda f: os.stat(f).st_size, reverse=True)
 
-    print(f"Found {len(playlist_dat_targets)} target DAT files to generate from playlists")
-    print(f"Found {len(existing_dat_paths)} existing DAT files")
+    print(f"Found {len(target_dat_paths)} target DAT files to generate from playlists")
+    if verbose:
+        pprint(target_dat_paths, width=120)
 
-    dats_to_scan = set(existing_dat_paths) - playlist_dat_targets
+    print(f"Found {len(existing_dat_paths)} existing DAT files")
+    if verbose:
+        pprint(existing_dat_paths, width=120)
+
+    dats_to_scan = set(existing_dat_paths) - target_dat_paths
 
     print(f"In total, will scan {len(dats_to_scan)} existing DAT files for games to process.")
-    start = time.perf_counter_ns()
+    if verbose:
+        pprint(dats_to_scan, width=120)
+
     async with TaskGroup() as group:
-        loaded_json_task = group.create_task(load_scraped_json(playlists))
-        with ProcessPoolExecutor() as executor:
-            dat_playlists = tuple(f for f in executor.map(load_dat_file, dats_to_scan, chunksize=16) if f is not None)
+        loaded_json_task: Task[JsonRepository] = group.create_task(load_scraped_json(playlists.keys()))
+        loaded_dat_task: Task[DatRepository] = group.create_task(load_dats(dats_to_scan, playlists.values()))
+        loaded_hasheous_task: Task[HasheousRepository] = group.create_task(load_metadata_map(metadata_map, playlists.values()))
 
-        now = time.perf_counter_ns()
         loaded_json = await loaded_json_task
-        print(f"Loaded {len(dat_playlists)} existing DAT files in {(now - start) / 1_000_000:.2f} ms")
+        loaded_dats = await loaded_dat_task
+        loaded_hasheous = await loaded_hasheous_task
 
-    dat_repo = DatRepository(d for d in dat_playlists if isinstance(d, DatFile))
+        await generate_dats(loaded_json, loaded_dats, loaded_hasheous, playlists.values(), outpath)
 
 
 def main():
@@ -432,6 +483,11 @@ def main():
     process_parser = subparsers.add_parser(
         "process",
         help="Process JSON data fetched with the scrape command into DAT format."
+    )
+    process_parser.add_argument(
+        "--metadata-map",
+        help="Path to the MetadataMap.zip file from the Hasheous project, to use for known IGDB-DAT mappings. If not given, will download it from https://hasheous.org/api/v1/Dumps/MetadataMap.zip",
+        type=str
     )
     process_parser.add_argument(
         "inpath",

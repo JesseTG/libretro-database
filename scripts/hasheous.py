@@ -132,7 +132,7 @@ class RomItem(TypedDict, total=False):
     MediaLabel: str
     SignatureSource: SignatureSourceType
 
-AttributeValue: TypeAlias = "DataObject" | str | Sequence[RomItem]
+AttributeValue: TypeAlias = "DataObject | str | Sequence[RomItem]"
 
 class Attribute(TypedDict):
     Id: NotRequired[int]

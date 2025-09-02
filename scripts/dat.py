@@ -1,17 +1,25 @@
 #!/usr/bin/env python3
 
 import argparse
+import asyncio
 import itertools
 import json
+import os
+import os.path
+import time
 import typing
-from collections.abc import Iterable, Sequence, Iterator, Mapping, Collection, Sized
+from collections import ChainMap
+from collections.abc import Iterable, Sequence, Iterator, Mapping, Collection, Sized, AsyncIterator
+from concurrent.futures import ProcessPoolExecutor
 from io import TextIOWrapper
-from typing import TypedDict, Required, TypeAlias, TextIO, Union
+from typing import TypedDict, Required, TypeAlias, TextIO, Union, cast
 import sys
 
 import pe
-from pe import OPTIMIZE
+from pe import OPTIMIZE, ParseError
 from pe.operators import Class, Star
+
+from igdb_playlists import Playlist, PLAYLISTS
 
 
 class ClrMamePro(TypedDict, total=False):
@@ -242,24 +250,184 @@ class DatFile(Sized, Iterable[Game]):
     def __len__(self) -> int:
         return len(self._games)
 
-def main():
-    parser = argparse.ArgumentParser(
-        description="Convert DAT files to JSON and print them to stdout.",
-        prog="dat"
-    )
+def crc_key(game: Game) -> str:
+    if 'rom' not in game:
+        return ''
 
-    parser.add_argument(
-        "infile",
-        type=str,
-        help="Path to the input DAT"
-    )
+    roms = game['rom']
+    if isinstance(roms, Sequence) and len(roms) > 0:
+        rom = roms[0]
+    else:
+        rom = roms
 
-    args = parser.parse_args()
+    if 'crc' in rom:
+        return rom['crc'].lower()
+    elif 'serial' in rom:
+        return rom['serial'].lower()
+    else:
+        return ''
 
+async def handle_tojson(args: argparse.Namespace):
     with open(args.infile, 'r', encoding='utf-8') as infile:
         dat = DatFile(infile)
         json.dump(dat, sys.stdout, indent=2, default=lambda o: o.to_dict(), ensure_ascii=False)
         print('')  # Ensure a newline at the end of the output
 
+def load_dat(dat_path: str) -> DatFile | None:
+    start = time.perf_counter_ns()
+    try:
+
+        with open(dat_path, 'r', encoding='utf-8') as infile:
+            dat = DatFile(infile)
+    except ParseError as e:
+        # Don't want to let one bad record crash the whole process
+        return None
+    except Exception as e:
+        raise Exception(f"Failed to load DAT file {dat_path}: {e}") from e
+
+    finish = time.perf_counter_ns()
+    print(f"Loaded DAT file from {dat_path} with {len(dat.games)} games in {(finish - start) / 1_000_000:.2f} ms")
+
+    return dat
+
+def game_name_key(game: Game):
+    if 'name' in game:
+        return game['name']
+
+    if 'description' in game:
+        return game['description']
+
+    if 'comment' in game:
+        return game['comment']
+
+    return ''
+
+class DatRepository(Mapping[str, Collection[Game]]):
+    def __init__(self, dats: Iterable[DatFile], playlists: Iterable[Playlist]):
+        self.dats: dict[str, Collection[Game]] = {}
+
+        playlists_with_alts: dict[str, Playlist] = {}
+        for p in playlists:
+            playlists_with_alts[p.title] = p
+            for a in p.alts:
+                playlists_with_alts[a] = p
+
+        def playlist_key(dat: DatFile):
+            name = dat.clrmamepro['name']
+            if playlist := playlists_with_alts.get(name):
+                # If we have a playlist that matches this DAT's name field, return the "canonical" title
+                return playlist.title
+            else:
+                # Otherwise just use the DAT's name as-is
+                return name
+
+        def union_games(games: Iterable[Game]) -> Game:
+            game: dict = {}
+            for g in games:
+                for k in g:
+                    if k not in game:
+                        # Add new key-value pairs
+                        game[k] = g[k]
+
+            return typing.cast(Game, game)
+
+
+        dats_list = [d for d in dats if len(d) > 0]
+        dats_list.sort(key=playlist_key)
+        dats_by_platform = itertools.groupby(dats_list, key=playlist_key)
+        for (platform, dat_group) in dats_by_platform:
+            # For each set of DAT files that represent the same platform...
+            games: list[Game] = sorted(itertools.chain.from_iterable(dat_group), key=crc_key)
+            grouped_games: Iterator[tuple[str, Iterator[Game]]] = itertools.groupby(games, crc_key)
+            games_by_crc = {k: union_games(v) for (k, v) in grouped_games}
+            self.dats[platform] = tuple(sorted(games_by_crc.values(), key=game_name_key))
+
+        pass
+        #dat_records: list[DatGame] = sorted(itertools.chain.from_iterable(self.dats), key=dat_key)
+        #self.games = {k: tuple(v) for (k, v) in itertools.groupby(self.dat_records, dat_key)}
+        #self.unioned_games = {k: ChainMap(*v) for (k, v) in self.games.items()}
+
+    def __getitem__(self, key: str, /) -> Collection[Game]:
+        if key in self.dats:
+            return self.dats[key]
+
+        raise KeyError(key)
+
+    def __len__(self) -> int:
+        return len(self.dats)
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self.dats)
+
+async def load_dats(dats: Iterable[str], playlists: Iterable[Playlist]) -> DatRepository:
+    with ProcessPoolExecutor() as executor:
+        async def asynciter() -> AsyncIterator[DatFile]:
+            for d in executor.map(load_dat, dats, chunksize=16):
+                if d:
+                    yield d
+                await asyncio.sleep(0)  # Yield control to the event loop
+
+        dat_playlists = [f async for f in asynciter()]
+
+    return DatRepository(dat_playlists, playlists)
+
+def get_existing_dat_files(datdir: str) -> Iterator[str]:
+    for (dirpath, dirnames, filenames) in os.walk(datdir):
+        for file in filter(lambda f: f.endswith('.dat'), filenames):
+            if not ('xml' in file or 'XML' in file):  # Exclude XML files
+                yield os.path.join(dirpath, file)
+
+async def handle_bench(args: argparse.Namespace):
+
+    existing_dat_paths = [os.path.realpath(p) for p in itertools.chain(get_existing_dat_files("dat"), get_existing_dat_files("metadat"))]
+    start = time.perf_counter_ns()
+    dat_repo = await load_dats(existing_dat_paths, PLAYLISTS)
+    now = time.perf_counter_ns()
+    print(f"Loaded {len(existing_dat_paths)} DAT files in {(now - start) / 1_000_000:.2f} ms")
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Utilities for processing DAT files.",
+        prog="dat"
+    )
+
+    # Create subparsers for commands
+    subparsers = parser.add_subparsers(
+        dest="command",
+        help="Available commands",
+        required=True
+    )
+
+    tojson_parser = subparsers.add_parser(
+        "tojson",
+        help="Convert a DAT file to JSON format and print it to stdout."
+    )
+    tojson_parser.add_argument(
+        "infile",
+        type=str,
+        help="Path to the input DAT"
+    )
+    tojson_parser.set_defaults(func=handle_tojson)
+
+    bench_parser = subparsers.add_parser(
+        "bench",
+        help="Benchmark loading all DAT files in the 'dat' and 'metadat' directories."
+    )
+    bench_parser.set_defaults(func=handle_bench)
+
+    args = parser.parse_args()
+    asyncio.run(args.func(args))
+
 if __name__ == "__main__":
     main()
+
+__all__ = [
+    "DatFile",
+    "Game",
+    "Rom",
+    "ClrMamePro",
+    "DatRepository",
+    "load_dat",
+    "load_dats",
+    "get_existing_dat_files",
+]
