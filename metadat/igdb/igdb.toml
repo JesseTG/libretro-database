@@ -1,0 +1,724 @@
+# See https://api-docs.igdb.com#filter for details about how to use filters in IGDB queries.
+# (The "where" fields are passed to the API as-is)
+
+[[igdb.playlists]]
+# The title of the playlist.
+# Used as the name of the JSON data fetched from IGDB,
+# and as the name of the generated .dat file.
+# Usually follows the format "Manufacturer - Platform Name".
+title = "Amstrad - CPC"
+
+# Other names that may be used to address this playlist.
+# Usually contains the name of a .dat file
+# that doesn't follow the aforementioned naming convention.
+alts = ["Amstrad - CPC - clean-cpc-db"]
+
+# The name of zero or more directories within a Hasheous dump.
+# Can have slashes for subdirectories (e.g. "Commodore Plus/4")
+hasheous = ["Amstrad CPC"]
+
+# The IGDB filter to use to fetch games for this playlist.
+# NOTE: The "= (number)" syntax means "includes this value and possibly others"
+where = "platforms = (25)"
+
+[[igdb.playlists]]
+title = "Amstrad - GX4000"
+hasheous = ["Amstrad GX4000"]
+where = "platforms = (506)"
+
+[[igdb.playlists]]
+title = "Arduboy Inc - Arduboy"
+hasheous = ["Arduboy Inc - Arduboy"]
+where = "platforms = (438)"
+
+[[igdb.playlists]]
+title = "Atari - Jaguar"
+hasheous = ["Atari Jaguar"]
+where = "platforms = (62)"
+
+[[igdb.playlists]]
+title = "Atari - Jaguar CD"
+hasheous = ["Atari Jaguar"]
+where = "platforms = (410)"
+
+[[igdb.playlists]]
+title = "Atari - Lynx"
+hasheous = ["Atari Lynx"]
+where = "platforms = (61)"
+
+[[igdb.playlists]]
+title = "Atari - ST"
+hasheous = ["Atari ST/STE"]
+where = "platforms = (63)"
+
+[[igdb.playlists]]
+title = "Atari - 2600"
+hasheous = ["Atari 2600"]
+where = "platforms = (59)"
+
+[[igdb.playlists]]
+title = "Atari - 5200"
+hasheous = ["Atari 5200"]
+where = "platforms = (66)"
+
+[[igdb.playlists]]
+title = "Atari - 7800"
+hasheous = ["Atari 7800"]
+where = "platforms = (60)"
+
+[[igdb.playlists]]
+title = "Atari - 8-bit Family"
+hasheous = ["Atari 8-bit"]
+where = "platforms = (65)"
+
+# TODO: IGDB hasn't tagged all Atomiswave games with the Atomiswave platform, this query is incomplete
+[[igdb.playlists]]
+title = "Atomiswave"
+where = "game_engines = (970)"
+
+[[igdb.playlists]]
+title = "Bandai - WonderSwan"
+hasheous = ["Bandai WonderSwan"]
+alts = ["WonderSwan hacks"]
+where = "platforms = (57)"
+
+[[igdb.playlists]]
+title = "Bandai - WonderSwan Color"
+hasheous = ["Bandai WonderSwan Color"]
+alts = ["WonderSwan Color hacks"]
+where = "platforms = (123)"
+
+[[igdb.playlists]]
+title = "Cannonball"
+where = "id = 2051"
+
+[[igdb.playlists]]
+title = "Casio - Loopy"
+hasheous = ["Casio Loopy"]
+where = "platforms = (380)"
+
+# IGDB lacks a platform entry for the Casio PV-1000
+# [[igdb.playlists]]
+# title = "Casio - PV-1000"
+# hasheous = ["Casio PV-1000"]
+
+[[igdb.playlists]]
+title = "Cave Story"
+where = "id = 6189"
+
+# IGDB lacks a platform entry for ChaiLove
+# [[igdb.playlists]]
+# title = "ChaiLove"
+
+# IGDB lacks a platform entry for the CHIP-8
+# [[igdb.playlists]]
+# title = "CHIP-8"
+
+[[igdb.playlists]]
+title = "Coleco - ColecoVision"
+hasheous = ["ColecoVision"]
+where = "platforms = (68)"
+
+[[igdb.playlists]]
+title = "Commodore - Amiga"
+hasheous = ["Commodore Amiga"]
+alts = ["Commodore - Amiga - WHDLoad"]
+where = "platforms = (16)"
+
+[[igdb.playlists]]
+title = "Commodore - CD32"
+hasheous = ["Commodore CD32"]
+where = "platforms = (114)"
+
+[[igdb.playlists]]
+title = "Commodore - CDTV"
+hasheous = ["Commodore CDTV"]
+where = "platforms = (158)"
+
+[[igdb.playlists]]
+title = "Commodore - PET"
+hasheous = ["Commodore PET"]
+where = "platforms = (90)"
+
+[[igdb.playlists]]
+title = "Commodore - Plus-4"
+hasheous = ["Commodore Plus/4"]
+where = "platforms = (94)"
+
+[[igdb.playlists]]
+title = "Commodore - VIC-20"
+hasheous = ["Commodore VIC20"]
+where = "platforms = (71)"
+
+[[igdb.playlists]]
+title = "Commodore - 64"
+hasheous = ["Commodore 64"]
+where = "platforms = (15)"
+
+# TODO: "DICE" playlist
+# [[igdb.playlists]]
+# title = "DICE"
+# 
+[[igdb.playlists]]
+title = "Dinothawr"
+# Dinothawr or the Sokoban mod
+where = "id = (62332, 305555)"
+
+[[igdb.playlists]]
+title = "DOOM"
+where = "game_engines = (116)"
+
+[[igdb.playlists]]
+title = "DOS"
+hasheous = ["Microsoft DOS"]
+where = "platforms = (13)"
+
+[[igdb.playlists]]
+title = "Emerson - Arcadia 2001"
+hasheous = ["Emerson Arcadia 2001"]
+where = "platforms = (473)"
+
+# IGDB lacks a platform entry for the Entex Adventure Vision
+# [[igdb.playlists]]
+# title = "Entex - Adventure Vision"
+# hasheous = ["Entex Adventure Vision"]
+
+# IGDB lacks a platform entry for the Enterprise 128
+# [[igdb.playlists]]
+# title = "Enterprise - 128"
+# # hasheous = ["Enterprise 64 & 128"]
+
+[[igdb.playlists]]
+title = "Epoch - Super Cassette Vision"
+hasheous = ["Epoch Super Cassette Vision"]
+where = "platforms = (376)"
+
+[[igdb.playlists]]
+title = "Fairchild - Channel F"
+hasheous = ["Fairchild Channel F"]
+where = "platforms = (127)"
+
+# TODO: FBNeo doesn't support ALL arcade games, need to refine the query
+[[igdb.playlists]]
+title = "FBNeo - Arcade Games"
+hasheous = ["Arcade"]
+# Arcade games, Neo Geo MVS, Neo Geo AES
+where = "platforms = (52, 79, 80)"
+
+[[igdb.playlists]]
+title = "Flashback"
+where = "id = 4275"
+
+[[igdb.playlists]]
+title = "Funtech - Super Acan"
+where = "platforms = (480)"
+
+# IGDB lacks a `platforms` entry for the GP32
+# [[igdb.playlists]]
+# title = "GamePark - GP32"
+# hasheous = ["GamePark GP32"]
+
+[[igdb.playlists]]
+title = "GCE - Vectrex"
+hasheous = ["Vectrex"]
+where = "platforms = (70)"
+
+# TODO: Exclude those Mega Man Battle Network chips
+[[igdb.playlists]]
+title = "Handheld Electronic Game"
+hasheous = ["Nintendo Game & Watch"]
+# Game & Watch, Handheld LCD games
+where = "platforms = (307, 411)"
+
+[[igdb.playlists]]
+title = "Infocom - Z-Machine"
+hasheous = ["Infocom Z-Machine"]
+where = "game_engines = (71)"
+
+# IGDB lacks a `platforms` entry for the Hartung Game Master
+# [[igdb.playlists]]
+# title = "Hartung - Game Master"
+# hasheous = ["Hartung Game Master"]
+
+# TODO: all the MAME playlists
+# [[igdb.playlists]]
+# title = "MAME"
+# # hasheous = ["Arcade"]
+## Arcade games
+# where = "platforms = (52)"
+
+# [[igdb.playlists]]
+# title = "MAME 2003-Plus"
+# # hasheous = ["Arcade"]
+## Arcade games
+# where = "platforms = (52)"
+
+# TODO: Add the levels to the playlist somehow (individual level packs don't have IGDB entries)
+[[igdb.playlists]]
+title = "Jump 'n Bump"
+where = "id = 19226"
+
+[[igdb.playlists]]
+title = "LeapFrog - Leapster Learning Game System"
+where = "platforms = (412)"
+
+[[igdb.playlists]]
+title = "LowRes NX"
+where = "game_engines = (1672)"
+
+[[igdb.playlists]]
+title = "Magnavox - Odyssey2"
+hasheous = ["Magnavox Odyssey 2"]
+alts = ["Magnavox - Odyssey 2"]
+where = "platforms = (133)"
+
+[[igdb.playlists]]
+title = "Mattel - Intellivision"
+hasheous = ["Mattel Intellivision"]
+where = "platforms = (67)"
+
+[[igdb.playlists]]
+title = "Microsoft - MSX"
+hasheous = ["MSX"]
+where = "platforms = (27)"
+
+[[igdb.playlists]]
+title = "Microsoft - MSX2"
+hasheous = ["MSX 2"]
+alts = ["Microsoft - MSX 2"]
+where = "platforms = (53)"
+
+[[igdb.playlists]]
+title = "Microsoft - Xbox"
+hasheous = ["Microsoft Xbox"]
+where = "platforms = (11)"
+
+[[igdb.playlists]]
+title = "MicroW8"
+where = "game_engines = (1671)"
+
+[[igdb.playlists]]
+title = "Mobile - J2ME"
+hasheous = ["Mobile - J2ME"]
+where = "game_engines = (590)"
+
+[[igdb.playlists]]
+title = "MrBoom"
+where = "id = 46621"
+
+[[igdb.playlists]]
+title = "NEC - PC Engine - TurboGrafx 16"
+hasheous = ["TurboGrafx-16/PC Engine"]
+alts = ["PC Engine hacks"]
+where = "platforms = (86)"
+
+[[igdb.playlists]]
+title = "NEC - PC Engine CD - TurboGrafx-CD"
+hasheous = ["TurboGrafx-16/PC Engine"]
+where = "platforms = (150)"
+
+[[igdb.playlists]]
+title = "NEC - PC Engine SuperGrafx"
+hasheous = ["NEC SuperGrafx"]
+where = "platforms = (128)"
+
+[[igdb.playlists]]
+title = "NEC - PC-8001 - PC-8801"
+hasheous = ["NEC PC-8001"]
+where = "platforms = (125)"
+
+[[igdb.playlists]]
+title = "NEC - PC-98"
+where = "platforms = (149)"
+
+[[igdb.playlists]]
+title = "NEC - PC-FX"
+where = "platforms = (274)"
+
+[[igdb.playlists]]
+title = "Nintendo - e-Reader"
+hasheous = ["Nintendo Game Boy Advance"]
+where = "platforms = (510)"
+
+[[igdb.playlists]]
+title = "Nintendo - Family Computer Disk System"
+hasheous = ["Nintendo Famicom Disk System", "Family Computer Disk System"]
+alts = ["Nintendo - Famicom Disk System"]
+where = "platforms = (51)"
+
+[[igdb.playlists]]
+title = "Nintendo - Game Boy"
+hasheous = ["Nintendo Game Boy"]
+alts = ["Game Boy hacks"]
+where = "platforms = (33)"
+
+[[igdb.playlists]]
+title = "Nintendo - Game Boy Advance"
+hasheous = ["Nintendo Game Boy Advance"]
+alts = ["Game Boy Advance hacks"]
+where = "platforms = (24)"
+
+[[igdb.playlists]]
+title = "Nintendo - Game Boy Color"
+hasheous = ["Nintendo Game Boy Color"]
+alts = ["Game Boy Color hacks"]
+where = "platforms = (22)"
+
+[[igdb.playlists]]
+title = "Nintendo - GameCube"
+hasheous = ["Nintendo GameCube"]
+where = "platforms = (21)"
+
+[[igdb.playlists]]
+title = "Nintendo - Nintendo DS"
+hasheous = ["Nintendo DS"]
+alts = ["Nintendo - Nintendo DS (Download Play)", "Nintendo DS hacks"]
+where = "platforms = (20)"
+
+[[igdb.playlists]]
+title = "Nintendo - Nintendo DSi"
+hasheous = ["Nintendo DSi"]
+where = "platforms = (159)"
+
+[[igdb.playlists]]
+title = "Nintendo - Nintendo Entertainment System"
+hasheous = ["Nintendo Entertainment System"]
+# NES or Famicom
+where = "platforms = (18, 99)"
+alts = ["NES hacks"]
+
+[[igdb.playlists]]
+title = "Nintendo - Nintendo 3DS"
+hasheous = ["Nintendo 3DS"]
+alts = ["Nintendo - New Nintendo 3DS", "Nintendo - New Nintendo 3DS (Digital)"]
+# Nintendo 3DS or New Nintendo 3DS
+where = "platforms = (37, 137)"
+
+[[igdb.playlists]]
+title = "Nintendo - Nintendo 64"
+hasheous = ["Nintendo 64"]
+alts = ["N64 hacks", "Nintendo - Nintendo 64 (BigEndian)", "Nintendo - Nintendo 64 (ByteSwapped)"]
+where = "platforms = (4)"
+
+[[igdb.playlists]]
+title = "Nintendo - Nintendo 64DD"
+hasheous = ["Nintendo 64DD"]
+where = "platforms = (416)"
+
+[[igdb.playlists]]
+title = "Nintendo - Pokemon Mini"
+hasheous = ["Nintendo Pokemon Mini"]
+where = "platforms = (166)"
+
+[[igdb.playlists]]
+title = "Nintendo - Satellaview"
+hasheous = ["Nintendo - Satellaview"]
+where = "platforms = (306)"
+
+[[igdb.playlists]]
+title = "Nintendo - Sufami Turbo"
+hasheous = ["Nintendo Sufami Turbo"]
+# SNES or Super Famicom,
+# and has the "sufami turbo" keyword (and possibly others)
+# or its summary contains "sufami turbo" (any case) in the middle.
+# (IGDB has separate platform entries for the SNES (19) and Super Famicom (58))
+where = 'platforms = (19, 58) & (keywords = (29241) | summary ~ *"sufami turbo"*)'
+
+[[igdb.playlists]]
+title = "Nintendo - Super Nintendo Entertainment System"
+hasheous = ["Super Nintendo Entertainment System"]
+alts = ["SNES hacks"]
+# SNES or Super Famicom, and does not have the "sufami turbo" keyword
+where = 'platforms = (19, 58) & keywords != (29241)'
+
+[[igdb.playlists]]
+title = "Nintendo - Virtual Boy"
+hasheous = ["Nintendo Virtual Boy"]
+where = "platforms = (87)"
+
+[[igdb.playlists]]
+title = "Nintendo - Wii"
+hasheous = ["Nintendo Wii"]
+# Released for the Wii and does not include the keywords listed in the comment below
+where = "platforms = (5) & keywords != (4134, 4522, 27078, 27629, 43725)"
+
+[[igdb.playlists]]
+title = "Nintendo - Wii (Digital)"
+hasheous = ["Nintendo Wii"]
+# Released for the Wii
+# and includes the keywords "digital distribution" (4134), "virtual console" (4522),
+# "wiiware" (27078), "wii virtual console" (27629), or "digital distribution only" (43725)
+where = "platforms = (5) & keywords = (4134, 4522, 27078, 27629, 43725)"
+
+[[igdb.playlists]]
+title = "Nintendo - Wii U"
+hasheous = ["Nintendo WiiU"]
+where = "platforms = (41)"
+
+[[igdb.playlists]]
+title = "Philips - CD-i"
+hasheous = ["Philips CD-i"]
+where = "platforms = (117)"
+
+[[igdb.playlists]]
+title = "Philips - Videopac+"
+hasheous = ["Philips Videopac+"]
+where = "platforms = (133)"
+
+[[igdb.playlists]]
+title = "PICO-8"
+where = "game_engines = (829)"
+
+[[igdb.playlists]]
+title = "PuzzleScript"
+where = "game_engines = (831)"
+
+[[igdb.playlists]]
+title = "Quake"
+# Quake (not the game engine, but the original game; Quake II uses the same engine)
+where = "id = 333"
+
+[[igdb.playlists]]
+title = "Quake II"
+where = "id = 286"
+
+[[igdb.playlists]]
+title = "Quake III"
+where = "id = 355"
+
+# IGDB lacks a `platforms` entry for the RCA Studio II
+# [[igdb.playlists]]
+# title = "RCA - Studio II"
+# hasheous = ["RCA Studio II"]
+
+[[igdb.playlists]]
+title = "Rick Dangerous"
+where = "id = 12202"
+
+[[igdb.playlists]]
+title = "RPG Maker"
+# RPG Maker 2000, RPG Maker 2003
+where = "game_engines = (696, 765)"
+
+# TODO: ScummVM supports more than just the SCUMM games,
+#  this query needs to be significantly expanded
+[[igdb.playlists]]
+title = "ScummVM"
+# Made with SCUMM, Z-Machine, or Cinematique
+where = "game_engines = (53, 71, 270)"
+
+[[igdb.playlists]]
+title = "Sega - Dreamcast"
+hasheous = ["Sega Dreamcast"]
+where = "platforms = (23)"
+
+[[igdb.playlists]]
+title = "Sega - Game Gear"
+hasheous = ["Sega Game Gear"]
+alts = ["Game Gear hacks"]
+where = "platforms = (35)"
+
+[[igdb.playlists]]
+title = "Sega - Master System - Mark III"
+hasheous = ["Sega Master System"]
+alts = ["Master System hacks"]
+where = "platforms = (64)"
+
+[[igdb.playlists]]
+title = "Sega - Mega Drive - Genesis"
+hasheous = ["Sega Mega Drive / Genesis"]
+alts = ["Mega Drive hacks"]
+where = "platforms = (29)"
+
+[[igdb.playlists]]
+title = "Sega - Mega-CD - Sega CD"
+hasheous = ["Sega Mega CD / Sega CD"]
+# Sega CD, Sega CD 32X (informal name for games that needed both the Sega CD and 32X)
+# (libretro records Sega CD 32X games in the Sega CD playlist)
+where = "platforms =  (78, 482)"
+
+# Naomi is a hardware platform but has a game engine entry for some reason
+[[igdb.playlists]]
+title = "Sega - Naomi"
+where = "game_engines = (940)"
+
+[[igdb.playlists]]
+title = "Sega - PICO"
+hasheous = ["Sega Pico"]
+where = "platforms = (339)"
+
+[[igdb.playlists]]
+title = "Sega - Saturn"
+hasheous = ["Sega Saturn"]
+alts = ["Saturn hacks"]
+where = "platforms = (32)"
+
+# Sega ST-V is a hardware platform but has a game engine entry for some reason
+# TODO: IGDB's ST-V entry is incomplete, this query needs to be expanded
+[[igdb.playlists]]
+title = "Sega - ST-V"
+where = "game_engines = (1780)"
+
+[[igdb.playlists]]
+title = "Sega - SG-1000"
+hasheous = ["Sega SG-1000", "SG-1000"]
+where = "platforms = (84)"
+
+# Games that need both the Sega CD and 32X are included in the Sega CD playlist
+[[igdb.playlists]]
+title = "Sega - 32X"
+hasheous = ["Sega 32X"]
+alts = ["Sega - 32x", "32x hacks"]
+where = "platforms = (30)"
+
+# TODO: IGDB lacks a `platforms` and `game_engines` entry for the Naomi 2,
+#  and the games that used it aren't tagged properly
+# [[igdb.playlists]]
+# title = "Sega - Naomi 2"
+
+[[igdb.playlists]]
+title = "Sharp - X1"
+hasheous = ["Sharp X1"]
+where = "platforms = (77)"
+
+[[igdb.playlists]]
+title = "Sharp - X68000"
+hasheous = ["Sharp X68000"]
+where = "platforms = (121)"
+
+[[igdb.playlists]]
+title = "Sinclair - ZX 81"
+hasheous = ["Sinclair ZX81"]
+where = "platforms = (373)"
+
+[[igdb.playlists]]
+title = "Sinclair - ZX Spectrum"
+hasheous = ["Sinclair ZX Spectrum"]
+where = "platforms = (26)"
+
+# TODO: "Sinclair - ZX Spectrum +3" playlist
+# [[igdb.playlists]]
+# title = "Sinclair - ZX Spectrum +3"
+
+[[igdb.playlists]]
+title = "SNK - Neo Geo"
+# Neo Geo MVS, Neo Geo AES
+where = "platforms = (79, 80)"
+
+[[igdb.playlists]]
+title = "SNK - Neo Geo Pocket"
+hasheous = ["Neo Geo Pocket"]
+alts = ["Neo Geo Pocket hacks"]
+where = "platforms = (119)"
+
+[[igdb.playlists]]
+title = "SNK - Neo Geo Pocket Color"
+hasheous = ["Neo Geo Pocket Color"]
+where = "platforms = (120)"
+
+[[igdb.playlists]]
+title = "SNK - Neo Geo CD"
+hasheous = ["Neo Geo CD"]
+where = "platforms = (136)"
+
+[[igdb.playlists]]
+title = "Sony - PlayStation"
+hasheous = ["Sony PlayStation"]
+alts = ["PlayStation hacks"]
+where = "platforms = (7)"
+
+[[igdb.playlists]]
+title = "Sony - PlayStation Portable"
+hasheous = ["Sony PlayStation Portable"]
+alts = ["PlayStation Portable hacks", "Sony - PlayStation Portable (PSX2PSP)", "Sony - PlayStation Portable (UMD Music)", "Sony - PlayStation Portable (UMD Video)"]
+
+# PSP, without the "playstation minis" (4435) keyword
+# (some PSP games were later released on other platforms' digital storefronts,
+# so excluding the "digital distribution" keyword isn't enough)
+where = "platforms = (38) & keywords != (4435)"
+
+[[igdb.playlists]]
+title = "Sony - PlayStation Portable (PSN)"
+hasheous = ["Sony PlayStation Portable"]
+# PSP, with keywords "playstation network" (2543), "digital distribution" (4134), or "playstation minis" (4435)
+where = "platforms = (38) & keywords = (2543, 4134, 4435)"
+
+[[igdb.playlists]]
+title = "Sony - PlayStation Vita"
+hasheous = ["Sony PlayStation Vita"]
+where = "platforms = (46)"
+
+[[igdb.playlists]]
+title = "Sony - PlayStation 2"
+hasheous = ["Sony PlayStation 2"]
+alts = ["PlayStation 2 hacks"]
+where = "platforms = (8)"
+
+[[igdb.playlists]]
+title = "Sony - PlayStation 3"
+hasheous = ["Sony PlayStation 3"]
+where = "platforms = (9)"
+
+# TODO: "Sony - PlayStation 3 (PSN)" playlist
+# [[igdb.playlists]]
+# title = "Sony - PlayStation 3 (PSN)"
+
+# IGDB lacks an entry for the Spectravideo SVI series
+# [[igdb.playlists]]
+# title = "Spectravideo - SVI-318 - SVI-328"
+
+[[igdb.playlists]]
+title = "The 3DO Company - 3DO"
+hasheous = ["3DO Interactive Multiplayer"]
+where = "platforms = (50)"
+
+[[igdb.playlists]]
+title = "TIC-80"
+where = "game_engines = (975)"
+
+[[igdb.playlists]]
+title = "Thomson - MOTO"
+where = "platforms = (156)"
+
+[[igdb.playlists]]
+title = "Tiger - Game.com"
+hasheous = ["Tiger Electronics Game.com"]
+where = "platforms = (379)"
+
+[[igdb.playlists]]
+title = "Tomb Raider"
+# Tomb Raider, either using the OpenLara engine (1551) or the original games
+where = "game_engines = (1551) | id = (912, 1156, 1157)"
+
+# IGDB lacks an entry for the VTech CreatiVision
+# [[igdb.playlists]]
+# title = "VTech - CreatiVision"
+# hasheous = ["VTech - CreatiVision"]
+
+[[igdb.playlists]]
+title = "VTech - V.Smile"
+hasheous = ["VTech - V.Smile"]
+where = "platforms = (439)"
+
+[[igdb.playlists]]
+title = "Uzebox"
+where = "platforms = (504)"
+
+[[igdb.playlists]]
+title = "Vircon32"
+where = "game_engines = (1632)"
+
+[[igdb.playlists]]
+title = "WASM-4"
+where = "game_engines = (1556)"
+
+[[igdb.playlists]]
+title = "Watara - Supervision"
+hasheous = ["Watara Supervision"]
+where = "platforms = (415)"
+
+[[igdb.playlists]]
+title = "Wolfenstein 3D"
+# Wolfenstein 3D, or any game that uses its engine
+where = "game_engines = (246)"
+
