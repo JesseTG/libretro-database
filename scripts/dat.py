@@ -6,18 +6,19 @@ import itertools
 import json
 import os
 import os.path
+import sys
 import time
-import typing
+
 from collections import ChainMap
 from collections.abc import Iterable, Sequence, Iterator, Mapping, Collection, Sized, AsyncIterator
 from concurrent.futures import ProcessPoolExecutor
 from io import TextIOWrapper
-from typing import TypedDict, Required, TypeAlias, TextIO, Union, cast
-import sys
+from typing import TypedDict, Required, TypeAlias, TextIO, cast
 
-import pe
-from pe import OPTIMIZE, ParseError
-from pe.operators import Class, Star
+# pe lacks type stubs, so let's silence MyPy's complaints
+import pe  # type: ignore
+from pe import ParseError
+from pe.operators import Class, Star  # type: ignore
 
 from igdb_playlists import Playlist, PLAYLISTS
 
@@ -44,7 +45,7 @@ class Rom(TypedDict, total=False):
     sha1: str
 
 class Game(TypedDict, total=False):
-    rom: Required[Rom | Sequence[Rom]]
+    rom: Required[Sequence[Rom]]
     name: str
     comment: str
     description: str
@@ -78,7 +79,7 @@ class Game(TypedDict, total=False):
     users: int
     year: int
 
-DatRecord: TypeAlias = Union[Mapping[str, Union[str, Sequence["DatRecord"], "DatRecord"]], dict]
+DatRecord: TypeAlias = "Mapping[str, str | Sequence[DatRecord] | DatRecord]"
 
 # PEG grammar for DAT file format
 DAT_GRAMMAR = r'''
@@ -152,7 +153,7 @@ ACTIONS = {
 # Compile the parser
 dat_parser = pe.compile(DAT_GRAMMAR, actions=ACTIONS, ignore=Star(Class(" \t\n\r\v\f")), flags=pe.OPTIMIZE | pe.MEMOIZE)
 
-def _init_parse_results(records: list) -> tuple[ClrMamePro, Sequence[Game]]:
+def _init_parse_results(records: Sequence[DatRecord]) -> tuple[ClrMamePro, Sequence[Game]]:
     """Initialize ClrMamePro and Game objects from parsed records."""
     if not records:
         raise ValueError("No records found in the DAT file.")
@@ -174,7 +175,7 @@ def _init_parse_results(records: list) -> tuple[ClrMamePro, Sequence[Game]]:
                 raise ValueError(f"Invalid size value in rom record: {kwargs['size']}") from e
         return Rom(**kwargs)
 
-    def init_game(game_data: dict) -> Game | None:
+    def init_game(game_data: DatRecord) -> Game | None:
         """Initialize a Game object from parsed data."""
         if 'rom' not in game_data:
             return None
@@ -219,15 +220,13 @@ class DatFile(Sized, Iterable[Game]):
                 match_result = dat_parser.match(dat_string)
                 if match_result is None:
                     raise ValueError("Failed to parse DAT string")
-                parsed_records = match_result.value()
-                self._clrmamepro, self._games = _init_parse_results(parsed_records)
+                self._clrmamepro, self._games = _init_parse_results(match_result.value())
             case TextIO() | TextIOWrapper() as dat_io:
                 dat_content = dat_io.read()
                 match_result = dat_parser.match(dat_content)
                 if match_result is None:
                     raise ValueError("Failed to parse DAT file")
-                parsed_records = match_result.value()
-                self._clrmamepro, self._games = _init_parse_results(parsed_records)
+                self._clrmamepro, self._games = _init_parse_results(match_result.value())
                 self._path = dat_io.name
             case Iterable() as dat_records:
                 dats = tuple(dat_records)
@@ -286,7 +285,7 @@ def load_dat(dat_path: str) -> DatFile | None:
         raise Exception(f"Failed to load DAT file {dat_path}: {e}") from e
 
     finish = time.perf_counter_ns()
-    print(f"Loaded DAT file from {dat_path} with {len(dat.games)} games in {(finish - start) / 1_000_000:.2f} ms")
+    print(f"Loaded \"{dat_path}\" with {len(dat.games)} games in {(finish - start) / 1_000_000:.2f} ms")
 
     return dat
 
@@ -331,21 +330,24 @@ class DatRepository(Mapping[str, Collection[Game]]):
 
             return typing.cast(Game, game)
 
-
-        dats_list = [d for d in dats if len(d) > 0]
-        dats_list.sort(key=playlist_key)
+        # Sort the DATs by logical name to simplify manual inspection,
+        # and omit DAT files that don't actually have any games.
+        dats_list = sorted((d for d in dats if len(d) > 0), key=playlist_key)
         dats_by_platform = itertools.groupby(dats_list, key=playlist_key)
         for (platform, dat_group) in dats_by_platform:
             # For each set of DAT files that represent the same platform...
-            games: list[Game] = sorted(itertools.chain.from_iterable(dat_group), key=crc_key)
-            grouped_games: Iterator[tuple[str, Iterator[Game]]] = itertools.groupby(games, crc_key)
-            games_by_crc = {k: union_games(v) for (k, v) in grouped_games}
-            self.dats[platform] = tuple(sorted(games_by_crc.values(), key=game_name_key))
 
-        pass
-        #dat_records: list[DatGame] = sorted(itertools.chain.from_iterable(self.dats), key=dat_key)
-        #self.games = {k: tuple(v) for (k, v) in itertools.groupby(self.dat_records, dat_key)}
-        #self.unioned_games = {k: ChainMap(*v) for (k, v) in self.games.items()}
+            # Sort the DAT files by name, as the README says that
+            # earlier-named DATs take precedence over later ones
+            # when the same field is defined in more than one.
+            dats_sorted = sorted(dat_group, key=lambda d: cast(str, d.path))
+
+            # Sort all games (across all DAT files) by CRC,
+            # since itertools.groupby needs the input to be sorted by the key function
+            games: list[Game] = sorted(itertools.chain.from_iterable(dats_sorted), key=crc_key)
+            grouped_games = itertools.groupby(games, crc_key)
+            games_by_crc = {crc: union_games(g) for (crc, g) in grouped_games}
+            self.dats[platform] = tuple(sorted(games_by_crc.values(), key=game_name_key))
 
     def __getitem__(self, key: str, /) -> Collection[Game]:
         if key in self.dats:
