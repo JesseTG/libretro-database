@@ -5,3 +5,6 @@
 out
 tmp
 *.zip
+__pycache__
+*.pyc
+.idea
