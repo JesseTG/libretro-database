@@ -181,7 +181,13 @@ def _init_parse_results(records: Sequence[DatRecord]) -> tuple[ClrMamePro, Seque
             return None
 
         # Handle other game properties
-        kwargs = dict(game_data)
+        kwargs = {}
+        for (key, value) in game_data.items():
+            # TODO: Handle the various fields
+            match key, value:
+                case _, _:
+                    pass
+
         for key in ['edge_issue', 'edge_rating', 'famitsu_rating', 'releaseday', 'releasemonth', 'releaseyear', 'users', 'year']:
             if key in kwargs:
                 try:
