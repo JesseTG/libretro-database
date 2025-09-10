@@ -28,14 +28,11 @@ import httpx
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
 from httpx import Response, HTTPStatusError
-from mypy.types import names
-from pe import ParseError  # type: ignore
 
 from igdb_playlists import *
 from igdb_playlists import Game as IgdbGame
-from dat import DatFile, Game as DatGame, DatRecord, DatRepository, load_dat, load_dats, \
-    get_existing_dat_files
-from hasheous import DataObject
+from hasheous import HasheousRepository
+from dat import DatGame, DatRepository, load_dats, get_existing_dat_files
 
 # TODO: Get game time to beat
 # TODO: Get game characters
@@ -57,20 +54,7 @@ class JsonRepository:
         self.games: tuple[IgdbGame, ...] = tuple(itertools.chain.from_iterable(self.playlists.values()))
         self.games_by_id = {g['id']: g for g in self.games}
 
-class HasheousRepository:
-    def __init__(self, metadata_path: str | PathLike, playlists: Iterable[Playlist]):
-        dirs: set[str] = set(itertools.chain.from_iterable(h.hasheous_dirs for h in playlists))
-        # Some of the Playlists are represented by the same Hasheous directories
 
-        with ZipFile(metadata_path) as metadata_zip:
-            paths = map(lambda d: zipfile.Path(metadata_zip, d), dirs)
-            for zippath in paths:
-                # For each relevant directory in the zip file...
-                for f in zippath.iterdir():
-                    if f.is_file() and f.suffix == '.json':
-                        data = json.loads(f.read_text())
-                        if isinstance(data, dict) and data.get('Id') is not None:
-                            dataobject = cast(DataObject, data)
 
 
 def get_client_credentials(args: argparse.Namespace) -> tuple[str, str]:
@@ -261,9 +245,9 @@ async def handle_scrape(args: argparse.Namespace) -> None:
                 print(f"Error fetching playlist {playlist.title}: {r.status_code} {r.reason_phrase}", file=sys.stderr)
                 r.raise_for_status()
 
-            content_type: str | None = r.headers.get('content-type')
-            if content_type != 'application/json':
-                raise ValueError(f"Expected multiquery response to be JSON for query to playlist {playlist.title}, got: {r.headers.get('content-type')} ({r.text})")
+            response_content_type: str | None = r.headers.get('content-type')
+            if response_content_type != 'application/json':
+                raise ValueError(f"Expected multiquery response to be JSON for query to playlist {playlist.title}, got: {response_content_type} ({r.text})")
 
             try:
                 response_json: Sequence[MultiqueryResponse] = r.json()
@@ -313,7 +297,10 @@ async def load_metadata_map(metadata_path: str, playlists: Iterable[Playlist]) -
     # TODO: If metadata_map is not given, download it from https://hasheous.org/api/v1/Dumps/MetadataMap.zip
 
     start = time.perf_counter_ns()
-    hasheous = HasheousRepository(metadata_path, playlists)
+
+    hasheous_dirs: set[str] = set(itertools.chain.from_iterable(h.hasheous_dirs for h in playlists))
+    # Some of the Playlists are represented by the same Hasheous directories
+    hasheous = HasheousRepository(metadata_path, hasheous_dirs)
     now = time.perf_counter_ns()
     print(f"Loaded Hasheous metadata from {metadata_path} in {(now - start) / 1_000_000:.2f} ms")
     return hasheous
@@ -335,23 +322,27 @@ def get_playlists(playlistdir: str) -> Iterator[tuple[str, Playlist]]:
 def get_target_dat_paths(outpath: str, playlists: Iterable[Playlist]) -> Iterator[str]:
     """Get the paths to the DAT files that will be generated from the given playlists, rooted at the given directory."""
     for p in playlists:
-        dat = p.title + '.dat'
-        yield os.path.realpath(os.path.join(outpath, dat))
+        datpath = p.title + '.dat'
+        yield os.path.realpath(os.path.join(outpath, datpath))
 
-async def generate_dats(loaded_igdb: JsonRepository, loaded_dats: DatRepository, loaded_hasheous: HasheousRepository, playlists: Iterable[Playlist], outdir: str) -> None:
-    pass
-    for p in playlists:
-        clrmamepro = {
-            'name': p.title,
-            'description': p.title,
-            'comment': f"Games for {p.title} with metadata from IGDB",
-        }
+async def generate_dat(playlist: Playlist, outdir: str, loaded_igdb: JsonRepository, loaded_dats: DatRepository, loaded_hasheous: HasheousRepository) -> None:
+    clrmamepro = {
+        'name': playlist.title,
+        'description': playlist.title,
+        'comment': f"Games for {playlist.title} with metadata from IGDB",
+    }
+    dat_path = os.path.join(outdir, f"{playlist.title}.dat")
 
-        games: Collection[DatGame] = loaded_dats
-        game = DatGame(
+    games: Collection[DatGame] = loaded_dats[playlist.title]
+    dats: list[DatGame] = []
+    for game in games:
+        rom = game['rom'][0]
+        # TODO: Handle DAT records with more than one ROM entry (see the top of dat/Amstrad CPC.dat for an example)
 
-        )
-    # TODO:
+        assert 'crc' in rom or 'serial' in rom
+
+        rom_id = (rom['crc'] if 'crc' in rom else rom['serial']).lower()
+
 
 async def handle_process(args: argparse.Namespace) -> None:
     """Handle the process subcommand."""
@@ -400,7 +391,12 @@ async def handle_process(args: argparse.Namespace) -> None:
         loaded_dats = await loaded_dat_task
         loaded_hasheous = await loaded_hasheous_task
 
-        await generate_dats(loaded_json, loaded_dats, loaded_hasheous, playlists.values(), outpath)
+        dat_tasks: list[Task[None]] = []
+        for p in playlists.values():
+            task = group.create_task(generate_dat(p, outpath, loaded_json, loaded_dats, loaded_hasheous), name=p.title)
+            dat_tasks.append(task)
+
+        await asyncio.gather(*dat_tasks)
 
 
 def main():
