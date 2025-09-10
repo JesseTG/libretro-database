@@ -32,7 +32,7 @@ from httpx import Response, HTTPStatusError
 from igdb_playlists import *
 from igdb_playlists import Game as IgdbGame
 from hasheous import HasheousRepository
-from dat import DatGame, DatRepository, load_dats, get_existing_dat_files
+from dat import Game as DatGame, DatRepository, load_dats, get_existing_dat_files
 
 # TODO: Get game time to beat
 # TODO: Get game characters
