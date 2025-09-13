@@ -9,9 +9,7 @@ import time
 import zipfile
 
 from asyncio import TaskGroup, Task
-from collections import ChainMap
-from collections.abc import AsyncIterator, Collection, Sequence, Iterable, Mapping, Iterator
-from concurrent.futures import ProcessPoolExecutor
+from collections.abc import Collection, Sequence, Iterable, Mapping, Iterator
 from contextlib import asynccontextmanager
 from json import JSONDecodeError
 from numbers import Number
@@ -31,8 +29,8 @@ from httpx import Response, HTTPStatusError
 
 from igdb_playlists import *
 from igdb_playlists import Game as IgdbGame
-from hasheous import HasheousRepository
 from dats import Game as DatGame, DatRepository, load_dats, get_existing_dat_files
+from hasheous import DataObject, get_igdb_id, get_rom_list
 
 # TODO: Get game time to beat
 # TODO: Get game characters
@@ -303,7 +301,6 @@ class GameMetadataDicts:
         Args:
             metadata_path: The path to the metadata ZIP file.
             hasheous_dirs: The directories within the ZIP file to search for Hasheous metadata.
-            data_object_selector: A function to select which DataObjects to include.
         """
         self.crc_to_data: dict[str, DataObject] = {}
         self.crc_to_igdb: dict[str, int] = {}
@@ -371,11 +368,18 @@ async def generate_dat(playlist: Playlist, outdir: str, loaded_igdb: JsonReposit
     dats: list[DatGame] = []
     for game in games:
         rom = game['rom'][0]
-        # TODO: Handle DAT records with more than one ROM entry (see the top of dat/Amstrad CPC.dat for an example)
+        # TODO: Handle DAT records with more than one ROM entry
+        # (see the top of dat/Amstrad CPC.dat for an example)
 
         assert 'crc' in rom or 'serial' in rom
 
         rom_id = (rom['crc'] if 'crc' in rom else rom['serial']).lower()
+
+        if hasheous_object := loaded_hasheous.crc_to_data.get(rom_id, None):
+            # If we have Hasheous metadata for this ROM, use it
+            pass
+
+        raise NotImplementedError("Finish implementing generate_dat()")
 
 
 async def handle_process(args: argparse.Namespace) -> None:
