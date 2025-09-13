@@ -2,12 +2,8 @@
 Dictionary definitions taken from https://github.com/gaseous-project/hasheous/blob/main/hasheous-lib/Models/DataObjectItem.cs
 """
 
-import json
-import zipfile
-from collections.abc import Sequence, Mapping, Iterable, Iterator
-from os import PathLike
+from collections.abc import Sequence, Mapping
 from typing import TypedDict, Required, Any, Literal, TypeAlias, NotRequired, cast
-from zipfile import ZipFile
 
 METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
 
@@ -178,32 +174,6 @@ def get_igdb_id(data_object: DataObject) -> int | None:
                 return None
 
     return None
-
-class HasheousRepository:
-
-    def __init__(self, metadata_path: str | PathLike, hasheous_dirs: Iterable[str]):
-        self.crc_to_data: dict[str, DataObject] = {}
-        self.crc_to_igdb: dict[str, int] = {}
-
-        with ZipFile(metadata_path) as metadata_zip:
-            dirs = map(lambda d: zipfile.Path(metadata_zip, d), hasheous_dirs)
-            for d in dirs:
-                # For each relevant directory in the zip file...
-                json_file_paths = (
-                    p for p in d.iterdir() if p.is_file() and p.suffix == '.json'
-                )
-                json_data = (json.loads(j.read_text()) for j in json_file_paths)
-                dataobjects = (
-                    cast(DataObject, d) for d in json_data if
-                    isinstance(d, dict) and 'Id' in d and d.get("ObjectType") == 'Game'
-                )
-                for o in dataobjects:
-                    for r in get_rom_list(o):
-                        crc = r['Crc'].lower()
-                        self.crc_to_data[crc] = o
-                        if igdb_id := get_igdb_id(o):
-                            self.crc_to_igdb[crc] = igdb_id
-
 
 __all__ = [
     "DataObject",

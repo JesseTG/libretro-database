@@ -293,14 +293,48 @@ async def load_scraped_json(paths: Collection[str]) -> JsonRepository:
         print(f"Loaded {len(result)} JSON files from {len(paths)} paths in {(now - start) / 1_000_000:.2f} ms")
         return JsonRepository(result)
 
-async def load_metadata_map(metadata_path: str, playlists: Iterable[Playlist]) -> HasheousRepository:
+
+class GameMetadataDicts:
+
+    def __init__(self, metadata_path: str | PathLike, hasheous_dirs: Iterable[str]) -> None:
+        """
+        Initialize the GameMetadataDicts.
+
+        Args:
+            metadata_path: The path to the metadata ZIP file.
+            hasheous_dirs: The directories within the ZIP file to search for Hasheous metadata.
+            data_object_selector: A function to select which DataObjects to include.
+        """
+        self.crc_to_data: dict[str, DataObject] = {}
+        self.crc_to_igdb: dict[str, int] = {}
+
+        with ZipFile(metadata_path) as metadata_zip:
+            dirs = map(lambda d: zipfile.Path(metadata_zip, d), hasheous_dirs)
+            for d in dirs:
+                # For each relevant directory in the zip file...
+                json_file_paths = (
+                    p for p in d.iterdir() if p.is_file() and p.suffix == '.json'
+                )
+                json_data = (json.loads(j.read_text()) for j in json_file_paths)
+                dataobjects = (
+                    cast(DataObject, d) for d in json_data if
+                    isinstance(d, dict) and 'Id' in d and d.get("ObjectType") == 'Game'
+                )
+                for o in dataobjects:
+                    for r in get_rom_list(o):
+                        crc = r['Crc'].lower()
+                        self.crc_to_data[crc] = o
+                        if igdb_id := get_igdb_id(o):
+                            self.crc_to_igdb[crc] = igdb_id
+
+async def load_metadata_map(metadata_path: str, playlists: Iterable[Playlist]) -> GameMetadataDicts:
     # TODO: If metadata_map is not given, download it from https://hasheous.org/api/v1/Dumps/MetadataMap.zip
 
     start = time.perf_counter_ns()
 
     hasheous_dirs: set[str] = set(itertools.chain.from_iterable(h.hasheous_dirs for h in playlists))
     # Some of the Playlists are represented by the same Hasheous directories
-    hasheous = HasheousRepository(metadata_path, hasheous_dirs)
+    hasheous = GameMetadataDicts(metadata_path, hasheous_dirs)
     now = time.perf_counter_ns()
     print(f"Loaded Hasheous metadata from {metadata_path} in {(now - start) / 1_000_000:.2f} ms")
     return hasheous
@@ -325,7 +359,7 @@ def get_target_dat_paths(outpath: str, playlists: Iterable[Playlist]) -> Iterato
         datpath = p.title + '.dat'
         yield os.path.realpath(os.path.join(outpath, datpath))
 
-async def generate_dat(playlist: Playlist, outdir: str, loaded_igdb: JsonRepository, loaded_dats: DatRepository, loaded_hasheous: HasheousRepository) -> None:
+async def generate_dat(playlist: Playlist, outdir: str, loaded_igdb: JsonRepository, loaded_dats: DatRepository, loaded_hasheous: GameMetadataDicts) -> None:
     clrmamepro = {
         'name': playlist.title,
         'description': playlist.title,
@@ -385,7 +419,7 @@ async def handle_process(args: argparse.Namespace) -> None:
     async with TaskGroup() as group:
         loaded_json_task: Task[JsonRepository] = group.create_task(load_scraped_json(playlists.keys()))
         loaded_dat_task: Task[DatRepository] = group.create_task(load_dats(dats_to_scan, playlists.values()))
-        loaded_hasheous_task: Task[HasheousRepository] = group.create_task(load_metadata_map(metadata_map, playlists.values()))
+        loaded_hasheous_task: Task[GameMetadataDicts] = group.create_task(load_metadata_map(metadata_map, playlists.values()))
 
         loaded_json = await loaded_json_task
         loaded_dats = await loaded_dat_task
