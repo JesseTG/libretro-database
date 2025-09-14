@@ -1,9 +1,10 @@
+import dataclasses
 import os.path
 import tomllib
 
 from collections import ChainMap
 from dataclasses import dataclass
-from typing import Optional, Literal, TypedDict, Required, NewType, cast
+from typing import Optional, Literal, NewType, TypedDict, cast
 from collections.abc import Sequence, Iterable, Iterator, Mapping
 
 DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
@@ -112,25 +113,26 @@ DEFAULT_GAME_FIELDS = ''.join(DEFAULT_GAME_FIELD_TUPLE)
 
 IgdbId = NewType('IgdbId', int)
 
-class IgdbObject(TypedDict):
-    checksum: Optional[str] # For the object itself, *not* for a specific game
-    id: Required[IgdbId]
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class IgdbObject:
+    id: IgdbId
+    checksum: Optional[str] = None  # For the object itself, *not* for a specific game
 
-class AgeRatingCategory(IgdbObject, total=False):
+class AgeRatingCategory(IgdbObject):
     organization: 'AgeRatingOrganization'
     rating: str
 
-class AgeRatingContentDescriptionType(IgdbObject, total=False):
+class AgeRatingContentDescriptionType(IgdbObject):
     name: str
 
-class AgeRatingContentDescriptionV2(IgdbObject, total=False):
+class AgeRatingContentDescriptionV2(IgdbObject):
     description: str
     description_type: 'AgeRatingContentDescriptionType'
 
-class AgeRatingOrganization(IgdbObject, total=False):
+class AgeRatingOrganization(IgdbObject):
     name: str
 
-class AgeRating(IgdbObject, total=False):
+class AgeRating(IgdbObject):
     content_descriptions: Sequence['AgeRatingContentDescriptionV2']
     organization: AgeRatingOrganization
     rating_category: 'AgeRatingCategory'
@@ -138,74 +140,74 @@ class AgeRating(IgdbObject, total=False):
     rating_cover_url: str
     synopsis: str
 
-class AlternativeName(IgdbObject, total=False):
+class AlternativeName(IgdbObject):
     name: str
     comment: str
 
-class Franchise(IgdbObject, total=False):
+class Franchise(IgdbObject):
     name: str
     slug: str
 
-class GameEngine(IgdbObject, total=False):
+class GameEngine(IgdbObject):
     name: str
     slug: str
 
-class GameLocalization(IgdbObject, total=False):
+class GameLocalization(IgdbObject):
     name: str
     region: 'Region'
 
-class GameMode(IgdbObject, total=False):
+class GameMode(IgdbObject):
     name: str
     slug: str
 
-class GameStatus(IgdbObject, total=False):
+class GameStatus(IgdbObject):
     status: str
 
-class GameType(IgdbObject, total=False):
+class GameType(IgdbObject):
     type: str
 
-class Genre(IgdbObject, total=False):
+class Genre(IgdbObject):
     name: str
     slug: str
 
-class CompanyStatus(IgdbObject, total=False):
+class CompanyStatus(IgdbObject):
     name: str
 
-class Company(IgdbObject, total=False):
+class Company(IgdbObject):
     country: int # ISO 3166-1 code
     name: str
     slug: str
     status: CompanyStatus
 
-class InvolvedCompany(IgdbObject, total=False):
+class InvolvedCompany(IgdbObject):
     company: Company
     developer: bool
     porting: bool
     publisher: bool
     supporting: bool
 
-class Region(IgdbObject, total=False):
+class Region(IgdbObject):
     identifier: str
     name: str
     category: Literal['locale', 'continent']
 
-class Keyword(IgdbObject, total=False):
+class Keyword(IgdbObject):
     name: str
     slug: str
 
-class Language(IgdbObject, total=False):
+class Language(IgdbObject):
     locale: str
     name: str
     native_name: str
 
-class LanguageSupportType(IgdbObject, total=False):
+class LanguageSupportType(IgdbObject):
     name: str
 
-class LanguageSupport(IgdbObject, total=False):
+class LanguageSupport(IgdbObject):
     language: Language
     language_support_type: LanguageSupportType
 
-class MultiplayerMode(IgdbObject, total=False):
+class MultiplayerMode(IgdbObject):
     campaigncoop: bool
     dropin: bool
     lancoop: bool
@@ -219,18 +221,18 @@ class MultiplayerMode(IgdbObject, total=False):
     splitscreen: bool
     splitscreenonline: bool
 
-class PlatformFamily(IgdbObject, total=False):
+class PlatformFamily(IgdbObject):
     name: str
     slug: str
 
-class PlatformType(IgdbObject, total=False):
+class PlatformType(IgdbObject):
     name: str
 
-class PlatformVersion(IgdbObject, total=False):
+class PlatformVersion(IgdbObject):
     name: str
     slug: str
 
-class Platform(IgdbObject, total=False):
+class Platform(IgdbObject):
     abbreviation: str
     alternative_name: str
     generation: int
@@ -241,21 +243,21 @@ class Platform(IgdbObject, total=False):
     summary: str
     versions: Sequence['PlatformVersion']
 
-class PlayerPerspective(IgdbObject, total=False):
+class PlayerPerspective(IgdbObject):
     name: str
     slug: str
 
-class DateFormat(IgdbObject, total=False):
+class DateFormat(IgdbObject):
     format: str
 
-class ReleaseDateRegion(IgdbObject, total=False):
+class ReleaseDateRegion(IgdbObject):
     region: str
 
-class ReleaseDateStatus(IgdbObject, total=False):
+class ReleaseDateStatus(IgdbObject):
     description: str
     name: str
 
-class ReleaseDate(IgdbObject, total=False):
+class ReleaseDate(IgdbObject):
     date: int # TODO: Parse with date.fromtimestamp()
     date_format: 'DateFormat'
     human: str
@@ -265,11 +267,11 @@ class ReleaseDate(IgdbObject, total=False):
     status: 'ReleaseDateStatus'
     y: int
 
-class Theme(IgdbObject, total=False):
+class Theme(IgdbObject):
     name: str
     slug: str
 
-class Game(IgdbObject, total=False):
+class Game(IgdbObject):
     age_ratings: Sequence[AgeRating]
     aggregated_rating: float
     aggregated_rating_count: int

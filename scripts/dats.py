@@ -2,6 +2,7 @@
 
 import argparse
 import asyncio
+import dataclasses
 import itertools
 import json
 import os
@@ -13,73 +14,131 @@ import typing
 from collections.abc import Iterable, Sequence, Iterator, Mapping, Collection, Sized, AsyncIterator
 from concurrent.futures import ProcessPoolExecutor
 from io import TextIOWrapper
-from typing import TypedDict, Required, TypeAlias, TextIO, cast
+from typing import Any, NamedTuple, Self, TextIO, TypeAlias, TypedDict, cast
 
 # pe lacks type stubs, so let's silence MyPy's complaints
 import pe  # type: ignore
 from pe import ParseError
+from pe.actions import Call, Pack
 from pe.operators import Class, Star  # type: ignore
 
 from igdb_playlists import Playlist, PLAYLISTS
 
 
-class ClrMamePro(TypedDict, total=False):
-    name: Required[str]
-    description: str
-    category: str
-    date: str
-    author: str
-    email: str
-    url: str
-    version: str
-    comment: str
-    homepage: str
-
-class Rom(TypedDict, total=False):
-    crc: str
-    serial: str
-    image: str
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class ClrMamePro:
     name: str
-    size: int
-    md5: str
-    sha1: str
+    description: str | None = None
+    category: str | None = None
+    date: str | None = None
+    author: str | None = None
+    email: str | None = None
+    url: str | None = None
+    version: str | None = None
+    comment: str | None = None
+    homepage: str | None = None
 
-class Game(TypedDict, total=False):
-    rom: Required[Sequence[Rom]]
-    name: str
-    comment: str
-    description: str
-    id: str
+    @staticmethod
+    def from_dict(data: Mapping[str, Any]) -> "ClrMamePro":
+        if not isinstance(data, Mapping):
+            raise ValueError(f"Expected first record to be a Mapping, got {type(data)} instead.")
 
-    analog: bool
-    bbfc_rating: str
-    code: str
-    date: str
-    developer: str
-    edge_issue: int
-    edge_rating: int
-    elspa_rating: str
-    enhancement_hardware: str
-    esrb_rating: str
-    famitsu_rating: int
-    franchise: str
-    genre: str
-    homepage: str
-    license: str
-    manufacturer: str
-    origin: str
-    patch: str
-    publisher: str
-    region: str
-    releaseday: int
-    releasemonth: int
-    releaseyear: int
-    rumble: bool
-    tags: str
-    users: int
-    year: int
+        if 'name' not in data:
+            raise ValueError("clrmamepro record must have a 'name' field.")
+    
+        return ClrMamePro(**data)
 
-DatRecord: TypeAlias = "Mapping[str, str | Sequence[DatRecord] | DatRecord]"
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class Rom:
+    crc: str | None = None
+    serial: str | None = None
+    image: str | None = None
+    name: str | None = None
+    size: int | None = None
+    md5: str | None = None
+    sha1: str | None = None
+
+    @staticmethod
+    def from_dict(data: Mapping[str, Any]) -> "Rom":
+        kwargs = dict(data)
+        if 'size' in kwargs:
+            try:
+                kwargs['size'] = int(kwargs['size'])
+            except ValueError as e:
+                raise ValueError(f"Invalid size value in rom record: {kwargs['size']}") from e
+            
+        return Rom(**kwargs)
+
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class Game:
+    rom: Sequence[Rom]
+    name: str | None = None
+    comment: str | None = None
+    description: str | None = None
+    id: str | None = None
+
+    analog: bool | None = None
+    bbfc_rating: str | None = None
+    code: str | None = None
+    date: str | None = None
+    developer: str | None = None
+    download: str | None = None
+    edge_issue: int | None = None
+    edge_rating: int | None = None
+    elspa_rating: str | None = None
+    enhancement_hardware: str | None = None
+    enhancement_hw: str | None = None
+    esrb_rating: str | None = None
+    famitsu_rating: int | None = None
+    franchise: str | None = None
+    genre: str | None = None
+    homepage: str | None = None
+    license: str | None = None
+    manufacturer: str | None = None
+    origin: str | None = None
+    patch: str | None = None
+    publisher: str | None = None
+    region: str | None = None
+    releaseday: int | None = None
+    releasemonth: int | None = None
+    releaseyear: int | None = None
+    rumble: bool | None = None
+    serial: str | None = None
+    tags: str | None = None
+    users: int | None = None
+    version: str | None = None
+    year: int | None = None
+
+    @staticmethod
+    def from_dict(data: Mapping[str, Any]) -> "Game":
+        kwargs = dict(data)
+        if 'rom' in kwargs:
+            rom_data = kwargs['rom']
+            if isinstance(rom_data, Sequence):
+                kwargs['rom'] = tuple(Rom.from_dict(r) if isinstance(r, dict) else Rom() for r in rom_data)
+            elif isinstance(rom_data, dict):
+                kwargs['rom'] = (Rom.from_dict(rom_data),)
+            else:
+                kwargs['rom'] = (Rom(),)
+        else:
+            kwargs['rom'] = (Rom(),)
+
+        for key in ['edge_issue', 'edge_rating', 'famitsu_rating', 'releaseday', 'releasemonth', 'releaseyear', 'users', 'year']:
+            if key in kwargs and kwargs[key] is not None:
+                try:
+                    kwargs[key] = int(kwargs[key])
+                except ValueError:
+                    pass
+
+        for key in ['analog', 'rumble']:
+            if key in kwargs and kwargs[key] is not None:
+                kwargs[key] = str(kwargs[key]).lower() in ('true', 'yes', '1')
+
+        return Game(**kwargs)
+
+DatRecord: TypeAlias = Mapping[str, "DatValue"]
+DatValue: TypeAlias = str | Sequence[DatRecord] | DatRecord
+ParsedGameDatList: TypeAlias = Sequence[ClrMamePro | Game]
 
 # PEG grammar for DAT file format
 DAT_GRAMMAR = r'''
@@ -110,33 +169,41 @@ EndOfLine <- '\r\n' / '\n' / '\r'
 EndOfFile <- !.
 '''
 
-def _flatten(data):
-    result = tuple(data)
-    return result if len(result) > 1 else result[0]
-
 def _build_record(*args, **kwargs):
     """Build a record dictionary from parsed data."""
     record_type = kwargs.get('type', '')
 
+    match kwargs.get('type', None):
+        case None:
+            raise ValueError("Record missing 'type' field.")
+        case 'clrmamepro':
+            clrmamepro_args = args[0]
+            return ClrMamePro(**clrmamepro_args)
+        case 'game':
+            game_args = args[0]
+            return Game(**game_args)
+        case _:
+            raise ValueError(f"Unknown record type: {record_type}")
 
-    if record_type == 'clrmamepro':
-        clrmamepro_args = args[0]
-        return ClrMamePro(**clrmamepro_args)
+class KeyValueDict(TypedDict):
+    key: str
+    value: DatValue
 
-    return dict(**(args[0]))
+class KeyValueTuple(NamedTuple):
+    key: str
+    value: DatValue
 
-def _build_record_content(*args, **kwargs):
+def _build_record_content(args: tuple[KeyValueTuple, ...], **_):
     """Build record content from key-value pairs."""
 
     # group items with duplicate keys together, and put them in a tuple
-    def flatten_kv(key, value):
-        return key, _flatten(v[1] for v in value)
+    def flatten(value: Iterator[KeyValueTuple]):
+        result = tuple(v for (_, v) in value)
+        return result[0] if len(result) == 1 else result
 
-    return dict(flatten_kv(k, v) for k, v in itertools.groupby(args, lambda x: x[0]))
-
-def _build_keyvalue(*args, **kwargs):
-    """Build a key-value pair."""
-    return kwargs['key'], kwargs['value']
+    grouped_by_key = itertools.groupby(args, lambda x: x.key)
+    result = {k:flatten(v) for k, v in grouped_by_key}
+    return result
 
 def _build_datfile(*args, **kwargs):
     """Build the top-level DAT file structure."""
@@ -145,65 +212,13 @@ def _build_datfile(*args, **kwargs):
 # Actions for semantic processing
 ACTIONS = {
     'Record': _build_record,
-    'RecordContent': _build_record_content,
-    'KeyValue': _build_keyvalue,
+    'RecordContent': Pack(_build_record_content),
+    'KeyValue': Call(KeyValueTuple),
     'DatFile': _build_datfile,
 }
 
 # Compile the parser
 dat_parser = pe.compile(DAT_GRAMMAR, actions=ACTIONS, ignore=Star(Class(" \t\n\r\v\f")), flags=pe.OPTIMIZE | pe.MEMOIZE)
-
-def _init_parse_results(records: Sequence[DatRecord]) -> tuple[ClrMamePro, Sequence[Game]]:
-    """Initialize ClrMamePro and Game objects from parsed records."""
-    if not records:
-        raise ValueError("No records found in the DAT file.")
-
-    # Find clrmamepro record
-    clrmamepro = ClrMamePro(records[0])
-    if 'name' not in clrmamepro:
-        raise ValueError("clrmamepro record must have a 'name' field.")
-
-    game_records = records[1:]
-
-    def init_rom(rom_data: dict) -> Rom:
-        """Initialize a Rom object from parsed data."""
-        kwargs = dict(rom_data)
-        if 'size' in kwargs:
-            try:
-                kwargs['size'] = int(kwargs['size'])
-            except ValueError as e:
-                raise ValueError(f"Invalid size value in rom record: {kwargs['size']}") from e
-        return Rom(**kwargs)
-
-    def init_game(game_data: DatRecord) -> Game | None:
-        """Initialize a Game object from parsed data."""
-        if 'rom' not in game_data:
-            return None
-
-        # Handle other game properties
-        kwargs = {}
-        for (key, value) in game_data.items():
-            # TODO: Handle the various fields
-            match key, value:
-                case _, _:
-                    pass
-
-        for key in ['edge_issue', 'edge_rating', 'famitsu_rating', 'releaseday', 'releasemonth', 'releaseyear', 'users', 'year']:
-            if key in kwargs:
-                try:
-                    kwargs[key] = int(kwargs[key])
-                except ValueError:
-                    pass
-
-        for key in ['analog', 'rumble']:
-            if key in kwargs:
-                kwargs[key] = kwargs[key].lower() in ('true', 'yes', '1')
-
-        return Game(**kwargs)
-
-    games = tuple(g for g in (init_game(game_data) for game_data in game_records) if g is not None)
-
-    return clrmamepro, games
 
 class DatFile(Sized, Iterable[Game]):
     @property
@@ -226,25 +241,23 @@ class DatFile(Sized, Iterable[Game]):
                 match_result = dat_parser.match(dat_string)
                 if match_result is None:
                     raise ValueError("Failed to parse DAT string")
-                self._clrmamepro, self._games = _init_parse_results(match_result.value())
+                parse_results = cast(ParsedGameDatList, match_result.value())
+                self._clrmamepro, self._games = self._init_parse_results(parse_results)
             case TextIO() | TextIOWrapper() as dat_io:
                 dat_content = dat_io.read()
                 match_result = dat_parser.match(dat_content)
                 if match_result is None:
                     raise ValueError("Failed to parse DAT file")
-                self._clrmamepro, self._games = _init_parse_results(match_result.value())
+                parse_results = cast(ParsedGameDatList, match_result.value())
+                self._clrmamepro, self._games = self._init_parse_results(parse_results)
                 self._path = dat_io.name
-            case Iterable() as dat_records:
-                dats = tuple(dat_records)
-                self._clrmamepro = dats[0]
-                self._games = tuple(Game(d) for d in dats[1:])
             case _:
                 raise TypeError(f"Unsupported type for records: {type(records)}")
 
     def to_dict(self):
         return {
-            "clrmamepro": self._clrmamepro,
-            "games": tuple(game for game in self._games)
+            "clrmamepro": dataclasses.asdict(self._clrmamepro),
+            "games": tuple(dataclasses.asdict(game) for game in self._games)
         }
 
     @typing.override
@@ -255,27 +268,35 @@ class DatFile(Sized, Iterable[Game]):
     def __len__(self) -> int:
         return len(self._games)
 
+    @staticmethod
+    def _init_parse_results(records: Sequence[ClrMamePro | Game])-> tuple[ClrMamePro, Sequence[Game]]:
+        if not records:
+            raise ValueError("No records found in the DAT file.")
+
+        return cast(ClrMamePro, records[0]), cast(Sequence[Game], records[1:])
+
+
 def crc_key(game: Game) -> str:
-    if 'rom' not in game:
+    if not game.rom:
         return ''
 
-    roms = game['rom']
-    if isinstance(roms, Sequence) and len(roms) > 0:
-        rom = roms[0]
-    else:
-        rom = roms
+    roms = game.rom
+    rom = roms[0] if len(roms) > 0 else None
+    
+    if not rom:
+        return ''
 
-    if 'crc' in rom:
-        return rom['crc'].lower()
-    elif 'serial' in rom:
-        return rom['serial'].lower()
+    if rom.crc:
+        return rom.crc.lower()
+    elif rom.serial:
+        return rom.serial.lower()
     else:
         return ''
 
 async def handle_tojson(args: argparse.Namespace):
     with open(args.infile, 'r', encoding='utf-8') as infile:
         dat = DatFile(infile)
-        json.dump(dat, sys.stdout, indent=2, default=lambda o: o.to_dict(), ensure_ascii=False)
+        json.dump(dat.to_dict(), sys.stdout, indent=2, ensure_ascii=False)
         print('')  # Ensure a newline at the end of the output
 
 def load_dat(dat_path: str) -> DatFile | None:
@@ -296,14 +317,14 @@ def load_dat(dat_path: str) -> DatFile | None:
     return dat
 
 def game_name_key(game: Game):
-    if 'name' in game:
-        return game['name']
+    if game.name:
+        return game.name
 
-    if 'description' in game:
-        return game['description']
+    if game.description:
+        return game.description
 
-    if 'comment' in game:
-        return game['comment']
+    if game.comment:
+        return game.comment
 
     return ''
 
@@ -318,7 +339,7 @@ class DatRepository(Mapping[str, Collection[Game]]):
                 playlists_with_alts[a] = p
 
         def playlist_key(dat: DatFile):
-            name = dat.clrmamepro['name']
+            name = dat.clrmamepro.name
             if playlist := playlists_with_alts.get(name):
                 # If we have a playlist that matches this DAT's name field, return the "canonical" title
                 return playlist.title
@@ -327,14 +348,29 @@ class DatRepository(Mapping[str, Collection[Game]]):
                 return name
 
         def union_games(games: Iterable[Game]) -> Game:
-            game: dict = {}
-            for g in games:
-                for k in g:
-                    if k not in game:
-                        # Add new key-value pairs
-                        game[k] = g[k]
+            # For dataclasses, we need to merge the games by creating a new instance
+            # with the first non-None value for each field
+            games_list = tuple(games)
+            if not games_list:
+                raise ValueError("Cannot union empty games list")
 
-            return typing.cast(Game, game)
+            if len(games_list) == 1:
+                # Only one game, nothing to merge
+                return games_list[0]
+            
+            first_game = games_list[0]
+            # Start with first game's values
+            kwargs = dataclasses.asdict(first_game)
+            
+            for g in games_list[1:]:
+                # Update with non-None values from subsequent games, but keep existing values
+                for field in dataclasses.fields(Game):
+                    value = getattr(g, field.name)
+                    if value is not None and kwargs[field.name] is None:
+                        # Only update if we don't already have a value
+                        kwargs[field.name] = value
+
+            return Game(**kwargs)
 
         # Sort the DATs by logical name to simplify manual inspection,
         # and omit DAT files that don't actually have any games.

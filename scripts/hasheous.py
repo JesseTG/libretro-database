@@ -2,19 +2,21 @@
 Dictionary definitions taken from https://github.com/gaseous-project/hasheous/blob/main/hasheous-lib/Models/DataObjectItem.cs
 """
 
+import dataclasses
 from collections.abc import Sequence, Mapping
-from typing import TypedDict, Required, Any, Literal, TypeAlias, NotRequired, cast
+from typing import Any, Literal, TypeAlias
 
 METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
 
 
-class SignatureDataObject(TypedDict, total=False):
-    SignatureId: str
-    Name: str
-    Year: str
-    Platform: str
-    SourceId: str
-    MetadataSource: str
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class SignatureDataObject:
+    SignatureId: str | None = None
+    Name: str | None = None
+    Year: str | None = None
+    Platform: str | None = None
+    SourceId: str | None = None
+    MetadataSource: str | None = None
 
 
 MappingStatus: TypeAlias = Literal["NotMapped", "Mapped", "MappedWithErrors"]
@@ -41,7 +43,8 @@ MetadataSource: TypeAlias = Literal[
     "SteamGridDb",
 ]
 
-class MetadataItem(TypedDict):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class MetadataItem:
     Id: str
     ImmutableId: str
     Status: MappingStatus
@@ -106,36 +109,38 @@ SignatureSourceType: TypeAlias = Literal[
     "Generic",
 ]
 
-class MediaType(TypedDict, total=False):
-    MediaType: RomTypeName
-    Number: int
-    Count: int
-    Side: str
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class MediaType:
+    MediaType: RomTypeName | None = None
+    Number: int | None = None
+    Count: int | None = None
+    Side: str | None = None
 
-class RomItem(TypedDict, total=False):
-    Score: Required[int]
-    Id: str
-    Name: str
-    Size: int
-    Crc: str
-    Md5: str
-    Sha1: str
-    Sha256: str
-    Status: str
-    Country: Mapping[str, str]
-    Language: Mapping[str, str]
-    DevelopmentStatus: str
-    Attributes: Required[Mapping[str, Any]]
-    RomType: Required[RomTypeName]
-    RomTypeMedia: str
-    MediaDetail: MediaType
-    MediaLabel: str
-    SignatureSource: SignatureSourceType
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class RomItem:
+    Score: int
+    Attributes: Mapping[str, Any]
+    RomType: RomTypeName
+    Id: str | None = None
+    Name: str | None = None
+    Size: int | None = None
+    Crc: str | None = None
+    Md5: str | None = None
+    Sha1: str | None = None
+    Sha256: str | None = None
+    Status: str | None = None
+    Country: Mapping[str, str] | None = None
+    Language: Mapping[str, str] | None = None
+    DevelopmentStatus: str | None = None
+    RomTypeMedia: str | None = None
+    MediaDetail: MediaType | None = None
+    MediaLabel: str | None = None
+    SignatureSource: SignatureSourceType | None = None
 
 AttributeValue: TypeAlias = "DataObject | str | Sequence[RomItem]"
 
-class Attribute(TypedDict):
-    Id: NotRequired[int]
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class Attribute:
     attributeType: AttributeType
     '''Not a typo, the API serializes it this way'''
 
@@ -146,9 +151,11 @@ class Attribute(TypedDict):
     '''Not a typo, the API serializes it this way'''
 
     Value: AttributeValue
+    Id: int | None = None
 
 
-class DataObject(TypedDict):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class DataObject:
     Id: int
     ObjectType: DataObjectType
     SignatureDataObjects: Sequence[SignatureDataObject]
@@ -158,22 +165,25 @@ class DataObject(TypedDict):
     UpdatedDate: str
     Name: str
 
-def get_rom_list(data_object: DataObject) -> Sequence[RomItem]:
-    for a in data_object["Attributes"]:
-        if a['attributeName'] == 'ROMs' and isinstance(a['Value'], Sequence):
-            return cast(Sequence[RomItem], a['Value'])
+    @property
+    def rom_list(self) -> Sequence[RomItem]:
+        """Return the list of ROMs, or an empty tuple if none are present."""
+        for a in self.Attributes:
+            if a.attributeName == 'ROMs' and isinstance(a.Value, Sequence) and not isinstance(a.Value, str):
+                return a.Value
 
-    raise LookupError(f"No ROMs found in DataObject {data_object['Id']}")
+        return ()
 
-def get_igdb_id(data_object: DataObject) -> int | None:
-    for m in data_object["Metadata"]:
-        if m['Source'] == 'IGDB' and m['Status'] == 'Mapped':
-            try:
-                return int(m['ImmutableId'])
-            except ValueError:
-                return None
+    @property
+    def igdb_id(self) -> int | None:
+        for m in self.Metadata:
+            if m.Source == 'IGDB' and m.Status == 'Mapped':
+                try:
+                    return int(m.ImmutableId)
+                except ValueError:
+                    return None
 
-    return None
+        return None
 
 __all__ = [
     "DataObject",
