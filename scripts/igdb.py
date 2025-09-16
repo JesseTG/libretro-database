@@ -407,8 +407,7 @@ async def handle_process(args: argparse.Namespace) -> None:
 
     # TODO: Don't hardcode the dat and metadat directories
     target_dat_paths = set(get_target_dat_paths(outpath, playlists.values()))
-    existing_dat_paths = [os.path.realpath(p) for p in itertools.chain(get_existing_dat_files("dat"), get_existing_dat_files("metadat"))]
-    existing_dat_paths = sorted(existing_dat_paths, key=lambda f: os.stat(f).st_size, reverse=True)
+    existing_dat_paths = {os.path.realpath(p) for p in itertools.chain(get_existing_dat_files("dat"), get_existing_dat_files("metadat"))}
 
     print(f"Found {len(target_dat_paths)} target DAT files to generate from playlists")
     if verbose:
@@ -418,7 +417,7 @@ async def handle_process(args: argparse.Namespace) -> None:
     if verbose:
         pprint(existing_dat_paths, width=120)
 
-    dats_to_scan = set(existing_dat_paths) - target_dat_paths
+    dats_to_scan = existing_dat_paths - target_dat_paths
 
     print(f"In total, will scan {len(dats_to_scan)} existing DAT files for games to process.")
     if verbose:
