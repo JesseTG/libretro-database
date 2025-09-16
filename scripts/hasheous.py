@@ -16,6 +16,7 @@ class SignatureDataObject:
     Year: str | None = None
     Platform: str | None = None
     SourceId: str | None = None
+    Publisher: str | None = None
     MetadataSource: str | None = None
 
 
@@ -112,6 +113,7 @@ SignatureSourceType: TypeAlias = Literal[
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class MediaType:
     MediaType: RomTypeName | None = None
+    Media: str | None = None
     Number: int | None = None
     Count: int | None = None
     Side: str | None = None
@@ -119,7 +121,7 @@ class MediaType:
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class RomItem:
     Score: int
-    Attributes: Mapping[str, Any]
+    Attributes: Mapping[str, str] | None = None
     RomType: RomTypeName
     Id: str | None = None
     Name: str | None = None
