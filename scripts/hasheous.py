@@ -2,9 +2,15 @@
 Dictionary definitions taken from https://github.com/gaseous-project/hasheous/blob/main/hasheous-lib/Models/DataObjectItem.cs
 """
 
+import asyncio
 import dataclasses
-from collections.abc import Sequence, Mapping
-from typing import Any, Literal, TypeAlias
+import zipfile
+
+from collections.abc import Collection, Sequence, Mapping
+from typing import Iterable, Literal, TypeAlias
+from zipfile import ZipFile
+
+import typelib
 
 METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
 
@@ -187,6 +193,41 @@ class DataObject:
 
         return None
 
+DataObjectCodec: typelib.Codec[DataObject] = typelib.codec(DataObject)
+
+async def load_dataobjects(metadata_zip_path: str, hasheous_dirs: Iterable[str]) -> Collection[DataObject]:
+    """Load Hasheous DataObjects from the given metadata ZIP file for the specified playlists."""
+    # TODO: If metadata_map is not given, download it from https://hasheous.org/api/v1/Dumps/MetadataMap.zip
+
+    result: list[DataObject] = []
+    with ZipFile(metadata_zip_path) as metadata_zip:
+        root = zipfile.Path(metadata_zip)
+        def get_zip_path(p: str) -> zipfile.Path:
+            return root.joinpath(*p.split('/'))
+
+        def parse_dataobject(path: zipfile.Path) -> DataObject:
+            data = path.read_bytes()
+            return DataObjectCodec.decode(data)
+
+        for d in map(get_zip_path, hasheous_dirs):
+            # For each relevant directory in the zip file...
+
+            json_paths = filter(lambda p: p.is_file() and p.suffix == '.json', d.iterdir())
+            # Get the path to every JSON file in that directory
+
+            objects = map(parse_dataobject, json_paths)
+            # Parse each JSON file into a DataObject
+            
+            result.extend(objects)
+            # Then add them to the result list
+
+            await asyncio.sleep(0)
+            # Let the event loop have a turn; since this method is likely CPU bound
+            # and Python's GIL prevents true thread parallelism,
+            # we need to do this to avoid blocking other tasks.
+
+    return result
+
 __all__ = [
     "DataObject",
     "DataObjectType",
@@ -202,4 +243,5 @@ __all__ = [
     "MetadataSource",
     "RomTypeName",
     "SignatureSourceType",
+    "load_dataobjects",
 ]
