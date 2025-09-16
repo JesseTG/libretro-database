@@ -629,7 +629,8 @@ where = "platforms = (7)"
 
 [[igdb.playlists]]
 title = "Sony - PlayStation Portable"
-hasheous = ["Sony PlayStation Portable"]
+# NOTE: Some hasheous directories spell it as "Playstation", others as "PlayStation" (note the S)
+hasheous = ["Sony Playstation Portable"]
 alts = ["PlayStation Portable hacks", "Sony - PlayStation Portable (PSX2PSP)", "Sony - PlayStation Portable (UMD Music)", "Sony - PlayStation Portable (UMD Video)"]
 
 # PSP, without the "playstation minis" (4435) keyword
@@ -639,7 +640,7 @@ where = "platforms = (38) & keywords != (4435)"
 
 [[igdb.playlists]]
 title = "Sony - PlayStation Portable (PSN)"
-hasheous = ["Sony PlayStation Portable"]
+hasheous = ["Sony Playstation Portable"]
 # PSP, with keywords "playstation network" (2543), "digital distribution" (4134), or "playstation minis" (4435)
 where = "platforms = (38) & keywords = (2543, 4134, 4435)"
 
@@ -656,12 +657,12 @@ where = "platforms = (8)"
 
 [[igdb.playlists]]
 title = "Sony - PlayStation 3"
-hasheous = ["Sony PlayStation 3"]
+hasheous = ["Sony Playstation 3"]
 where = "platforms = (9)"
 
 # TODO: "Sony - PlayStation 3 (PSN)" playlist
 # [[igdb.playlists]]
-# title = "Sony - PlayStation 3 (PSN)"
+# title = "Sony - Playstation 3 (PSN)"
 
 # IGDB lacks an entry for the Spectravideo SVI series
 # [[igdb.playlists]]
