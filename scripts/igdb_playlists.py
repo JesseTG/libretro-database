@@ -4,7 +4,7 @@ import tomllib
 
 from collections import ChainMap
 from dataclasses import dataclass
-from typing import Optional, Literal, NewType, TypedDict, cast
+from typing import Any, Optional, Literal, NewType, TypedDict, cast
 from collections.abc import Sequence, Iterable, Iterator, Mapping
 
 DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
@@ -114,100 +114,160 @@ DEFAULT_GAME_FIELDS = ''.join(DEFAULT_GAME_FIELD_TUPLE)
 IgdbId = NewType('IgdbId', int)
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class IgdbObject:
+class AgeRatingOrganization:
     id: IgdbId
-    checksum: Optional[str] = None  # For the object itself, *not* for a specific game
+    checksum: str | None = None
+    name: str
 
-class AgeRatingCategory(IgdbObject):
-    organization: 'AgeRatingOrganization'
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class AgeRatingCategory:
+    id: IgdbId
+    checksum: str | None = None
+    organization: AgeRatingOrganization
     rating: str
 
-class AgeRatingContentDescriptionType(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class AgeRatingContentDescriptionType:
+    id: IgdbId
+    checksum: str | None = None
     name: str
 
-class AgeRatingContentDescriptionV2(IgdbObject):
-    description: str
-    description_type: 'AgeRatingContentDescriptionType'
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class AgeRatingContentDescriptionV2:
+    id: IgdbId
+    checksum: str | None = None
+    description: str | None = None
+    description_type: AgeRatingContentDescriptionType | None = None
 
-class AgeRatingOrganization(IgdbObject):
-    name: str
 
-class AgeRating(IgdbObject):
-    content_descriptions: Sequence['AgeRatingContentDescriptionV2']
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class AgeRating:
+    id: IgdbId
+    checksum: str | None = None
     organization: AgeRatingOrganization
-    rating_category: 'AgeRatingCategory'
-    rating_content_descriptions: Sequence['AgeRatingContentDescriptionV2']
-    rating_cover_url: str
-    synopsis: str
+    rating_category: AgeRatingCategory
+    rating_content_descriptions: Sequence[AgeRatingContentDescriptionV2] | None = None
+    rating_cover_url: str | None = None
+    synopsis: str | None = None
 
-class AlternativeName(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class AlternativeName:
+    id: IgdbId
+    checksum: str | None = None
     name: str
     comment: str
 
-class Franchise(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class Franchise:
+    id: IgdbId
+    checksum: str | None = None
     name: str
     slug: str
 
-class GameEngine(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class GameEngine:
+    id: IgdbId
+    checksum: str | None = None
     name: str
     slug: str
 
-class GameLocalization(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class GameLocalization:
+    id: IgdbId
+    checksum: str | None = None
     name: str
     region: 'Region'
 
-class GameMode(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class GameMode:
+    id: IgdbId
+    checksum: str | None = None
     name: str
-    slug: str
 
-class GameStatus(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class GameStatus:
+    id: IgdbId
+    checksum: str | None = None
     status: str
 
-class GameType(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class GameType:
+    id: IgdbId
+    checksum: str | None = None
     type: str
 
-class Genre(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class Genre:
+    id: IgdbId
+    checksum: str | None = None
     name: str
     slug: str
 
-class CompanyStatus(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class CompanyStatus:
+    id: IgdbId
+    checksum: str | None = None
     name: str
 
-class Company(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class Company:
+    id: IgdbId
+    checksum: str | None = None
     country: int # ISO 3166-1 code
     name: str
     slug: str
     status: CompanyStatus
 
-class InvolvedCompany(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class InvolvedCompany:
+    id: IgdbId
+    checksum: str | None = None
     company: Company
     developer: bool
     porting: bool
     publisher: bool
     supporting: bool
 
-class Region(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class Region:
+    id: IgdbId
+    checksum: str | None = None
     identifier: str
     name: str
     category: Literal['locale', 'continent']
 
-class Keyword(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class Keyword:
+    id: IgdbId
+    checksum: str | None = None
     name: str
     slug: str
 
-class Language(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class Language:
+    id: IgdbId
+    checksum: str | None = None
     locale: str
     name: str
     native_name: str
 
-class LanguageSupportType(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class LanguageSupportType:
+    id: IgdbId
+    checksum: str | None = None
     name: str
 
-class LanguageSupport(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class LanguageSupport:
+    id: IgdbId
+    checksum: str | None = None
     language: Language
     language_support_type: LanguageSupportType
 
-class MultiplayerMode(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class MultiplayerMode:
+    id: IgdbId
+    checksum: str | None = None
     campaigncoop: bool
     dropin: bool
     lancoop: bool
@@ -221,109 +281,142 @@ class MultiplayerMode(IgdbObject):
     splitscreen: bool
     splitscreenonline: bool
 
-class PlatformFamily(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class PlatformFamily:
+    id: IgdbId
+    checksum: str | None = None
     name: str
     slug: str
 
-class PlatformType(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class PlatformType:
+    id: IgdbId
+    checksum: str | None = None
     name: str
 
-class PlatformVersion(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class PlatformVersion:
+    id: IgdbId
+    checksum: str | None = None
     name: str
     slug: str
 
-class Platform(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class Platform:
+    id: IgdbId
+    checksum: str | None = None
     abbreviation: str
     alternative_name: str
     generation: int
     name: str
-    platform_family: 'PlatformFamily'
-    platform_type: 'PlatformType'
+    platform_family: PlatformFamily
+    platform_type: PlatformType
     slug: str
     summary: str
-    versions: Sequence['PlatformVersion']
+    versions: Sequence[PlatformVersion]
 
-class PlayerPerspective(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class PlayerPerspective:
+    id: IgdbId
+    checksum: str | None = None
     name: str
     slug: str
 
-class DateFormat(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class DateFormat:
+    id: IgdbId
+    checksum: str | None = None
     format: str
 
-class ReleaseDateRegion(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class ReleaseDateRegion:
+    id: IgdbId
+    checksum: str | None = None
     region: str
 
-class ReleaseDateStatus(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class ReleaseDateStatus:
+    id: IgdbId
+    checksum: str | None = None
     description: str
     name: str
 
-class ReleaseDate(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class ReleaseDate:
+    id: IgdbId
+    checksum: str | None = None
     date: int # TODO: Parse with date.fromtimestamp()
-    date_format: 'DateFormat'
+    date_format: DateFormat
     human: str
     m: Literal[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] # Month (1-12)
     platform: Platform
-    release_region: 'ReleaseDateRegion'
-    status: 'ReleaseDateStatus'
+    release_region: ReleaseDateRegion
+    status: ReleaseDateStatus
     y: int
 
-class Theme(IgdbObject):
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class Theme:
+    id: IgdbId
+    checksum: str | None = None
     name: str
     slug: str
 
-class Game(IgdbObject):
-    age_ratings: Sequence[AgeRating]
-    aggregated_rating: float
-    aggregated_rating_count: int
-    alternative_names: Sequence[AlternativeName]
-    #artworks: Sequence[IgdbId | IgdbObject]
-    bundles: Sequence['Game'] # name, ID, and platform
-    collections: Sequence['Game'] # name, ID, and platform
-    #cover: IgdbId | IgdbObject
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class Game:
+    id: IgdbId
+    checksum: str | None = None
+    age_ratings: Sequence[AgeRating] | None = None
+    aggregated_rating: float | None = None
+    aggregated_rating_count: int | None = None
+    alternative_names: Sequence[AlternativeName] | None = None
+    #artworks: Sequence[IgdbId | Game]
+    bundles: Sequence['Game'] | None = None # name, ID, and platform
+    collections: Sequence['Game'] | None = None # name, ID, and platform
+    #cover: IgdbId | Game
     #created_at: datetime
-    dlcs: Sequence['Game'] # name, ID, and platform
-    expanded_games: Sequence['Game'] # name, ID, and platform
-    expansions: Sequence['Game'] # name, ID, and platform
+    dlcs: Sequence['Game'] | None = None # name, ID, and platform
+    expanded_games: Sequence['Game'] | None = None # name, ID, and platform
+    expansions: Sequence['Game'] | None = None # name, ID, and platform
     #external_games: Sequence['ExternalGame']
-    first_release_date: int # TODO: Parse with date.fromtimestamp()
-    forks: Sequence['Game'] # name, ID, and platform
-    franchise: Franchise
-    franchises: Sequence[Franchise]
-    game_engines: Sequence[GameEngine]
-    game_localizations: Sequence[GameLocalization]
-    game_modes: Sequence[GameMode]
-    game_status: GameStatus
-    game_type: GameType
-    genres: Sequence[Genre]
-    involved_companies: Sequence[InvolvedCompany]
-    keywords: Sequence[Keyword]
-    language_supports: Sequence[LanguageSupport]
-    multiplayer_modes: Sequence[MultiplayerMode]
+    first_release_date: int | None = None # TODO: Parse with date.fromtimestamp()
+    forks: Sequence['Game'] | None = None # name, ID, and platform
+    franchise: Franchise | None = None
+    franchises: Sequence[Franchise] | None = None
+    game_engines: Sequence[GameEngine] | None = None
+    game_localizations: Sequence[GameLocalization] | None = None
+    game_modes: Sequence[GameMode] | None = None
+    game_status: GameStatus | None = None
+    game_type: GameType | None = None
+    genres: Sequence[Genre] | None = None
+    involved_companies: Sequence[InvolvedCompany] | None = None
+    keywords: Sequence[Keyword] | None = None
+    language_supports: Sequence[LanguageSupport] | None = None
+    multiplayer_modes: Sequence[MultiplayerMode] | None = None
     name: str
-    parent_game: 'Game'
-    platforms: Sequence[Platform]
-    player_perspectives: Sequence[PlayerPerspective]
-    ports: Sequence['Game'] # name, ID, and platform
-    rating: float
-    rating_count: int
-    release_dates: Sequence[ReleaseDate]
-    remakes: Sequence['Game'] # name, ID, and platform
-    remasters: Sequence['Game'] # name, ID, and platform
+    parent_game: 'Game | None' = None
+    platforms: Sequence[Platform] | None = None
+    player_perspectives: Sequence[PlayerPerspective] | None = None
+    ports: Sequence['Game'] | None = None # name, ID, and platform
+    rating: float | None = None
+    rating_count: int | None = None
+    release_dates: Sequence[ReleaseDate] | None = None
+    remakes: Sequence['Game'] | None = None # name, ID, and platform
+    remasters: Sequence['Game'] | None = None # name, ID, and platform
     #screenshots: Sequence['Screenshot']
-    #similar_games: Sequence['Game'] # name, ID, and platform
+    #similar_games: Sequence['Game'] | None = None # name, ID, and platform
     slug: str
-    standalone_expansions: Sequence['Game'] # name, ID, and platform
-    storyline: str
-    summary: str
-    tags: Sequence[int]
-    themes: Sequence['Theme']
-    total_rating: float
-    total_rating_count: int
-    url: str # TODO: Parse with urllib
-    version_parent: 'Game' # name, ID, and platform
-    version_title: str
-    #videos: Sequence['Video']
-    #websites: Sequence['Website']
+    standalone_expansions: Sequence['Game'] | None = None # name, ID, and platform
+    storyline: str | None = None
+    summary: str | None = None
+    tags: Sequence[int] | None = None
+    themes: Sequence[Theme] | None = None
+    total_rating: float | None = None
+    total_rating_count: int | None = None
+    url: str | None = None # TODO: Parse with urllib
+    version_parent: 'Game | None' = None # name, ID, and platform
+    version_title: str | None = None
+    #videos: Sequence['Video'] | None = None
+    #websites: Sequence['Website'] | None = None
 
 SortDirection = Literal['asc', 'desc']
 DEFAULT_SORT: tuple[str, SortDirection] = ('name', 'asc')
@@ -590,6 +683,9 @@ def get_by_title(title: str) -> Optional[Playlist]:
 
 __all__ = [
     "AgeRatingOrganization",
+    "AgeRatingContentDescriptionV2",
+    "AgeRatingContentDescriptionType",
+    "AgeRatingCategory",
     "AgeRating",
     "AlternativeName",
     "Franchise",
