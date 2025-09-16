@@ -57,6 +57,9 @@ class Rom:
     size: int | None = None
     md5: str | None = None
     sha1: str | None = None
+    sha1sum: str | None = None
+    genre: str | None = None
+    users: str | None = None
 
     @staticmethod
     def from_dict(data: Mapping[str, Any]) -> "Rom":
@@ -178,10 +181,10 @@ def _build_record(*args, **kwargs):
             raise ValueError("Record missing 'type' field.")
         case 'clrmamepro':
             clrmamepro_args = args[0]
-            return ClrMamePro(**clrmamepro_args)
+            return ClrMamePro.from_dict(clrmamepro_args)
         case 'game':
             game_args = args[0]
-            return Game(**game_args)
+            return Game.from_dict(game_args)
         case _:
             raise ValueError(f"Unknown record type: {record_type}")
 
