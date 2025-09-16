@@ -728,4 +728,5 @@ __all__ = [
     "MULTIQUERY_MAX",
     "PLAYLISTS_BY_TITLE",
     "DEFAULT_GAME_FIELD_TUPLE",
+    "DEFAULT_SORT",
 ]
