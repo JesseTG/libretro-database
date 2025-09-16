@@ -1,11 +1,15 @@
+import asyncio
 import dataclasses
 import os.path
 import tomllib
 
 from collections import ChainMap
 from dataclasses import dataclass
-from typing import Any, Optional, Literal, NewType, TypedDict, cast
+from typing import Optional, Literal, NewType, TypedDict, cast
 from collections.abc import Sequence, Iterable, Iterator, Mapping
+
+import aiofiles
+import typelib
 
 
 IgdbId = NewType('IgdbId', int)
@@ -681,6 +685,25 @@ def get_by_title(title: str) -> Optional[Playlist]:
 
     return None
 
+
+GameTupleCodec: typelib.Codec[tuple[Game, ...]] = typelib.codec(tuple[Game, ...])
+
+async def load_games(paths: Iterable[str]) -> Mapping[str, Sequence[Game]]:
+    async def _load_file(path: str) -> tuple[str, Sequence[Game]]:
+        async with aiofiles.open(path, mode='rb') as infile:
+            json_bytes = await infile.read()
+            games = GameTupleCodec.decode(json_bytes)
+            return path, games
+            # Including path in the return value simplifies the following list comprehension
+
+    async with asyncio.TaskGroup() as group:
+        tasks = tuple(group.create_task(_load_file(p), name=os.path.basename(p)) for p in paths)
+        # Start loading each playlist file concurrently
+        result = dict(await asyncio.gather(*tasks))
+
+        return result
+
+
 __all__ = [
     "AgeRatingOrganization",
     "AgeRatingContentDescriptionV2",
@@ -729,4 +752,5 @@ __all__ = [
     "PLAYLISTS_BY_TITLE",
     "DEFAULT_GAME_FIELD_TUPLE",
     "DEFAULT_SORT",
+    "load_games",
 ]
