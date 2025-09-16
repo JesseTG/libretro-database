@@ -426,8 +426,8 @@ class Query:
     fields: tuple[str, ...] | None
     exclude: tuple[str, ...] | None
     where: str | None
-    limit: int | None
-    offset: int | None
+    limit: int
+    offset: int
     sort: tuple[str, SortDirection] | None
     search: str | None
 
@@ -437,8 +437,8 @@ class Query:
             fields: Iterable[str] | str | None = "*",
             exclude: Iterable[str] | str | None = None,
             where: Optional[str] = None,
-            limit: Optional[int] = None,
-            offset: Optional[int] = None,
+            limit: int = 10, # IGDB's default
+            offset: int = 0, # IGDB's default
             sort: tuple[str, SortDirection] | None = None,
             search: Optional[str] = None,
     ):
@@ -539,11 +539,11 @@ class Playlist:
             *, # Force keyword arguments for clarity
             fields: Iterable[str] | str | None = DEFAULT_GAME_FIELD_TUPLE,
             exclude: Iterable[str] | str | None = None,
-            where: Optional[str] = None,
-            limit: Optional[int] = 500,
-            offset: Optional[int] = 0,
+            where: str | None = None,
+            limit: int = 500,
+            offset: int = 0,
             sort: tuple[str, SortDirection] | None = DEFAULT_SORT,
-            search: Optional[str] = None,
+            search: str | None = None,
     ):
         self.title = title
 
@@ -727,4 +727,5 @@ __all__ = [
     "MAX_QUERY_PERIOD",
     "MULTIQUERY_MAX",
     "PLAYLISTS_BY_TITLE",
+    "DEFAULT_GAME_FIELD_TUPLE",
 ]

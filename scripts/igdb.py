@@ -39,9 +39,13 @@ JsonPrimitive = str | int | float | bool | None
 JsonArray: TypeAlias = "Sequence[JsonPrimitive | JsonObject | JsonArray]"
 JsonObject: TypeAlias = "Mapping[str, JsonPrimitive | JsonArray | JsonObject]"
 
+class GameResponse(TypedDict):
+    name: str
+
+
 class MultiqueryResponse(TypedDict):
     name: str
-    result: list[JsonObject]
+    result: Sequence[GameResponse]
 
 class CountResponse(TypedDict, total=False):
     count: int
@@ -224,10 +228,10 @@ async def handle_scrape(args: argparse.Namespace) -> None:
             # But if the response is successful yet wrong, raise a ValueError
             raise ValueError(f"Count response for '{playlist.title}' lacks a 'count' attribute; got: {count_json} (Headers: {response.headers})")
 
-        if not isinstance(count_json['count'], Number):
-            raise ValueError(f"Expected response['count'] to be a number, got {type(count_json['count'])}")
+        count = count_json['count']
+        if not isinstance(count, int):
+            raise ValueError(f"Expected response['count'] to be a number, got {type(count)}")
 
-        count = int(count_json['count'])
         multiqueries: list[Multiquery] = []
         for batch in itertools.batched(playlist.query_pages(count), MULTIQUERY_MAX):
             multiqueries.append(Multiquery({f"{playlist.title} ({q.offset}-{q.offset + q.limit - 1})": ('games', q) for q in batch}))
@@ -236,7 +240,7 @@ async def handle_scrape(args: argparse.Namespace) -> None:
         print(f"{playlist.title}: Scheduled to fetch {count} games...")
 
         responses: Sequence[Response]  = await asyncio.gather(*playlist_tasks)
-        games: list[JsonObject] = []
+        games: list[GameResponse] = []
 
         for r in responses:
             if r.is_error:
