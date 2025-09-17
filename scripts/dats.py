@@ -45,7 +45,7 @@ class ClrMamePro:
 
         if 'name' not in data:
             raise ValueError("clrmamepro record must have a 'name' field.")
-    
+
         return ClrMamePro(**data)
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
@@ -70,10 +70,10 @@ class Rom:
     def id(self) -> str:
         if self.crc:
             return self.crc.lower()
-    
+
         if self.serial:
             return self.serial.lower()
-        
+
         raise TypeError("Rom record has neither 'crc' nor 'serial' field.")
 
     @staticmethod
@@ -84,7 +84,7 @@ class Rom:
                 kwargs['size'] = int(kwargs['size'])
             except ValueError as e:
                 raise ValueError(f"Invalid size value in rom record: {kwargs['size']}") from e
-            
+
         return Rom(**kwargs)
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
@@ -300,7 +300,7 @@ def crc_key(game: Game) -> str:
 
     roms = game.rom
     rom = roms[0] if len(roms) > 0 else None
-    
+
     if not rom:
         return ''
 
@@ -375,11 +375,11 @@ class DatRepository(Mapping[str, Collection[Game]]):
             if len(games_list) == 1:
                 # Only one game, nothing to merge
                 return games_list[0]
-            
+
             first_game = games_list[0]
             # Start with first game's values
             kwargs = dataclasses.asdict(first_game)
-            
+
             for g in games_list[1:]:
                 # Update with non-None values from subsequent games, but keep existing values
                 for field in dataclasses.fields(Game):
