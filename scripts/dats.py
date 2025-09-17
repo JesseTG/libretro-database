@@ -61,6 +61,21 @@ class Rom:
     genre: str | None = None
     users: str | None = None
 
+    def __post_init__(self):
+        # Called by dataclasses after __init__, but before the instance is returned
+        if not self.crc and not self.serial:
+            raise ValueError("Rom record must have at least a 'crc' or 'serial' field.")
+
+    @property
+    def id(self) -> str:
+        if self.crc:
+            return self.crc.lower()
+    
+        if self.serial:
+            return self.serial.lower()
+        
+        raise TypeError("Rom record has neither 'crc' nor 'serial' field.")
+
     @staticmethod
     def from_dict(data: Mapping[str, Any]) -> "Rom":
         kwargs = dict(data)
