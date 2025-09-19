@@ -22,7 +22,7 @@ from pe import ParseError
 from pe.actions import Call, Pack
 from pe.operators import Class, Star  # type: ignore
 
-from igdb_playlists import Playlist, PLAYLISTS
+from igdb_playlists import Playlist
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
@@ -440,6 +440,7 @@ def get_existing_dat_files(datdir: str) -> Iterator[str]:
                 yield os.path.join(dirpath, file)
 
 async def handle_bench(args: argparse.Namespace):
+    from igdb_playlists import PLAYLISTS
 
     existing_dat_paths = [os.path.realpath(p) for p in itertools.chain(get_existing_dat_files("dat"), get_existing_dat_files("metadat"))]
     start = time.perf_counter_ns()
