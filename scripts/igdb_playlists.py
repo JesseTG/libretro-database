@@ -1,12 +1,13 @@
 import asyncio
 import dataclasses
 import os.path
+from pathlib import Path
 import tomllib
 
 from collections import ChainMap
 from dataclasses import dataclass
 from typing import Optional, Literal, NewType, TypedDict, cast
-from collections.abc import Sequence, Iterable, Iterator, Mapping
+from collections.abc import Collection, Sequence, Iterable, Iterator, Mapping
 
 import aiofiles
 import typelib
@@ -688,16 +689,23 @@ def get_by_title(title: str) -> Optional[Playlist]:
 
 GameTupleCodec: typelib.Codec[tuple[Game, ...]] = typelib.codec(tuple[Game, ...])
 
-async def load_games(paths: Iterable[str]) -> Mapping[str, Sequence[Game]]:
-    async def _load_file(path: str) -> tuple[str, Sequence[Game]]:
+async def load_games(playlists: Mapping[Path, Playlist]) -> Mapping[str, Collection[Game]]:
+    """
+    :param playlists: An iterable of tuples,
+    where each tuple contains the path to a playlist file
+    and the corresponding Playlist object.
+
+    :return: A mapping of playlist titles to collections of the Games they represent.
+    """
+    async def _load_file(path: Path, playlist: Playlist) -> tuple[str, Collection[Game]]:
         async with aiofiles.open(path, mode='rb') as infile:
             json_bytes = await infile.read()
             games = GameTupleCodec.decode(json_bytes)
-            return path, games
+            return playlist.title, games
             # Including path in the return value simplifies the following list comprehension
 
     async with asyncio.TaskGroup() as group:
-        tasks = tuple(group.create_task(_load_file(p), name=os.path.basename(p)) for p in paths)
+        tasks = tuple(group.create_task(_load_file(k, v), name=k.stem) for (k, v) in playlists.items())
         # Start loading each playlist file concurrently
         result = dict(await asyncio.gather(*tasks))
 
