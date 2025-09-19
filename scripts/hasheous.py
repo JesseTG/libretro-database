@@ -4,10 +4,12 @@ Dictionary definitions taken from https://github.com/gaseous-project/hasheous/bl
 
 import asyncio
 import dataclasses
+import itertools
+from pathlib import Path
 import zipfile
 
-from collections.abc import Collection, Sequence, Mapping
-from typing import Iterable, Literal, TypeAlias
+from collections.abc import Sequence, Mapping
+from typing import Literal, TypeAlias
 from zipfile import ZipFile
 
 import typelib
@@ -195,30 +197,45 @@ class DataObject:
 
 DataObjectCodec: typelib.Codec[DataObject] = typelib.codec(DataObject)
 
-async def load_dataobjects(metadata_zip_path: str, hasheous_dirs: Iterable[str]) -> Collection[DataObject]:
-    """Load Hasheous DataObjects from the given metadata ZIP file for the specified playlists."""
+async def load_dataobjects(metadata_zip_path: Path, hasheous_dirs: Mapping[str, Sequence[str]]) -> Mapping[str, Sequence[DataObject]]:
+    """
+    Load Hasheous DataObjects from the given metadata ZIP file for the specified playlists.
+
+    :param metadata_zip_path: Path to the Hasheous MetadataMap.zip file.
+    :param hasheous_dirs: A mapping of playlist names to the directories
+    in MetadataMap.zip to load DataObjects from.
+
+    :return: A mapping of playlist names to the DataObjects representing
+    the games in those playlists.
+    """
     # TODO: If metadata_map is not given, download it from https://hasheous.org/api/v1/Dumps/MetadataMap.zip
 
-    result: list[DataObject] = []
+    result: dict[str, Sequence[DataObject]] = {}
     with ZipFile(metadata_zip_path) as metadata_zip:
         root = zipfile.Path(metadata_zip)
-        def get_zip_path(p: str) -> zipfile.Path:
-            return root.joinpath(*p.split('/'))
+        def get_zip_path(path: str) -> zipfile.Path:
+            return root.joinpath(*path.split('/'))
 
         def parse_dataobject(path: zipfile.Path) -> DataObject:
             data = path.read_bytes()
             return DataObjectCodec.decode(data)
 
-        for d in map(get_zip_path, hasheous_dirs):
+        for playlist_name, dir_paths in hasheous_dirs.items():
             # For each relevant directory in the zip file...
 
-            json_paths = filter(lambda p: p.is_file() and p.suffix == '.json', d.iterdir())
-            # Get the path to every JSON file in that directory
+            zip_paths = map(get_zip_path, dir_paths)
+            # Get the path object for each directory
+
+            paths = itertools.chain.from_iterable(p.iterdir() for p in zip_paths)
+            # Iterate over each directory's contents
+
+            json_paths = filter(lambda p: p.is_file() and p.suffix == '.json', paths)
+            # Ignore everything that isn't a JSON file
 
             objects = map(parse_dataobject, json_paths)
             # Parse each JSON file into a DataObject
-            
-            result.extend(objects)
+
+            result[playlist_name] = tuple(objects)
             # Then add them to the result list
 
             await asyncio.sleep(0)
