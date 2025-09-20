@@ -7,6 +7,7 @@ import itertools
 import json
 import os
 import os.path
+from pathlib import Path
 import sys
 import time
 import typing
@@ -14,13 +15,16 @@ import typing
 from collections.abc import Iterable, Sequence, Iterator, Mapping, Collection, Sized, AsyncIterator
 from concurrent.futures import ProcessPoolExecutor
 from io import TextIOWrapper
-from typing import Any, NamedTuple, Self, TextIO, TypeAlias, TypedDict, cast
+from typing import NamedTuple, TextIO, TypeAlias, TypedDict, cast
 
 # pe lacks type stubs, so let's silence MyPy's complaints
 import pe  # type: ignore
 from pe import ParseError
 from pe.actions import Call, Pack
-from pe.operators import Class, Star  # type: ignore
+from pe.operators import Class, Star
+import typelib
+import typelib.ctx
+import typelib.serdes
 
 from igdb_playlists import Playlist
 
@@ -37,16 +41,6 @@ class ClrMamePro:
     version: str | None = None
     comment: str | None = None
     homepage: str | None = None
-
-    @staticmethod
-    def from_dict(data: Mapping[str, Any]) -> "ClrMamePro":
-        if not isinstance(data, Mapping):
-            raise ValueError(f"Expected first record to be a Mapping, got {type(data)} instead.")
-
-        if 'name' not in data:
-            raise ValueError("clrmamepro record must have a 'name' field.")
-
-        return ClrMamePro(**data)
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Rom:
@@ -76,16 +70,6 @@ class Rom:
 
         raise TypeError("Rom record has neither 'crc' nor 'serial' field.")
 
-    @staticmethod
-    def from_dict(data: Mapping[str, Any]) -> "Rom":
-        kwargs = dict(data)
-        if 'size' in kwargs:
-            try:
-                kwargs['size'] = int(kwargs['size'])
-            except ValueError as e:
-                raise ValueError(f"Invalid size value in rom record: {kwargs['size']}") from e
-
-        return Rom(**kwargs)
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Game:
@@ -127,36 +111,38 @@ class Game:
     version: str | None = None
     year: int | None = None
 
-    @staticmethod
-    def from_dict(data: Mapping[str, Any]) -> "Game":
-        kwargs = dict(data)
-        if 'rom' in kwargs:
-            rom_data = kwargs['rom']
-            if isinstance(rom_data, Sequence):
-                kwargs['rom'] = tuple(Rom.from_dict(r) if isinstance(r, dict) else Rom() for r in rom_data)
-            elif isinstance(rom_data, dict):
-                kwargs['rom'] = (Rom.from_dict(rom_data),)
-            else:
-                kwargs['rom'] = (Rom(),)
-        else:
-            kwargs['rom'] = (Rom(),)
+    @property
+    def name_key(self) -> str:
+        if self.name:
+            return self.name
 
-        for key in ['edge_issue', 'edge_rating', 'famitsu_rating', 'releaseday', 'releasemonth', 'releaseyear', 'users', 'year']:
-            if key in kwargs and kwargs[key] is not None:
-                try:
-                    kwargs[key] = int(kwargs[key])
-                except ValueError:
-                    pass
+        if self.description:
+            return self.description
 
-        for key in ['analog', 'rumble']:
-            if key in kwargs and kwargs[key] is not None:
-                kwargs[key] = str(kwargs[key]).lower() in ('true', 'yes', '1')
+        if self.comment:
+            return self.comment
 
-        return Game(**kwargs)
+        return ''
 
-DatRecord: TypeAlias = Mapping[str, "DatValue"]
-DatValue: TypeAlias = str | Sequence[DatRecord] | DatRecord
-ParsedGameDatList: TypeAlias = Sequence[ClrMamePro | Game]
+    @property
+    def crc_key(self) -> str:
+        if not self.rom:
+            return ''
+
+        roms = self.rom
+        rom = roms[0] if len(roms) > 0 else None
+
+        if not rom:
+            return ''
+
+        return rom.id
+
+DatValue: TypeAlias = "str | Sequence[DatRecord] | DatRecord"
+DatRecord: TypeAlias = Mapping[str, DatValue]
+
+ParsedGameDatList: TypeAlias = tuple[ClrMamePro, *tuple[Game, ...]]
+''' A parsed DAT file is a tuple where the first element is a ClrMamePro record,
+and the remaining elements are Game records. '''
 
 # PEG grammar for DAT file format
 DAT_GRAMMAR = r'''
@@ -189,19 +175,7 @@ EndOfFile <- !.
 
 def _build_record(*args, **kwargs):
     """Build a record dictionary from parsed data."""
-    record_type = kwargs.get('type', '')
-
-    match kwargs.get('type', None):
-        case None:
-            raise ValueError("Record missing 'type' field.")
-        case 'clrmamepro':
-            clrmamepro_args = args[0]
-            return ClrMamePro.from_dict(clrmamepro_args)
-        case 'game':
-            game_args = args[0]
-            return Game.from_dict(game_args)
-        case _:
-            raise ValueError(f"Unknown record type: {record_type}")
+    return args[0]
 
 class KeyValueDict(TypedDict):
     key: str
@@ -225,7 +199,7 @@ def _build_record_content(args: tuple[KeyValueTuple, ...], **_):
 
 def _build_datfile(*args, **kwargs):
     """Build the top-level DAT file structure."""
-    return args
+    return list(args)
 
 # Actions for semantic processing
 ACTIONS = {
@@ -293,28 +267,69 @@ class DatFile(Sized, Iterable[Game]):
 
         return cast(ClrMamePro, records[0]), cast(Sequence[Game], records[1:])
 
+class ParsedGameDatListMarshaller(typelib.AbstractMarshaller[ParsedGameDatList]):
+    def __call__(self, value: ParsedGameDatList) -> typelib.serdes.MarshalledValueT:
+        raise NotImplementedError("TODO: Implement marshalling from ParsedGameDatList to serializable object")
 
-def crc_key(game: Game) -> str:
-    if not game.rom:
-        return ''
+class ParsedGameDatListUnmarshaller(typelib.AbstractUnmarshaller[ParsedGameDatList]):
+    def __call__(self, value: typelib.serdes.MarshalledValueT) -> ParsedGameDatList:
+        if isinstance(value, str):
+            raise TypeError("Expected a sequence for unmarshalling ParsedGameDatList, got str")
 
-    roms = game.rom
-    rom = roms[0] if len(roms) > 0 else None
+        if not isinstance(value, Sequence):
+            raise TypeError(f"Expected a sequence for unmarshalling ParsedGameDatList, got {type(value)}")
 
-    if not rom:
-        return ''
+        if not value:
+            raise ValueError("Cannot unmarshal empty sequence to ParsedGameDatList")
 
-    if rom.crc:
-        return rom.crc.lower()
-    elif rom.serial:
-        return rom.serial.lower()
-    else:
-        return ''
+        clrmamepro_dict = value[0]
+        if not isinstance(clrmamepro_dict, dict):
+            raise TypeError(f"Expected first element of sequence to be a dict for ClrMamePro, got {type(value[0])}")
+
+        try:
+            clrmamepro = typelib.unmarshal(ClrMamePro, clrmamepro_dict)
+        except (LookupError, ValueError) as e:
+            raise ValueError(f"Failed to unmarshal clrmamepro record") from e
+
+        # Need to unmarshal each record separately,
+        # as the default unmarshaller doesn't handle `ParsedGameDatList` correctly.
+        game_dicts = value[1:]
+        games = tuple(typelib.unmarshal(Game, g) for g in game_dicts)
+
+        # Return a tuple with the ClrMamePro as the first element,
+        # and the rest as Game records.
+        return clrmamepro, *games
+
+
+def encode_dat(value: typelib.serdes.MarshalledValueT) -> bytes:
+
+    raise NotImplementedError("TODO: Implement encoding from DatFile to bytes")
+
+def decode_dat(value: bytes) -> typelib.serdes.MarshalledValueT:
+    dat = value.decode('utf-8')
+
+    match_result = dat_parser.match(dat)
+    if match_result is None:
+        raise ValueError("Failed to parse DAT string")
+
+    result = match_result.value()
+    assert result is not None
+    return result
+
+ctx = typelib.ctx.TypeContext()
+GameDataListCodec: typelib.Codec[ParsedGameDatList] = typelib.codec(
+    ParsedGameDatList,
+    marshaller=ParsedGameDatListMarshaller(ParsedGameDatList, ctx),
+    unmarshaller=ParsedGameDatListUnmarshaller(ParsedGameDatList, ctx),
+    # TODO: Why does the default unmarshaller not include the `rom` field?
+    encoder=encode_dat,
+    decoder=decode_dat
+)
 
 async def handle_tojson(args: argparse.Namespace):
-    with open(args.infile, 'r', encoding='utf-8') as infile:
-        dat = DatFile(infile)
-        json.dump(dat.to_dict(), sys.stdout, indent=2, ensure_ascii=False)
+    with open(args.infile, 'rb') as infile:
+        dat = GameDataListCodec.decode(infile.read())
+        json.dump(dat, sys.stdout, indent=2, ensure_ascii=False, default=dataclasses.asdict)
         print('')  # Ensure a newline at the end of the output
 
 def load_dat(dat_path: str) -> DatFile | None:
