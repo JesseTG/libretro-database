@@ -214,61 +214,6 @@ ACTIONS = {
 # Compile the parser
 dat_parser = pe.compile(DAT_GRAMMAR, actions=ACTIONS, ignore=Star(Class(" \t\n\r\v\f")), flags=pe.OPTIMIZE | pe.MEMOIZE)
 
-class DatFile(Sized, Iterable[Game]):
-    @property
-    def clrmamepro(self) -> ClrMamePro:
-        return self._clrmamepro
-
-    @property
-    def games(self) -> Sequence[Game]:
-        return self._games
-
-    @property
-    def path(self) -> str | None:
-        return self._path
-
-    def __init__(self, records: Iterable[DatRecord] | str | TextIO):
-        self._path: str | None = None
-        self._clrmamepro: ClrMamePro
-        match records:
-            case str() as dat_string:
-                match_result = dat_parser.match(dat_string)
-                if match_result is None:
-                    raise ValueError("Failed to parse DAT string")
-                parse_results = cast(ParsedGameDatList, match_result.value())
-                self._clrmamepro, self._games = self._init_parse_results(parse_results)
-            case TextIO() | TextIOWrapper() as dat_io:
-                dat_content = dat_io.read()
-                match_result = dat_parser.match(dat_content)
-                if match_result is None:
-                    raise ValueError("Failed to parse DAT file")
-                parse_results = cast(ParsedGameDatList, match_result.value())
-                self._clrmamepro, self._games = self._init_parse_results(parse_results)
-                self._path = dat_io.name
-            case _:
-                raise TypeError(f"Unsupported type for records: {type(records)}")
-
-    def to_dict(self):
-        return {
-            "clrmamepro": dataclasses.asdict(self._clrmamepro),
-            "games": tuple(dataclasses.asdict(game) for game in self._games)
-        }
-
-    @typing.override
-    def __iter__(self) -> Iterator[Game]:
-        return self._games.__iter__()
-
-    @typing.override
-    def __len__(self) -> int:
-        return len(self._games)
-
-    @staticmethod
-    def _init_parse_results(records: Sequence[ClrMamePro | Game])-> tuple[ClrMamePro, Sequence[Game]]:
-        if not records:
-            raise ValueError("No records found in the DAT file.")
-
-        return cast(ClrMamePro, records[0]), cast(Sequence[Game], records[1:])
-
 class ParsedGameDatListMarshaller(typelib.AbstractMarshaller[ParsedGameDatList]):
     def __call__(self, value: ParsedGameDatList) -> typelib.serdes.MarshalledValueT:
         raise NotImplementedError("TODO: Implement marshalling from ParsedGameDatList to serializable object")
@@ -482,11 +427,9 @@ if __name__ == "__main__":
     main()
 
 __all__ = [
-    "DatFile",
     "Game",
     "Rom",
     "ClrMamePro",
-    "DatRepository",
     "load_dat",
     "load_dats",
     "get_existing_dat_files",
