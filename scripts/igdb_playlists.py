@@ -1,5 +1,6 @@
 import asyncio
 import dataclasses
+from functools import cache
 import os.path
 from pathlib import Path
 import tomllib
@@ -649,27 +650,35 @@ TOML_PATH = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'meta
 
 PLAYLISTS = read_playlists(TOML_PATH)
 
-_idtranstable = str.maketrans({'-': None, ' ': None, '_': None, '.': None, '\'': None, '"': None})
-
 PLAYLISTS_BY_TITLE = {p.title: p for p in PLAYLISTS}
 PLAYLISTS_BY_TITLE_LOWER = {p.title.lower(): p for p in PLAYLISTS}
-PLAYLISTS_BY_NORMALIZED_TITLE = {t.translate(_idtranstable):p for (t, p) in PLAYLISTS_BY_TITLE_LOWER.items()}
 PLAYLISTS_BY_ANY: Mapping[str, Playlist] = ChainMap(
     PLAYLISTS_BY_TITLE,
     PLAYLISTS_BY_TITLE_LOWER,
-    PLAYLISTS_BY_NORMALIZED_TITLE,
 )
 
-def get_playlist(identifier: str) -> Optional[Playlist]:
+@cache
+def get_playlist(identifier: str | Path) -> Optional[Playlist]:
     """
-    Get a playlist by its title or system ID, normalizing the identifier to lowercase and removing special characters.
-
-    :param identifier: The title or system ID of the playlist to search for.
-    :return: The Playlist object if found, otherwise None.
+    Look up a playlist in `PLAYLISTS` by its title, path, or alternative name.
     """
 
-    normalized_identifier = identifier.lower().translate(_idtranstable)
-    return PLAYLISTS_BY_ANY.get(normalized_identifier, None)
+    if isinstance(identifier, Path):
+        playlist_id = identifier.stem.lower()
+    else:
+        playlist_id = identifier.strip().lower()
+
+    for playlist in PLAYLISTS:
+        if playlist_id == playlist.title.lower():
+            return playlist
+
+        if any(playlist_id == alt.lower() for alt in playlist.alts):
+            return playlist
+
+        if any(playlist_id == h.lower() for h in playlist.hasheous_dirs):
+            return playlist
+
+    return None
 
 
 def get_by_title(title: str) -> Optional[Playlist]:
