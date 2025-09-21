@@ -11,13 +11,11 @@ import os.path
 from pathlib import Path
 import sys
 import time
-import typing
 
-from collections.abc import Iterable, Sequence, Iterator, Mapping, Collection, Sized, AsyncIterator
+from collections.abc import Iterable, Sequence, Iterator, Mapping, Collection, AsyncIterator
 from concurrent.futures import ProcessPoolExecutor
-from io import TextIOWrapper
 from itertools import groupby
-from typing import Any, NamedTuple, TextIO, TypeAlias, TypedDict, cast
+from typing import Any, NamedTuple, TypeAlias, TypedDict
 
 # pe lacks type stubs, so let's silence MyPy's complaints
 import pe  # type: ignore
@@ -27,8 +25,6 @@ from pe.operators import Class, Star
 import typelib
 import typelib.ctx
 import typelib.serdes
-
-from igdb_playlists import Playlist
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
@@ -75,7 +71,7 @@ class Rom:
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Game:
-    rom: Sequence[Rom]
+    rom: Sequence[Rom] | None = None
     name: str | None = None
     comment: str | None = None
     description: str | None = None
@@ -111,7 +107,10 @@ class Game:
     tags: str | None = None
     users: int | None = None
     version: str | None = None
-    year: int | None = None
+
+    # May be a string because of entries like "???" for unknown years,
+    # or "198?" for an unknown year in the 1980s
+    year: int | str | None = None
 
     @property
     def name_key(self) -> str:
@@ -131,8 +130,7 @@ class Game:
         if not self.rom:
             return ''
 
-        roms = self.rom
-        rom = roms[0] if len(roms) > 0 else None
+        rom = self.rom if isinstance(self.rom, Rom) else self.rom[0]
 
         if not rom:
             return ''
@@ -311,7 +309,7 @@ def load_dat(dat_path: tuple[str, Path]) -> LoadedDat | None:
         raise Exception(f"Failed to load DAT file {dat_path}: {e}") from e
 
     finish = time.perf_counter_ns()
-    print(f"Loaded \"{dat_path}\" with {len(dat)} records in {(finish - start) / 1_000_000:.2f} ms")
+    print(f"Loaded \"{dat_path[0]}\" from \"{str(dat_path[1])}\" with {len(dat)} records in {(finish - start) / 1_000_000:.2f} ms")
 
     return LoadedDat(
         *dat_path,
@@ -349,6 +347,7 @@ async def load_dats(dat_playlists: Mapping[str, Sequence[Path]], parallel=True) 
         dat_files = [d for d in map(load_dat, paths) if d]
 
     def reduce_game(map: dict[str, Any], game: Game) -> dict[str, Any]:
+        # Merge the fields of `game` into `map`, without overwriting existing values
         for field in dataclasses.fields(Game):
             value = getattr(game, field.name)
             if value is not None and map.get(field.name) is None:
@@ -386,7 +385,7 @@ def get_target_dat_paths(outpath: Path, playlist_titles: Iterable[str]) -> Itera
         yield outpath / f"{title}.dat"
 
 async def handle_bench(args: argparse.Namespace):
-    from igdb_playlists import PLAYLISTS, get_playlist
+    from igdb_playlists import get_playlist
 
     # TODO: Don't hardcode these paths
     existing_dat_paths = {Path(p) for p in itertools.chain(get_existing_dat_files("dat"), get_existing_dat_files("metadat"))}
