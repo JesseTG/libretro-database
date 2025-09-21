@@ -191,12 +191,19 @@ def _build_record_content(args: tuple[KeyValueTuple, ...], **_):
     """Build record content from key-value pairs."""
 
     # group items with duplicate keys together, and put them in a tuple
-    def flatten(value: Iterator[KeyValueTuple]):
+    def dedupe_keys(value: Iterator[KeyValueTuple]):
         result = tuple(v for (_, v) in value)
-        return result[0] if len(result) == 1 else result
+        match result:
+            case (str(),) as result_str:
+                return result_str[0]
+            case (dict(), *_) as records:
+                return records
+            case _:
+                return result
 
-    grouped_by_key = itertools.groupby(args, lambda x: x.key)
-    result = {k:flatten(v) for k, v in grouped_by_key}
+    sorted_by_key = sorted(args, key=lambda x: x.key)
+    grouped_by_key = itertools.groupby(sorted_by_key, lambda x: x.key)
+    result = {k:dedupe_keys(v) for k, v in grouped_by_key}
     return result
 
 def _build_datfile(*args, **kwargs):
