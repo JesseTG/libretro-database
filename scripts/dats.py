@@ -312,7 +312,7 @@ def load_dat(dat_path: tuple[str, Path]) -> LoadedDat | None:
         games=dat[1:]
     )
 
-async def load_dats(dat_playlists: Mapping[str, Sequence[Path]]) -> Mapping[str, Collection[Game]]:
+async def load_dats(dat_playlists: Mapping[str, Sequence[Path]], parallel=True) -> Mapping[str, Collection[Game]]:
     """
     Load game data from DAT files for each playlist.
 
@@ -329,14 +329,17 @@ async def load_dats(dat_playlists: Mapping[str, Sequence[Path]]) -> Mapping[str,
     # Break the mapping of playlist names to lists of paths
     # into a flat iterable of (playlist name, path) tuples
 
-    with ProcessPoolExecutor() as executor:
-        async def asynciter() -> AsyncIterator[LoadedDat]:
-            for d in executor.map(load_dat, paths, chunksize=16):
-                if d:
-                    yield d
-                await asyncio.sleep(0)  # Yield control to the event loop
+    if parallel:
+        with ProcessPoolExecutor() as executor:
+            async def asynciter() -> AsyncIterator[LoadedDat]:
+                for d in executor.map(load_dat, paths, chunksize=16):
+                    if d:
+                        yield d
+                    await asyncio.sleep(0)  # Yield control to the event loop
 
-        dat_files = [pair async for pair in asynciter()]
+            dat_files = [pair async for pair in asynciter()]
+    else:
+        dat_files = [d for d in map(load_dat, paths) if d]
 
     def reduce_game(map: dict[str, Any], game: Game) -> dict[str, Any]:
         for field in dataclasses.fields(Game):
