@@ -3,6 +3,7 @@
 import argparse
 import asyncio
 import dataclasses
+import functools
 import itertools
 import json
 import os
@@ -15,7 +16,8 @@ import typing
 from collections.abc import Iterable, Sequence, Iterator, Mapping, Collection, Sized, AsyncIterator
 from concurrent.futures import ProcessPoolExecutor
 from io import TextIOWrapper
-from typing import NamedTuple, TextIO, TypeAlias, TypedDict, cast
+from itertools import groupby
+from typing import Any, NamedTuple, TextIO, TypeAlias, TypedDict, cast
 
 # pe lacks type stubs, so let's silence MyPy's complaints
 import pe  # type: ignore
@@ -321,7 +323,6 @@ GameDataListCodec: typelib.Codec[ParsedGameDatList] = typelib.codec(
     ParsedGameDatList,
     marshaller=ParsedGameDatListMarshaller(ParsedGameDatList, ctx),
     unmarshaller=ParsedGameDatListUnmarshaller(ParsedGameDatList, ctx),
-    # TODO: Why does the default unmarshaller not include the `rom` field?
     encoder=encode_dat,
     decoder=decode_dat
 )
@@ -332,12 +333,25 @@ async def handle_tojson(args: argparse.Namespace):
         json.dump(dat, sys.stdout, indent=2, ensure_ascii=False, default=dataclasses.asdict)
         print('')  # Ensure a newline at the end of the output
 
-def load_dat(dat_path: str) -> DatFile | None:
+class LoadedDat(NamedTuple):
+    playlist: str
+    path: Path
+    clrmamepro: ClrMamePro
+    games: Sequence[Game]
+
+def load_dat(dat_path: tuple[str, Path]) -> LoadedDat | None:
+    """
+    Load a DAT file from the given path.
+    :param dat_path: A tuple of (playlist name, path to the DAT file).
+    :return: The loaded DatFile, or None if there was an error.
+
+    :note: Including the playlist title in the argument
+    simplifies parallel processing with ProcessPoolExecutor.
+    """
     start = time.perf_counter_ns()
     try:
-
-        with open(dat_path, 'r', encoding='utf-8') as infile:
-            dat = DatFile(infile)
+        with open(dat_path[1], 'rb') as infile:
+            dat = GameDataListCodec.decode(infile.read())
     except ParseError as e:
         # Don't want to let one bad record crash the whole process
         return None
@@ -345,108 +359,65 @@ def load_dat(dat_path: str) -> DatFile | None:
         raise Exception(f"Failed to load DAT file {dat_path}: {e}") from e
 
     finish = time.perf_counter_ns()
-    print(f"Loaded \"{dat_path}\" with {len(dat.games)} games in {(finish - start) / 1_000_000:.2f} ms")
+    print(f"Loaded \"{dat_path}\" with {len(dat)} records in {(finish - start) / 1_000_000:.2f} ms")
 
-    return dat
+    return LoadedDat(
+        *dat_path,
+        clrmamepro=dat[0],
+        games=dat[1:]
+    )
 
-def game_name_key(game: Game):
-    if game.name:
-        return game.name
+async def load_dats(dat_playlists: Mapping[str, Sequence[Path]]) -> Mapping[str, Collection[Game]]:
+    """
+    Load game data from DAT files for each playlist.
 
-    if game.description:
-        return game.description
+    :param paths: A mapping of playlist names to the paths of the DAT files
+    that contain the game data for those playlists.
 
-    if game.comment:
-        return game.comment
+    :return: A mapping of playlist names to the games in those playlists.
+      Each game will be combined from all DAT files for that playlist,
+      with precedence given to earlier DAT files in the list.
+    """
+    paths = itertools.chain.from_iterable(
+        ((name, p) for p in dats) for (name, dats) in dat_playlists.items()
+    )
+    # Break the mapping of playlist names to lists of paths
+    # into a flat iterable of (playlist name, path) tuples
 
-    return ''
-
-class DatRepository(Mapping[str, Collection[Game]]):
-    def __init__(self, dats: Iterable[DatFile], playlists: Iterable[Playlist]):
-        self.dats: dict[str, Collection[Game]] = {}
-
-        playlists_with_alts: dict[str, Playlist] = {}
-        for p in playlists:
-            playlists_with_alts[p.title] = p
-            for a in p.alts:
-                playlists_with_alts[a] = p
-
-        def playlist_key(dat: DatFile):
-            name = dat.clrmamepro.name
-            if playlist := playlists_with_alts.get(name):
-                # If we have a playlist that matches this DAT's name field, return the "canonical" title
-                return playlist.title
-            else:
-                # Otherwise just use the DAT's name as-is
-                return name
-
-        def union_games(games: Iterable[Game]) -> Game:
-            # For dataclasses, we need to merge the games by creating a new instance
-            # with the first non-None value for each field
-            games_list = tuple(games)
-            if not games_list:
-                raise ValueError("Cannot union empty games list")
-
-            if len(games_list) == 1:
-                # Only one game, nothing to merge
-                return games_list[0]
-
-            first_game = games_list[0]
-            # Start with first game's values
-            kwargs = dataclasses.asdict(first_game)
-
-            for g in games_list[1:]:
-                # Update with non-None values from subsequent games, but keep existing values
-                for field in dataclasses.fields(Game):
-                    value = getattr(g, field.name)
-                    if value is not None and kwargs[field.name] is None:
-                        # Only update if we don't already have a value
-                        kwargs[field.name] = value
-
-            return Game(**kwargs)
-
-        # Sort the DATs by logical name to simplify manual inspection,
-        # and omit DAT files that don't actually have any games.
-        dats_list = sorted((d for d in dats if len(d) > 0), key=playlist_key)
-        dats_by_platform = itertools.groupby(dats_list, key=playlist_key)
-        for (platform, dat_group) in dats_by_platform:
-            # For each set of DAT files that represent the same platform...
-
-            # Sort the DAT files by name, as the README says that
-            # earlier-named DATs take precedence over later ones
-            # when the same field is defined in more than one.
-            dats_sorted = sorted(dat_group, key=lambda d: cast(str, d.path))
-
-            # Sort all games (across all DAT files) by CRC,
-            # since itertools.groupby needs the input to be sorted by the key function
-            games: list[Game] = sorted(itertools.chain.from_iterable(dats_sorted), key=crc_key)
-            grouped_games = itertools.groupby(games, crc_key)
-            games_by_crc = {crc: union_games(g) for (crc, g) in grouped_games}
-            self.dats[platform] = tuple(sorted(games_by_crc.values(), key=game_name_key))
-
-    def __getitem__(self, key: str, /) -> Collection[Game]:
-        if key in self.dats:
-            return self.dats[key]
-
-        raise KeyError(key)
-
-    def __len__(self) -> int:
-        return len(self.dats)
-
-    def __iter__(self) -> Iterator[str]:
-        return iter(self.dats)
-
-async def load_dats(dats: Iterable[str], playlists: Iterable[Playlist]) -> DatRepository:
     with ProcessPoolExecutor() as executor:
-        async def asynciter() -> AsyncIterator[DatFile]:
-            for d in executor.map(load_dat, dats, chunksize=16):
+        async def asynciter() -> AsyncIterator[LoadedDat]:
+            for d in executor.map(load_dat, paths, chunksize=16):
                 if d:
                     yield d
                 await asyncio.sleep(0)  # Yield control to the event loop
 
-        dat_playlists = [f async for f in asynciter()]
+        dat_files = [pair async for pair in asynciter()]
 
-    return DatRepository(dat_playlists, playlists)
+    def reduce_game(map: dict[str, Any], game: Game) -> dict[str, Any]:
+        for field in dataclasses.fields(Game):
+            value = getattr(game, field.name)
+            if value is not None and map.get(field.name) is None:
+                # Only update if we don't already have a value
+                map[field.name] = value
+        return map
+
+    def reduce_games(games: Iterable[Game]) -> Game:
+        game_dict = functools.reduce(reduce_game, games, {})
+        return Game(**game_dict)
+
+    def reduce_dats(dats: Iterable[LoadedDat]) -> Collection[Game]:
+        games_iterable = itertools.chain.from_iterable(d.games for d in dats)
+        games = sorted(games_iterable, key=lambda g: g.crc_key)
+        games_by_crc = itertools.groupby(games, key=lambda g: g.crc_key)
+        reduced_games = tuple(reduce_games(dats) for (crc, dats) in games_by_crc)
+        return reduced_games
+
+    # Group the loaded DAT files by playlist name
+    dat_files.sort(key=lambda p: p.playlist)
+    dat_groups = itertools.groupby(dat_files, key=lambda p: p.playlist)
+    game_groups = ((p, reduce_dats(g)) for (p, g) in dat_groups)
+
+    return dict(game_groups)
 
 def get_existing_dat_files(datdir: str) -> Iterator[str]:
     for (dirpath, dirnames, filenames) in os.walk(datdir):
@@ -454,12 +425,23 @@ def get_existing_dat_files(datdir: str) -> Iterator[str]:
             if not ('xml' in file or 'XML' in file):  # Exclude XML files
                 yield os.path.join(dirpath, file)
 
-async def handle_bench(args: argparse.Namespace):
-    from igdb_playlists import PLAYLISTS
+def get_target_dat_paths(outpath: Path, playlist_titles: Iterable[str]) -> Iterator[Path]:
+    """Get the paths to the DAT files that will be generated from the given playlists, rooted at the given directory."""
+    for title in playlist_titles:
+        yield outpath / f"{title}.dat"
 
-    existing_dat_paths = [os.path.realpath(p) for p in itertools.chain(get_existing_dat_files("dat"), get_existing_dat_files("metadat"))]
+async def handle_bench(args: argparse.Namespace):
+    from igdb_playlists import PLAYLISTS, get_playlist
+
+    # TODO: Don't hardcode these paths
+    existing_dat_paths = {Path(p) for p in itertools.chain(get_existing_dat_files("dat"), get_existing_dat_files("metadat"))}
+    playlists = ((get_playlist(p), p) for p in existing_dat_paths)
+    playlists_to_dats = ((p.title, d) for (p, d) in playlists if p)
+    sorted_by_title = sorted(playlists_to_dats, key=lambda x: x[0])
+    datgroups = {k: tuple(vv[1] for vv in v) for k, v in groupby(sorted_by_title, key=lambda x: x[0])}
+
     start = time.perf_counter_ns()
-    dat_repo = await load_dats(existing_dat_paths, PLAYLISTS)
+    dats = await load_dats(datgroups)
     now = time.perf_counter_ns()
     print(f"Loaded {len(existing_dat_paths)} DAT files in {(now - start) / 1_000_000:.2f} ms")
 
