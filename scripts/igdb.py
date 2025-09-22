@@ -4,19 +4,16 @@ import asyncio
 import itertools
 import os
 import json
+from pathlib import Path
 import sys
-import time
 import zipfile
 
-from asyncio import TaskGroup, Task
+from asyncio import TaskGroup
 from collections.abc import Collection, Sequence, Iterable, Mapping, Iterator
 from contextlib import asynccontextmanager
 from json import JSONDecodeError
-from numbers import Number
-from os import PathLike
 from pprint import pprint
-from typing import Any, TypeAlias, TypedDict, cast
-from zipfile import ZipFile
+from typing import Any, NamedTuple, TypeAlias, TypedDict
 
 import aiofiles
 import aiofiles.os
@@ -29,8 +26,8 @@ from httpx import Response, HTTPStatusError
 
 from igdb_playlists import *
 from igdb_playlists import Game as IgdbGame
-from dats import Game as DatGame, DatRepository, load_dats, get_existing_dat_files
-from hasheous import DataObject, get_igdb_id, get_rom_list
+from dats import Game as DatGame, load_dats, get_existing_dat_files
+from hasheous import DataObject, load_dataobjects
 
 # TODO: Get game time to beat
 # TODO: Get game characters
@@ -42,22 +39,18 @@ JsonObject: TypeAlias = "Mapping[str, JsonPrimitive | JsonArray | JsonObject]"
 class GameResponse(TypedDict):
     name: str
 
-
 class MultiqueryResponse(TypedDict):
     name: str
     result: Sequence[GameResponse]
 
-class CountResponse(TypedDict, total=False):
+class CountResponse(TypedDict):
     count: int
 
-class JsonRepository:
-    def __init__(self, playlists: Iterable[tuple[str, Collection[IgdbGame]]]):
-        self.playlists: dict[str, Collection[IgdbGame]] = {os.path.basename(path): games for (path, games) in playlists}
-        self.games: tuple[IgdbGame, ...] = tuple(itertools.chain.from_iterable(self.playlists.values()))
-        self.games_by_id = {g['id']: g for g in self.games}
-
-
-
+class PlaylistData(NamedTuple):
+    playlist: Playlist
+    igdb: Collection[IgdbGame]
+    dats: Collection[DatGame]
+    hasheous: Collection[DataObject]
 
 def get_client_credentials(args: argparse.Namespace) -> tuple[str, str]:
     """Get client ID and secret from args or environment variables."""
@@ -258,6 +251,8 @@ async def handle_scrape(args: argparse.Namespace) -> None:
 
                 for g in response_json:
                     games.extend(g['result'])
+                    # We're not processing the returned games except to sort them,
+                    # so we don't need to convert them to IgdbGame objects here.
 
             except JSONDecodeError as e:
                 raise ValueError(f"Failed to decode JSON response for playlist {playlist.title}") from e
@@ -282,132 +277,53 @@ async def handle_scrape(args: argparse.Namespace) -> None:
             tasks = tuple(group.create_task(fetch_playlist(oauth, p, group), name=p.title) for p in playlists)
 
 
-async def load_scraped_json(paths: Collection[str]) -> JsonRepository:
-    start = time.perf_counter_ns()
-    async def _load_file(path: str) -> tuple[str, Sequence[IgdbGame]]:
-        async with aiofiles.open(path, encoding='utf-8') as infile:
-            return path, json.loads(await infile.read())
-
-    async with TaskGroup() as group:
-        tasks = tuple(group.create_task(_load_file(p), name=os.path.basename(p)) for p in paths)
-        result: Sequence[tuple[str, Sequence[IgdbGame]]] = await asyncio.gather(*tasks)
-        now = time.perf_counter_ns()
-        print(f"Loaded {len(result)} JSON files from {len(paths)} paths in {(now - start) / 1_000_000:.2f} ms")
-        return JsonRepository(result)
-
-
 class GameMetadataDicts:
+    def __init__(self, playlists: Mapping[str, PlaylistData]) -> None:
+        self.playlists = playlists
 
-    def __init__(self, metadata_path: str | PathLike, hasheous_dirs: Iterable[str]) -> None:
-        """
-        Initialize the GameMetadataDicts.
-
-        Args:
-            metadata_path: The path to the metadata ZIP file.
-            hasheous_dirs: The directories within the ZIP file to search for Hasheous metadata.
-        """
-        self.crc_to_data: dict[str, DataObject] = {}
-        self.crc_to_igdb: dict[str, int] = {}
-
-        with ZipFile(metadata_path) as metadata_zip:
-            dirs = map(lambda d: zipfile.Path(metadata_zip, d), hasheous_dirs)
-            for d in dirs:
-                # For each relevant directory in the zip file...
-                json_file_paths = (
-                    p for p in d.iterdir() if p.is_file() and p.suffix == '.json'
-                )
-                json_data = (json.loads(j.read_text()) for j in json_file_paths)
-                dataobjects = (
-                    cast(DataObject, d) for d in json_data if
-                    isinstance(d, dict) and 'Id' in d and d.get("ObjectType") == 'Game'
-                )
-                for o in dataobjects:
-                    for r in get_rom_list(o):
-                        crc = r['Crc'].lower()
-                        self.crc_to_data[crc] = o
-                        if igdb_id := get_igdb_id(o):
-                            self.crc_to_igdb[crc] = igdb_id
-
-async def load_metadata_map(metadata_path: str, playlists: Iterable[Playlist]) -> GameMetadataDicts:
-    # TODO: If metadata_map is not given, download it from https://hasheous.org/api/v1/Dumps/MetadataMap.zip
-
-    start = time.perf_counter_ns()
-
-    hasheous_dirs: set[str] = set(itertools.chain.from_iterable(h.hasheous_dirs for h in playlists))
-    # Some of the Playlists are represented by the same Hasheous directories
-    hasheous = GameMetadataDicts(metadata_path, hasheous_dirs)
-    now = time.perf_counter_ns()
-    print(f"Loaded Hasheous metadata from {metadata_path} in {(now - start) / 1_000_000:.2f} ms")
-    return hasheous
-
-def get_playlists(playlistdir: str) -> Iterator[tuple[str, Playlist]]:
+def get_playlists(playlistdir: Path) -> Iterator[tuple[Path, Playlist]]:
     """Get the Playlist objects represented by the JSON files in the specified directory."""
-    for dirpath, dirnames, filenames in os.walk(playlistdir):
-        # Walking through each file inside the playlistdir...
-        for file in filenames:
-            # For each file in this directory...
-            name, ext = os.path.splitext(file)
-
-            if ext == '.json' and (playlist := PLAYLISTS_BY_TITLE.get(name, None)):
-                # If this is a JSON file and matches a known playlist title, yield it
-                path = os.path.join(dirpath, file)
-                yield (path, playlist)
+    for p in playlistdir.rglob('*.json'):
+        # Walking through each JSON file inside the playlistdir...
+        if (playlist := PLAYLISTS_BY_TITLE.get(p.stem, None)):
+            # If it matches a known playlist title, yield it
+            yield (p, playlist)
 
 
-def get_target_dat_paths(outpath: str, playlists: Iterable[Playlist]) -> Iterator[str]:
+def get_target_dat_paths(outpath: Path, playlist_titles: Iterable[str]) -> Iterator[Path]:
     """Get the paths to the DAT files that will be generated from the given playlists, rooted at the given directory."""
-    for p in playlists:
-        datpath = p.title + '.dat'
-        yield os.path.realpath(os.path.join(outpath, datpath))
-
-async def generate_dat(playlist: Playlist, outdir: str, loaded_igdb: JsonRepository, loaded_dats: DatRepository, loaded_hasheous: GameMetadataDicts) -> None:
-    clrmamepro = {
-        'name': playlist.title,
-        'description': playlist.title,
-        'comment': f"Games for {playlist.title} with metadata from IGDB",
-    }
-    dat_path = os.path.join(outdir, f"{playlist.title}.dat")
-
-    games: Collection[DatGame] = loaded_dats[playlist.title]
-    dats: list[DatGame] = []
-    for game in games:
-        rom = game['rom'][0]
-        # TODO: Handle DAT records with more than one ROM entry
-        # (see the top of dat/Amstrad CPC.dat for an example)
-
-        assert 'crc' in rom or 'serial' in rom
-
-        rom_id = (rom['crc'] if 'crc' in rom else rom['serial']).lower()
-
-        if hasheous_object := loaded_hasheous.crc_to_data.get(rom_id, None):
-            # If we have Hasheous metadata for this ROM, use it
-            pass
-
-        raise NotImplementedError("Finish implementing generate_dat()")
+    for title in playlist_titles:
+        yield outpath / f"{title}.dat"
 
 
 async def handle_process(args: argparse.Namespace) -> None:
     """Handle the process subcommand."""
-    inpath: str = args.inpath
-    outpath: str = args.outpath
-    verbose: bool = args.verbose
-    metadata_map: str = args.metadata_map
 
-    if not inpath:
+    if not args.inpath:
         raise ValueError("Input path must be specified for processing.")
 
-    playlists = dict(get_playlists(inpath))
-    if verbose:
-        playlist_titles = tuple(playlists.keys())
-        print(f"Found {len(playlists)} playlists in input path '{inpath}'")
-        pprint(playlist_titles, width=120)
+    inpath = Path(args.inpath)
+    outpath = Path(args.outpath)
+    verbose = bool(args.verbose)
+    metadata_map = Path(args.metadata_map) if args.metadata_map else None
 
-    if metadata_map and not zipfile.is_zipfile(metadata_map):
+    playlists = dict(get_playlists(inpath))
+    playlist_paths = tuple(playlists.keys())
+    playlist_titles = tuple(p.title for p in playlists.values())
+
+    if verbose:
+        print(f"Found {len(playlist_paths)} playlists in input path '{inpath}'")
+        pprint(playlist_paths, width=120)
+
+    if not metadata_map:
+        raise ValueError("Downloading MetadataMap.zip from Hasheous is not yet implemented; please provide a path to the file.")
+
+    if not zipfile.is_zipfile(metadata_map):
         raise ValueError(f"Metadata map path '{metadata_map}' doesn't refer to a valid zip file.")
 
     # TODO: Don't hardcode the dat and metadat directories
-    target_dat_paths = set(get_target_dat_paths(outpath, playlists.values()))
-    existing_dat_paths = {os.path.realpath(p) for p in itertools.chain(get_existing_dat_files("dat"), get_existing_dat_files("metadat"))}
+    target_dat_paths = set(get_target_dat_paths(outpath, playlist_titles))
+    existing_dat_paths = {Path(p) for p in itertools.chain(get_existing_dat_files("dat"), get_existing_dat_files("metadat"))}
 
     print(f"Found {len(target_dat_paths)} target DAT files to generate from playlists")
     if verbose:
@@ -423,19 +339,52 @@ async def handle_process(args: argparse.Namespace) -> None:
     if verbose:
         pprint(dats_to_scan, width=120)
 
+    hasheous_dirs = {p.title: p.hasheous_dirs for p in playlists.values()}
+    # Some of the Playlists consist of multiple Hasheous directories
+
+    playlists_for_dats = ((get_playlist(d), d) for d in dats_to_scan)
+    playlists_for_dats = ((p.title, d) for p, d in playlists_for_dats if p is not None)
+    sorted_playlists_for_dats = sorted(playlists_for_dats, key=lambda p: p[0])
+    grouped_playlists_for_dats = itertools.groupby(sorted_playlists_for_dats, key=lambda p: p[0])
+    dats_by_playlist = {k: [pd[1] for pd in g] for k, g in grouped_playlists_for_dats}
+
     async with TaskGroup() as group:
-        loaded_json_task: Task[JsonRepository] = group.create_task(load_scraped_json(playlists.keys()))
-        loaded_dat_task: Task[DatRepository] = group.create_task(load_dats(dats_to_scan, playlists.values()))
-        loaded_hasheous_task: Task[GameMetadataDicts] = group.create_task(load_metadata_map(metadata_map, playlists.values()))
+        loaded_igdb, loaded_dats, loaded_hasheous = await asyncio.gather(
+            group.create_task(load_games(playlists)),
+            group.create_task(load_dats(dats_by_playlist)),
+            group.create_task(load_dataobjects(metadata_map, hasheous_dirs))
+        )
 
-        loaded_json = await loaded_json_task
-        loaded_dats = await loaded_dat_task
-        loaded_hasheous = await loaded_hasheous_task
+        keys = set(loaded_igdb.keys()) | set(loaded_dats.keys()) | set(loaded_hasheous.keys())
 
-        dat_tasks: list[Task[None]] = []
-        for p in playlists.values():
-            task = group.create_task(generate_dat(p, outpath, loaded_json, loaded_dats, loaded_hasheous), name=p.title)
-            dat_tasks.append(task)
+        playlist_dict: Mapping[str, PlaylistData] = {}
+        for k in keys:
+            playlist = get_playlist(k)
+            if not playlist:
+                print(f"Warning: Ignoring data for unknown playlist '{k}'", file=sys.stderr)
+                continue
+
+            playlist_dict[k] = PlaylistData(
+                playlist=playlist,
+                igdb=loaded_igdb.get(k, ()),
+                dats=loaded_dats.get(k, ()),
+                hasheous=loaded_hasheous.get(k, ()),
+            )
+
+        metadata = GameMetadataDicts(playlist_dict)
+
+        async def generate_dat(playlist: Playlist) -> None:
+            clrmamepro = {
+                'name': playlist.title,
+                'description': playlist.title,
+                'comment': f"Games for {playlist.title} with metadata from IGDB",
+            }
+            dat_path = os.path.join(outpath, f"{playlist.title}.dat")
+
+            raise NotImplementedError("Finish implementing generate_dat()")
+
+        dat_tasks = tuple(group.create_task(generate_dat(p), name=p.title) for p in playlists.values())
+
 
         await asyncio.gather(*dat_tasks)
 
