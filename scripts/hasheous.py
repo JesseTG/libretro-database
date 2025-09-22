@@ -42,7 +42,7 @@ MatchMethodType: TypeAlias = Literal[
 MetadataSource: TypeAlias = Literal[
     "None",
     "IGDB",
-    "TheGamesDB",
+    "TheGamesDb",
     "RetroAchievements",
     "GiantBomb",
     "Steam",
@@ -101,7 +101,7 @@ AttributeName: TypeAlias = Literal[
     "Public",
 ]
 
-DataObjectType: TypeAlias = Literal["Company", "Platform", "Game", "ROM", "App"]
+DataObjectType: TypeAlias = Literal["None", "Company", "Platform", "Game", "ROM", "App"]
 RomTypeName: TypeAlias = Literal["Unknown", "Disc", "Disk", "File", "Part", "Tape", "Side"]
 SignatureSourceType: TypeAlias = Literal[
     "None",

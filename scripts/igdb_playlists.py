@@ -1,5 +1,7 @@
 import asyncio
 import dataclasses
+import datetime
+from datetime import date
 from functools import cache
 import os.path
 from pathlib import Path
@@ -19,34 +21,28 @@ IgdbId = NewType('IgdbId', int)
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class AgeRatingOrganization:
     id: IgdbId
-    checksum: str | None = None
     name: str
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class AgeRatingCategory:
     id: IgdbId
-    checksum: str | None = None
-    organization: AgeRatingOrganization
     rating: str
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class AgeRatingContentDescriptionType:
     id: IgdbId
-    checksum: str | None = None
     name: str
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class AgeRatingContentDescriptionV2:
     id: IgdbId
-    checksum: str | None = None
-    description: str | None = None
-    description_type: AgeRatingContentDescriptionType | None = None
+    description: str
+    description_type: AgeRatingContentDescriptionType
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class AgeRating:
     id: IgdbId
-    checksum: str | None = None
     organization: AgeRatingOrganization
     rating_category: AgeRatingCategory
     rating_content_descriptions: Sequence[AgeRatingContentDescriptionV2] | None = None
@@ -56,75 +52,63 @@ class AgeRating:
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class AlternativeName:
     id: IgdbId
-    checksum: str | None = None
     name: str
-    comment: str
+    comment: str | None = None
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Franchise:
     id: IgdbId
-    checksum: str | None = None
     name: str
     slug: str
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class GameEngine:
     id: IgdbId
-    checksum: str | None = None
     name: str
     slug: str
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class GameLocalization:
     id: IgdbId
-    checksum: str | None = None
-    name: str
+    name: str | None = None
     region: 'Region'
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class GameMode:
     id: IgdbId
-    checksum: str | None = None
     name: str
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class GameStatus:
     id: IgdbId
-    checksum: str | None = None
     status: str
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class GameType:
     id: IgdbId
-    checksum: str | None = None
     type: str
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Genre:
     id: IgdbId
-    checksum: str | None = None
     name: str
-    slug: str
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class CompanyStatus:
     id: IgdbId
-    checksum: str | None = None
     name: str
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Company:
     id: IgdbId
-    checksum: str | None = None
-    country: int # ISO 3166-1 code
+    country: int | None = None # ISO 3166-1 code
     name: str
     slug: str
-    status: CompanyStatus
+    status: CompanyStatus | None = None
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class InvolvedCompany:
     id: IgdbId
-    checksum: str | None = None
     company: Company
     developer: bool
     porting: bool
@@ -134,153 +118,127 @@ class InvolvedCompany:
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Region:
     id: IgdbId
-    checksum: str | None = None
-    identifier: str
-    name: str
-    category: Literal['locale', 'continent']
+    identifier: str | None = None
+    name: str | None = None
+    category: Literal['locale', 'continent'] | None = None
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Keyword:
     id: IgdbId
-    checksum: str | None = None
     name: str
     slug: str
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Language:
     id: IgdbId
-    checksum: str | None = None
     locale: str
     name: str
-    native_name: str
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class LanguageSupportType:
     id: IgdbId
-    checksum: str | None = None
     name: str
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class LanguageSupport:
     id: IgdbId
-    checksum: str | None = None
     language: Language
     language_support_type: LanguageSupportType
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class MultiplayerMode:
-    id: IgdbId
-    checksum: str | None = None
-    campaigncoop: bool
-    dropin: bool
-    lancoop: bool
-    offlinecoop: bool
-    offlinecoopmax: int
-    offlinemax: int
-    onlinecoop: bool
-    onlinecoopmax: int
-    onlinemax: int
-    platform: 'Platform'
-    splitscreen: bool
-    splitscreenonline: bool
-
-@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class PlatformFamily:
     id: IgdbId
-    checksum: str | None = None
     name: str
-    slug: str
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class PlatformType:
     id: IgdbId
-    checksum: str | None = None
     name: str
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class PlatformVersion:
     id: IgdbId
-    checksum: str | None = None
     name: str
     slug: str
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Platform:
     id: IgdbId
-    checksum: str | None = None
-    abbreviation: str
-    alternative_name: str
-    generation: int
+    abbreviation: str | None = None
+    alternative_name: str | None = None
+    generation: int | None = None
     name: str
-    platform_family: PlatformFamily
-    platform_type: PlatformType
-    slug: str
-    summary: str
-    versions: Sequence[PlatformVersion]
+    platform_family: PlatformFamily | None = None
+    platform_type: PlatformType | None = None
+    slug: str | None = None
+    summary: str | None = None
+
+@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+class MultiplayerMode:
+    id: IgdbId
+    campaigncoop: bool
+    dropin: bool
+    lancoop: bool
+    offlinecoop: bool
+    offlinecoopmax: int | None = None
+    offlinemax: int | None = None
+    onlinecoop: bool
+    onlinecoopmax: int | None = None
+    onlinemax: int | None = None
+    platform: Platform | None = None
+    splitscreen: bool
+    splitscreenonline: bool | None = None
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class PlayerPerspective:
     id: IgdbId
-    checksum: str | None = None
     name: str
-    slug: str
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class DateFormat:
     id: IgdbId
-    checksum: str | None = None
     format: str
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class ReleaseDateRegion:
     id: IgdbId
-    checksum: str | None = None
     region: str
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class ReleaseDateStatus:
     id: IgdbId
-    checksum: str | None = None
     description: str
     name: str
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class ReleaseDate:
     id: IgdbId
-    checksum: str | None = None
-    date: int # TODO: Parse with date.fromtimestamp()
+    date: int | None = None
     date_format: DateFormat
     human: str
-    m: Literal[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] # Month (1-12)
+    m: Literal[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] | None = None  # Month (1-12)
     platform: Platform
     release_region: ReleaseDateRegion
-    status: ReleaseDateStatus
-    y: int
+    status: ReleaseDateStatus | None = None
+    y: int | None = None  # Year
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Theme:
     id: IgdbId
-    checksum: str | None = None
     name: str
-    slug: str
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Game:
     id: IgdbId
-    checksum: str | None = None
     age_ratings: Sequence[AgeRating] | None = None
     aggregated_rating: float | None = None
     aggregated_rating_count: int | None = None
     alternative_names: Sequence[AlternativeName] | None = None
-    #artworks: Sequence[IgdbId | Game]
     bundles: Sequence['Game'] | None = None # name, ID, and platform
     collections: Sequence['Game'] | None = None # name, ID, and platform
-    #cover: IgdbId | Game
-    #created_at: datetime
     dlcs: Sequence['Game'] | None = None # name, ID, and platform
     expanded_games: Sequence['Game'] | None = None # name, ID, and platform
     expansions: Sequence['Game'] | None = None # name, ID, and platform
-    #external_games: Sequence['ExternalGame']
     first_release_date: int | None = None # TODO: Parse with date.fromtimestamp()
     forks: Sequence['Game'] | None = None # name, ID, and platform
     franchise: Franchise | None = None
@@ -299,27 +257,20 @@ class Game:
     parent_game: 'Game | None' = None
     platforms: Sequence[Platform] | None = None
     player_perspectives: Sequence[PlayerPerspective] | None = None
-    ports: Sequence['Game'] | None = None # name, ID, and platform
-    rating: float | None = None
-    rating_count: int | None = None
+    ports: Sequence['Game'] | None = None
     release_dates: Sequence[ReleaseDate] | None = None
-    remakes: Sequence['Game'] | None = None # name, ID, and platform
-    remasters: Sequence['Game'] | None = None # name, ID, and platform
-    #screenshots: Sequence['Screenshot']
-    #similar_games: Sequence['Game'] | None = None # name, ID, and platform
-    slug: str
-    standalone_expansions: Sequence['Game'] | None = None # name, ID, and platform
+    remakes: Sequence['Game'] | None = None
+    remasters: Sequence['Game'] | None = None
+    slug: str | None = None
+    standalone_expansions: Sequence['Game'] | None = None
     storyline: str | None = None
     summary: str | None = None
-    tags: Sequence[int] | None = None
     themes: Sequence[Theme] | None = None
     total_rating: float | None = None
     total_rating_count: int | None = None
     url: str | None = None # TODO: Parse with urllib
-    version_parent: 'Game | None' = None # name, ID, and platform
+    version_parent: 'Game | None' = None
     version_title: str | None = None
-    #videos: Sequence['Video'] | None = None
-    #websites: Sequence['Website'] | None = None
 
 DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
     "age_ratings.organization.name",
@@ -393,8 +344,6 @@ DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
     "platforms.platform_type.name",
     "platforms.slug",
     "platforms.summary",
-    # "platforms.versions.name",
-    # "platforms.versions.slug",
     "player_perspectives.name",
     "ports.name",
     "ports.platforms.name",
