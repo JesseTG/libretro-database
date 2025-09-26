@@ -147,7 +147,7 @@ class RomItem:
     MediaLabel: str | None = None
     SignatureSource: SignatureSourceType | None = None
 
-AttributeValue: TypeAlias = "DataObject | str | Sequence[RomItem]"
+AttributeValue: TypeAlias = "DataObject | Sequence[RomItem] | str"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Attribute:
