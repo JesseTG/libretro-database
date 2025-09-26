@@ -175,6 +175,11 @@ class DataObject:
     UpdatedDate: str
     Name: str
 
+    def has_crc(self, crc: str) -> bool:
+        roms = self.rom_list
+
+        return any(r.Crc == crc for r in roms)
+
     @property
     def rom_list(self) -> Sequence[RomItem]:
         """Return the list of ROMs, or an empty tuple if none are present."""
