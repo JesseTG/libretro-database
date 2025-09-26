@@ -8,13 +8,14 @@ import itertools
 import json
 import os
 import os.path
-from pathlib import Path
 import sys
 import time
 
 from collections.abc import Iterable, Sequence, Iterator, Mapping, Collection, AsyncIterator
 from concurrent.futures import ProcessPoolExecutor
+from io import BytesIO
 from itertools import groupby
+from pathlib import Path
 from typing import Any, NamedTuple, TypeAlias, TypedDict
 
 # pe lacks type stubs, so let's silence MyPy's complaints
@@ -25,6 +26,8 @@ from pe.operators import Class, Star
 import typelib
 import typelib.ctx
 import typelib.serdes
+
+from typelib.serdes import MarshalledValueT
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
@@ -71,7 +74,6 @@ class Rom:
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Game:
-    rom: Sequence[Rom] | None = None
     name: str | None = None
     comment: str | None = None
     description: str | None = None
@@ -111,6 +113,9 @@ class Game:
     # May be a string because of entries like "???" for unknown years,
     # or "198?" for an unknown year in the 1980s
     year: int | str | None = None
+
+    # Declared last so that it appears last in the generated DATs
+    rom: Sequence[Rom] | None = None
 
     @property
     def name_key(self) -> str:
@@ -221,7 +226,7 @@ dat_parser = pe.compile(DAT_GRAMMAR, actions=ACTIONS, ignore=Star(Class(" \t\n\r
 
 class ParsedGameDatListMarshaller(typelib.AbstractMarshaller[ParsedGameDatList]):
     def __call__(self, value: ParsedGameDatList) -> typelib.serdes.MarshalledValueT:
-        raise NotImplementedError("TODO: Implement marshalling from ParsedGameDatList to serializable object")
+        return [dataclasses.asdict(g) for g in value] # type: ignore
 
 class ParsedGameDatListUnmarshaller(typelib.AbstractUnmarshaller[ParsedGameDatList]):
     def __call__(self, value: typelib.serdes.MarshalledValueT) -> ParsedGameDatList:
@@ -254,8 +259,85 @@ class ParsedGameDatListUnmarshaller(typelib.AbstractUnmarshaller[ParsedGameDatLi
 
 
 def encode_dat(value: typelib.serdes.MarshalledValueT) -> bytes:
+    # value is a list of dicts, one per DAT record
+    if isinstance(value, str):
+        raise TypeError("Expected a sequence for encoding ParsedGameDatList, got str")
 
-    raise NotImplementedError("TODO: Implement encoding from DatFile to bytes")
+    if not isinstance(value, Sequence):
+        raise TypeError(f"Expected a sequence for encoding ParsedGameDatList, got {type(value)}")
+
+    output = BytesIO()
+
+    def write_record(val: 'tuple[MarshalledValueT, MarshalledValueT]', indent = 0):
+        match val:
+            case (str(), None):
+                return # An absent field, skip it
+            case (str(key), bool(b)):
+                output.write(b'  ' * indent)
+                output.write(key.encode('utf-8'))
+                output.write(b' ')
+                output.write(b'1\n' if b else b'0\n')
+            case (str(key), int() | float() as number):
+                output.write(b'  ' * indent)
+                output.write(key.encode('utf-8'))
+                output.write(b' ')
+                output.write(str(number).encode('utf-8'))
+                output.write(b'\n')
+            case (str(key), str(text)):
+                output.write(b'  ' * indent)
+                output.write(key.encode('utf-8'))
+                output.write(b' ')
+                # Escape backslashes and double quotes in the string
+                escaped = text.replace('\\', '\\\\').replace('"', '\\"')
+                output.write(b'"')
+                output.write(escaped.encode('utf-8'))
+                output.write(b'"\n')
+            case (str(key), list() as sequence):
+                for item in sequence:
+                    # Don't add extra indentation to list items,
+                    # as they're encoded as a sequence of records
+                    # with the same key
+                    # (i.e. there's no real list syntax)
+                    write_record((key, item), indent)
+                    output.write(b'\n')
+            case (str(key), dict() as record):
+                output.write(b'  ' * indent)
+                output.write(key.encode('utf-8'))
+                output.write(b' (\n')
+                for pair in record.items():
+                    write_record(pair, indent + 1)
+                output.write(b'  ' * indent)
+                output.write(b')')
+            case _:
+                raise TypeError(f"Cannot encode {val} of type {type(val)}")
+
+    clrmamepro_dict = value[0]
+    if not isinstance(clrmamepro_dict, dict):
+        raise TypeError(f"Expected first element of sequence to be a dict for ClrMamePro, got {type(value[0])}")
+
+    write_record(('clrmamepro', clrmamepro_dict))
+    output.write(b'\n\n')
+
+    def game_name(game: MarshalledValueT) -> str:
+        if not isinstance(game, dict):
+            raise TypeError(f"Expected game record to be a dict for encoding a Game, got {type(game)}")
+
+        for key in ('name', 'description', 'comment', 'id'):
+            if name := game.get(key):
+                return str(name)
+
+        raise ValueError("Game record has no name, description, comment, or id field")
+
+    for game in sorted(value[1:], key=game_name):
+        if not isinstance(game, dict):
+            raise TypeError(f"Expected each record to be a dict for encoding a Game, got {game}")
+
+        write_record(('game', game))
+        output.write(b'\n\n')
+
+    result = output.getvalue()
+    return result
+
 
 def decode_dat(value: bytes) -> typelib.serdes.MarshalledValueT:
     dat = value.decode('utf-8')
