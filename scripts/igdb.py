@@ -13,7 +13,7 @@ from collections.abc import Collection, Sequence, Iterable, Mapping, Iterator
 from contextlib import asynccontextmanager
 from json import JSONDecodeError
 from pprint import pprint
-from typing import Any, NamedTuple, TypeAlias, TypedDict
+from typing import Any, NamedTuple, TypeAlias, TypedDict, cast
 
 import aiofiles
 import aiofiles.os
@@ -117,6 +117,9 @@ async def query_igdb(client: AsyncOAuth2Client, endpoint: str, query: str | Quer
 async def handle_query(args: argparse.Namespace) -> None:
     """Handle the query subcommand."""
 
+    all_records = bool(args.all)
+    verbose = bool(args.verbose)
+
     if args.endpoint == "multiquery":
         # Read multiquery definitions from file or stdin
         if args.query == '-':
@@ -127,13 +130,38 @@ async def handle_query(args: argparse.Namespace) -> None:
     else:
         body = args.query
 
-    # Get token from Twitch API (IGDB uses Twitch authentication)
-    async with authenticate_igdb(args) as (oauth, token):
-        response = await query_igdb(oauth, args.endpoint, body)
+    client_id, client_secret = get_client_credentials(args)
+    async with QueryClient(client_id, client_secret) as client:
         try:
-            print(json.dumps(response.json(), indent=2))
+            if not all_records:
+                # If the user didn't pass the --all flag...
+                response = await client.query(args.endpoint, body)
+                json.dump(response, sys.stdout, indent=2)
+            else:
+                count_response = cast(CountResponse, await client.query(f"{args.endpoint}/count", body))
+                count = count_response["count"]
+                if verbose:
+                    print(f"Query will return {count} total records", file=sys.stderr)
+
+                query = Query(body)
+                async with TaskGroup() as group:
+                    tasks: list[asyncio.Task[JsonArray]] = []
+                    for q in itertools.batched(query.query_pages(count), MULTIQUERY_MAX):
+                        if verbose:
+                            print(f"Fetching records {q[0].offset} to {q[-1].offset + q[-1].limit - 1}", file=sys.stderr)
+
+                        multiquery = Multiquery({f"{args.endpoint} ({p.offset}-{p.offset + p.limit - 1})": (args.endpoint, p) for p in q})
+                        task = group.create_task(client.query("multiquery", multiquery))
+                        tasks.append(task)
+
+                    responses: Sequence[Sequence[MultiqueryResponse]] = await asyncio.gather(*tasks) # type: ignore[type-var]
+
+
+                results = tuple(r['result'] for r in itertools.chain.from_iterable(responses))
+                records = tuple(itertools.chain.from_iterable(results))
+                json.dump(records, sys.stdout, indent=2)
         except JSONDecodeError as e:
-            print(response.text, file=sys.stderr)
+            print(e.doc, file=sys.stderr)
             print(e, file=sys.stderr)
             raise e
 
@@ -431,6 +459,11 @@ def main():
         "--client-secret",
         type=str,
         help="The IGDB API client secret. Overrides the TWITCH_CLIENT_SECRET environment variable if provided."
+    )
+    query_parser.add_argument(
+        "--all",
+        action="store_true",
+        help="Use this query, but fetch all results by making multiple requests."
     )
     query_parser.add_argument(
         "endpoint",

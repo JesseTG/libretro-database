@@ -1,20 +1,27 @@
 import asyncio
 import dataclasses
-import datetime
-from datetime import date
-from functools import cache
 import os.path
-from pathlib import Path
+import re
+import sys
 import tomllib
+
+from functools import cache
+from pathlib import Path
 
 from collections import ChainMap
 from dataclasses import dataclass
-from typing import Optional, Literal, NewType, TypedDict, cast
+from typing import Never, Optional, Literal, NewType, TypeAlias, TypedDict, cast, overload
 from collections.abc import Collection, Sequence, Iterable, Iterator, Mapping
 
 import aiofiles
+import asynciolimiter
+import backoff
+import httpx
 import typelib
 
+from authlib.integrations.httpx_client import AsyncOAuth2Client
+from authlib.oauth2.rfc6749 import OAuth2Token
+from httpx import HTTPStatusError, Response
 
 IgdbId = NewType('IgdbId', int)
 
@@ -375,6 +382,11 @@ DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
 
 SortDirection = Literal['asc', 'desc']
 DEFAULT_SORT: tuple[str, SortDirection] = ('name', 'asc')
+QUERY_CLAUSE = r'(fields|f|exclude|x|where|w|limit|l|offset|o|sort|s|search)\s+([^;]+)\s*;'
+
+JsonPrimitive = str | int | float | bool | None
+JsonArray: TypeAlias = Sequence["JsonPrimitive | JsonObject | JsonArray"]
+JsonObject: TypeAlias = Mapping[str, "JsonPrimitive | JsonArray | JsonObject"]
 
 @dataclass(kw_only=True, eq=True)
 class Query:
@@ -388,6 +400,7 @@ class Query:
 
     def __init__(
             self,
+            query: str | None = None,
             *, # Force keyword arguments for clarity
             fields: Iterable[str] | str | None = "*",
             exclude: Iterable[str] | str | None = None,
@@ -396,7 +409,45 @@ class Query:
             offset: int = 0, # IGDB's default
             sort: tuple[str, SortDirection] | None = None,
             search: Optional[str] = None,
-    ):
+    ) -> None:
+          # Regular expression to match clauses
+
+        if query is not None:
+            # If given a query string, use it to override all other parameters.
+            for match in re.finditer(QUERY_CLAUSE, query.strip(), re.IGNORECASE):
+                clause_name = match.group(1).lower()
+                clause_value = match.group(2).strip()
+
+                match clause_name:
+                    case 'fields' | 'f':
+                        fields = tuple(f.strip() for f in clause_value.split(',') if f.strip())
+                    case 'exclude' | 'x':
+                        exclude = tuple(f.strip() for f in clause_value.split(',') if f.strip())
+                    case 'where' | 'w':
+                        where = clause_value
+                    case 'limit' | 'l':
+                        limit = int(clause_value)
+                    case 'offset' | 'o':
+                        offset = int(clause_value)
+                    case 'sort' | 's':
+                        # Parse sort field and direction
+                        sort_parts = clause_value.split()
+                        if len(sort_parts) >= 1:
+                            sort_field: str = sort_parts[0]
+                        else:
+                            raise ValueError("Sort clause must specify a field")
+
+                        if len(sort_parts) >= 2:
+                            sort_direction = cast(SortDirection, sort_parts[1].lower().strip())
+                            if sort_direction not in ('asc', 'desc'):
+                                raise ValueError("Sort direction must be 'asc' or 'desc'")
+                        else:
+                            sort_direction = 'asc' # Default to ascending if not specified
+
+                        sort = (sort_field, sort_direction)
+                    case 'search':
+                        search = clause_value.strip()
+
         match fields:
             case str():
                 self.fields = tuple(f.strip(" ;") for f in fields.split(",") if f)
@@ -435,6 +486,18 @@ class Query:
 
         self.search = search
         self.sort = sort
+
+    def query_pages(self, count: int, limit: int = 500) -> Iterator['Query']:
+        for i in range(0, count, limit):
+            yield Query(
+                fields=self.fields,
+                exclude=self.exclude,
+                where=self.where,
+                limit=limit,
+                offset=i,
+                sort=self.sort,
+                search=self.search,
+            )
 
     def __str__(self) -> str:
         clauses: list[str] = []
@@ -570,6 +633,138 @@ class Multiquery:
             queries.append(f"query {endpoint} \"{name}\" {{ {query} }};")
 
         return '\n'.join(queries)
+
+
+RETRY_CODES = (
+    httpx.codes.REQUEST_TIMEOUT,
+    httpx.codes.TOO_MANY_REQUESTS,
+    httpx.codes.INTERNAL_SERVER_ERROR,
+    httpx.codes.BAD_GATEWAY,
+    httpx.codes.SERVICE_UNAVAILABLE,
+    httpx.codes.GATEWAY_TIMEOUT,
+)
+
+QueryType: TypeAlias = str | Query | Multiquery
+
+class QueryClient:
+    def __init__(self, client_id: str, client_secret: str, max_queries: int = MAX_ACTIVE_QUERIES, max_rate: int = MAX_QUERY_RATE):
+        # Limit to 8 in-flight requests
+        self.request_limit = asyncio.BoundedSemaphore(max_queries)
+        self.rate_limit = asynciolimiter.StrictLimiter(max_rate)
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.client = AsyncOAuth2Client(
+            client_id=client_id,
+            client_secret=client_secret,
+            token_endpoint='https://id.twitch.tv/oauth2/token',
+            token_endpoint_auth_method='client_secret_post',
+            scope=['user_read', 'user_subscriptions'],
+        )
+
+    async def __aenter__(self) -> 'QueryClient':
+        try:
+            client = await self.client.__aenter__()
+
+            token: OAuth2Token = await self.client.fetch_token(
+                grant_type='client_credentials',
+                url='https://id.twitch.tv/oauth2/token',
+                client_id=self.client_id,
+                client_secret=self.client_secret,
+            )
+
+            if not token:
+                raise RuntimeError("Failed to obtain access token from Twitch")
+
+            return self
+        except:
+            await self.client.__aexit__(None, None, None)
+            raise
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        await self.client.__aexit__(exc_type, exc_val, exc_tb)
+
+
+    @staticmethod
+    def _on_backoff(details):
+        print("Retrying after backoff:", details['target'].__name__, "with args:", details['args'], "and kwargs:", details['kwargs'], file=sys.stderr)
+
+    @staticmethod
+    def _on_predicate(response: Response) -> bool:
+        status = response.status_code
+        if status in RETRY_CODES:
+            # If the response is a retryable error, we want to retry
+            print(f"Retrying due to status code {status} ({response.reason_phrase})", file=sys.stderr)
+            return True
+
+        return False
+
+
+    @staticmethod
+    def _giveup(e: Exception):
+        print("Exception raised during query:", e, file=sys.stderr)
+        if not isinstance(e, HTTPStatusError):
+            # Give up if query_endpoint failed with something besides HTTPStatusError
+            return True
+
+        if e.response.status_code in RETRY_CODES:
+            # Don't give up on server errors (5xx), we might just be unlucky
+            # or rate-limited (429), so we should back off and retry.
+            return False
+
+        return e.response.is_error
+
+    @backoff.on_exception(backoff.expo, HTTPStatusError, max_tries=5, giveup=_giveup, on_backoff=_on_backoff)
+    @backoff.on_predicate(backoff.expo, _on_predicate)
+    async def _query(self, endpoint: str, query: str | Query | Multiquery) -> Response:
+        """
+        Query the IGDB API with the given endpoint and query.
+
+        Args:
+            client: The authenticated AsyncOAuth2Client instance
+            endpoint: The IGDB API endpoint to query
+            query: The Apicalypse query string to send to the endpoint
+
+        Returns:
+            The HTTP response from the API
+
+        Raises:
+            requests.exceptions.RequestException: If the request fails
+        """
+
+        async with self.request_limit:
+            url = f"https://api.igdb.com/v4/{endpoint}"
+            access_token = self.client.token["access_token"]
+
+            headers = {
+                'Client-ID': self.client.client_id,
+                'Authorization': f'Bearer {access_token}',
+                'Accept': 'application/json',
+                'Accept-Encoding': 'gzip, deflate'
+            }
+
+            await self.rate_limit.wait()
+            return await self.client.post(url, headers=headers, content=str(query))
+
+    @overload
+    async def query(self, endpoint: Literal["multiquery"], query: str | Multiquery) -> JsonArray: ...
+
+    @overload
+    async def query(self, endpoint: Literal["multiquery"], query: Query) -> Never: ...
+
+    @overload
+    async def query(self, endpoint: str, query: str | Query | Multiquery) -> JsonArray | JsonObject: ...
+
+    async def query(self, endpoint: str, query: str | Query | Multiquery) -> JsonArray | JsonObject:
+        if endpoint == "multiquery" and isinstance(query, Query):
+            raise TypeError("Expected a str or Multiquery for 'multiquery' endpoint; got Query")
+
+        try:
+            response = await self._query(endpoint, query)
+            return response.json()
+        except HTTPStatusError as e:
+            print(e.response.headers, file=sys.stderr)
+            raise
+
 
 def read_playlists(path: str) -> tuple[Playlist, ...]:
     class TomlPlaylistEntry(TypedDict):
@@ -719,4 +914,5 @@ __all__ = [
     "DEFAULT_GAME_FIELD_TUPLE",
     "DEFAULT_SORT",
     "load_games",
+    "QueryClient",
 ]
