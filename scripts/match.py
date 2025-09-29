@@ -3,7 +3,7 @@ import sys
 from typing import Callable, NamedTuple
 
 from dats import Game as DatGame
-from igdb_playlists import Playlist, Game as IgdbGame
+from igdb_playlists import RUMBLE_KEYWORD_IDS, Playlist, Game as IgdbGame
 from hasheous import DataObject
 
 class PlaylistData(NamedTuple):
@@ -32,14 +32,21 @@ def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
     def generate_game(dat: DatGame, igdb: IgdbGame, hasheous: DataObject) -> DatGame:
         """Generate a new DatGame object by combining data from the given DatGame, IgdbGame, and Hasheous DataObject."""
 
-        esrb = find(igdb.age_ratings, lambda r: r.organization.name == "ESRB")
-        if not esrb:
-            esrb = dat.esrb_rating
+        esrb_entry = find(igdb.age_ratings, lambda r: r.organization.name == "ESRB")
+        esrb = esrb_entry.rating_category.rating if esrb_entry else dat.esrb_rating
 
         franchise = igdb.franchise.name if igdb.franchise else None
         # TODO: Handle multiple franchises
         genre = igdb.genres[0] if igdb.genres else None
         # TODO: Handle multiple genres
+
+        rumble_keyword = find(igdb.keywords, lambda k: k.id in RUMBLE_KEYWORD_IDS)
+        if rumble_keyword:
+            rumble = True
+        elif dat.rumble is not None:
+            rumble = dat.rumble
+        else:
+            rumble = None
 
         if dat.serial:
             serial = dat.serial
@@ -62,7 +69,7 @@ def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
             #elspa_rating
             #enhancement_hardware
             #enhancement_hw
-            esrb_rating=esrb.rating_category.rating if esrb else None,
+            esrb_rating=esrb,
             #famitsu_rating
             franchise=franchise,
             genre=genre.name if genre else None,
@@ -77,7 +84,7 @@ def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
             #releaseday
             #releasemonth
             #releaseyear
-            #rumble
+            rumble=rumble,
             serial=serial
             #tags
             #users
