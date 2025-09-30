@@ -79,11 +79,24 @@ class Game:
     description: str | None = None
     id: str | None = None
 
+    achievements: int | None = None
     analog: bool | None = None
+    artstyle: str | None = None
+    """May include multiple art styles separated by commas, slashes, or pipes."""
+
     bbfc_rating: str | None = None
+    category: str | None = None
+    """May include multiple categories separated by commas, slashes, or pipes."""
+
+    cero_rating: str | None = None
     code: str | None = None
+    console_exclusive: bool | None = None
+    controls: str | None = None
+    coop: bool | None = None
     date: str | None = None
     developer: str | None = None
+    """May include multiple developers separated by commas, slashes, or pipes"""
+
     download: str | None = None
     edge_issue: int | None = None
     edge_rating: int | None = None
@@ -93,22 +106,55 @@ class Game:
     esrb_rating: str | None = None
     famitsu_rating: int | None = None
     franchise: str | None = None
+    gameplay: str | None = None
+    """May include multiple gameplay types separated by commas, slashes, or pipes."""
+
     genre: str | None = None
+    """May include multiple genres separated by commas, slashes, or pipes."""
+
     homepage: str | None = None
+    igdb_id: int | None = None
+    igdb_platform_id: int | None = None
+    igdb_release_date_id: int | None = None
+    language: str | None = None
+    """May include multiple languages separated by commas, slashes, or pipes."""
+
     license: str | None = None
     manufacturer: str | None = None
+    media: str | None = None
+    """May include multiple media types separated by commas, slashes, or pipes."""
+
+    narrative: str | None = None
+    """May include multiple narrative types separated by commas, slashes, or pipes."""
+
     origin: str | None = None
+
+    pacing: str | None = None
+    """May include multiple pacing types separated by commas, slashes, or pipes."""
+
     patch: str | None = None
+    pegi_rating: str | None = None
+    perspective: str | None = None
+    platform_exclusive: bool | None = None
     publisher: str | None = None
+    """May include multiple publishers separated by commas, slashes, or pipes."""
+
     region: str | None = None
     releaseday: int | None = None
     releasemonth: int | None = None
     releaseyear: int | None = None
     rumble: bool | None = None
+    score: str | None = None
     serial: str | None = None
+    setting: str | None = None
     tags: str | None = None
     users: int | None = None
+    vehicular: str | None = None
+    """May include multiple vehicule types separated by commas, slashes, or pipes."""
+
     version: str | None = None
+    visual: str | None = None
+    """May include multiple visual types separated by commas, slashes, or pipes."""
 
     # May be a string because of entries like "???" for unknown years,
     # or "198?" for an unknown year in the 1980s
