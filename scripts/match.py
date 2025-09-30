@@ -32,13 +32,29 @@ def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
     def generate_game(dat: DatGame, igdb: IgdbGame, hasheous: DataObject) -> DatGame:
         """Generate a new DatGame object by combining data from the given DatGame, IgdbGame, and Hasheous DataObject."""
 
-        esrb_entry = find(igdb.age_ratings, lambda r: r.organization.name == "ESRB")
-        esrb = esrb_entry.rating_category.rating if esrb_entry else dat.esrb_rating
+        cero = find(igdb.age_ratings, lambda r: r.organization.name == "CERO")
+
+        developer: str | None = None
+        if igdb.involved_companies:
+            developer = '|'.join(c.company.name for c in igdb.involved_companies if c.developer or c.porting)
+
+        esrb = find(igdb.age_ratings, lambda r: r.organization.name == "ESRB")
 
         franchise = igdb.franchise.name if igdb.franchise else None
         # TODO: Handle multiple franchises
-        genre = igdb.genres[0] if igdb.genres else None
-        # TODO: Handle multiple genres
+
+        genre = '|'.join(g.name for g in igdb.genres) if igdb.genres else None
+        # Some string fields in RetroArch are treated as lists delimited by pipes, commas, or slashes.
+
+        pegi = find(igdb.age_ratings, lambda r: r.organization.name == "PEGI")
+
+        perspective: str | None = None
+        if igdb.player_perspectives:
+            perspective = '|'.join(p.name for p in igdb.player_perspectives)
+
+        publisher: str | None = None
+        if igdb.involved_companies:
+            publisher = '|'.join(c.company.name for c in igdb.involved_companies if c.publisher)
 
         rumble_keyword = find(igdb.keywords, lambda k: k.id in RUMBLE_KEYWORD_IDS)
         if rumble_keyword:
@@ -55,40 +71,62 @@ def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
         else:
             serial = None
 
+
         return DatGame(
-            name=igdb.name,
+            name=dat.name_key,
             rom=dat.rom,
+            #achievements
             #analog
+            #artstyle
             #bbfc_rating
+            #category
+            cero_rating=cero.rating_category.rating if cero else None,
             #code
+            #console_exclusive
+            #controls
+            #coop
             #date
-            #developer
+            developer=developer,
             #download
             #edge_issue
             #edge_rating
             #elspa_rating
             #enhancement_hardware
             #enhancement_hw
-            esrb_rating=esrb,
+            esrb_rating=esrb.rating_category.rating if esrb else None,
             #famitsu_rating
             franchise=franchise,
-            genre=genre.name if genre else None,
+            #gameplay
+            genre=genre,
             #homepage
             igdb_id=igdb.id,
+            #igdb_platform_id
+            #igdb_release_date_id
+            #language
             #license
             #manufacturer
+            #media
+            #narrative
             #origin
+            #pacing
             #patch
-            #publisher
+            pegi_rating=pegi.rating_category.rating if pegi else None,
+            perspective=perspective,
+            #platform_exclusive
+            publisher=publisher,
             #region
             #releaseday
             #releasemonth
             #releaseyear
             rumble=rumble,
+            #score
             serial=serial
+            #setting
             #tags
             #users
+            #vehicular
             #version
+            #visual
             #year
 
         )

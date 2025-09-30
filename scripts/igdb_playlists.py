@@ -801,6 +801,16 @@ PLAYLISTS_BY_ANY: Mapping[str, Playlist] = ChainMap(
     PLAYLISTS_BY_TITLE_LOWER,
 )
 
+RUMBLE_KEYWORD_IDS = (
+    8156, # contextual controller rumble
+    50485, # game boy player rumble support
+    46206, # nintendo ds rumble pak
+    10564, # rumble cartridge
+    27048, # rumble pak
+    38907, # rumble support
+)
+
+
 @cache
 def get_playlist(identifier: str | Path) -> Optional[Playlist]:
     """
@@ -915,4 +925,5 @@ __all__ = [
     "DEFAULT_SORT",
     "load_games",
     "QueryClient",
+    "RUMBLE_KEYWORD_IDS",
 ]
