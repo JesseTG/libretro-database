@@ -61,6 +61,34 @@ class Rom:
         if not self.crc and not self.serial:
             raise ValueError("Rom record must have at least a 'crc' or 'serial' field.")
 
+    def same_as(self, other: 'Rom') -> bool:
+        if self.crc and other.crc and self.crc.lower() == other.crc.lower():
+            return True
+
+        if self.serial and other.serial and self.serial.lower() == other.serial.lower():
+            return True
+
+        if self.md5 and other.md5 and self.md5.lower() == other.md5.lower():
+            return True
+
+        selfsha = self.sha1 or self.sha1sum
+        othersha = other.sha1 or other.sha1sum
+
+        if selfsha and othersha and selfsha.lower() == othersha.lower():
+            return True
+
+        return False
+
+    def __or__(self, other: 'Rom') -> 'Rom':
+        # Merge two Rom records, preferring non-None values from self
+        if not isinstance(other, Rom):
+            return NotImplemented
+
+        this = {k: v for k, v in dataclasses.asdict(self).items() if v is not None}
+        that = {k: v for k, v in dataclasses.asdict(other).items() if v is not None}
+
+        return Rom(**(that | this))
+
     @property
     def id(self) -> str:
         if self.crc:
@@ -474,14 +502,42 @@ async def load_dats(dat_playlists: Mapping[str, Sequence[Path]], parallel=True) 
     else:
         dat_files = [d for d in map(load_dat, paths) if d]
 
-    def reduce_game(map: dict[str, Any], game: Game) -> dict[str, Any]:
-        # Merge the fields of `game` into `map`, without overwriting existing values
+    def reduce_game(merged: dict[str, bool | str | int | Sequence[Rom]], game: Game) -> dict[str, Any]:
+        # Merge the fields of `game` into `merged`, without overwriting existing values
         for field in dataclasses.fields(Game):
-            value = getattr(game, field.name)
-            if value is not None and map.get(field.name) is None:
-                # Only update if we don't already have a value
-                map[field.name] = value
-        return map
+            name = field.name
+            old = merged.get(name)
+            new = getattr(game, name)
+
+            match (name, old, new):
+                case _, None, None:
+                    # Both old and new are None, nothing to do
+                    pass
+                case _, None, value:
+                    # Apply any new field value if we don't already have one
+                    merged[name] = value
+                case 'year', str(unknown), int(year) if '?' in unknown:
+                    # If we have a string year like "198?" or "???"
+                    # but we found a specific year in another DAT,
+                    # use the integer year
+                    merged[name] = year
+                case 'rom', None, list(roms) if roms:
+                    # Add any ROMs if we haven't found any yet,
+                    # but only if the list is non-empty
+                    merged[name] = list(roms)
+                case 'rom', list(known_roms), list(new_roms) if new_roms:
+                    roms = []
+                    for k in known_roms:
+                        updated_rom = k
+                        for n in new_roms:
+                            if k.same_as(n):
+                                updated_rom = k | n
+
+                        roms.append(updated_rom)
+
+                    merged[name] = roms
+
+        return merged
 
     def reduce_games(games: Iterable[Game]) -> Game:
         game_dict = functools.reduce(reduce_game, games, {})
