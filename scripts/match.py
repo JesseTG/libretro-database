@@ -33,9 +33,33 @@ def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
     def generate_game(dat: DatGame, igdb: IgdbGame, hasheous: DataObject) -> DatGame:
         """Generate a new DatGame object by combining data from the given DatGame, IgdbGame, and Hasheous DataObject."""
 
+        def get_achievements():
+            if hasheous.Metadata:
+                for m in hasheous.Metadata:
+                    if m.Source == 'RetroAchievements' and m.Status == 'Mapped':
+                        return True
+
+            return None
+
         def get_cero():
             cero = find(igdb.age_ratings, lambda r: r.organization.name == "CERO")
             return cero.rating_category.rating if cero else None
+
+        def get_coop():
+            if igdb.multiplayer_modes:
+                for m in igdb.multiplayer_modes:
+                    if m.coop:
+                        # TODO: Only return true if the coop mode is for the current platform
+                        return True
+
+            if igdb.game_modes:
+                for m in igdb.game_modes:
+                    if m.id == 3: # IGDB ID for "Co-operative"
+                        # TODO: Only return true if the coop mode is for the current platform
+                        return True
+
+            # Can't definitively say there's no coop mode, so return None
+            return None
 
         def get_developer():
             if not igdb.involved_companies:
@@ -65,6 +89,19 @@ def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
                 perspective = '|'.join(p.name for p in igdb.player_perspectives)
             return perspective
 
+        def get_platform_exclusive():
+            if not igdb.platforms:
+                return None
+
+            num_platforms = len(igdb.platforms)
+            num_remakes = len(igdb.remakes or ()) # TODO: Only count remakes on different platforms
+            num_ports = len(igdb.ports or ()) # TODO: Only count ports on different platforms
+            num_remasters = len(igdb.remasters or ()) # TODO: Only count remasters on different platforms
+            num_collections = len(igdb.collections or ()) # TODO: Only count collections on different platforms
+            total_releases = num_platforms + num_remakes + num_ports + num_remasters + num_collections
+
+            return total_releases == 1
+
         def get_publisher():
             publisher = None
             if igdb.involved_companies:
@@ -93,10 +130,21 @@ def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
             else:
                 return None
 
+        def get_users():
+            if not igdb.multiplayer_modes:
+                return None
+
+            users = 1
+            for m in igdb.multiplayer_modes:
+                users = max(users, m.offlinecoopmax or 0, m.offlinemax or 0, m.onlinecoopmax or 0, m.onlinemax or 0)
+
+            return users
+
+
         return DatGame(
             name=dat.name_key,
             rom=dat.rom,
-            #achievements
+            achievements=get_achievements(),
             #analog
             #artstyle
             #bbfc_rating
@@ -105,7 +153,7 @@ def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
             #code
             #console_exclusive
             #controls
-            #coop
+            coop=get_coop(),
             #date
             developer=get_developer(),
             #download
@@ -133,7 +181,7 @@ def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
             #patch
             pegi_rating=get_pegi(),
             perspective=get_perspective(),
-            #platform_exclusive
+            platform_exclusive=get_platform_exclusive(),
             publisher=get_publisher(),
             #region
             #releaseday
@@ -144,7 +192,7 @@ def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
             serial=get_serial(),
             #setting
             tags=get_tags(),
-            #users
+            users=get_users(),
             #vehicular
             #version
             #visual
