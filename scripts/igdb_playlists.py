@@ -196,6 +196,10 @@ class MultiplayerMode:
     splitscreen: bool
     splitscreenonline: bool | None = None
 
+    @property
+    def coop(self) -> bool:
+        return self.campaigncoop or self.lancoop or self.offlinecoop or self.onlinecoop
+
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class PlayerPerspective:
     id: IgdbId

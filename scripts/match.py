@@ -4,7 +4,7 @@ import sys
 from typing import Callable, NamedTuple
 
 from dats import Game as DatGame
-from igdb_playlists import RUMBLE_KEYWORD_IDS, Playlist, Game as IgdbGame
+from igdb_playlists import RUMBLE_KEYWORD_IDS, Playlist, Game as IgdbGame, ReleaseDate
 from hasheous import DataObject
 
 class PlaylistData(NamedTuple):
@@ -33,6 +33,8 @@ def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
     def generate_game(dat: DatGame, igdb: IgdbGame, hasheous: DataObject) -> DatGame:
         """Generate a new DatGame object by combining data from the given DatGame, IgdbGame, and Hasheous DataObject."""
 
+        # TODO: Get the IGDB platform ID for dat
+        # (can't just use the PlaylistData, as some playlists contain games for multiple platforms)
         def get_achievements():
             if hasheous.Metadata:
                 for m in hasheous.Metadata:
@@ -61,6 +63,14 @@ def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
             # Can't definitively say there's no coop mode, so return None
             return None
 
+        def get_date(release: ReleaseDate | None):
+            if release and release.human:
+                return release.human
+
+            # TODO: How to handle cancelled games?
+            # TODO: Format the date as YYYY-MM-DD
+            return dat.date
+
         def get_developer():
             if not igdb.involved_companies:
                 return None
@@ -76,7 +86,7 @@ def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
             # TODO: Handle multiple franchises
 
         def get_genre():
-            return '|'.join(g.name for g in igdb.genres) if igdb.genres else None
+            return '|'.join(g.name.title() for g in igdb.genres) if igdb.genres else None
             # Some string fields in RetroArch are treated as lists delimited by pipes, commas, or slashes.
 
         def get_pegi():
@@ -86,7 +96,7 @@ def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
         def get_perspective():
             perspective = None
             if igdb.player_perspectives:
-                perspective = '|'.join(p.name for p in igdb.player_perspectives)
+                perspective = '|'.join(p.name.title() for p in igdb.player_perspectives)
             return perspective
 
         def get_platform_exclusive():
@@ -108,6 +118,24 @@ def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
                 publisher = '|'.join(c.company.name for c in igdb.involved_companies if c.publisher)
             return publisher
 
+        def get_region():
+            # TODO: Guess the region from the DAT's name if the region isn't given
+            # TODO: Guess the region from matching release dates if the region isn't given
+            return dat.region
+
+        def get_release(region: str | None):
+            if not igdb.release_dates:
+                return None
+
+            if len(igdb.release_dates) == 1:
+                return igdb.release_dates[0]
+
+            if not region:
+                return None
+
+            region_lower = region.lower()
+            return find(igdb.release_dates, lambda rd: rd.release_region.region.lower() == region_lower)
+
         def get_rumble():
             rumble_keyword = find(igdb.keywords, lambda k: k.id in RUMBLE_KEYWORD_IDS)
             if rumble_keyword:
@@ -118,7 +146,7 @@ def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
 
         def get_tags():
             keywords = (k.name.title() for k in igdb.keywords) if igdb.keywords else ()
-            themes = (t.name for t in igdb.themes) if igdb.themes else ()
+            themes = (t.name.title() for t in igdb.themes) if igdb.themes else ()
             tags = sorted(itertools.chain(keywords, themes))
             return '|'.join(tags) if tags else None
 
@@ -140,6 +168,17 @@ def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
 
             return users
 
+        def get_year(release: ReleaseDate | None):
+            if release and release.y:
+                return release.y
+
+            # TODO: How to handle cancelled games?
+
+            return dat.year
+
+        region = get_region()
+        release = get_release(region)
+
 
         return DatGame(
             name=dat.name_key,
@@ -154,7 +193,7 @@ def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
             #console_exclusive
             #controls
             coop=get_coop(),
-            #date
+            date=get_date(release),
             developer=get_developer(),
             #download
             #edge_issue
@@ -183,10 +222,10 @@ def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
             perspective=get_perspective(),
             platform_exclusive=get_platform_exclusive(),
             publisher=get_publisher(),
-            #region
+            region=region,
             #releaseday
-            #releasemonth
-            #releaseyear
+            releasemonth=release.m if release else None,
+            releaseyear=release.y if release else None,
             rumble=get_rumble(),
             #score
             serial=get_serial(),
@@ -196,7 +235,7 @@ def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
             #vehicular
             #version
             #visual
-            #year
+            year=get_year(release)
 
         )
 
