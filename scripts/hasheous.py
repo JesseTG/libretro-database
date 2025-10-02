@@ -175,10 +175,16 @@ class DataObject:
     UpdatedDate: str
     Name: str
 
-    def has_crc(self, crc: str) -> bool:
-        roms = self.rom_list
+    def has_rom(self, crc: str | None, md5: str | None, sha1: str | None) -> bool:
+        for rom in self.rom_list:
+            if crc and rom.Crc and (rom.Crc.lower() == crc.lower()):
+                return True
+            if md5 and rom.Md5 and (rom.Md5.lower() == md5.lower()):
+                return True
+            if sha1 and rom.Sha1 and (rom.Sha1.lower() == sha1.lower()):
+                return True
 
-        return any(r.Crc == crc for r in roms)
+        return False
 
     @property
     def rom_list(self) -> Sequence[RomItem]:
