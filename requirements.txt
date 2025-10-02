@@ -5,3 +5,4 @@ aiofiles==24.1.*
 asynciolimiter==1.2.*
 backoff==2.2.*
 pe==0.6.*
+typelib==0.2.*
