@@ -52,15 +52,15 @@ class AgeRating:
     id: IgdbId
     organization: AgeRatingOrganization
     rating_category: AgeRatingCategory
-    rating_content_descriptions: Sequence[AgeRatingContentDescriptionV2] | None = None
-    rating_cover_url: str | None = None
-    synopsis: str | None = None
+    rating_content_descriptions: Optional[Sequence[AgeRatingContentDescriptionV2]] = None
+    rating_cover_url: Optional[str] = None
+    synopsis: Optional[str] = None
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class AlternativeName:
     id: IgdbId
     name: str
-    comment: str | None = None
+    comment: Optional[str] = None
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Franchise:
@@ -77,7 +77,7 @@ class GameEngine:
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class GameLocalization:
     id: IgdbId
-    name: str | None = None
+    name: Optional[str] = None
     region: 'Region'
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
@@ -108,10 +108,10 @@ class CompanyStatus:
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Company:
     id: IgdbId
-    country: int | None = None # ISO 3166-1 code
+    country: Optional[int] = None # ISO 3166-1 code
     name: str
     slug: str
-    status: CompanyStatus | None = None
+    status: Optional[CompanyStatus] = None
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class InvolvedCompany:
@@ -125,9 +125,9 @@ class InvolvedCompany:
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Region:
     id: IgdbId
-    identifier: str | None = None
-    name: str | None = None
-    category: Literal['locale', 'continent'] | None = None
+    identifier: Optional[str] = None
+    name: Optional[str] = None
+    category: Optional[Literal['locale', 'continent']] = None
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Keyword:
@@ -171,14 +171,14 @@ class PlatformVersion:
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Platform:
     id: IgdbId
-    abbreviation: str | None = None
-    alternative_name: str | None = None
-    generation: int | None = None
+    abbreviation: Optional[str] = None
+    alternative_name: Optional[str] = None
+    generation: Optional[int] = None
     name: str
-    platform_family: PlatformFamily | None = None
-    platform_type: PlatformType | None = None
-    slug: str | None = None
-    summary: str | None = None
+    platform_family: Optional[PlatformFamily] = None
+    platform_type: Optional[PlatformType] = None
+    slug: Optional[str] = None
+    summary: Optional[str] = None
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class MultiplayerMode:
@@ -187,14 +187,14 @@ class MultiplayerMode:
     dropin: bool
     lancoop: bool
     offlinecoop: bool
-    offlinecoopmax: int | None = None
-    offlinemax: int | None = None
+    offlinecoopmax: Optional[int] = None
+    offlinemax: Optional[int] = None
     onlinecoop: bool
-    onlinecoopmax: int | None = None
-    onlinemax: int | None = None
-    platform: Platform | None = None
+    onlinecoopmax: Optional[int] = None
+    onlinemax: Optional[int] = None
+    platform: Optional[Platform] = None
     splitscreen: bool
-    splitscreenonline: bool | None = None
+    splitscreenonline: Optional[bool] = None
 
     @property
     def coop(self) -> bool:
@@ -224,14 +224,14 @@ class ReleaseDateStatus:
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class ReleaseDate:
     id: IgdbId
-    date: int | None = None
+    date: Optional[int] = None
     date_format: DateFormat
     human: str
-    m: Literal[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] | None = None  # Month (1-12)
+    m: Optional[Literal[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]] = None  # Month (1-12)
     platform: Platform
     release_region: ReleaseDateRegion
-    status: ReleaseDateStatus | None = None
-    y: int | None = None  # Year
+    status: Optional[ReleaseDateStatus] = None
+    y: Optional[int] = None  # Year
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Theme:
@@ -241,47 +241,47 @@ class Theme:
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Game:
     id: IgdbId
-    age_ratings: Sequence[AgeRating] | None = None
-    aggregated_rating: float | None = None
-    aggregated_rating_count: int | None = None
-    alternative_names: Sequence[AlternativeName] | None = None
-    bundles: Sequence['Game'] | None = None # name, ID, and platform
-    collections: Sequence['Game'] | None = None # name, ID, and platform
-    dlcs: Sequence['Game'] | None = None # name, ID, and platform
-    expanded_games: Sequence['Game'] | None = None # name, ID, and platform
-    expansions: Sequence['Game'] | None = None # name, ID, and platform
-    first_release_date: int | None = None # TODO: Parse with date.fromtimestamp()
-    forks: Sequence['Game'] | None = None # name, ID, and platform
-    franchise: Franchise | None = None
-    franchises: Sequence[Franchise] | None = None
-    game_engines: Sequence[GameEngine] | None = None
-    game_localizations: Sequence[GameLocalization] | None = None
-    game_modes: Sequence[GameMode] | None = None
-    game_status: GameStatus | None = None
-    game_type: GameType | None = None
-    genres: Sequence[Genre] | None = None
-    involved_companies: Sequence[InvolvedCompany] | None = None
-    keywords: Sequence[Keyword] | None = None
-    language_supports: Sequence[LanguageSupport] | None = None
-    multiplayer_modes: Sequence[MultiplayerMode] | None = None
+    age_ratings: Optional[Sequence[AgeRating]] = None
+    aggregated_rating: Optional[float] = None
+    aggregated_rating_count: Optional[int] = None
+    alternative_names: Optional[Sequence[AlternativeName]] = None
+    bundles: Optional[Sequence['Game']] = None # name, ID, and platform
+    collections: Optional[Sequence['Game']] = None # name, ID, and platform
+    dlcs: Optional[Sequence['Game']] = None # name, ID, and platform
+    expanded_games: Optional[Sequence['Game']] = None # name, ID, and platform
+    expansions: Optional[Sequence['Game']] = None # name, ID, and platform
+    first_release_date: Optional[int] = None # TODO: Parse with date.fromtimestamp()
+    forks: Optional[Sequence['Game']] = None # name, ID, and platform
+    franchise: Optional[Franchise] = None
+    franchises: Optional[Sequence[Franchise]] = None
+    game_engines: Optional[Sequence[GameEngine]] = None
+    game_localizations: Optional[Sequence[GameLocalization]] = None
+    game_modes: Optional[Sequence[GameMode]] = None
+    game_status: Optional[GameStatus] = None
+    game_type: Optional[GameType] = None
+    genres: Optional[Sequence[Genre]] = None
+    involved_companies: Optional[Sequence[InvolvedCompany]] = None
+    keywords: Optional[Sequence[Keyword]] = None
+    language_supports: Optional[Sequence[LanguageSupport]] = None
+    multiplayer_modes: Optional[Sequence[MultiplayerMode]] = None
     name: str
-    parent_game: 'Game | None' = None
-    platforms: Sequence[Platform] | None = None
-    player_perspectives: Sequence[PlayerPerspective] | None = None
-    ports: Sequence['Game'] | None = None
-    release_dates: Sequence[ReleaseDate] | None = None
-    remakes: Sequence['Game'] | None = None
-    remasters: Sequence['Game'] | None = None
-    slug: str | None = None
-    standalone_expansions: Sequence['Game'] | None = None
-    storyline: str | None = None
-    summary: str | None = None
-    themes: Sequence[Theme] | None = None
-    total_rating: float | None = None
-    total_rating_count: int | None = None
-    url: str | None = None # TODO: Parse with urllib
-    version_parent: 'Game | None' = None
-    version_title: str | None = None
+    parent_game: Optional['Game'] = None
+    platforms: Optional[Sequence[Platform]] = None
+    player_perspectives: Optional[Sequence[PlayerPerspective]] = None
+    ports: Optional[Sequence['Game']] = None
+    release_dates: Optional[Sequence[ReleaseDate]] = None
+    remakes: Optional[Sequence['Game']] = None
+    remasters: Optional[Sequence['Game']] = None
+    slug: Optional[str] = None
+    standalone_expansions: Optional[Sequence['Game']] = None
+    storyline: Optional[str] = None
+    summary: Optional[str] = None
+    themes: Optional[Sequence[Theme]] = None
+    total_rating: Optional[float] = None
+    total_rating_count: Optional[int] = None
+    url: Optional[str] = None # TODO: Parse with urllib
+    version_parent: Optional['Game'] = None
+    version_title: Optional[str] = None
 
 DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
     "age_ratings.organization.name",
@@ -394,24 +394,24 @@ JsonObject: TypeAlias = Mapping[str, "JsonPrimitive | JsonArray | JsonObject"]
 
 @dataclass(kw_only=True, eq=True)
 class Query:
-    fields: tuple[str, ...] | None
-    exclude: tuple[str, ...] | None
-    where: str | None
+    fields: Optional[tuple[str, ...]]
+    exclude: Optional[tuple[str, ...]]
+    where: Optional[str]
     limit: int
     offset: int
-    sort: tuple[str, SortDirection] | None
-    search: str | None
+    sort: Optional[tuple[str, SortDirection]]
+    search: Optional[str]
 
     def __init__(
             self,
-            query: str | None = None,
+            query: Optional[str] = None,
             *, # Force keyword arguments for clarity
-            fields: Iterable[str] | str | None = "*",
-            exclude: Iterable[str] | str | None = None,
+            fields: Optional[Iterable[str] | str] = "*",
+            exclude: Optional[Iterable[str] | str] = None,
             where: Optional[str] = None,
             limit: int = 10, # IGDB's default
             offset: int = 0, # IGDB's default
-            sort: tuple[str, SortDirection] | None = None,
+            sort: Optional[tuple[str, SortDirection]] = None,
             search: Optional[str] = None,
     ) -> None:
           # Regular expression to match clauses
@@ -556,16 +556,16 @@ class Playlist:
     def __init__(
             self,
             title: str,
-            hasheous: str | Iterable[str] | None = None,
-            alts: str | Iterable[str] | None = None,
+            hasheous: Optional[str | Iterable[str]] = None,
+            alts: Optional[str | Iterable[str]] = None,
             *, # Force keyword arguments for clarity
-            fields: Iterable[str] | str | None = DEFAULT_GAME_FIELD_TUPLE,
-            exclude: Iterable[str] | str | None = None,
-            where: str | None = None,
+            fields: Optional[Iterable[str] | str] = DEFAULT_GAME_FIELD_TUPLE,
+            exclude: Optional[Iterable[str] | str] = None,
+            where: Optional[str] = None,
             limit: int = 500,
             offset: int = 0,
-            sort: tuple[str, SortDirection] | None = DEFAULT_SORT,
-            search: str | None = None,
+            sort: Optional[tuple[str, SortDirection]] = DEFAULT_SORT,
+            search: Optional[str] = None,
     ):
         self.title = title
 

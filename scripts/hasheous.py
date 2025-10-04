@@ -19,13 +19,13 @@ METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class SignatureDataObject:
-    SignatureId: str | None = None
-    Name: str | None = None
-    Year: str | None = None
-    Platform: str | None = None
-    SourceId: str | None = None
-    Publisher: str | None = None
-    MetadataSource: str | None = None
+    SignatureId: Optional[str] = None
+    Name: Optional[str] = None
+    Year: Optional[str] = None
+    Platform: Optional[str] = None
+    SourceId: Optional[str] = None
+    Publisher: Optional[str] = None
+    MetadataSource: Optional[str] = None
 
 
 MappingStatus: TypeAlias = Literal["NotMapped", "Mapped", "MappedWithErrors"]
@@ -120,11 +120,11 @@ SignatureSourceType: TypeAlias = Literal[
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class MediaType:
-    MediaType: RomTypeName | None = None
-    Media: str | None = None
-    Number: int | None = None
-    Count: int | None = None
-    Side: str | None = None
+    MediaType: Optional[RomTypeName] = None
+    Media: Optional[str] = None
+    Number: Optional[int] = None
+    Count: Optional[int] = None
+    Side: Optional[str] = None
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class RomItem:
@@ -147,7 +147,7 @@ class RomItem:
     MediaLabel: str | None = None
     SignatureSource: SignatureSourceType | None = None
 
-AttributeValue: TypeAlias = "DataObject | Sequence[RomItem] | str"
+AttributeValue: TypeAlias = Union["DataObject", list[RomItem], str]
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Attribute:
@@ -161,7 +161,7 @@ class Attribute:
     '''Not a typo, the API serializes it this way'''
 
     Value: AttributeValue
-    Id: int | None = None
+    Id: Optional[int] = None
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)

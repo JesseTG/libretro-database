@@ -33,28 +33,28 @@ from typelib.serdes import MarshalledValueT
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class ClrMamePro:
     name: str
-    description: str | None = None
-    category: str | None = None
-    date: str | None = None
-    author: str | None = None
-    email: str | None = None
-    url: str | None = None
-    version: str | None = None
-    comment: str | None = None
-    homepage: str | None = None
+    description: Optional[str] = None
+    category: Optional[str] = None
+    date: Optional[str] = None
+    author: Optional[str] = None
+    email: Optional[str] = None
+    url: Optional[str] = None
+    version: Optional[str] = None
+    comment: Optional[str] = None
+    homepage: Optional[str] = None
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Rom:
-    crc: str | None = None
-    serial: str | None = None
-    image: str | None = None
-    name: str | None = None
-    size: int | None = None
-    md5: str | None = None
-    sha1: str | None = None
-    sha1sum: str | None = None
-    genre: str | None = None
-    users: str | None = None
+    crc: Optional[str] = None
+    serial: Optional[str] = None
+    image: Optional[str] = None
+    name: Optional[str] = None
+    size: Optional[int] = None
+    md5: Optional[str] = None
+    sha1: Optional[str] = None
+    sha1sum: Optional[str] = None
+    genre: Optional[str] = None
+    users: Optional[str] = None
 
     def __post_init__(self):
         # Called by dataclasses after __init__, but before the instance is returned
@@ -102,94 +102,94 @@ class Rom:
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Game:
-    name: str | None = None
-    comment: str | None = None
-    description: str | None = None
-    id: str | None = None
+    name: Optional[str] = None
+    comment: Optional[str] = None
+    description: Optional[str] = None
+    id: Optional[str] = None
 
-    achievements: int | None = None
-    analog: bool | None = None
-    artstyle: str | None = None
+    achievements: Optional[int] = None
+    analog: Optional[bool] = None
+    artstyle: Optional[str] = None
     """May include multiple art styles separated by commas, slashes, or pipes."""
 
-    bbfc_rating: str | None = None
-    category: str | None = None
+    bbfc_rating: Optional[str] = None
+    category: Optional[str] = None
     """May include multiple categories separated by commas, slashes, or pipes."""
 
-    cero_rating: str | None = None
-    code: str | None = None
-    console_exclusive: bool | None = None
-    controls: str | None = None
-    coop: bool | None = None
-    date: str | None = None
-    developer: str | None = None
+    cero_rating: Optional[str] = None
+    code: Optional[str] = None
+    console_exclusive: Optional[bool] = None
+    controls: Optional[str] = None
+    coop: Optional[bool] = None
+    date: Optional[str] = None
+    developer: Optional[str] = None
     """May include multiple developers separated by commas, slashes, or pipes"""
 
-    download: str | None = None
-    edge_issue: int | None = None
-    edge_rating: int | None = None
-    elspa_rating: str | None = None
-    enhancement_hardware: str | None = None
-    enhancement_hw: str | None = None
-    esrb_rating: str | None = None
-    famitsu_rating: int | None = None
-    franchise: str | None = None
-    gameplay: str | None = None
+    download: Optional[str] = None
+    edge_issue: Optional[int] = None
+    edge_rating: Optional[int] = None
+    elspa_rating: Optional[str] = None
+    enhancement_hardware: Optional[str] = None
+    enhancement_hw: Optional[str] = None
+    esrb_rating: Optional[str] = None
+    famitsu_rating: Optional[int] = None
+    franchise: Optional[str] = None
+    gameplay: Optional[str] = None
     """May include multiple gameplay types separated by commas, slashes, or pipes."""
 
-    genre: str | None = None
+    genre: Optional[str] = None
     """May include multiple genres separated by commas, slashes, or pipes."""
 
-    homepage: str | None = None
-    igdb_id: int | None = None
-    igdb_platform_id: int | None = None
-    igdb_release_date_id: int | None = None
-    language: str | None = None
+    homepage: Optional[str] = None
+    igdb_id: Optional[int] = None
+    igdb_platform_id: Optional[int] = None
+    igdb_release_date_id: Optional[int] = None
+    language: Optional[str] = None
     """May include multiple languages separated by commas, slashes, or pipes."""
 
-    license: str | None = None
-    manufacturer: str | None = None
-    media: str | None = None
+    license: Optional[str] = None
+    manufacturer: Optional[str] = None
+    media: Optional[str] = None
     """May include multiple media types separated by commas, slashes, or pipes."""
 
-    narrative: str | None = None
+    narrative: Optional[str] = None
     """May include multiple narrative types separated by commas, slashes, or pipes."""
 
-    origin: str | None = None
+    origin: Optional[str] = None
 
-    pacing: str | None = None
+    pacing: Optional[str] = None
     """May include multiple pacing types separated by commas, slashes, or pipes."""
 
-    patch: str | None = None
-    pegi_rating: str | None = None
-    perspective: str | None = None
-    platform_exclusive: bool | None = None
-    publisher: str | None = None
+    patch: Optional[str] = None
+    pegi_rating: Optional[str] = None
+    perspective: Optional[str] = None
+    platform_exclusive: Optional[bool] = None
+    publisher: Optional[str] = None
     """May include multiple publishers separated by commas, slashes, or pipes."""
 
-    region: str | None = None
-    releaseday: int | None = None
-    releasemonth: int | None = None
-    releaseyear: int | None = None
-    rumble: bool | None = None
-    score: str | None = None
-    serial: str | None = None
-    setting: str | None = None
-    tags: str | None = None
-    users: int | None = None
-    vehicular: str | None = None
+    region: Optional[str] = None
+    releaseday: Optional[int] = None
+    releasemonth: Optional[int] = None
+    releaseyear: Optional[int] = None
+    rumble: Optional[bool] = None
+    score: Optional[str] = None
+    serial: Optional[str] = None
+    setting: Optional[str] = None
+    tags: Optional[str] = None
+    users: Optional[int] = None
+    vehicular: Optional[str] = None
     """May include multiple vehicule types separated by commas, slashes, or pipes."""
 
-    version: str | None = None
-    visual: str | None = None
+    version: Optional[str] = None
+    visual: Optional[str] = None
     """May include multiple visual types separated by commas, slashes, or pipes."""
 
     # May be a string because of entries like "???" for unknown years,
     # or "198?" for an unknown year in the 1980s
-    year: int | str | None = None
+    year: Optional[int | str] = None
 
     # Declared last so that it appears last in the generated DATs
-    rom: Sequence[Rom] | None = None
+    rom: Optional[Sequence[Rom]] = None
 
     @property
     def name_key(self) -> str:
@@ -216,7 +216,7 @@ class Game:
 
         return rom.id
 
-DatValue: TypeAlias = "str | Sequence[DatRecord] | DatRecord"
+DatValue: TypeAlias = Union[str, Sequence["DatRecord"], "DatRecord"]
 DatRecord: TypeAlias = Mapping[str, DatValue]
 
 ParsedGameDatList: TypeAlias = tuple[ClrMamePro, *tuple[Game, ...]]
