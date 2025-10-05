@@ -109,6 +109,7 @@ SignatureSourceType: TypeAlias = Literal[
     "MAMEArcade",
     "MAMEMess",
     "NoIntro",
+    "NoIntros",
     "Redump",
     "WHDLoad",
     "RetroAchievements",
