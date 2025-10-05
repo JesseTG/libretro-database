@@ -130,23 +130,23 @@ class MediaType:
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class RomItem:
     Score: int
-    Attributes: Mapping[str, str] | None = None
+    Attributes: Optional[Mapping[str, str]] = None
     RomType: RomTypeName
-    Id: str | None = None
-    Name: str | None = None
-    Size: int | None = None
-    Crc: str | None = None
-    Md5: str | None = None
-    Sha1: str | None = None
-    Sha256: str | None = None
-    Status: str | None = None
-    Country: Mapping[str, str] | None = None
-    Language: Mapping[str, str] | None = None
-    DevelopmentStatus: str | None = None
-    RomTypeMedia: str | None = None
-    MediaDetail: MediaType | None = None
-    MediaLabel: str | None = None
-    SignatureSource: SignatureSourceType | None = None
+    Id: Optional[str] = None
+    Name: Optional[str] = None
+    Size: Optional[int] = None
+    Crc: Optional[str] = None
+    Md5: Optional[str] = None
+    Sha1: Optional[str] = None
+    Sha256: Optional[str] = None
+    Status: Optional[str] = None
+    Country: Optional[Mapping[str, str]] = None
+    Language: Optional[Mapping[str, str]] = None
+    DevelopmentStatus: Optional[str] = None
+    RomTypeMedia: Optional[str] = None
+    MediaDetail: Optional[MediaType] = None
+    MediaLabel: Optional[str] = None
+    SignatureSource: Optional[SignatureSourceType] = None
 
 AttributeValue: TypeAlias = Union["DataObject", list[RomItem], str]
 
