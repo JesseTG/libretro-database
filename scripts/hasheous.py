@@ -9,7 +9,7 @@ from pathlib import Path
 import zipfile
 
 from collections.abc import Sequence, Mapping
-from typing import Literal, TypeAlias
+from typing import Literal, Optional, TypeAlias, Union
 from zipfile import ZipFile
 
 import typelib
