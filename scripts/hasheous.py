@@ -148,7 +148,7 @@ class RomItem:
     MediaLabel: Optional[str] = None
     SignatureSource: Optional[SignatureSourceType] = None
 
-AttributeValue: TypeAlias = Union["DataObject", list[RomItem], str]
+AttributeValue: TypeAlias = Union["DataObject", Sequence[RomItem], str]
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Attribute:
