@@ -379,6 +379,7 @@ DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
     "themes.name",
     "total_rating",
     "total_rating_count",
+    "url",
     "version_title",
     "version_parent.name",
     "version_parent.platforms.name",
