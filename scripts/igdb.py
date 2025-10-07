@@ -417,7 +417,7 @@ async def handle_process(args: argparse.Namespace) -> None:
             encoded_dat = GameDataListCodec.encode(dat)
             dat_path = os.path.join(outpath, f"{title}.dat")
 
-            print(f"Generating DAT at '{dat_path}'...")
+            print(f"Generating DAT at '{dat_path}' with {len(dat)} records...")
             async with aiofiles.open(dat_path, 'wb') as outfile:
                 await outfile.write(encoded_dat)
 

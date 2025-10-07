@@ -465,7 +465,7 @@ def load_dat(dat_path: tuple[str, Path]) -> LoadedDat | None:
         raise Exception(f"Failed to load DAT file {dat_path}: {e}") from e
 
     finish = time.perf_counter_ns()
-    print(f"Loaded \"{dat_path[0]}\" from \"{str(dat_path[1])}\" with {len(dat)} records in {(finish - start) / 1_000_000:.2f} ms")
+    print(f"Loaded {len(dat)} records from \"{str(dat_path[1])}\" in {(finish - start) / 1_000_000:.2f} ms")
 
     return LoadedDat(
         *dat_path,
