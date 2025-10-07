@@ -1,7 +1,7 @@
 from collections.abc import Collection, Iterable
 import itertools
 import sys
-from typing import Callable, NamedTuple
+from typing import Callable, NamedTuple, Optional
 
 from dats import Game as DatGame
 from igdb_playlists import RUMBLE_KEYWORD_IDS, Playlist, Game as IgdbGame, ReleaseDate
@@ -12,6 +12,85 @@ class PlaylistData(NamedTuple):
     igdb: Collection[IgdbGame]
     dats: Collection[DatGame]
     hasheous: Collection[DataObject]
+
+class MatchRecord(NamedTuple):
+    """
+    A record of an attempt to match a game listed in one of this repo's DAT files
+    with an entry in IGDB and/or Hasheous.
+    Intended for output to a CSV file for later analysis.
+    """
+
+    name: str
+    """
+    The name of the game as listed in the DAT file.
+    If the game is listed under multiple names,
+    the first one found wins.
+    """
+
+    crc: Optional[str]
+    """
+    The CRC32 of the game's ROM, if available.
+    """
+
+    md5: Optional[str]
+    """
+    The MD5 hash of the game's ROM, if available.
+    """
+
+    sha1: Optional[str]
+    """
+    The SHA-1 hash of the game's ROM, if available.
+    """
+
+    serial: Optional[str]
+    """
+    The serial number of the game's ROM, if available.
+    """
+
+    hasheous_id: Optional[int]
+    """
+    The ID number of this game's entry on Hasheous, if one was found.
+    """
+
+    hasheous_url: Optional[str]
+    """
+    The URL of this game's entry on Hasheous, if one was found.
+    """
+
+    igdb_id: Optional[int]
+    """
+    The ID number of this game's entry on IGDB, if one was found.
+    """
+
+    igdb_url: Optional[str]
+    """
+    The URL of this game's entry on IGDB, if one was found.
+    """
+
+    igdb_release_id: Optional[int]
+    """
+    The ID number of this game's release on IGDB for the platform named by igdb_platform_id.
+    """
+
+    igdb_platform_id: Optional[int]
+    """
+    The ID number of the platform on IGDB that this game was released for.
+    """
+
+
+    @property
+    def matched(self) -> bool:
+        return \
+            self.igdb_id is not None and \
+            self.hasheous_id is not None and \
+            (self.crc is not None or self.serial is not None)
+
+class GameMatch(NamedTuple):
+    source_dat: DatGame
+    igdb: Optional[IgdbGame]
+    hasheous: Optional[DataObject]
+    generated_dat: Optional[DatGame]
+    record: MatchRecord
 
 def find[T](items: Iterable[T] | None, predicate: Callable[[T], bool]) -> T | None:
     """Find the first item in items that matches the predicate, or None if not found."""
@@ -25,10 +104,7 @@ def find[T](items: Iterable[T] | None, predicate: Callable[[T], bool]) -> T | No
     return None
 
 
-def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
-    # TODO: Keep track of which IGDB objects we used, and which we didn't
-    # TODO: Keep track of which Hasheous objects we used, and which we didn't
-    # TODO: Keep track of which DAT games we used, and which we didn't
+def match_games(playlist: PlaylistData) -> Iterable[GameMatch]:
 
     def generate_game(dat: DatGame, igdb: IgdbGame, hasheous: DataObject) -> DatGame:
         """Generate a new DatGame object by combining data from the given DatGame, IgdbGame, and Hasheous DataObject."""
@@ -249,24 +325,32 @@ def generate_games(playlist: PlaylistData, verbose=False) -> Iterable[DatGame]:
         md5 = rom.md5
         serial = rom.serial
         sha1 = rom.sha1
+
         hasheous_entry = find(playlist.hasheous, lambda d: d.has_rom(crc, md5, sha1))
-        if not hasheous_entry:
-            if verbose:
-                print(f"Warning: No Hasheous entry found for '{dat.name_key}' (CRC={crc}, MD5={md5}, SHA1={sha1}, serial={serial}, playlist='{playlist.playlist.title}')", file=sys.stderr)
-            continue
 
-        igdb_id = hasheous_entry.igdb_id
-        if igdb_id is None:
-            if verbose:
-                print(f"Warning: No IGDB ID found in Hasheous entry for game '{dat.name_key}' (CRC {crc}) in playlist '{playlist.playlist.title}'", file=sys.stderr)
-            continue
-
+        igdb_id = hasheous_entry.igdb_id if hasheous_entry else None
         igdb_entry = find(playlist.igdb, lambda g: g.id == igdb_id)
-        if igdb_entry is None:
-            if verbose:
-                print(f"Warning: No IGDB entry found for IGDB ID {igdb_id} (Hasheous entry for game '{dat.name_key}' (CRC {crc}) in playlist '{playlist.playlist.title}')", file=sys.stderr)
-            continue
 
-        yield generate_game(dat, igdb_entry, hasheous_entry)
+        game = generate_game(dat, igdb_entry, hasheous_entry) if (igdb_entry and hasheous_entry) else None
+        match_record = MatchRecord(
+            name=dat.name_key,
+            crc=crc,
+            md5=md5,
+            sha1=sha1,
+            serial=serial,
+            igdb_id=igdb_entry.id if igdb_entry else None,
+            igdb_url=igdb_entry.url if igdb_entry else None,
+            igdb_release_id=None, # TODO: Populate this field
+            igdb_platform_id=None, # TODO: Populate this field
+            hasheous_id=hasheous_entry.Id if hasheous_entry else None,
+            hasheous_url=None # TODO: Populate this field
+        )
+        yield GameMatch(
+            source_dat=dat,
+            igdb=igdb_entry,
+            hasheous=hasheous_entry,
+            generated_dat=game,
+            record=match_record,
+        )
 
-__all__ = ("PlaylistData", "generate_games")
+__all__ = ("PlaylistData", "match_games", "GameMatch", "MatchRecord")

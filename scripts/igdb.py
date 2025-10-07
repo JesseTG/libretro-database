@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import argparse
 import asyncio
+import csv
+from io import StringIO
 import itertools
 import os
 import json
@@ -28,7 +30,7 @@ from igdb_playlists import *
 from igdb_playlists import Game as IgdbGame
 from dats import ClrMamePro, Game as DatGame, GameDataListCodec, load_dats, get_existing_dat_files
 from hasheous import DataObject, load_dataobjects
-from match import PlaylistData, generate_games
+from match import MatchRecord, PlaylistData, match_games
 
 # TODO: Get game time to beat
 # TODO: Get game characters
@@ -411,15 +413,27 @@ async def handle_process(args: argparse.Namespace) -> None:
                 author="Jesse Talavera",
             )
 
-            games = generate_games(data, verbose=verbose)
+            matches = tuple(match_games(data))
+            games = (m.generated_dat for m in matches if m.generated_dat is not None)
             await asyncio.sleep(0)
             dat = (clrmamepro, *games, )
             encoded_dat = GameDataListCodec.encode(dat)
-            dat_path = os.path.join(outpath, f"{title}.dat")
+            dat_path = outpath.joinpath(f"{title}.dat")
 
-            print(f"Generating DAT at '{dat_path}' with {len(dat)} records...")
+            print(f"Writing DAT at '{dat_path}' with {len(dat)} records...")
             async with aiofiles.open(dat_path, 'wb') as outfile:
                 await outfile.write(encoded_dat)
+
+            csv_path = outpath.joinpath(f"{title}.csv")
+            csv_output = StringIO(newline=None) # csv.DictWriter writes its own newlines
+            writer = csv.DictWriter(csv_output, fieldnames=MatchRecord._fields, dialect='unix')
+            writer.writeheader()
+            for match in matches:
+                writer.writerow(match.record._asdict())
+
+            print(f"Writing CSV at '{csv_path}' with {len(matches)} records (including failures)...")
+            async with aiofiles.open(csv_path, 'w', encoding='utf-8') as outfile:
+                await outfile.write(csv_output.getvalue())
 
         dat_tasks = tuple(group.create_task(generate_dat(p), name=p.playlist.title) for p in playlist_dict.values())
 
