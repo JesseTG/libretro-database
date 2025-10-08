@@ -16,7 +16,7 @@ from concurrent.futures import ProcessPoolExecutor
 from io import BytesIO
 from itertools import groupby
 from pathlib import Path
-from typing import Any, NamedTuple, TypeAlias, TypedDict
+from typing import Any, NamedTuple, Optional, TypeAlias, TypedDict, Union
 
 # pe lacks type stubs, so let's silence MyPy's complaints
 import pe  # type: ignore
@@ -28,7 +28,6 @@ import typelib.ctx
 import typelib.serdes
 
 from typelib.serdes import MarshalledValueT
-
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class ClrMamePro:
@@ -142,6 +141,9 @@ class Game:
 
     homepage: Optional[str] = None
     igdb_id: Optional[int] = None
+    igdb_url: Optional[str] = None
+    """URL of the IGDB page for this game."""
+
     igdb_platform_id: Optional[int] = None
     igdb_release_date_id: Optional[int] = None
     language: Optional[str] = None

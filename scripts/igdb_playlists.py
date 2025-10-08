@@ -835,6 +835,15 @@ PLAYLISTS_BY_ANY: Mapping[str, Playlist] = ChainMap(
     PLAYLISTS_BY_TITLE_LOWER,
 )
 
+ANALOG_KEYWORD_IDS = (
+    4965, # circle pad pro support
+    10740, # gamecube
+    11394, # gamecube controller support on wii
+    45794, # n64 controller supported
+    48530, # input type - dial controls
+)
+
+
 RUMBLE_KEYWORD_IDS = (
     8156, # contextual controller rumble
     50485, # game boy player rumble support
@@ -960,4 +969,5 @@ __all__ = [
     "load_games",
     "QueryClient",
     "RUMBLE_KEYWORD_IDS",
+    "ANALOG_KEYWORD_IDS",
 ]

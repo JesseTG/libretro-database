@@ -4,8 +4,9 @@ import sys
 from typing import Callable, NamedTuple, Optional
 
 from dats import Game as DatGame
-from igdb_playlists import RUMBLE_KEYWORD_IDS, Playlist, Game as IgdbGame, ReleaseDate
+from igdb_playlists import ANALOG_KEYWORD_IDS, RUMBLE_KEYWORD_IDS, Playlist, Game as IgdbGame, ReleaseDate
 from hasheous import DataObject
+from pycountry import countries
 
 class PlaylistData(NamedTuple):
     playlist: Playlist
@@ -109,8 +110,8 @@ def match_games(playlist: PlaylistData) -> Iterable[GameMatch]:
     def generate_game(dat: DatGame, igdb: IgdbGame, hasheous: DataObject) -> DatGame:
         """Generate a new DatGame object by combining data from the given DatGame, IgdbGame, and Hasheous DataObject."""
 
-        # TODO: Get the IGDB platform ID for dat
-        # (can't just use the PlaylistData, as some playlists contain games for multiple platforms)
+        # TODO: How to handle games with multiple ROMs (e.g. bin/cue games)?
+
         def get_achievements():
             if hasheous.Metadata:
                 for m in hasheous.Metadata:
@@ -119,33 +120,40 @@ def match_games(playlist: PlaylistData) -> Iterable[GameMatch]:
 
             return None
 
-        def get_cero():
+        def get_analog():
+            analog_keyword = find(igdb.keywords, lambda k: k.id in ANALOG_KEYWORD_IDS)
+            if analog_keyword:
+                return True
+            elif dat.analog is not None:
+                return dat.analog
+            return None
+
+        def get_cero(release: ReleaseDate | None):
+            region = release.release_region.id if release else None
+            if region not in (5, 7, 8, None):
+                # 5 = Japan
+                # 7 = Asia
+                # 8 = Worldwide
+                # CERO is a Japanese rating system,
+                # so omit it if this release is known to be somewhere else.
+                return None
+
             cero = find(igdb.age_ratings, lambda r: r.organization.name == "CERO")
             return cero.rating_category.rating if cero else None
 
-        def get_coop():
+        def get_coop(release: ReleaseDate | None):
             if igdb.multiplayer_modes:
                 for m in igdb.multiplayer_modes:
-                    if m.coop:
-                        # TODO: Only return true if the coop mode is for the current platform
+                    if m.coop and m.platform and release and m.platform.id == release.platform.id:
                         return True
 
             if igdb.game_modes:
                 for m in igdb.game_modes:
                     if m.id == 3: # IGDB ID for "Co-operative"
-                        # TODO: Only return true if the coop mode is for the current platform
                         return True
 
             # Can't definitively say there's no coop mode, so return None
             return None
-
-        def get_date(release: ReleaseDate | None):
-            if release and release.human:
-                return release.human
-
-            # TODO: How to handle cancelled games?
-            # TODO: Format the date as YYYY-MM-DD
-            return dat.date
 
         def get_developer():
             if not igdb.involved_companies:
@@ -153,7 +161,15 @@ def match_games(playlist: PlaylistData) -> Iterable[GameMatch]:
 
             return '|'.join(c.company.name for c in igdb.involved_companies if c.developer or c.porting)
 
-        def get_esrb():
+        def get_esrb(release: ReleaseDate | None):
+            region = release.release_region.id if release else None
+            if region not in (2, 8, None):
+                # 2 = North America
+                # 8 = Worldwide
+                # ESRB is a North American rating system,
+                # so omit it if this release is known to be outside North America.
+                return None
+
             esrb = find(igdb.age_ratings, lambda r: r.organization.name == "ESRB")
             return esrb.rating_category.rating if esrb else None
 
@@ -165,17 +181,43 @@ def match_games(playlist: PlaylistData) -> Iterable[GameMatch]:
             return '|'.join(g.name.title() for g in igdb.genres) if igdb.genres else None
             # Some string fields in RetroArch are treated as lists delimited by pipes, commas, or slashes.
 
-        def get_pegi():
+        def get_language():
+            # TODO: Extract languages from the DAT's name (check for Goodtools/No-Intro/Redump/TOSEC conventions)
+            if not igdb.language_supports:
+                return None
+
+            language_names: set[str] = set()
+            language_supports = sorted((l for l in igdb.language_supports), key=lambda l: l.language.name)
+            languages = itertools.groupby(language_supports, key=lambda l: l.language.name)
+            for (lang, supports) in languages:
+                language_names.add(lang)
+                language_names.update(f"{s.language.name} ({s.language_support_type.name})" for s in supports)
+
+            if not language_names:
+                return None
+
+            return '|'.join(sorted(language_names))
+
+        def get_pegi(release: ReleaseDate | None):
+            region = release.release_region.id if release else None
+            if region not in (1, 8, None):
+                # 1 = Europe
+                # 8 = Worldwide
+                # PEGI is a European rating system,
+                # so omit it if this release is known to be outside Europe.
+                return None
+
             pegi = find(igdb.age_ratings, lambda r: r.organization.name == "PEGI")
             return pegi.rating_category.rating if pegi else None
 
         def get_perspective():
-            perspective = None
-            if igdb.player_perspectives:
-                perspective = '|'.join(p.name.title() for p in igdb.player_perspectives)
-            return perspective
+            if not igdb.player_perspectives:
+                return None
+
+            return '|'.join(p.name.title() for p in igdb.player_perspectives)
 
         def get_platform_exclusive():
+            # TODO: What to do about legacy re-releases?
             if not igdb.platforms:
                 return None
 
@@ -188,11 +230,24 @@ def match_games(playlist: PlaylistData) -> Iterable[GameMatch]:
 
             return total_releases == 1
 
+        def get_origin():
+            if not igdb.involved_companies:
+                return None
+
+            country_codes = {c.company.country for c in igdb.involved_companies if c.developer and c.company.country}
+            country_objects = (countries.get(numeric=str(c)) for c in country_codes)
+            country_names: tuple[str, ...] = tuple(c.name for c in country_objects if c)
+
+            if not country_names:
+                return None
+
+            return '|'.join(sorted(country_names))
+
         def get_publisher():
-            publisher = None
-            if igdb.involved_companies:
-                publisher = '|'.join(c.company.name for c in igdb.involved_companies if c.publisher)
-            return publisher
+            if not igdb.involved_companies:
+                return None
+
+            return '|'.join(c.company.name for c in igdb.involved_companies if c.publisher)
 
         def get_region():
             # TODO: Guess the region from the DAT's name if the region isn't given
@@ -200,6 +255,7 @@ def match_games(playlist: PlaylistData) -> Iterable[GameMatch]:
             return dat.region
 
         def get_release(region: str | None):
+            # TODO: What to do about cancelled games?
             if not igdb.release_dates:
                 return None
 
@@ -244,75 +300,39 @@ def match_games(playlist: PlaylistData) -> Iterable[GameMatch]:
 
             return users
 
-        def get_year(release: ReleaseDate | None):
-            if release and release.y:
-                return release.y
-
-            # TODO: How to handle cancelled games?
-
-            return dat.year
-
         region = get_region()
         release = get_release(region)
-
 
         return DatGame(
             name=dat.name_key,
             rom=dat.rom,
             achievements=get_achievements(),
-            #analog
-            #artstyle
-            #bbfc_rating
-            #category
-            cero_rating=get_cero(),
-            #code
+            analog=get_analog(),
+            cero_rating=get_cero(release),
             #console_exclusive
-            #controls
-            coop=get_coop(),
-            date=get_date(release),
+            coop=get_coop(release),
             developer=get_developer(),
-            #download
-            #edge_issue
-            #edge_rating
-            #elspa_rating
-            #enhancement_hardware
             #enhancement_hw
-            esrb_rating=get_esrb(),
-            #famitsu_rating
+            esrb_rating=get_esrb(release),
             franchise=get_franchise(),
-            #gameplay
             genre=get_genre(),
-            #homepage
             igdb_id=igdb.id,
-            #igdb_platform_id
-            #igdb_release_date_id
-            #language
-            #license
-            #manufacturer
-            #media
-            #narrative
-            #origin
-            #pacing
-            #patch
-            pegi_rating=get_pegi(),
+            igdb_url=igdb.url,
+            igdb_platform_id=release.platform.id if release else None,
+            igdb_release_date_id=release.id if release else None,
+            language=get_language(),
+            origin=get_origin(),
+            pegi_rating=get_pegi(release),
             perspective=get_perspective(),
             platform_exclusive=get_platform_exclusive(),
             publisher=get_publisher(),
             region=region,
-            #releaseday
             releasemonth=release.m if release else None,
             releaseyear=release.y if release else None,
             rumble=get_rumble(),
-            #score
             serial=get_serial(),
-            #setting
             tags=get_tags(),
             users=get_users(),
-            #vehicular
-            #version
-            #visual
-            year=get_year(release)
-
         )
 
     for dat in playlist.dats:
@@ -340,8 +360,8 @@ def match_games(playlist: PlaylistData) -> Iterable[GameMatch]:
             serial=serial,
             igdb_id=igdb_entry.id if igdb_entry else None,
             igdb_url=igdb_entry.url if igdb_entry else None,
-            igdb_release_id=None, # TODO: Populate this field
-            igdb_platform_id=None, # TODO: Populate this field
+            igdb_release_id=game.igdb_release_date_id if game else None,
+            igdb_platform_id=game.igdb_platform_id if game else None,
             hasheous_id=hasheous_entry.Id if hasheous_entry else None,
             hasheous_url=None # TODO: Populate this field
         )
