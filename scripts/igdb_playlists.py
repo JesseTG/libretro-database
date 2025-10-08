@@ -21,7 +21,7 @@ import typelib
 
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
-from httpx import HTTPStatusError, Response
+from httpx import HTTPStatusError, Response, Timeout
 
 IgdbId = NewType('IgdbId', int)
 
@@ -748,7 +748,15 @@ class QueryClient:
             }
 
             await self.rate_limit.wait()
-            return await self.client.post(url, headers=headers, content=str(query))
+            response = await self.client.post(url, headers=headers, content=str(query), timeout=Timeout(None))
+            response.raise_for_status()
+
+            content_type = response.headers.get("Content-Type")
+
+            if response.headers.get('content-type') != 'application/json':
+                raise ValueError(f"Expected IGDB query response to be JSON, got: {content_type} ({response.text})")
+
+            return response
 
     @overload
     async def query(self, endpoint: Literal["multiquery"], query: str | Multiquery) -> JsonArray: ...
@@ -765,11 +773,32 @@ class QueryClient:
 
         try:
             response = await self._query(endpoint, query)
-            return response.json()
+            response_json = response.json()
+
+            return response_json
         except HTTPStatusError as e:
             print(e.response.headers, file=sys.stderr)
             raise
 
+    async def count(self, endpoint: str, query: str | Query) -> int:
+        if not endpoint.endswith('/count'):
+            endpoint += '/count'
+
+        response = await self._query(endpoint, query)
+        response_json = response.json()
+
+        if not isinstance(response_json, Mapping):
+            raise ValueError(f"Expected {endpoint} response to be a JSON object, got {type(response_json)} ({response_json})")
+
+        if 'count' not in response_json:
+            # If the response is successful yet wrong, raise a ValueError
+            raise ValueError(f"Expected a 'count' attribute in response from {endpoint}, got {response_json}")
+
+        count = response_json['count']
+        if not isinstance(count, int):
+            raise ValueError(f"Expected response['count'] to be a number, got {type(count)}")
+
+        return int(count)
 
 def read_playlists(path: str) -> tuple[Playlist, ...]:
     class TomlPlaylistEntry(TypedDict):

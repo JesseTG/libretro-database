@@ -189,100 +189,30 @@ async def handle_scrape(args: argparse.Namespace) -> None:
     if not playlists:
         raise ValueError("All listed playlists are unknown.")
 
-    # Limit to 8 in-flight requests
-    request_limit = asyncio.BoundedSemaphore(MAX_ACTIVE_QUERIES)
-    rate_limit = asynciolimiter.StrictLimiter(MAX_QUERY_RATE) # 4 requests per second
     outdir: str = args.outdir
 
-    def giveup(e: Exception):
-        print("Exception raised during query:", e, file=sys.stderr)
-        if not isinstance(e, HTTPStatusError):
-            # Give up if query_endpoint failed with something besides HTTPStatusError
-            return True
-
-        if e.response.status_code in RETRY_CODES:
-            # Don't give up on server errors (5xx), we might just be unlucky
-            # or rate-limited (429), so we should back off and retry.
-            return False
-
-        return e.response.is_error
-
-    def on_backoff(details):
-        print("Retrying after backoff:", details['target'].__name__, "with args:", details['args'], "and kwargs:", details['kwargs'], file=sys.stderr)
-
-    def on_predicate(response: Response) -> bool:
-        status = response.status_code
-        if status in RETRY_CODES:
-            # If the response is a retryable error, we want to retry
-            print(f"Retrying due to status code {status} ({response.reason_phrase})", file=sys.stderr)
-            return True
-
-        return False
-
-    @backoff.on_exception(backoff.expo, HTTPStatusError, max_tries=5, giveup=giveup, on_backoff=on_backoff)
-    @backoff.on_predicate(backoff.expo, on_predicate)
-    async def query_endpoint(client: AsyncOAuth2Client, endpoint: str, query: Query | Multiquery) -> Response:
-        async with request_limit:
-            try:
-                await rate_limit.wait()
-                return await query_igdb(client, endpoint, query)
-            except HTTPStatusError as e:
-                print(e.response.headers, file=sys.stderr)
-                raise
-
-    async def fetch_playlist(client: AsyncOAuth2Client, playlist: Playlist, group: TaskGroup) -> Sequence[Mapping[str, Any]]:
+    async def fetch_playlist(client: QueryClient, playlist: Playlist, group: TaskGroup) -> Sequence[Mapping[str, Any]]:
         print(f"{playlist.title}: Fetching game count in query...")
-        response = await query_endpoint(client, "games/count", playlist.query)
-        content_type = response.headers.get("Content-Type")
-        if response.headers.get('content-type') != 'application/json':
-            raise ValueError(f"Expected games/count response to be JSON for query to playlist {playlist.title}, got: {content_type} ({response.text})")
-        count_json: JsonObject = response.json()
-
-        if not isinstance(count_json, Mapping):
-            raise ValueError(f"Expected count response for '{playlist.title}' query to be a JSON object; got: {type(count_json)} ({count_json})")
-
-        if 'count' not in count_json:
-            response.raise_for_status() # Raise an error if the response is not successful
-            # But if the response is successful yet wrong, raise a ValueError
-            raise ValueError(f"Count response for '{playlist.title}' lacks a 'count' attribute; got: {count_json} (Headers: {response.headers})")
-
-        count = count_json['count']
-        if not isinstance(count, int):
-            raise ValueError(f"Expected response['count'] to be a number, got {type(count)}")
+        count = await client.count("games", playlist.query)
 
         multiqueries: list[Multiquery] = []
         for batch in itertools.batched(playlist.query_pages(count), MULTIQUERY_MAX):
             multiqueries.append(Multiquery({f"{playlist.title} ({q.offset}-{q.offset + q.limit - 1})": ('games', q) for q in batch}))
 
-        playlist_tasks = tuple(group.create_task(query_endpoint(client, "multiquery", m)) for m in multiqueries)
+        playlist_tasks = tuple(group.create_task(client.query("multiquery", m)) for m in multiqueries)
         print(f"{playlist.title}: Scheduled to fetch {count} games...")
 
-        responses: Sequence[Response]  = await asyncio.gather(*playlist_tasks)
+        responses: Sequence[JsonArray]  = await asyncio.gather(*playlist_tasks)
         games: list[GameResponse] = []
 
         for r in responses:
-            if r.is_error:
-                print(f"Error fetching playlist {playlist.title}: {r.status_code} {r.reason_phrase}", file=sys.stderr)
-                r.raise_for_status()
+            if not isinstance(r, Sequence):
+                raise ValueError(f"Expected multiquery response for '{playlist.title}' to be a JSON array; got: {type(r)} ({r})")
 
-            response_content_type: str | None = r.headers.get('content-type')
-            if response_content_type != 'application/json':
-                raise ValueError(f"Expected multiquery response to be JSON for query to playlist {playlist.title}, got: {response_content_type} ({r.text})")
-
-            try:
-                response_json: Sequence[MultiqueryResponse] = r.json()
-                if not isinstance(response_json, Sequence):
-                    raise ValueError(f"Expected multiquery response for '{playlist.title}' to be a JSON array; got: {type(response_json)} ({response_json})")
-
-                for g in response_json:
-                    games.extend(g['result'])
-                    # We're not processing the returned games except to sort them,
-                    # so we don't need to convert them to IgdbGame objects here.
-
-            except JSONDecodeError as e:
-                raise ValueError(f"Failed to decode JSON response for playlist {playlist.title}") from e
-            except TypeError as e:
-                raise ValueError(f"Unexpected response format for playlist {playlist.title}: {e}") from e
+            for g in cast(Sequence[MultiqueryResponse], r):
+                games.extend(g['result'])
+                # We're not processing the returned games except to sort them,
+                # so we don't need to convert them to IgdbGame objects here.
 
         print(f"{playlist.title}: Fetched {len(games)} games.")
         games.sort(key=lambda g: g['name'])
@@ -297,9 +227,10 @@ async def handle_scrape(args: argparse.Namespace) -> None:
 
         return games
 
-    async with authenticate_igdb(args) as (oauth, token):
+    client_id, client_secret = get_client_credentials(args)
+    async with QueryClient(client_id, client_secret) as client:
         async with asyncio.TaskGroup() as group:
-            tasks = tuple(group.create_task(fetch_playlist(oauth, p, group), name=p.title) for p in playlists)
+            tasks = tuple(group.create_task(fetch_playlist(client, p, group), name=p.title) for p in playlists)
 
 
 class GameMetadataDicts:
