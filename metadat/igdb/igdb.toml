@@ -500,12 +500,54 @@ title = "RPG Maker"
 # RPG Maker 2000, RPG Maker 2003
 where = "game_engines = (696, 765)"
 
-# TODO: ScummVM supports more than just the SCUMM games,
-#  this query needs to be significantly expanded
+# ScummVM supports games from a ton of engines (not just SCUMM),
+# including ports from different platforms (e.g. DOS, Amiga, Atari ST).
+# However, not every game engine that ScummVM supports has an entry in IGDB.
+# Even for those engines that do have an entry,
+# not every game that uses it is tagged properly.
+# See https://wiki.scummvm.org/index.php?title=Engines for a list of supported engines.
 [[igdb.playlists]]
 title = "ScummVM"
-# Made with SCUMM, Z-Machine, or Cinematique
-where = "game_engines = (53, 71, 270)"
+# Made with one of the following:
+# - 31: AGS (Adventure Game Studio)
+# - 39: SCI1.1
+# - 53: SCUMM (LucasArts)
+# - 71: Z-Machine
+# - 77: AGOS (Adventure Graphic Operating System)
+# - 96: SAGA
+# - 101: Virtual Theatre
+# - 102: Virtools Engine
+# - 111: Groovie
+# - 132: Voxel Plus
+# - 142: AGI (Adventure Game Interpreter)
+# - 143: SCI (Sierra Creative Interpreter)
+# - 145: GrimE (Grim Engine)
+# - 164: MacVenture
+# - 178: HPL
+# - 199: Macromedia Director 2.0
+# - 238: Sprint
+# - 269: Freescape
+# - 270: Cinematique
+# - 279: HPL Engine
+# - 289: Wintermute
+# - 329: MADE (Multimedia Applications Development Environment)
+# - 534: SCI0
+# - 535: SCI1
+# - 536: SCI
+# - 589: Macromedia Director
+# - 664: Asylum
+# - 774: Mohawk
+# - 1067: Text Adventure Development System (TADS)
+# - 1068: Hugo
+# - 1129: AGT (Adventure Game Toolkit)
+# - 1158: V-Cruise
+# - 1376: SLUDGE
+# - 1474: World Builder
+# OR it has one of the following keywords:
+# - "scumm" (14178)
+# - "virtools" (43693)
+# - "scummvm compatible" (50501)
+where = "game_engines = (31, 39, 53, 71, 77, 96, 101, 102, 111, 132, 142, 143, 145, 164, 178, 199, 238, 269, 270, 279, 289, 329, 534, 535, 536, 589, 664, 774, 1067, 1068, 1129, 1158, 1376, 1474) | keywords = (14178, 43693, 50501)"
 
 [[igdb.playlists]]
 title = "Sega - Dreamcast"
