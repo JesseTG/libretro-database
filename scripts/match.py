@@ -1,12 +1,26 @@
-from collections.abc import Collection, Iterable
+#!/usr/bin/env python3
+
+import argparse
+import asyncio
+import csv
 import itertools
 import sys
+import zipfile
+
+from collections.abc import Collection, Iterable, Iterator, Mapping
+from io import StringIO
+from pathlib import Path
+from pprint import pprint
 from typing import Callable, NamedTuple, Optional
 
-from dats import Game as DatGame
-from igdb_playlists import ANALOG_KEYWORD_IDS, RUMBLE_KEYWORD_IDS, Playlist, Game as IgdbGame, ReleaseDate
-from hasheous import DataObject
+import aiofiles
+
 from pycountry import countries
+
+from dats import Game as DatGame, ClrMamePro, GameDataListCodec, get_existing_dat_files, load_dats
+from hasheous import DataObject, load_dataobjects
+from igdb_playlists import ANALOG_KEYWORD_IDS, PLAYLISTS_BY_TITLE, RUMBLE_KEYWORD_IDS, Playlist, Game as IgdbGame, ReleaseDate, get_playlist, load_games
+
 
 class PlaylistData(NamedTuple):
     playlist: Playlist
@@ -373,4 +387,189 @@ def match_games(playlist: PlaylistData) -> Iterable[GameMatch]:
             record=match_record,
         )
 
+def get_playlists(playlistdir: Path) -> Iterator[tuple[Path, Playlist]]:
+    """Get the Playlist objects represented by the JSON files in the specified directory."""
+    for p in playlistdir.rglob('*.json'):
+        # Walking through each JSON file inside the playlistdir...
+        if (playlist := PLAYLISTS_BY_TITLE.get(p.stem, None)):
+            # If it matches a known playlist title, yield it
+            yield (p, playlist)
+
+def get_target_dat_paths(outpath: Path, playlist_titles: Iterable[str]) -> Iterator[Path]:
+    """Get the paths to the DAT files that will be generated from the given playlists, rooted at the given directory."""
+    for title in playlist_titles:
+        yield outpath / f"{title}.dat"
+
+async def handle_generate(args: argparse.Namespace) -> None:
+    """Handle the generate subcommand."""
+
+    if not args.inpath:
+        raise ValueError("Input path must be specified for processing.")
+
+    inpath = Path(args.inpath)
+    outpath = Path(args.outpath)
+    verbose = bool(args.verbose)
+    metadata_map = Path(args.metadata_map) if args.metadata_map else None
+
+    selected_playlists: Collection[str] = args.playlists
+    if selected_playlists:
+        playlists = {p: pl for p, pl in get_playlists(inpath) if pl.title in selected_playlists}
+    else:
+        playlists = dict(get_playlists(inpath))
+
+    playlist_paths = tuple(playlists.keys())
+    playlist_titles = tuple(p.title for p in playlists.values())
+
+    if verbose:
+        print(f"Found {len(playlist_paths)} playlists in input path '{inpath}'")
+        pprint(playlist_paths, width=120)
+
+    if not metadata_map:
+        raise ValueError("Downloading MetadataMap.zip from Hasheous is not yet implemented; please provide a path to the file.")
+
+    if not zipfile.is_zipfile(metadata_map):
+        raise ValueError(f"Metadata map path '{metadata_map}' doesn't refer to a valid zip file.")
+
+    # TODO: Don't hardcode the dat and metadat directories
+    target_dat_paths = set(get_target_dat_paths(outpath, playlist_titles))
+    existing_dat_paths = {Path(p) for p in itertools.chain(get_existing_dat_files("dat"), get_existing_dat_files("metadat"))}
+    existing_dat_paths = {p for p in existing_dat_paths if p.stem in playlist_titles}
+
+    print(f"Found {len(target_dat_paths)} target DAT files to generate from playlists")
+    if verbose:
+        pprint(target_dat_paths, width=120)
+
+    print(f"Found {len(existing_dat_paths)} existing DAT files")
+    if verbose:
+        pprint(existing_dat_paths, width=120)
+
+    dats_to_scan = existing_dat_paths - target_dat_paths
+
+    print(f"In total, will scan {len(dats_to_scan)} existing DAT files for games to process.")
+    if verbose:
+        pprint(dats_to_scan, width=120)
+
+    hasheous_dirs = {p.title: p.hasheous_dirs for p in playlists.values()}
+    # Some of the Playlists consist of multiple Hasheous directories
+
+    playlists_for_dats = ((get_playlist(d), d) for d in dats_to_scan)
+    playlists_for_dats = ((p.title, d) for p, d in playlists_for_dats if p is not None)
+    sorted_playlists_for_dats = sorted(playlists_for_dats, key=lambda p: p[0])
+    grouped_playlists_for_dats = itertools.groupby(sorted_playlists_for_dats, key=lambda p: p[0])
+    dats_by_playlist = {k: [pd[1] for pd in g] for k, g in grouped_playlists_for_dats}
+
+    async with asyncio.TaskGroup() as group:
+        loaded_igdb, loaded_dats, loaded_hasheous = await asyncio.gather(
+            group.create_task(load_games(playlists)),
+            group.create_task(load_dats(dats_by_playlist)),
+            group.create_task(load_dataobjects(metadata_map, hasheous_dirs))
+        )
+
+        keys = set(loaded_igdb.keys()) | set(loaded_dats.keys()) | set(loaded_hasheous.keys())
+
+        playlist_dict: Mapping[str, PlaylistData] = {}
+        for k in keys:
+            playlist = get_playlist(k)
+            if not playlist:
+                print(f"Warning: Ignoring data for unknown playlist '{k}'", file=sys.stderr)
+                continue
+
+            playlist_dict[k] = PlaylistData(
+                playlist=playlist,
+                igdb=loaded_igdb.get(k, ()),
+                dats=loaded_dats.get(k, ()),
+                hasheous=loaded_hasheous.get(k, ()),
+            )
+
+        async def generate_dat(data: PlaylistData) -> None:
+            title = data.playlist.title
+
+            clrmamepro = ClrMamePro(
+                name=title,
+                description=title,
+                comment=f"Games for {title} with metadata from IGDB",
+                #version = "today's date"  # TODO: Set version to today's date
+                version=None,
+                author="Jesse Talavera",
+            )
+
+            matches = tuple(match_games(data))
+            games = (m.generated_dat for m in matches if m.generated_dat is not None)
+            await asyncio.sleep(0)
+            dat = (clrmamepro, *games, )
+            encoded_dat = GameDataListCodec.encode(dat)
+            dat_path = outpath.joinpath(f"{title}.dat")
+
+            print(f"Writing DAT at '{dat_path}' with {len(dat)} records...")
+            async with aiofiles.open(dat_path, 'wb') as outfile:
+                await outfile.write(encoded_dat)
+
+            csv_path = outpath.joinpath(f"{title}.csv")
+            csv_output = StringIO(newline=None) # csv.DictWriter writes its own newlines
+            writer = csv.DictWriter(csv_output, fieldnames=MatchRecord._fields, dialect='unix')
+            writer.writeheader()
+            for match in matches:
+                writer.writerow(match.record._asdict())
+
+            print(f"Writing CSV at '{csv_path}' with {len(matches)} records (including failures)...")
+            async with aiofiles.open(csv_path, 'w', encoding='utf-8') as outfile:
+                await outfile.write(csv_output.getvalue())
+
+        dat_tasks = tuple(group.create_task(generate_dat(p), name=p.playlist.title) for p in playlist_dict.values())
+
+        await asyncio.gather(*dat_tasks)
+
+def main():
+    """Main entry point for the script."""
+    parser = argparse.ArgumentParser(
+        description="Utilities for matching data from the various sources used by this repo."
+    )
+
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Show more logging output."
+    )
+
+    # Create subparsers for commands
+    subparsers = parser.add_subparsers(
+        dest="command",
+        help="Available commands",
+        required=True
+    )
+
+    # `generate` subcommand (the only one for now)
+    generate_parser = subparsers.add_parser(
+        "generate",
+        help="Output DAT files suitable for ClrMamePro and libretro."
+    )
+    generate_parser.add_argument(
+        "--metadata-map",
+        help="Path to the MetadataMap.zip file from the Hasheous project, to use for known IGDB-DAT mappings.",
+        type=str
+    )
+    generate_parser.add_argument(
+        "--playlists",
+        help="The title or system IDs of the playlists to process. If not provided, all playlists found in the input directory will be processed.",
+        action="extend",
+        nargs="*",
+        default=None
+    )
+    generate_parser.add_argument(
+        "inpath",
+        type=str,
+        help="Path to an input directory containing scraped JSON files, or to a single file."
+    )
+    generate_parser.add_argument(
+        "outpath",
+        help="The output directory for the processed DAT files. If processing a single file, can be either a file path or - for stdout.",
+    )
+    generate_parser.set_defaults(func=handle_generate)
+
+    args = parser.parse_args()
+    asyncio.run(args.func(args))
+
 __all__ = ("PlaylistData", "match_games", "GameMatch", "MatchRecord")
+
+if __name__ == "__main__":
+    main()
