@@ -571,7 +571,7 @@ def get_target_dat_paths(outpath: Path, playlist_titles: Iterable[str]) -> Itera
         yield outpath / f"{title}.dat"
 
 async def handle_bench(args: argparse.Namespace):
-    from igdb_playlists import get_playlist
+    from igdb import get_playlist
 
     # TODO: Don't hardcode these paths
     existing_dat_paths = {Path(p) for p in itertools.chain(get_existing_dat_files("dat"), get_existing_dat_files("metadat"))}

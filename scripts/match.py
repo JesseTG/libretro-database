@@ -19,7 +19,7 @@ from pycountry import countries
 
 from dats import Game as DatGame, ClrMamePro, GameDataListCodec, get_existing_dat_files, load_dats
 from hasheous import DataObject, load_dataobjects
-from igdb_playlists import ANALOG_KEYWORD_IDS, PLAYLISTS_BY_TITLE, RUMBLE_KEYWORD_IDS, Playlist, Game as IgdbGame, ReleaseDate, get_playlist, load_games
+from igdb import ANALOG_KEYWORD_IDS, PLAYLISTS_BY_TITLE, RUMBLE_KEYWORD_IDS, Playlist, Game as IgdbGame, ReleaseDate, get_playlist, load_games
 
 
 class PlaylistData(NamedTuple):
