@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from functools import cache
 from json import JSONDecodeError
 from pathlib import Path
-from typing import Never, Optional, Literal, NewType, Required, TypeAlias, TypedDict, cast, overload
+from typing import Never, Optional, Literal, NewType, Required, Self, TypeAlias, TypedDict, cast, overload
 
 import aiofiles
 import aiofiles.os
@@ -683,7 +683,7 @@ class QueryClient:
             scope=['user_read', 'user_subscriptions'],
         )
 
-    async def __aenter__(self) -> 'QueryClient':
+    async def __aenter__(self) -> Self:
         try:
             client = await self.client.__aenter__()
 
