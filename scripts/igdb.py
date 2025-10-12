@@ -4,7 +4,6 @@ import argparse
 import asyncio
 import dataclasses
 import itertools
-import json
 import os.path
 import re
 import sys
@@ -24,6 +23,7 @@ import aiofiles.os
 import asynciolimiter
 import backoff
 import httpx
+import orjson
 import typelib
 
 from authlib.integrations.httpx_client import AsyncOAuth2Client
@@ -790,7 +790,7 @@ class QueryClient:
 
         try:
             response = await self._query(endpoint, query)
-            response_json = response.json()
+            response_json = orjson.loads(response.content)
 
             return response_json
         except HTTPStatusError as e:
@@ -802,7 +802,7 @@ class QueryClient:
             endpoint += '/count'
 
         response = await self._query(endpoint, query)
-        response_json = response.json()
+        response_json = orjson.loads(response.content)
 
         if not isinstance(response_json, Mapping):
             raise ValueError(f"Expected {endpoint} response to be a JSON object, got {type(response_json)} ({response_json})")
@@ -982,7 +982,8 @@ async def handle_query(args: argparse.Namespace) -> None:
             if not all_records:
                 # If the user didn't pass the --all flag...
                 response = await client.query(args.endpoint, body)
-                json.dump(response, sys.stdout, indent=2)
+                json = orjson.dumps(response, option=orjson.OPT_INDENT_2 | orjson.OPT_APPEND_NEWLINE)
+                await aiofiles.stdout_bytes.write(json)
             else:
                 count_response = cast(CountResponse, await client.query(f"{args.endpoint}/count", body))
                 count = count_response["count"]
@@ -1005,7 +1006,8 @@ async def handle_query(args: argparse.Namespace) -> None:
 
                 results = tuple(r['result'] for r in itertools.chain.from_iterable(responses))
                 records = tuple(itertools.chain.from_iterable(results))
-                json.dump(records, sys.stdout, indent=2)
+                json = orjson.dumps(records, option=orjson.OPT_INDENT_2 | orjson.OPT_APPEND_NEWLINE)
+                await aiofiles.stdout_bytes.write(json)
         except JSONDecodeError as e:
             print(e.doc, file=sys.stderr)
             print(e, file=sys.stderr)
@@ -1057,8 +1059,9 @@ async def handle_fetch(args: argparse.Namespace) -> None:
         # Create the output directory if it doesn't exist
         await aiofiles.os.makedirs(outdir, exist_ok=True)
         outpath = os.path.join(outdir, f"{playlist.title}.json")
-        async with aiofiles.open(outpath, 'w', encoding='utf-8') as outfile:
-            await outfile.write(json.dumps(games, indent=2, ensure_ascii=False))
+        async with aiofiles.open(outpath, 'wb') as outfile:
+            json = orjson.dumps(games, option=orjson.OPT_INDENT_2 | orjson.OPT_APPEND_NEWLINE)
+            await outfile.write(json)
             print(f"{playlist.title}: Saved {len(games)} games to {outpath}")
 
         return games
