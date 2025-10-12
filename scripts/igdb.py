@@ -432,8 +432,6 @@ class Query:
             sort: Optional[tuple[str, SortDirection]] = None,
             search: Optional[str] = None,
     ) -> None:
-          # Regular expression to match clauses
-
         if query is not None:
             # If given a query string, use it to override all other parameters.
             for match in re.finditer(QUERY_CLAUSE, query.strip(), re.IGNORECASE):
