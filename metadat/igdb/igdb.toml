@@ -223,12 +223,12 @@ title = "GCE - Vectrex"
 hasheous = ["Vectrex"]
 where = "platforms = (70)"
 
-# TODO: Exclude those Mega Man Battle Network chips
 [[igdb.playlists]]
 title = "Handheld Electronic Game"
 hasheous = ["Nintendo Game & Watch"]
 # Game & Watch, Handheld LCD games
-where = "platforms = (307, 411)"
+where = "platforms = (307, 411) & parent_game != (38010, 38147, 48725, 198871, 198934, 217728, 308060, 308062, 336716)"
+# ...but exclude cards for various collectible games (mostly Barcode Battler and Mega Man Battle Network).
 
 [[igdb.playlists]]
 title = "Infocom - Z-Machine"
