@@ -9,6 +9,7 @@ from pathlib import Path
 import zipfile
 
 from collections.abc import Sequence, Mapping
+from dataclasses import field
 from typing import Literal, Optional, TypeAlias, Union
 from zipfile import ZipFile
 
@@ -176,36 +177,55 @@ class DataObject:
     UpdatedDate: str
     Name: str
 
+    # Internal cache of some commonly used properties
+    _Roms: tuple[RomItem, ...] = field(default=(), init=False, repr=False, compare=False)
+    _IgdbId: Optional[int] = field(default=None, init=False, repr=False, compare=False)
+
+    def __post_init__(self):
+        if self.ObjectType == 'Game':
+            for a in self.Attributes:
+                if a.attributeName == 'ROMs' and isinstance(a.Value, Sequence) and not isinstance(a.Value, str):
+                    object.__setattr__(self, '_Roms', tuple(a.Value))  # Bypass frozen restriction
+                    break
+
+            for m in self.Metadata:
+                if m.Source == 'IGDB' and m.Status == 'Mapped':
+                    object.__setattr__(self, '_IgdbId', int(m.ImmutableId))  # Bypass frozen restriction
+                    break
+
     def has_rom(self, crc: str | None, md5: str | None, sha1: str | None) -> bool:
-        for rom in self.rom_list:
-            if crc and rom.Crc and (rom.Crc.lower() == crc.lower()):
-                return True
-            if md5 and rom.Md5 and (rom.Md5.lower() == md5.lower()):
-                return True
-            if sha1 and rom.Sha1 and (rom.Sha1.lower() == sha1.lower()):
-                return True
+        for rom in self._Roms:
+            if crc and rom.Crc:
+                # If we have a CRC to check, and this ROM has one...
+                if rom.Crc.lower() == crc.lower():
+                    # If they're the same, we have a match
+                    return True
+                else:
+                    # Otherwise this ROM can't be a match, so look at the next one
+                    continue
+
+            if md5 and rom.Md5:
+                if rom.Md5.lower() == md5.lower():
+                    return True
+                else:
+                    continue
+
+            if sha1 and rom.Sha1:
+                if rom.Sha1.lower() == sha1.lower():
+                    return True
+                else:
+                    continue
 
         return False
 
     @property
     def rom_list(self) -> Sequence[RomItem]:
         """Return the list of ROMs, or an empty tuple if none are present."""
-        for a in self.Attributes:
-            if a.attributeName == 'ROMs' and isinstance(a.Value, Sequence) and not isinstance(a.Value, str):
-                return a.Value
-
-        return ()
+        return self._Roms
 
     @property
     def igdb_id(self) -> int | None:
-        for m in self.Metadata:
-            if m.Source == 'IGDB' and m.Status == 'Mapped':
-                try:
-                    return int(m.ImmutableId)
-                except ValueError:
-                    return None
-
-        return None
+        return self._IgdbId
 
 DataObjectCodec: typelib.Codec[DataObject] = typelib.codec(DataObject)
 
