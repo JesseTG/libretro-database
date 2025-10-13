@@ -180,8 +180,15 @@ class DataObject:
     # Internal cache of some commonly used properties
     _Roms: tuple[RomItem, ...] = field(default=(), init=False, repr=False, compare=False)
     _IgdbId: Optional[int] = field(default=None, init=False, repr=False, compare=False)
+    _Crcs: frozenset[str] = field(default=frozenset(), init=False, repr=False, compare=False)
+    _Md5s: frozenset[str] = field(default=frozenset(), init=False, repr=False, compare=False)
+    _Sha1s: frozenset[str] = field(default=frozenset(), init=False, repr=False, compare=False)
 
     def __post_init__(self):
+        '''
+        Called by the dataclass machinery after __init__,
+        but before the instance is returned.
+        '''
         if self.ObjectType == 'Game':
             for a in self.Attributes:
                 if a.attributeName == 'ROMs' and isinstance(a.Value, Sequence) and not isinstance(a.Value, str):
@@ -193,28 +200,24 @@ class DataObject:
                     object.__setattr__(self, '_IgdbId', int(m.ImmutableId))  # Bypass frozen restriction
                     break
 
+            if self._Roms:
+                crcs = frozenset(rom.Crc.lower() for rom in self._Roms if rom.Crc)
+                md5s = frozenset(rom.Md5.lower() for rom in self._Roms if rom.Md5)
+                sha1s = frozenset(rom.Sha1.lower() for rom in self._Roms if rom.Sha1)
+                object.__setattr__(self, '_Crcs', crcs)  # Bypass frozen restriction
+                object.__setattr__(self, '_Md5s', md5s)  # Bypass frozen restriction
+                object.__setattr__(self, '_Sha1s', sha1s)  # Bypass frozen restriction
+
+
     def has_rom(self, crc: str | None, md5: str | None, sha1: str | None) -> bool:
-        for rom in self._Roms:
-            if crc and rom.Crc:
-                # If we have a CRC to check, and this ROM has one...
-                if rom.Crc.lower() == crc.lower():
-                    # If they're the same, we have a match
-                    return True
-                else:
-                    # Otherwise this ROM can't be a match, so look at the next one
-                    continue
+        if crc and crc.lower() in self._Crcs:
+            return True
 
-            if md5 and rom.Md5:
-                if rom.Md5.lower() == md5.lower():
-                    return True
-                else:
-                    continue
+        if md5 and md5.lower() in self._Md5s:
+            return True
 
-            if sha1 and rom.Sha1:
-                if rom.Sha1.lower() == sha1.lower():
-                    return True
-                else:
-                    continue
+        if sha1 and sha1.lower() in self._Sha1s:
+            return True
 
         return False
 
