@@ -9,12 +9,12 @@
 title = "Amstrad - CPC"
 
 # Other names that may be used to address this playlist.
-# Usually contains the name of a .dat file
+# Usually contains the name of a .dat file from this repo
 # that doesn't follow the aforementioned naming convention.
 alts = ["Amstrad - CPC - clean-cpc-db"]
 
-# The name of zero or more directories within a Hasheous dump.
-# Can have slashes for subdirectories (e.g. "Commodore Plus/4")
+# The names of zero or more Hasheous dump files,
+# passed to "https://hasheous.org/api/v1/Dumps/platforms/{name}".
 hasheous = ["Amstrad CPC"]
 
 # The IGDB filter to use to fetch games for this playlist.
@@ -28,7 +28,7 @@ where = "platforms = (506)"
 
 [[igdb.playlists]]
 title = "Arduboy Inc - Arduboy"
-hasheous = ["Arduboy Inc - Arduboy"]
+hasheous = ["Arduboy Arduboy"]
 where = "platforms = (438)"
 
 [[igdb.playlists]]
@@ -48,7 +48,8 @@ where = "platforms = (61)"
 
 [[igdb.playlists]]
 title = "Atari - ST"
-hasheous = ["Atari ST/STE"]
+# "_" is a stand-in for "/" in Hasheous dump names
+hasheous = ["Atari ST_STE"]
 where = "platforms = (63)"
 
 [[igdb.playlists]]
@@ -142,7 +143,7 @@ where = "platforms = (90)"
 
 [[igdb.playlists]]
 title = "Commodore - Plus-4"
-hasheous = ["Commodore Plus/4"]
+hasheous = ["Commodore Plus_4"]
 where = "platforms = (94)"
 
 [[igdb.playlists]]
@@ -158,7 +159,7 @@ where = "platforms = (15)"
 # TODO: "DICE" playlist
 # [[igdb.playlists]]
 # title = "DICE"
-# 
+
 [[igdb.playlists]]
 title = "Dinothawr"
 # Dinothawr or the Sokoban mod
@@ -211,6 +212,7 @@ where = "id = 4275"
 
 [[igdb.playlists]]
 title = "Funtech - Super Acan"
+hasheous = ["Funtech Super A'can"]
 where = "platforms = (480)"
 
 # IGDB lacks a `platforms` entry for the GP32
@@ -308,13 +310,13 @@ where = "id = 46621"
 
 [[igdb.playlists]]
 title = "NEC - PC Engine - TurboGrafx 16"
-hasheous = ["TurboGrafx-16/PC Engine"]
+hasheous = ["TurboGrafx-16_PC Engine"]
 alts = ["PC Engine hacks"]
 where = "platforms = (86)"
 
 [[igdb.playlists]]
 title = "NEC - PC Engine CD - TurboGrafx-CD"
-hasheous = ["TurboGrafx-16/PC Engine"]
+hasheous = ["TurboGrafx-16_PC Engine"]
 where = "platforms = (150)"
 
 [[igdb.playlists]]
@@ -334,6 +336,7 @@ where = "platforms = (149)"
 [[igdb.playlists]]
 title = "NEC - PC-FX"
 where = "platforms = (274)"
+hasheous = ["NEC - PC-FX & PC-FXGA"]
 
 [[igdb.playlists]]
 title = "Nintendo - e-Reader"
@@ -389,7 +392,7 @@ alts = ["NES hacks"]
 
 [[igdb.playlists]]
 title = "Nintendo - Nintendo 3DS"
-hasheous = ["Nintendo 3DS"]
+hasheous = ["Nintendo 3DS", "Nintendo New 3DS"]
 alts = ["Nintendo - New Nintendo 3DS", "Nintendo - New Nintendo 3DS (Digital)"]
 # Nintendo 3DS or New Nintendo 3DS
 where = "platforms = (37, 137)"
@@ -548,6 +551,7 @@ title = "ScummVM"
 # - "virtools" (43693)
 # - "scummvm compatible" (50501)
 where = "game_engines = (31, 39, 53, 71, 77, 96, 101, 102, 111, 132, 142, 143, 145, 164, 178, 199, 238, 269, 270, 279, 289, 329, 534, 535, 536, 589, 664, 774, 1067, 1068, 1129, 1158, 1376, 1474) | keywords = (14178, 43693, 50501)"
+hasheous = ["Microsoft DOS", "Microsoft Windows", "Atari ST_STE", "Commodore Amiga", "Apple Mac"]
 
 [[igdb.playlists]]
 title = "Sega - Dreamcast"
@@ -568,13 +572,13 @@ where = "platforms = (64)"
 
 [[igdb.playlists]]
 title = "Sega - Mega Drive - Genesis"
-hasheous = ["Sega Mega Drive / Genesis"]
+hasheous = ["Sega Mega Drive _ Genesis"]
 alts = ["Mega Drive hacks"]
 where = "platforms = (29)"
 
 [[igdb.playlists]]
 title = "Sega - Mega-CD - Sega CD"
-hasheous = ["Sega Mega CD / Sega CD"]
+hasheous = ["Sega Mega CD _ Sega CD"]
 # Sega CD, Sega CD 32X (informal name for games that needed both the Sega CD and 32X)
 # (libretro records Sega CD 32X games in the Sega CD playlist)
 where = "platforms =  (78, 482)"
@@ -603,7 +607,7 @@ where = "game_engines = (1780)"
 
 [[igdb.playlists]]
 title = "Sega - SG-1000"
-hasheous = ["Sega SG-1000", "SG-1000"]
+hasheous = ["Sega SG-1000"]
 where = "platforms = (84)"
 
 # Games that need both the Sega CD and 32X are included in the Sega CD playlist
@@ -645,6 +649,7 @@ where = "platforms = (26)"
 [[igdb.playlists]]
 title = "SNK - Neo Geo"
 # Neo Geo MVS, Neo Geo AES
+hasheous = ["Neo Geo", "Arcade"]
 where = "platforms = (79, 80)"
 
 [[igdb.playlists]]

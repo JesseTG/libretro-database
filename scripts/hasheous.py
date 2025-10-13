@@ -2,17 +2,27 @@
 Dictionary definitions taken from https://github.com/gaseous-project/hasheous/blob/main/hasheous-lib/Models/DataObjectItem.cs
 """
 
+import argparse
 import asyncio
 import dataclasses
 import itertools
+import os
 from pathlib import Path
+from pprint import pprint
+import re
+import sys
+import tomllib
 import zipfile
 
 from collections.abc import Sequence, Mapping
 from dataclasses import field
-from typing import Literal, Optional, TypeAlias, Union
+from typing import Collection, Literal, Optional, TypeAlias, TypedDict, Union, cast
 from zipfile import ZipFile
 
+import aiofiles
+import aiofiles.os
+import backoff
+import httpx
 import typelib
 
 METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
@@ -100,6 +110,7 @@ AttributeName: TypeAlias = Literal[
     "Screenshot4",
     "Wikipedia",
     "Public",
+    "DumpFile",
 ]
 
 DataObjectType: TypeAlias = Literal["None", "Company", "Platform", "Game", "ROM", "App"]
@@ -261,7 +272,7 @@ async def load_dataobjects(metadata_zip_path: Path, hasheous_dirs: Mapping[str, 
             zip_paths = map(get_zip_path, dir_paths)
             # Get the path object for each directory
 
-            paths = itertools.chain.from_iterable(p.iterdir() for p in zip_paths)
+            paths = itertools.chain.from_iterable(p.iterdir() for p in zip_paths if p.is_dir())
             # Iterate over each directory's contents
 
             json_paths = filter(lambda p: p.is_file() and p.suffix == '.json', paths)
@@ -280,6 +291,139 @@ async def load_dataobjects(metadata_zip_path: Path, hasheous_dirs: Mapping[str, 
 
     return result
 
+def read_dump_names(path: str) -> Collection[str]:
+    class TomlPlaylistEntry(TypedDict):
+        hasheous: Sequence[str]
+
+    with open(path, "rb") as playlist_file:
+        toml = tomllib.load(playlist_file)
+
+        if not (igdb := toml.get('igdb')):
+            raise KeyError(f"Missing 'igdb' section in TOML file at {path}")
+
+        if not (playlists := igdb.get('playlists')):
+            raise KeyError(f"Missing 'playlists' array in 'igdb' table of TOML file at {path}")
+
+        if not isinstance(playlists, list):
+            raise TypeError(f"Expected 'playlists' to be a list; got {type(playlists).__name__}")
+
+        playlist_objects = cast(Sequence[TomlPlaylistEntry], playlists)
+        playlists_with_hasheous = filter(lambda p: 'hasheous' in p, playlist_objects)
+        return frozenset(itertools.chain.from_iterable(p['hasheous'] for p in playlists_with_hasheous))
+
+
+dirname = os.path.dirname(__file__)
+TOML_PATH = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'metadat', 'igdb', 'igdb.toml'))
+
+def _on_backoff(details):
+    print("Retrying after backoff:", details['target'].__name__, "with args:", details['args'], "and kwargs:", details['kwargs'], file=sys.stderr)
+
+RETRY_CODES = (
+    httpx.codes.REQUEST_TIMEOUT,
+    httpx.codes.TOO_MANY_REQUESTS,
+    httpx.codes.INTERNAL_SERVER_ERROR,
+    httpx.codes.BAD_GATEWAY,
+    httpx.codes.SERVICE_UNAVAILABLE,
+    httpx.codes.GATEWAY_TIMEOUT,
+)
+
+HASHEOUS_BASE_URL = "https://hasheous.org/api/v1/Dumps/platforms/"
+
+def _giveup(e: Exception):
+    print("Exception raised during query:", e, file=sys.stderr)
+    if not isinstance(e, httpx.HTTPStatusError):
+        # Give up if query_endpoint failed with something besides HTTPStatusError
+        return True
+
+    if e.response.status_code in RETRY_CODES:
+        # Don't give up on server errors (5xx), we might just be unlucky
+        # or rate-limited (429), so we should back off and retry.
+        return False
+
+    return e.response.is_error
+
+async def handle_fetch(args: argparse.Namespace) -> None:
+    outdir = Path(args.outdir)
+    dumps: Collection[str] = sorted(args.dumps or read_dump_names(TOML_PATH))
+    verbose = bool(args.verbose)
+
+    if verbose:
+        print(f"Output directory: {outdir}")
+        pprint(dumps)
+
+    await aiofiles.os.makedirs(outdir, exist_ok=True)
+
+    async with asyncio.TaskGroup() as group:
+        @backoff.on_exception(backoff.expo, httpx.HTTPStatusError, max_tries=5, giveup=_giveup, on_backoff=_on_backoff)
+        async def fetch_dump(name: str):
+            dump_url = f"{HASHEOUS_BASE_URL}{name}.zip"
+            if verbose:
+                print(f"Fetching {dump_url}")
+
+            async with httpx.AsyncClient() as client:
+                async with client.stream("GET", dump_url) as response:
+                    response.raise_for_status()
+                    content_type = response.headers.get('content-type')
+
+                    if not content_type or 'application/zip' not in content_type.lower():
+                        raise ValueError(f"Expected content type 'application/zip', got {content_type} for dump {name}")
+
+                    outpath = outdir / f"{name}.zip"
+                    async with aiofiles.open(outpath, "wb") as out_file:
+                        async for chunk in response.aiter_bytes():
+                            await out_file.write(chunk)
+
+            if verbose:
+                print(f"Saved dump to {outpath}")
+
+        for d in dumps:
+            group.create_task(fetch_dump(d), name="fetch_dump_" + d)
+
+def main():
+    """Main entry point for the script."""
+
+    parser = argparse.ArgumentParser(
+        description="Utilities for fetching and processing data from Hasheous.",
+    )
+
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Show more logging output"
+    )
+
+    subparsers = parser.add_subparsers(
+        dest="command",
+        help="Available commands",
+        required=True
+    )
+
+    # fetch subcommand
+    fetch_parser = subparsers.add_parser(
+        "fetch",
+        help="Fetch data from Hasheous and save it to the specified directory"
+    )
+    fetch_parser.add_argument(
+        "--dumps",
+        type=str,
+        help="The names of the Hasheous dumps to fetch. Defaults to all 'hasheous' entries in metadat/igdb/igdb.toml",
+        action="extend",
+        nargs="*",
+        default=None
+    )
+    fetch_parser.add_argument(
+        "outdir",
+        type=str,
+        help="The output directory for the scraped JSON files",
+        default="tmp/hasheous",
+    )
+    fetch_parser.set_defaults(func=handle_fetch)
+
+    # Parse arguments and call appropriate handler
+
+    args = parser.parse_args()
+    asyncio.run(args.func(args))
+
 __all__ = [
     "DataObject",
     "DataObjectType",
@@ -297,3 +441,6 @@ __all__ = [
     "SignatureSourceType",
     "load_dataobjects",
 ]
+
+if __name__ == "__main__":
+    main()
