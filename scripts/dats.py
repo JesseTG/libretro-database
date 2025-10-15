@@ -253,6 +253,29 @@ Space <- [ \t\r\n]
 EndOfLine <- '\r\n' / '\n' / '\r'
 EndOfFile <- !.
 '''
+"""
+I don't know of a formal spec for DAT files,
+so I wrote this PEG based on my observations
+of the DAT files in this repo.
+It should handle all of them.
+
+These are the rules I came up with:
+
+- A Record is a parentheses-wrapped sequence of key-value pairs.
+- The key is a string that's a valid C identifier (plus hyphens).
+- The value is either a string or another record.
+- Strings may be quoted or unquoted.
+- Unquoted strings may not contain spaces or parentheses.
+- Quoted strings may contain escaped quotes and backslashes.
+- Whitespace and newlines outside of strings is ignored.
+- Any key may appear multiple times in a record.
+- A DAT file is a top-level record with implicit parentheses,
+  and all values are records.
+
+We don't try to interpret the meaning of any keys or values while parsing;
+this means we just treat everything as a string,
+and let the unmarshalling step figure out what to do with it.
+"""
 
 def _build_record(*args, **kwargs):
     """Build a record dictionary from parsed data."""
