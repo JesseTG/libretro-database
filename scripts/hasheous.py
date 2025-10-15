@@ -4,19 +4,22 @@ Dictionary definitions taken from https://github.com/gaseous-project/hasheous/bl
 
 import argparse
 import asyncio
+from concurrent.futures import ProcessPoolExecutor
 import dataclasses
 import itertools
+from multiprocessing.util import info
 import os
 from pathlib import Path
 from pprint import pprint
 import re
 import sys
+import time
 import tomllib
 import zipfile
 
-from collections.abc import Sequence, Mapping
+from collections.abc import AsyncIterator, Iterable, Sequence, Mapping
 from dataclasses import field
-from typing import Collection, Literal, Optional, TypeAlias, TypedDict, Union, cast
+from typing import Collection, Iterator, Literal, NamedTuple, Optional, TypeAlias, TypedDict, Union, cast
 from zipfile import ZipFile
 
 import aiofiles
@@ -243,53 +246,54 @@ class DataObject:
 
 DataObjectCodec: typelib.Codec[DataObject] = typelib.codec(DataObject)
 
-async def load_dataobjects(metadata_zip_path: Path, hasheous_dirs: Mapping[str, Sequence[str]]) -> Mapping[str, Sequence[DataObject]]:
-    """
-    Load Hasheous DataObjects from the given metadata ZIP file for the specified playlists.
+class HasheousZip(NamedTuple):
+    name: str
+    objects: Sequence[DataObject]
 
-    :param metadata_zip_path: Path to the Hasheous MetadataMap.zip file.
+def parse_zip(path: Path) -> HasheousZip:
+    start = time.perf_counter_ns()
+    with ZipFile(path, 'r') as zip:
+        paths = zip.infolist()
+        json_infos = filter(lambda p: p.filename.endswith('.json') and p.filename != 'PlatformMapping.json', paths)
+        objects = map(lambda i: DataObjectCodec.decode(zip.read(i)), json_infos)
+
+        result = HasheousZip(path.stem, tuple(objects))
+
+    end = time.perf_counter_ns()
+    duration = (end - start) / 1_000_000
+    print(f"Parsed {len(result.objects)} DataObjects from {path.name} in {duration:.2f} ms")
+    return result
+    # Returning the stem makes it easier to aggregate results later
+
+
+async def load_dataobjects(metadata_dir: Path, hasheous_dirs: Mapping[str, Sequence[str]]) -> Mapping[str, Sequence[DataObject]]:
+    """
+    Load Hasheous DataObjects from the given metadata directory for the specified playlists.
+
+    :param metadata_dir: Path to the directory containing Hasheous metadata ZIP files.
     :param hasheous_dirs: A mapping of playlist names to the directories
     in MetadataMap.zip to load DataObjects from.
 
     :return: A mapping of playlist names to the DataObjects representing
     the games in those playlists.
     """
-    # TODO: If metadata_map is not given, download it from https://hasheous.org/api/v1/Dumps/MetadataMap.zip
 
-    result: dict[str, Sequence[DataObject]] = {}
-    with ZipFile(metadata_zip_path) as metadata_zip:
-        root = zipfile.Path(metadata_zip)
-        def get_zip_path(path: str) -> zipfile.Path:
-            return root.joinpath(*path.split('/'))
+    print("Loading Hasheous DataObjects from", metadata_dir)
 
-        def parse_dataobject(path: zipfile.Path) -> DataObject:
-            data = path.read_bytes()
-            return DataObjectCodec.decode(data)
+    with ProcessPoolExecutor() as executor:
+        hasheous_paths = {playlist: tuple(metadata_dir / f"{d}.zip" for d in dirs) for (playlist, dirs) in hasheous_dirs.items()}
+        hasheous_zip_paths = frozenset(itertools.chain.from_iterable(v for v in hasheous_paths.values()))
+        iterator = executor.map(parse_zip, hasheous_zip_paths)
+        dataobjects = {p.name: p.objects for p in iterator}
 
-        for playlist_name, dir_paths in hasheous_dirs.items():
-            # For each relevant directory in the zip file...
+    results: dict[str, Sequence[DataObject]] = {}
+    for (name, zips) in hasheous_dirs.items():
+        zip_objects = (dataobjects.get(z, ()) for z in zips if z in dataobjects)
+        objects = itertools.chain.from_iterable(zip_objects)
+        results[name] = tuple(objects)
 
-            zip_paths = map(get_zip_path, dir_paths)
-            # Get the path object for each directory
-
-            paths = itertools.chain.from_iterable(p.iterdir() for p in zip_paths if p.is_dir())
-            # Iterate over each directory's contents
-
-            json_paths = filter(lambda p: p.is_file() and p.suffix == '.json', paths)
-            # Ignore everything that isn't a JSON file
-
-            objects = map(parse_dataobject, json_paths)
-            # Parse each JSON file into a DataObject
-
-            result[playlist_name] = tuple(objects)
-            # Then add them to the result list
-
-            await asyncio.sleep(0)
-            # Let the event loop have a turn; since this method is likely CPU bound
-            # and Python's GIL prevents true thread parallelism,
-            # we need to do this to avoid blocking other tasks.
-
-    return result
+    print(f"Loaded {sum(len(v) for v in results.values())} DataObjects for {len(results)} playlists")
+    return results
 
 def read_dump_names(path: str) -> Collection[str]:
     class TomlPlaylistEntry(TypedDict):
@@ -343,7 +347,7 @@ def _giveup(e: Exception):
     return e.response.is_error
 
 async def handle_fetch(args: argparse.Namespace) -> None:
-    outdir = Path(args.outdir)
+    outdir: Path = args.outdir
     dumps: Collection[str] = sorted(args.dumps or read_dump_names(TOML_PATH))
     verbose = bool(args.verbose)
 
@@ -413,7 +417,7 @@ def main():
     )
     fetch_parser.add_argument(
         "outdir",
-        type=str,
+        type=Path,
         help="The output directory for the scraped JSON files",
         default="tmp/hasheous",
     )
