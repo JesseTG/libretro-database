@@ -1027,6 +1027,8 @@ async def handle_fetch(args: argparse.Namespace) -> None:
 
     outdir: str = args.outdir
 
+    await aiofiles.os.makedirs(outdir, exist_ok=True)
+
     async def fetch_playlist(client: QueryClient, playlist: Playlist, group: TaskGroup) -> Sequence[GameResponse]:
         print(f"{playlist.title}: Fetching game count in query...")
         count = await client.count("games", playlist.query)
