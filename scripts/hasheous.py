@@ -4,21 +4,20 @@ Dictionary definitions taken from https://github.com/gaseous-project/hasheous/bl
 
 import argparse
 import asyncio
-from concurrent.futures import ProcessPoolExecutor
 import dataclasses
 import itertools
-from multiprocessing.util import info
 import os
-from pathlib import Path
-from pprint import pprint
-import re
+import pickle
 import sys
 import time
 import tomllib
 import zipfile
 
-from collections.abc import AsyncIterator, Iterable, Sequence, Mapping
+from collections.abc import Sequence, Mapping
+from concurrent.futures import ProcessPoolExecutor
 from dataclasses import field
+from pathlib import Path
+from pprint import pprint
 from typing import Collection, Iterator, Literal, NamedTuple, Optional, TypeAlias, TypedDict, Union, cast
 from zipfile import ZipFile
 
@@ -246,6 +245,31 @@ class DataObject:
 
 DataObjectCodec: typelib.Codec[DataObject] = typelib.codec(DataObject)
 
+class HasheousIndex:
+    def __init__(self, objects: Iterator[DataObject]) -> None:
+        self.objects = tuple(objects)
+        self.by_id: dict[int, DataObject] = {obj.Id: obj for obj in objects}
+        self.by_name: dict[str, DataObject] = {obj.Name.lower(): obj for obj in objects if obj.Name}
+        self.by_igdb_id: dict[int, DataObject] = {obj.igdb_id: obj for obj in objects if obj.igdb_id is not None}
+
+        self.by_crc: dict[str, DataObject] = {}
+        self.by_md5: dict[str, DataObject] = {}
+        self.by_sha1: dict[str, DataObject] = {}
+
+        for obj in objects:
+            if obj.ObjectType != 'Game':
+                continue
+
+            for rom in obj.rom_list:
+                if rom.Crc and rom.Crc.lower() not in self.by_crc:
+                    self.by_crc[rom.Crc.lower()] = obj
+
+                if rom.Md5 and rom.Md5.lower() not in self.by_md5:
+                    self.by_md5[rom.Md5.lower()] = obj
+
+                if rom.Sha1 and rom.Sha1.lower() not in self.by_sha1:
+                    self.by_sha1[rom.Sha1.lower()] = obj
+
 class HasheousZip(NamedTuple):
     name: str
     objects: Sequence[DataObject]
@@ -383,6 +407,46 @@ async def handle_fetch(args: argparse.Namespace) -> None:
         for d in dumps:
             group.create_task(fetch_dump(d), name="fetch_dump_" + d)
 
+async def handle_index(args: argparse.Namespace) -> None:
+    input_paths: Collection[str] = args.paths
+    verbose = bool(args.verbose)
+    output: Path = args.output
+
+    if verbose:
+        print("Input paths:", input_paths)
+
+    zip_paths: set[Path] = set()
+    for path in map(Path, input_paths):
+        if zipfile.is_zipfile(path):
+            zip_paths.add(path.resolve())
+        elif path.is_dir():
+            glob_paths = path.rglob('*.zip')
+            glob_zips = filter(zipfile.is_zipfile, glob_paths)
+            zip_paths.update(p.resolve() for p in glob_zips)
+
+    if not zip_paths:
+        print("No ZIP files found in the specified input paths.", file=sys.stderr)
+        return
+
+    if verbose:
+        print(f"Found {len(zip_paths)} ZIP files to index.")
+        pprint(zip_paths)
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+
+    with ProcessPoolExecutor() as executor:
+        iterator = executor.map(parse_zip, zip_paths)
+        dataobjects = itertools.chain.from_iterable(p.objects for p in iterator)
+
+        index = HasheousIndex(dataobjects)
+
+    print(f"Loaded all DataObjects, indexing...")
+
+    with open(output, "wb") as out_file:
+        pickle.dump(index, out_file, protocol=5)
+
+    print(f"Indexed {len(index.objects)} DataObjects from {len(zip_paths)} ZIP files, saved to {output}")
+
 def main():
     """Main entry point for the script."""
 
@@ -422,6 +486,27 @@ def main():
         default="tmp/hasheous",
     )
     fetch_parser.set_defaults(func=handle_fetch)
+
+    # index subcommand
+    index_parser = subparsers.add_parser(
+        "index",
+        help="Create an index of DataObjects from the specified ZIP files."
+    )
+    index_parser.add_argument(
+        "paths",
+        help="A ZIP file or a directory containing Hasheous ZIP files",
+        default=["tmp/hasheous"],
+        action="extend",
+        nargs="*",
+    )
+    index_parser.add_argument(
+        "--output",
+        type=Path,
+        help="The output file to save the index to.",
+        default="tmp/index/hasheous_index.pickle",
+    )
+    index_parser.set_defaults(func=handle_index)
+
 
     # Parse arguments and call appropriate handler
 
