@@ -1150,7 +1150,8 @@ def main():
     fetch_parser.add_argument(
         "outdir",
         type=str,
-        help="The output directory for the scraped JSON files"
+        help="The output directory for the scraped JSON files",
+        default="tmp/igdb",
     )
     fetch_parser.set_defaults(func=handle_fetch)
 
