@@ -101,6 +101,14 @@ class Rom:
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Game:
+    """
+    A parsed and unmarshalled game record from a DAT file.
+
+    Unrecognized fields are ignored.
+    You can read or write a new field by adding it to this class.
+
+    At least one of `name`, `description`, `comment`, or `id` should be present.
+    """
     name: Optional[str] = None
     comment: Optional[str] = None
     description: Optional[str] = None
@@ -425,7 +433,7 @@ def encode_dat(value: typelib.serdes.MarshalledValueT) -> bytes:
             if name := game.get(key):
                 return str(name)
 
-        raise ValueError("Game record has no name, description, comment, or id field")
+        return ''
 
     for game in sorted(value[1:], key=game_name):
         if not isinstance(game, dict):
@@ -580,7 +588,9 @@ async def load_dats(dat_playlists: Mapping[str, Sequence[Path]], parallel=True) 
     dat_groups = itertools.groupby(dat_files, key=lambda p: p.playlist)
     game_groups = ((p, reduce_dats(g)) for (p, g) in dat_groups)
 
-    return dict(game_groups)
+    result = dict(game_groups)
+    print(f"Loaded {len(result)} playlists from {len(dat_files)} DAT files")
+    return result
 
 def get_existing_dat_files(datdir: str) -> Iterator[str]:
     for (dirpath, dirnames, filenames) in os.walk(datdir):
