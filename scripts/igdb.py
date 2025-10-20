@@ -546,7 +546,7 @@ class Query:
 
 @dataclass
 class Playlist:
-    title: str
+    title: PlaylistTitle
     '''
     The title of the playlist,
     which is used as the filename for the playlist file.
@@ -571,7 +571,7 @@ class Playlist:
 
     def __init__(
             self,
-            title: str,
+            title: PlaylistTitle,
             hasheous: Optional[str | Iterable[str]] = None,
             alts: Optional[str | Iterable[str]] = None,
             *, # Force keyword arguments for clarity
@@ -817,7 +817,7 @@ class QueryClient:
 
 def read_playlists(path: str) -> tuple[Playlist, ...]:
     class TomlPlaylistEntry(TypedDict):
-        title: str
+        title: PlaylistTitle
         hasheous: Sequence[str]
         alts: Sequence[str]
         where: str
@@ -843,12 +843,13 @@ TOML_PATH = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'meta
 
 PLAYLISTS = read_playlists(TOML_PATH)
 
-PLAYLISTS_BY_TITLE = {p.title: p for p in PLAYLISTS}
+PLAYLISTS_BY_TITLE = {str(p.title): p for p in PLAYLISTS}
 PLAYLISTS_BY_TITLE_LOWER = {p.title.lower(): p for p in PLAYLISTS}
 PLAYLISTS_BY_ANY: Mapping[str, Playlist] = ChainMap(
     PLAYLISTS_BY_TITLE,
     PLAYLISTS_BY_TITLE_LOWER,
 )
+PLAYLIST_TITLES = tuple(p.title for p in PLAYLISTS)
 
 ANALOG_KEYWORD_IDS = (
     4965, # circle pad pro support
