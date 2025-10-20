@@ -1141,7 +1141,7 @@ def main():
         help="The IGDB API client secret. Overrides the TWITCH_CLIENT_SECRET environment variable if provided."
     )
     fetch_parser.add_argument(
-        "--playlists",
+        "--playlist",
         type=str,
         help="The title or system IDs of the playlists to scrape. If not provided, all known playlists will be scraped.",
         action="extend",
