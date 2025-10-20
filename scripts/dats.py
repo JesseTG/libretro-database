@@ -29,6 +29,8 @@ import typelib.serdes
 
 from typelib.serdes import MarshalledValueT
 
+from igdb import PlaylistTitle
+
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class ClrMamePro:
     name: str
@@ -473,12 +475,12 @@ async def handle_tojson(args: argparse.Namespace):
         print('')  # Ensure a newline at the end of the output
 
 class LoadedDat(NamedTuple):
-    playlist: str
+    playlist: PlaylistTitle
     path: Path
     clrmamepro: ClrMamePro
     games: Sequence[Game]
 
-def load_dat(dat_path: tuple[str, Path]) -> LoadedDat | None:
+def load_dat(dat_path: tuple[PlaylistTitle, Path]) -> LoadedDat | None:
     """
     Load a DAT file from the given path.
     :param dat_path: A tuple of (playlist name, path to the DAT file).
@@ -506,7 +508,7 @@ def load_dat(dat_path: tuple[str, Path]) -> LoadedDat | None:
         games=dat[1:]
     )
 
-async def load_dats(dat_playlists: Mapping[str, Sequence[Path]], parallel=True) -> Mapping[str, Collection[Game]]:
+async def load_dats(dat_playlists: Mapping[PlaylistTitle, Sequence[Path]], parallel=True) -> Mapping[PlaylistTitle, Collection[Game]]:
     """
     Load game data from DAT files for each playlist.
 
