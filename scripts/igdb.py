@@ -1214,6 +1214,7 @@ __all__ = (
     "QueryClient",
     "RUMBLE_KEYWORD_IDS",
     "ANALOG_KEYWORD_IDS",
+    "PlaylistTitle",
 )
 
 if __name__ == "__main__":
