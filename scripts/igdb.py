@@ -31,6 +31,7 @@ from authlib.oauth2.rfc6749 import OAuth2Token
 from httpx import HTTPStatusError, Response, Timeout
 
 IgdbId = NewType('IgdbId', int)
+PlaylistTitle = NewType('PlaylistTitle', str)
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class AgeRatingOrganization:
