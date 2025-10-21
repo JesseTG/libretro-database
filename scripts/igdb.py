@@ -1144,7 +1144,7 @@ def main():
     fetch_parser.add_argument(
         "--playlist",
         type=str,
-        help="The title or system IDs of the playlists to scrape. If not provided, all known playlists will be scraped.",
+        help="The titles of the playlists to scrape. If not provided, all known playlists will be scraped.",
         action="extend",
         nargs="*",
         default=PLAYLISTS_BY_TITLE.keys()  # Default to all known playlists
