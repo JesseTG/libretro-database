@@ -594,7 +594,7 @@ async def load_dats(dat_playlists: Mapping[PlaylistTitle, Sequence[Path]], paral
     print(f"Loaded {len(result)} playlists from {len(dat_files)} DAT files")
     return result
 
-def get_existing_dat_files(datdir: str) -> Iterator[str]:
+def get_existing_dat_files(datdir: str | Path) -> Iterator[str]:
     for (dirpath, dirnames, filenames) in os.walk(datdir):
         for file in filter(lambda f: f.endswith('.dat'), filenames):
             if not ('xml' in file or 'XML' in file):  # Exclude XML files
