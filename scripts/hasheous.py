@@ -13,12 +13,12 @@ import time
 import tomllib
 import zipfile
 
-from collections.abc import Sequence, Mapping
+from collections.abc import Iterable, Sequence, Mapping
+from collections import ChainMap
 from concurrent.futures import ProcessPoolExecutor
-from dataclasses import field
 from pathlib import Path
 from pprint import pprint
-from typing import Collection, Iterator, Literal, NamedTuple, Optional, TypeAlias, TypedDict, Union, cast
+from typing import Collection, Literal, NamedTuple, NewType, Optional, TypeAlias, TypedDict, Union, cast
 from zipfile import ZipFile
 
 import aiofiles
@@ -27,7 +27,11 @@ import backoff
 import httpx
 import typelib
 
+from igdb import PLAYLISTS, IgdbId, Playlist, PlaylistTitle
+
 METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
+
+HasheousId = NewType('HasheousId', int)
 
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
@@ -181,7 +185,7 @@ class Attribute:
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class DataObject:
-    Id: int
+    Id: HasheousId
     ObjectType: DataObjectType
     SignatureDataObjects: Sequence[SignatureDataObject]
     Metadata: Sequence[MetadataItem]
@@ -190,85 +194,76 @@ class DataObject:
     UpdatedDate: str
     Name: str
 
-    # Internal cache of some commonly used properties
-    _Roms: tuple[RomItem, ...] = field(default=(), init=False, repr=False, compare=False)
-    _IgdbId: Optional[int] = field(default=None, init=False, repr=False, compare=False)
-    _Crcs: frozenset[str] = field(default=frozenset(), init=False, repr=False, compare=False)
-    _Md5s: frozenset[str] = field(default=frozenset(), init=False, repr=False, compare=False)
-    _Sha1s: frozenset[str] = field(default=frozenset(), init=False, repr=False, compare=False)
-
-    def __post_init__(self):
-        '''
-        Called by the dataclass machinery after __init__,
-        but before the instance is returned.
-        '''
-        if self.ObjectType == 'Game':
-            for a in self.Attributes:
-                if a.attributeName == 'ROMs' and isinstance(a.Value, Sequence) and not isinstance(a.Value, str):
-                    object.__setattr__(self, '_Roms', tuple(a.Value))  # Bypass frozen restriction
-                    break
-
-            for m in self.Metadata:
-                if m.Source == 'IGDB' and m.Status == 'Mapped':
-                    object.__setattr__(self, '_IgdbId', int(m.ImmutableId))  # Bypass frozen restriction
-                    break
-
-            if self._Roms:
-                crcs = frozenset(rom.Crc.lower() for rom in self._Roms if rom.Crc)
-                md5s = frozenset(rom.Md5.lower() for rom in self._Roms if rom.Md5)
-                sha1s = frozenset(rom.Sha1.lower() for rom in self._Roms if rom.Sha1)
-                object.__setattr__(self, '_Crcs', crcs)  # Bypass frozen restriction
-                object.__setattr__(self, '_Md5s', md5s)  # Bypass frozen restriction
-                object.__setattr__(self, '_Sha1s', sha1s)  # Bypass frozen restriction
-
-
-    def has_rom(self, crc: str | None, md5: str | None, sha1: str | None) -> bool:
-        if crc and crc.lower() in self._Crcs:
-            return True
-
-        if md5 and md5.lower() in self._Md5s:
-            return True
-
-        if sha1 and sha1.lower() in self._Sha1s:
-            return True
-
-        return False
-
-    @property
-    def rom_list(self) -> Sequence[RomItem]:
-        """Return the list of ROMs, or an empty tuple if none are present."""
-        return self._Roms
-
-    @property
-    def igdb_id(self) -> int | None:
-        return self._IgdbId
-
 DataObjectCodec: typelib.Codec[DataObject] = typelib.codec(DataObject)
 
 class HasheousIndex:
-    def __init__(self, objects: Iterator[DataObject]) -> None:
-        self.objects = tuple(objects)
-        self.by_id: dict[int, DataObject] = {obj.Id: obj for obj in objects}
-        self.by_name: dict[str, DataObject] = {obj.Name.lower(): obj for obj in objects if obj.Name}
-        self.by_igdb_id: dict[int, DataObject] = {obj.igdb_id: obj for obj in objects if obj.igdb_id is not None}
+    def __init__(self, games: Iterable[tuple[PlaylistTitle, Iterable[DataObject]]]) -> None:
+        playlists_iterators = dict(games)
+        playlists = {title: tuple(obj_iter) for title, obj_iter in playlists_iterators.items()}
+        self.by_playlist = playlists
+        self.by_id: dict[int, DataObject] = {}
+        self.by_igdb_id: dict[IgdbId, DataObject] = {}
+        self.hasheous_to_igdb: dict[HasheousId, IgdbId] = {}
+        self.supports_achievements: set[HasheousId] = set()
 
         self.by_crc: dict[str, DataObject] = {}
+        """
+        Mapping of ROM CRC32 hashes to DataObjects.
+        CRCs must be all uppercase.
+        """
+
         self.by_md5: dict[str, DataObject] = {}
         self.by_sha1: dict[str, DataObject] = {}
+        self.by_serial: dict[str, DataObject] = {}
 
-        for obj in objects:
+        self.by_game_id = ChainMap(self.by_crc, self.by_md5, self.by_sha1, self.by_serial)
+
+        for obj in itertools.chain.from_iterable(playlists.values()):
             if obj.ObjectType != 'Game':
                 continue
 
-            for rom in obj.rom_list:
-                if rom.Crc and rom.Crc.lower() not in self.by_crc:
-                    self.by_crc[rom.Crc.lower()] = obj
+            self.by_id[obj.Id] = obj
 
-                if rom.Md5 and rom.Md5.lower() not in self.by_md5:
-                    self.by_md5[rom.Md5.lower()] = obj
+            for m in filter(lambda mi: mi.Status == 'Mapped', obj.Metadata):
+                self._handle_metadata(obj, m)
 
-                if rom.Sha1 and rom.Sha1.lower() not in self.by_sha1:
-                    self.by_sha1[rom.Sha1.lower()] = obj
+            for a in obj.Attributes:
+                self._handle_attribute(obj, a)
+
+    def _handle_metadata(self, obj: DataObject, m: MetadataItem) -> None:
+        match m.Source:
+            case 'IGDB':
+                igdb_id = IgdbId(int(m.ImmutableId))
+                if igdb_id not in self.by_igdb_id:
+                    self.by_igdb_id[igdb_id] = obj
+                    self.hasheous_to_igdb[obj.Id] = igdb_id
+            case 'RetroAchievements':
+                self.supports_achievements.add(obj.Id)
+
+    def _handle_attribute(self, obj: DataObject, a: Attribute) -> None:
+        match (a.attributeType, a.attributeName, a.Value):
+            case ('EmbeddedList', 'ROMs', roms) if isinstance(roms, Sequence) and not isinstance(roms, str):
+                for r in roms:
+                    if r.Crc:
+                        crc = r.Crc.upper()
+                        if crc not in self.by_crc:
+                            self.by_crc[crc] = obj
+
+                    if r.Md5:
+                        md5 = r.Md5.upper()
+                        if md5 not in self.by_md5:
+                            self.by_md5[md5] = obj
+
+                    if r.Sha1:
+                        sha1 = r.Sha1.upper()
+                        if sha1 not in self.by_sha1:
+                            self.by_sha1[sha1] = obj
+
+                    if r.Attributes and (serial := r.Attributes.get('serial', None)):
+                        serial_upper = serial.upper()
+                        if serial_upper not in self.by_serial:
+                            self.by_serial[serial_upper] = obj
+
 
 class HasheousZip(NamedTuple):
     name: str
@@ -289,37 +284,52 @@ def parse_zip(path: Path) -> HasheousZip:
     return result
     # Returning the stem makes it easier to aggregate results later
 
-
-async def load_dataobjects(metadata_dir: Path, hasheous_dirs: Mapping[str, Sequence[str]]) -> Mapping[str, Sequence[DataObject]]:
+async def load_index(path: Path | str) -> HasheousIndex:
     """
-    Load Hasheous DataObjects from the given metadata directory for the specified playlists.
+    Load a HasheousIndex from the given pickle file.
+
+    :param path: Path to the pickle file containing the HasheousIndex.
+
+    :return: The loaded HasheousIndex.
+    """
+
+    async with aiofiles.open(path, "rb") as index_file:
+        index = pickle.load(index_file.raw)
+
+        if not isinstance(index, HasheousIndex):
+            raise TypeError(f"Expected HasheousIndex in pickle file at {path}; got {type(index).__name__}")
+
+    return index
+
+def create_index(zip_paths: Iterable[Path], playlists: Iterable[Playlist]) -> HasheousIndex:
+    """
+    Create a HasheousIndex from the given metadata directory for the specified playlists.
 
     :param metadata_dir: Path to the directory containing Hasheous metadata ZIP files.
-    :param hasheous_dirs: A mapping of playlist names to the directories
-    in MetadataMap.zip to load DataObjects from.
+    :param playlists: An iterable of Playlist objects to load DataObjects for.
 
-    :return: A mapping of playlist names to the DataObjects representing
-    the games in those playlists.
+    :return: An index of all loaded DataObjects.
     """
 
-    print("Loading Hasheous DataObjects from", metadata_dir)
+    resolved_zip_paths = {p.resolve() for p in zip_paths if zipfile.is_zipfile(p)}
 
     with ProcessPoolExecutor() as executor:
-        hasheous_paths = {playlist: tuple(metadata_dir / f"{d}.zip" for d in dirs) for (playlist, dirs) in hasheous_dirs.items()}
-        hasheous_zip_paths = frozenset(itertools.chain.from_iterable(v for v in hasheous_paths.values()))
-        iterator = executor.map(parse_zip, hasheous_zip_paths)
-        dataobjects = {p.name: p.objects for p in iterator}
+        zips = dict(executor.map(parse_zip, resolved_zip_paths))
+        # A map of dump filenames (minus .zip) to parsed DataObjects.
+        # A Hasheous dump can be referenced by multiple IGDB playlists,
+        # so we load the ZIP files and merge the results accordingly.
 
-    results: dict[str, Sequence[DataObject]] = {}
-    for (name, zips) in hasheous_dirs.items():
-        zip_objects = (dataobjects.get(z, ()) for z in zips if z in dataobjects)
-        objects = itertools.chain.from_iterable(zip_objects)
-        results[name] = tuple(objects)
+        playlist_map: dict[PlaylistTitle, Iterable[DataObject]] = {}
+        for playlist in playlists:
+            objects = itertools.chain.from_iterable(zips[d] for d in playlist.hasheous_dirs if d in zips)
+            playlist_map[playlist.title] = objects
 
-    print(f"Loaded {sum(len(v) for v in results.values())} DataObjects for {len(results)} playlists")
-    return results
+        index = HasheousIndex(playlist_map.items())
+
+    return index
 
 def read_dump_names(path: str) -> Collection[str]:
+    # TODO: Remove this, just read from the PLAYLISTS object
     class TomlPlaylistEntry(TypedDict):
         hasheous: Sequence[str]
 
@@ -434,18 +444,12 @@ async def handle_index(args: argparse.Namespace) -> None:
 
     output.parent.mkdir(parents=True, exist_ok=True)
 
-    with ProcessPoolExecutor() as executor:
-        iterator = executor.map(parse_zip, zip_paths)
-        dataobjects = itertools.chain.from_iterable(p.objects for p in iterator)
-
-        index = HasheousIndex(dataobjects)
-
-    print(f"Loaded all DataObjects, indexing...")
+    print(f"Indexing all DataObjects...")
+    index = create_index(zip_paths, PLAYLISTS)
+    print(f"Indexed all DataObjects, saving to {output}...")
 
     with open(output, "wb") as out_file:
         pickle.dump(index, out_file, protocol=5)
-
-    print(f"Indexed {len(index.objects)} DataObjects from {len(zip_paths)} ZIP files, saved to {output}")
 
 def main():
     """Main entry point for the script."""
@@ -482,6 +486,7 @@ def main():
     fetch_parser.add_argument(
         "outdir",
         type=Path,
+        nargs="?",
         help="The output directory for the scraped JSON files",
         default="tmp/hasheous",
     )
@@ -503,7 +508,7 @@ def main():
         "--output",
         type=Path,
         help="The output file to save the index to.",
-        default="tmp/index/hasheous_index.pickle",
+        default="tmp/index/hasheous.pkl",
     )
     index_parser.set_defaults(func=handle_index)
 
@@ -513,7 +518,7 @@ def main():
     args = parser.parse_args()
     asyncio.run(args.func(args))
 
-__all__ = [
+__all__ = (
     "DataObject",
     "DataObjectType",
     "SignatureDataObject",
@@ -528,8 +533,11 @@ __all__ = [
     "MetadataSource",
     "RomTypeName",
     "SignatureSourceType",
-    "load_dataobjects",
-]
+    "HasheousId",
+    "load_index",
+    "HasheousIndex",
+    "MediaType",
+)
 
 if __name__ == "__main__":
     main()
