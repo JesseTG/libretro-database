@@ -938,7 +938,7 @@ def get_client_credentials(args: argparse.Namespace) -> tuple[str, str]:
     return client_id, client_secret
 
 
-async def load_games(playlists: Mapping[Path, Playlist]) -> Mapping[str, Collection[Game]]:
+async def load_games(playlists: Mapping[Path, Playlist]) -> Mapping[PlaylistTitle, Collection[Game]]:
     """
     :param playlists: An iterable of tuples,
     where each tuple contains the path to a playlist file
@@ -946,7 +946,7 @@ async def load_games(playlists: Mapping[Path, Playlist]) -> Mapping[str, Collect
 
     :return: A mapping of playlist titles to collections of the Games they represent.
     """
-    async def _load_file(path: Path, playlist: Playlist) -> tuple[str, Collection[Game]]:
+    async def _load_file(path: Path, playlist: Playlist) -> tuple[PlaylistTitle, Collection[Game]]:
         async with aiofiles.open(path, mode='rb') as infile:
             json_bytes = await infile.read()
             games = GameTupleCodec.decode(json_bytes)
