@@ -458,11 +458,17 @@ async def handle_index(args: argparse.Namespace) -> None:
     output.parent.mkdir(parents=True, exist_ok=True)
 
     print(f"Indexing all DataObjects...")
+    index_start = time.perf_counter_ns()
     index = create_index(zip_paths, PLAYLISTS, parallel=parallel)
-    print(f"Indexed all DataObjects, saving to {output}...")
+    index_finish = time.perf_counter_ns()
+    print(f"Indexed all DataObjects in {(index_finish - index_start) / 1_000_000:.2f} ms")
 
+    dump_start = time.perf_counter_ns()
+    print(f"Saving index to {output}...")
     with open(output, "wb") as out_file:
         pickle.dump(index, out_file, protocol=5)
+    dump_finish = time.perf_counter_ns()
+    print(f"Saved index to {output} in {(dump_finish - dump_start) / 1_000_000:.2f} ms")
 
 def main():
     """Main entry point for the script."""
