@@ -301,7 +301,7 @@ async def load_index(path: Path | str) -> HasheousIndex:
 
     return index
 
-def create_index(zip_paths: Iterable[Path], playlists: Iterable[Playlist]) -> HasheousIndex:
+def create_index(zip_paths: Iterable[Path], playlists: Iterable[Playlist], parallel=True) -> HasheousIndex:
     """
     Create a HasheousIndex from the given metadata directory for the specified playlists.
 
@@ -313,8 +313,7 @@ def create_index(zip_paths: Iterable[Path], playlists: Iterable[Playlist]) -> Ha
 
     resolved_zip_paths = {p.resolve() for p in zip_paths if zipfile.is_zipfile(p)}
 
-    with ProcessPoolExecutor() as executor:
-        zips = dict(executor.map(parse_zip, resolved_zip_paths))
+    def _make_index(zips: dict[str, Sequence[DataObject]]) -> HasheousIndex:
         # A map of dump filenames (minus .zip) to parsed DataObjects.
         # A Hasheous dump can be referenced by multiple IGDB playlists,
         # so we load the ZIP files and merge the results accordingly.
@@ -324,7 +323,19 @@ def create_index(zip_paths: Iterable[Path], playlists: Iterable[Playlist]) -> Ha
             objects = itertools.chain.from_iterable(zips[d] for d in playlist.hasheous_dirs if d in zips)
             playlist_map[playlist.title] = objects
 
-        index = HasheousIndex(playlist_map.items())
+        return HasheousIndex(playlist_map.items())
+
+    if parallel:
+        with ProcessPoolExecutor() as executor:
+            zips = dict(executor.map(parse_zip, resolved_zip_paths))
+            # A map of dump filenames (minus .zip) to parsed DataObjects.
+            # A Hasheous dump can be referenced by multiple IGDB playlists,
+            # so we load the ZIP files and merge the results accordingly.
+
+            index = _make_index(zips)
+    else:
+        zips = dict(map(parse_zip, resolved_zip_paths))
+        index = _make_index(zips)
 
     return index
 
@@ -421,9 +432,11 @@ async def handle_index(args: argparse.Namespace) -> None:
     input_paths: Collection[str] = args.paths
     verbose = bool(args.verbose)
     output: Path = args.output
+    parallel = bool(args.parallel)
 
     if verbose:
         print("Input paths:", input_paths)
+        print("Parallel processing:", parallel)
 
     zip_paths: set[Path] = set()
     for path in map(Path, input_paths):
@@ -445,7 +458,7 @@ async def handle_index(args: argparse.Namespace) -> None:
     output.parent.mkdir(parents=True, exist_ok=True)
 
     print(f"Indexing all DataObjects...")
-    index = create_index(zip_paths, PLAYLISTS)
+    index = create_index(zip_paths, PLAYLISTS, parallel=parallel)
     print(f"Indexed all DataObjects, saving to {output}...")
 
     with open(output, "wb") as out_file:
@@ -510,8 +523,13 @@ def main():
         help="The output file to save the index to.",
         default="tmp/index/hasheous.pkl",
     )
+    index_parser.add_argument(
+        "--parallel",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Enable (default) or disable parallel processing"
+    )
     index_parser.set_defaults(func=handle_index)
-
 
     # Parse arguments and call appropriate handler
 
