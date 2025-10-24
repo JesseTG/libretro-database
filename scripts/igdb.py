@@ -836,7 +836,17 @@ def read_playlists(path: str) -> tuple[Playlist, ...]:
             raise TypeError(f"Expected 'playlists' to be a list; got {type(playlists).__name__}")
 
         playlist_objects = cast(Sequence[TomlPlaylistEntry], playlists)
-        return tuple(Playlist(**p) for p in playlist_objects)
+
+        def load_playlist(entry: TomlPlaylistEntry) -> Playlist:
+            # We use a separate function so that the Playlist is hashable
+            # (as tomllib loads into mutable dicts and lists)
+            return Playlist(
+                title=entry['title'],
+                hasheous=tuple(entry.get('hasheous', ())),
+                alts=tuple(entry.get('alts', ())),
+                where=entry['where'],
+            )
+        return tuple(load_playlist(p) for p in playlist_objects)
 
 
 dirname = os.path.dirname(__file__)
