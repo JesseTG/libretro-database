@@ -76,6 +76,7 @@ where = "platforms = (65)"
 [[igdb.playlists]]
 title = "Atomiswave"
 where = "game_engines = (970)"
+hasheous = ["Arcade"]
 
 [[igdb.playlists]]
 title = "Bandai - WonderSwan"
@@ -92,6 +93,7 @@ where = "platforms = (123)"
 [[igdb.playlists]]
 title = "Cannonball"
 where = "id = 2051"
+hasheous = ["Arcade"]
 
 [[igdb.playlists]]
 title = "Casio - Loopy"
@@ -106,6 +108,7 @@ where = "platforms = (380)"
 [[igdb.playlists]]
 title = "Cave Story"
 where = "id = 6189"
+hasheous = ["Microsoft Windows"]
 
 # IGDB lacks a platform entry for ChaiLove
 # [[igdb.playlists]]
@@ -159,20 +162,24 @@ where = "platforms = (15)"
 # TODO: "DICE" playlist
 # [[igdb.playlists]]
 # title = "DICE"
+# hasheous = ["Arcade"]
 
 [[igdb.playlists]]
 title = "Dinothawr"
 # Dinothawr or the Sokoban mod
 where = "id = (62332, 305555)"
+hasheous = ["Microsoft Windows"]
 
 [[igdb.playlists]]
 title = "DOOM"
 where = "game_engines = (116)"
+hasheous = ["Microsoft DOS", "Microsoft Windows"]
 
 [[igdb.playlists]]
 title = "DOS"
-hasheous = ["Microsoft DOS"]
 where = "platforms = (13)"
+# Hasheous classifies most DOS games as "Microsoft Windows"
+hasheous = ["Microsoft DOS", "Microsoft Windows"]
 
 [[igdb.playlists]]
 title = "Emerson - Arcadia 2001"
@@ -187,7 +194,7 @@ where = "platforms = (473)"
 # IGDB lacks a platform entry for the Enterprise 128
 # [[igdb.playlists]]
 # title = "Enterprise - 128"
-# # hasheous = ["Enterprise 64 & 128"]
+# hasheous = ["Enterprise 64 & 128"]
 
 [[igdb.playlists]]
 title = "Epoch - Super Cassette Vision"
@@ -202,13 +209,14 @@ where = "platforms = (127)"
 # TODO: FBNeo doesn't support ALL arcade games, need to refine the query
 [[igdb.playlists]]
 title = "FBNeo - Arcade Games"
-hasheous = ["Arcade"]
+hasheous = ["Arcade", "Neo Geo"]
 # Arcade games, Neo Geo MVS, Neo Geo AES
 where = "platforms = (52, 79, 80)"
 
 [[igdb.playlists]]
 title = "Flashback"
 where = "id = 4275"
+hasheous = ["Microsoft Windows", "Microsoft DOS"]
 
 [[igdb.playlists]]
 title = "Funtech - Super Acan"
@@ -245,13 +253,13 @@ where = "game_engines = (71)"
 # TODO: all the MAME playlists
 # [[igdb.playlists]]
 # title = "MAME"
-# # hasheous = ["Arcade"]
+# hasheous = ["Arcade"]
 ## Arcade games
 # where = "platforms = (52)"
 
 # [[igdb.playlists]]
 # title = "MAME 2003-Plus"
-# # hasheous = ["Arcade"]
+# hasheous = ["Arcade"]
 ## Arcade games
 # where = "platforms = (52)"
 
@@ -259,6 +267,7 @@ where = "game_engines = (71)"
 [[igdb.playlists]]
 title = "Jump 'n Bump"
 where = "id = 19226"
+hasheous = ["Microsoft Windows"]
 
 [[igdb.playlists]]
 title = "LeapFrog - Leapster Learning Game System"
@@ -307,6 +316,7 @@ where = "game_engines = (590)"
 [[igdb.playlists]]
 title = "MrBoom"
 where = "id = 46621"
+hasheous = ["Microsoft Windows"]
 
 [[igdb.playlists]]
 title = "NEC - PC Engine - TurboGrafx 16"
@@ -480,14 +490,17 @@ where = "game_engines = (831)"
 title = "Quake"
 # Quake (not the game engine, but the original game; Quake II uses the same engine)
 where = "id = 333"
+hasheous = ["Microsoft Windows"]
 
 [[igdb.playlists]]
 title = "Quake II"
 where = "id = 286"
+hasheous = ["Microsoft Windows"]
 
 [[igdb.playlists]]
 title = "Quake III"
 where = "id = 355"
+hasheous = ["Microsoft Windows"]
 
 # IGDB lacks a `platforms` entry for the RCA Studio II
 # [[igdb.playlists]]
@@ -497,11 +510,13 @@ where = "id = 355"
 [[igdb.playlists]]
 title = "Rick Dangerous"
 where = "id = 12202"
+hasheous = ["Microsoft Windows"]
 
 [[igdb.playlists]]
 title = "RPG Maker"
 # RPG Maker 2000, RPG Maker 2003
 where = "game_engines = (696, 765)"
+hasheous = ["Microsoft Windows"]
 
 # ScummVM supports games from a ton of engines (not just SCUMM),
 # including ports from different platforms (e.g. DOS, Amiga, Atari ST).
@@ -587,6 +602,7 @@ where = "platforms =  (78, 482)"
 [[igdb.playlists]]
 title = "Sega - Naomi"
 where = "game_engines = (940)"
+hasheous = ["Arcade"]
 
 [[igdb.playlists]]
 title = "Sega - PICO"
@@ -604,6 +620,7 @@ where = "platforms = (32)"
 [[igdb.playlists]]
 title = "Sega - ST-V"
 where = "game_engines = (1780)"
+hasheous = ["Arcade"]
 
 [[igdb.playlists]]
 title = "Sega - SG-1000"
@@ -621,6 +638,7 @@ where = "platforms = (30)"
 #  and the games that used it aren't tagged properly
 # [[igdb.playlists]]
 # title = "Sega - Naomi 2"
+# hasheous = ["Arcade"]
 
 [[igdb.playlists]]
 title = "Sharp - X1"
@@ -676,7 +694,7 @@ where = "platforms = (7)"
 
 [[igdb.playlists]]
 title = "Sony - PlayStation Portable"
-# NOTE: Some hasheous directories spell it as "Playstation", others as "PlayStation" (note the S)
+# NOTE: Some hasheous dumps spell it as "Playstation", others as "PlayStation" (note the S)
 hasheous = ["Sony Playstation Portable"]
 alts = ["PlayStation Portable hacks", "Sony - PlayStation Portable (PSX2PSP)", "Sony - PlayStation Portable (UMD Music)", "Sony - PlayStation Portable (UMD Video)"]
 
@@ -737,6 +755,7 @@ where = "platforms = (379)"
 title = "Tomb Raider"
 # Tomb Raider, either using the OpenLara engine (1551) or the original games
 where = "game_engines = (1551) | id = (912, 1156, 1157)"
+hasheous = ["Microsoft Windows"]
 
 # IGDB lacks an entry for the VTech CreatiVision
 # [[igdb.playlists]]
@@ -769,4 +788,4 @@ where = "platforms = (415)"
 title = "Wolfenstein 3D"
 # Wolfenstein 3D, or any game that uses its engine
 where = "game_engines = (246)"
-
+hasheous = ["Microsoft Windows"]
