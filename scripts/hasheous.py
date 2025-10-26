@@ -15,11 +15,16 @@ import zipfile
 
 from collections.abc import Iterable, Sequence, Mapping
 from collections import ChainMap
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import Executor, ProcessPoolExecutor, ThreadPoolExecutor
 from pathlib import Path
 from pprint import pprint
 from typing import Collection, Literal, NamedTuple, NewType, Optional, TypeAlias, TypedDict, Union, cast
 from zipfile import ZipFile
+
+try:
+    from concurrent.futures import InterpreterPoolExecutor # type: ignore
+except ImportError:
+    InterpreterPoolExecutor = None
 
 import aiofiles
 import aiofiles.os
@@ -301,7 +306,13 @@ async def load_index(path: Path | str) -> HasheousIndex:
 
     return index
 
-def create_index(zip_paths: Iterable[Path], playlists: Iterable[Playlist], parallel=True) -> HasheousIndex:
+def create_index(
+    zip_paths: Iterable[Path],
+    playlists: Iterable[Playlist],
+    executor: type[Executor] | Executor | None=None,
+    chunksize=1,
+    buffersize: Optional[int] = None
+) -> HasheousIndex:
     """
     Create a HasheousIndex from the given metadata directory for the specified playlists.
 
@@ -325,19 +336,25 @@ def create_index(zip_paths: Iterable[Path], playlists: Iterable[Playlist], paral
 
         return HasheousIndex(playlist_map.items())
 
-    if parallel:
-        with ProcessPoolExecutor() as executor:
-            zips = dict(executor.map(parse_zip, resolved_zip_paths))
+    match executor:
+        case None:
+            zips = dict(map(parse_zip, resolved_zip_paths))
             # A map of dump filenames (minus .zip) to parsed DataObjects.
             # A Hasheous dump can be referenced by multiple IGDB playlists,
             # so we load the ZIP files and merge the results accordingly.
 
-            index = _make_index(zips)
-    else:
-        zips = dict(map(parse_zip, resolved_zip_paths))
-        index = _make_index(zips)
+            return _make_index(zips)
+        case type() if issubclass(executor, Executor):
+            with executor() as e:
+                zips = dict(e.map(parse_zip, resolved_zip_paths, chunksize=chunksize, buffersize=buffersize))
+                return _make_index(zips)
+        case Executor():
+            with executor as e:
+                zips = dict(e.map(parse_zip, resolved_zip_paths, chunksize=chunksize, buffersize=buffersize))
+                return _make_index(zips)
+        case _:
+            raise TypeError(f"Expected Executor, executor type, or None; got {type(executor).__name__}")
 
-    return index
 
 def read_dump_names(path: str) -> Collection[str]:
     # TODO: Remove this, just read from the PLAYLISTS object
@@ -432,11 +449,12 @@ async def handle_index(args: argparse.Namespace) -> None:
     input_paths: Collection[str] = args.paths
     verbose = bool(args.verbose)
     output: Path = args.output
-    parallel = bool(args.parallel)
+    executor: type[Executor] | None = args.executor
 
     if verbose:
         print("Input paths:", input_paths)
-        print("Parallel processing:", parallel)
+        print("Output path:", output)
+        print("Executor:", executor)
 
     zip_paths: set[Path] = set()
     for path in map(Path, input_paths):
@@ -459,7 +477,7 @@ async def handle_index(args: argparse.Namespace) -> None:
 
     print(f"Indexing all DataObjects...")
     index_start = time.perf_counter_ns()
-    index = create_index(zip_paths, PLAYLISTS, parallel=parallel)
+    index = create_index(zip_paths, PLAYLISTS, executor=executor)
     index_finish = time.perf_counter_ns()
     print(f"Indexed all DataObjects in {(index_finish - index_start) / 1_000_000:.2f} ms")
 
@@ -472,6 +490,21 @@ async def handle_index(args: argparse.Namespace) -> None:
 
 def main():
     """Main entry point for the script."""
+
+    def executor_type(s: Optional[str]) -> type[Executor] | None:
+        match s:
+            case None | "none":
+                return None
+            case "process":
+                return ProcessPoolExecutor
+            case "thread":
+                return ThreadPoolExecutor
+            case "interpreter" if InterpreterPoolExecutor is not None:
+                return InterpreterPoolExecutor
+            case "interpreter" if InterpreterPoolExecutor is None:
+                raise argparse.ArgumentTypeError("InterpreterPoolExecutor requires Python 3.14 or later.")
+            case _:
+                raise argparse.ArgumentTypeError(f"Invalid executor type: {s}")
 
     parser = argparse.ArgumentParser(
         description="Utilities for fetching and processing data from Hasheous.",
@@ -529,11 +562,27 @@ def main():
         help="The output file to save the index to.",
         default="tmp/index/hasheous.pkl",
     )
+    executor_choices = [None, ProcessPoolExecutor, ThreadPoolExecutor]
+    if InterpreterPoolExecutor is not None:
+        executor_choices.append(InterpreterPoolExecutor)
     index_parser.add_argument(
-        "--parallel",
-        action=argparse.BooleanOptionalAction,
-        default=True,
+        "--executor",
+        choices=executor_choices,
+        type=executor_type,
+        default="process",
         help="Enable (default) or disable parallel processing"
+    )
+    index_parser.add_argument(
+        "--chunksize",
+        type=int,
+        default=1,
+        help="The number of tasks to submit to each worker at a time when using parallel processing (default: 1). Ignored if not using an executor.",
+    )
+    index_parser.add_argument(
+        "--buffersize",
+        type=int,
+        default=None,
+        help="Ignored if not using an executor."
     )
     index_parser.set_defaults(func=handle_index)
 
