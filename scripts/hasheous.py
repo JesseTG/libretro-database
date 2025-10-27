@@ -21,10 +21,6 @@ from pprint import pprint
 from typing import Collection, Literal, NamedTuple, NewType, Optional, TypeAlias, TypedDict, Union, cast
 from zipfile import ZipFile
 
-try:
-    from concurrent.futures import InterpreterPoolExecutor # type: ignore
-except ImportError:
-    InterpreterPoolExecutor = None
 
 import aiofiles
 import aiofiles.os
@@ -336,6 +332,11 @@ def create_index(
 
         return HasheousIndex(playlist_map.items())
 
+    kwargs = {}
+    if buffersize is not None and sys.version_info >= (3, 14):
+        # buffersize param was introduced in Python 3.14
+        kwargs['buffersize'] = buffersize
+
     match executor:
         case None:
             zips = dict(map(parse_zip, resolved_zip_paths))
@@ -346,11 +347,11 @@ def create_index(
             return _make_index(zips)
         case type() if issubclass(executor, Executor):
             with executor() as e:
-                zips = dict(e.map(parse_zip, resolved_zip_paths, chunksize=chunksize, buffersize=buffersize))
+                zips = dict(e.map(parse_zip, resolved_zip_paths, chunksize=chunksize, **kwargs))
                 return _make_index(zips)
         case Executor():
             with executor as e:
-                zips = dict(e.map(parse_zip, resolved_zip_paths, chunksize=chunksize, buffersize=buffersize))
+                zips = dict(e.map(parse_zip, resolved_zip_paths, chunksize=chunksize, **kwargs))
                 return _make_index(zips)
         case _:
             raise TypeError(f"Expected Executor, executor type, or None; got {type(executor).__name__}")
@@ -445,11 +446,26 @@ async def handle_fetch(args: argparse.Namespace) -> None:
         for d in dumps:
             group.create_task(fetch_dump(d), name="fetch_dump_" + d)
 
+ExecutorTypeName: TypeAlias = Literal["none", "process", "thread", "interpreter"]
+
+def executor_type(s: Optional[str]) -> type[Executor] | None:
+    match s:
+        case None | "none":
+            return None
+        case "process":
+            return ProcessPoolExecutor
+        case "thread":
+            return ThreadPoolExecutor
+        case _:
+            raise argparse.ArgumentTypeError(f"Invalid executor type: {s}")
+
 async def handle_index(args: argparse.Namespace) -> None:
     input_paths: Collection[str] = args.paths
     verbose = bool(args.verbose)
     output: Path = args.output
-    executor: type[Executor] | None = args.executor
+    executor = executor_type(args.executor)
+    chunksize: int = args.chunksize
+    buffersize: Optional[int] = args.buffersize
 
     if verbose:
         print("Input paths:", input_paths)
@@ -477,7 +493,7 @@ async def handle_index(args: argparse.Namespace) -> None:
 
     print(f"Indexing all DataObjects...")
     index_start = time.perf_counter_ns()
-    index = create_index(zip_paths, PLAYLISTS, executor=executor)
+    index = create_index(zip_paths, PLAYLISTS, executor=executor, chunksize=chunksize, buffersize=buffersize)
     index_finish = time.perf_counter_ns()
     print(f"Indexed all DataObjects in {(index_finish - index_start) / 1_000_000:.2f} ms")
 
@@ -490,21 +506,6 @@ async def handle_index(args: argparse.Namespace) -> None:
 
 def main():
     """Main entry point for the script."""
-
-    def executor_type(s: Optional[str]) -> type[Executor] | None:
-        match s:
-            case None | "none":
-                return None
-            case "process":
-                return ProcessPoolExecutor
-            case "thread":
-                return ThreadPoolExecutor
-            case "interpreter" if InterpreterPoolExecutor is not None:
-                return InterpreterPoolExecutor
-            case "interpreter" if InterpreterPoolExecutor is None:
-                raise argparse.ArgumentTypeError("InterpreterPoolExecutor requires Python 3.14 or later.")
-            case _:
-                raise argparse.ArgumentTypeError(f"Invalid executor type: {s}")
 
     parser = argparse.ArgumentParser(
         description="Utilities for fetching and processing data from Hasheous.",
@@ -562,21 +563,18 @@ def main():
         help="The output file to save the index to.",
         default="tmp/index/hasheous.pkl",
     )
-    executor_choices = [None, ProcessPoolExecutor, ThreadPoolExecutor]
-    if InterpreterPoolExecutor is not None:
-        executor_choices.append(InterpreterPoolExecutor)
     index_parser.add_argument(
         "--executor",
-        choices=executor_choices,
-        type=executor_type,
+        choices=ExecutorTypeName.__args__,
+        type=str,
         default="process",
         help="Enable (default) or disable parallel processing"
     )
     index_parser.add_argument(
         "--chunksize",
         type=int,
-        default=1,
-        help="The number of tasks to submit to each worker at a time when using parallel processing (default: 1). Ignored if not using an executor.",
+        default=16,
+        help="The number of tasks to submit to each worker at a time when using parallel processing (default: 16). Ignored if not using an executor.",
     )
     index_parser.add_argument(
         "--buffersize",
