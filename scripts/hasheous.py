@@ -302,12 +302,13 @@ async def load_index(path: Path | str) -> HasheousIndex:
 
     return index
 
+DEFAULT_CHUNKSIZE = 16
+
 def create_index(
     zip_paths: Iterable[Path],
     playlists: Iterable[Playlist],
     executor: type[Executor] | Executor | None=None,
-    chunksize=1,
-    buffersize: Optional[int] = None
+    chunksize=DEFAULT_CHUNKSIZE
 ) -> HasheousIndex:
     """
     Create a HasheousIndex from the given metadata directory for the specified playlists.
@@ -332,11 +333,6 @@ def create_index(
 
         return HasheousIndex(playlist_map.items())
 
-    kwargs = {}
-    if buffersize is not None and sys.version_info >= (3, 14):
-        # buffersize param was introduced in Python 3.14
-        kwargs['buffersize'] = buffersize
-
     match executor:
         case None:
             zips = dict(map(parse_zip, resolved_zip_paths))
@@ -347,11 +343,11 @@ def create_index(
             return _make_index(zips)
         case type() if issubclass(executor, Executor):
             with executor() as e:
-                zips = dict(e.map(parse_zip, resolved_zip_paths, chunksize=chunksize, **kwargs))
+                zips = dict(e.map(parse_zip, resolved_zip_paths, chunksize=chunksize))
                 return _make_index(zips)
         case Executor():
             with executor as e:
-                zips = dict(e.map(parse_zip, resolved_zip_paths, chunksize=chunksize, **kwargs))
+                zips = dict(e.map(parse_zip, resolved_zip_paths, chunksize=chunksize))
                 return _make_index(zips)
         case _:
             raise TypeError(f"Expected Executor, executor type, or None; got {type(executor).__name__}")
@@ -465,7 +461,6 @@ async def handle_index(args: argparse.Namespace) -> None:
     output: Path = args.output
     executor = executor_type(args.executor)
     chunksize: int = args.chunksize
-    buffersize: Optional[int] = args.buffersize
 
     if verbose:
         print("Input paths:", input_paths)
@@ -493,7 +488,7 @@ async def handle_index(args: argparse.Namespace) -> None:
 
     print(f"Indexing all DataObjects...")
     index_start = time.perf_counter_ns()
-    index = create_index(zip_paths, PLAYLISTS, executor=executor, chunksize=chunksize, buffersize=buffersize)
+    index = create_index(zip_paths, PLAYLISTS, executor=executor, chunksize=chunksize)
     index_finish = time.perf_counter_ns()
     print(f"Indexed all DataObjects in {(index_finish - index_start) / 1_000_000:.2f} ms")
 
@@ -573,14 +568,8 @@ def main():
     index_parser.add_argument(
         "--chunksize",
         type=int,
-        default=16,
-        help="The number of tasks to submit to each worker at a time when using parallel processing (default: 16). Ignored if not using an executor.",
-    )
-    index_parser.add_argument(
-        "--buffersize",
-        type=int,
-        default=None,
-        help="Ignored if not using an executor."
+        default=DEFAULT_CHUNKSIZE,
+        help=f"The number of tasks to submit to each worker at a time when using parallel processing (default: {DEFAULT_CHUNKSIZE}). Ignored if not using an executor.",
     )
     index_parser.set_defaults(func=handle_index)
 
