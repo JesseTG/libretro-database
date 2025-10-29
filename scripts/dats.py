@@ -655,10 +655,10 @@ if __name__ == "__main__":
     main()
 
 __all__ = [
-    "Game",
-    "Rom",
     "ClrMamePro",
+    "Game",
+    "get_existing_dat_files",
     "load_dat",
     "load_dats",
-    "get_existing_dat_files",
+    "Rom",
 ]
