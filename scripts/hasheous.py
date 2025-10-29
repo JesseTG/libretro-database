@@ -424,7 +424,7 @@ async def handle_fetch(args: argparse.Namespace) -> None:
                 print(f"Fetching {dump_url}")
 
             async with httpx.AsyncClient() as client:
-                async with client.stream("GET", dump_url) as response:
+                async with client.stream("GET", dump_url, timeout=httpx.Timeout(None)) as response:
                     response.raise_for_status()
                     content_type = response.headers.get('content-type')
 
