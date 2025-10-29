@@ -10,7 +10,6 @@ import os
 import pickle
 import sys
 import time
-import tomllib
 import zipfile
 
 from collections.abc import Iterable, Sequence, Mapping
@@ -18,7 +17,7 @@ from collections import ChainMap
 from concurrent.futures import Executor, ProcessPoolExecutor, ThreadPoolExecutor
 from pathlib import Path
 from pprint import pprint
-from typing import Collection, Literal, NamedTuple, NewType, Optional, TypeAlias, TypedDict, Union, cast
+from typing import Collection, Literal, NamedTuple, NewType, Optional, TypeAlias, Union
 from zipfile import ZipFile
 
 
@@ -285,7 +284,7 @@ def parse_zip(path: Path) -> HasheousZip:
     return result
     # Returning the stem makes it easier to aggregate results later
 
-async def load_index(path: Path | str) -> HasheousIndex:
+async def load_index(path: Path) -> HasheousIndex:
     """
     Load a HasheousIndex from the given pickle file.
 
@@ -304,12 +303,7 @@ async def load_index(path: Path | str) -> HasheousIndex:
 
 DEFAULT_CHUNKSIZE = 16
 
-def create_index(
-    zip_paths: Iterable[Path],
-    playlists: Iterable[Playlist],
-    executor: type[Executor] | Executor | None=None,
-    chunksize=DEFAULT_CHUNKSIZE
-) -> HasheousIndex:
+async def create_index(zip_paths: Iterable[Path] | Path, playlists: Iterable[Playlist]) -> HasheousIndex:
     """
     Create a HasheousIndex from the given metadata directory for the specified playlists.
 
@@ -319,60 +313,27 @@ def create_index(
     :return: An index of all loaded DataObjects.
     """
 
-    resolved_zip_paths = {p.resolve() for p in zip_paths if zipfile.is_zipfile(p)}
+    if isinstance(zip_paths, Iterable):
+        resolved_zip_paths = {p.resolve() for p in zip_paths if zipfile.is_zipfile(p)}
+    else:
+        resolved_zip_paths = {p.resolve() for p in zip_paths.rglob('*.zip') if zipfile.is_zipfile(p)}
 
-    def _make_index(zips: dict[str, Sequence[DataObject]]) -> HasheousIndex:
-        # A map of dump filenames (minus .zip) to parsed DataObjects.
-        # A Hasheous dump can be referenced by multiple IGDB playlists,
-        # so we load the ZIP files and merge the results accordingly.
+    zips: dict[str, Sequence[DataObject]] = {}
+    # A map of dump filenames (minus .zip) to parsed DataObjects.
+    # A Hasheous dump can be referenced by multiple IGDB playlists,
+    # so we load the ZIP files and merge the results accordingly.
 
-        playlist_map: dict[PlaylistTitle, Iterable[DataObject]] = {}
-        for playlist in playlists:
-            objects = itertools.chain.from_iterable(zips[d] for d in playlist.hasheous_dirs if d in zips)
-            playlist_map[playlist.title] = objects
+    loop = asyncio.get_running_loop()
+    with ProcessPoolExecutor() as executor:
+        futures = (loop.run_in_executor(executor, parse_zip, p) for p in resolved_zip_paths)
+        zips = dict(await asyncio.gather(*futures))
 
-        return HasheousIndex(playlist_map.items())
+    playlist_map: dict[PlaylistTitle, Iterable[DataObject]] = {}
+    for playlist in playlists:
+        objects = itertools.chain.from_iterable(zips[d] for d in playlist.hasheous_dirs if d in zips)
+        playlist_map[playlist.title] = objects
 
-    match executor:
-        case None:
-            zips = dict(map(parse_zip, resolved_zip_paths))
-            # A map of dump filenames (minus .zip) to parsed DataObjects.
-            # A Hasheous dump can be referenced by multiple IGDB playlists,
-            # so we load the ZIP files and merge the results accordingly.
-
-            return _make_index(zips)
-        case type() if issubclass(executor, Executor):
-            with executor() as e:
-                zips = dict(e.map(parse_zip, resolved_zip_paths, chunksize=chunksize))
-                return _make_index(zips)
-        case Executor():
-            with executor as e:
-                zips = dict(e.map(parse_zip, resolved_zip_paths, chunksize=chunksize))
-                return _make_index(zips)
-        case _:
-            raise TypeError(f"Expected Executor, executor type, or None; got {type(executor).__name__}")
-
-
-def read_dump_names(path: str) -> Collection[str]:
-    # TODO: Remove this, just read from the PLAYLISTS object
-    class TomlPlaylistEntry(TypedDict):
-        hasheous: Sequence[str]
-
-    with open(path, "rb") as playlist_file:
-        toml = tomllib.load(playlist_file)
-
-        if not (igdb := toml.get('igdb')):
-            raise KeyError(f"Missing 'igdb' section in TOML file at {path}")
-
-        if not (playlists := igdb.get('playlists')):
-            raise KeyError(f"Missing 'playlists' array in 'igdb' table of TOML file at {path}")
-
-        if not isinstance(playlists, list):
-            raise TypeError(f"Expected 'playlists' to be a list; got {type(playlists).__name__}")
-
-        playlist_objects = cast(Sequence[TomlPlaylistEntry], playlists)
-        playlists_with_hasheous = filter(lambda p: 'hasheous' in p, playlist_objects)
-        return frozenset(itertools.chain.from_iterable(p['hasheous'] for p in playlists_with_hasheous))
+    return HasheousIndex(playlist_map.items())
 
 
 dirname = os.path.dirname(__file__)
@@ -407,7 +368,7 @@ def _giveup(e: Exception):
 
 async def handle_fetch(args: argparse.Namespace) -> None:
     outdir: Path = args.outdir
-    dumps: Collection[str] = sorted(args.dumps or read_dump_names(TOML_PATH))
+    dumps: Collection[str] = sorted(args.dumps or set(itertools.chain.from_iterable(p.hasheous_dirs for p in PLAYLISTS)))
     verbose = bool(args.verbose)
 
     if verbose:
@@ -459,13 +420,10 @@ async def handle_index(args: argparse.Namespace) -> None:
     input_paths: Collection[str] = args.paths
     verbose = bool(args.verbose)
     output: Path = args.output
-    executor = executor_type(args.executor)
-    chunksize: int = args.chunksize
 
     if verbose:
         print("Input paths:", input_paths)
         print("Output path:", output)
-        print("Executor:", executor)
 
     zip_paths: set[Path] = set()
     for path in map(Path, input_paths):
@@ -488,7 +446,7 @@ async def handle_index(args: argparse.Namespace) -> None:
 
     print(f"Indexing all DataObjects...")
     index_start = time.perf_counter_ns()
-    index = create_index(zip_paths, PLAYLISTS, executor=executor, chunksize=chunksize)
+    index = await create_index(zip_paths, PLAYLISTS)
     index_finish = time.perf_counter_ns()
     print(f"Indexed all DataObjects in {(index_finish - index_start) / 1_000_000:.2f} ms")
 
@@ -558,19 +516,6 @@ def main():
         help="The output file to save the index to.",
         default="tmp/index/hasheous.pkl",
     )
-    index_parser.add_argument(
-        "--executor",
-        choices=ExecutorTypeName.__args__,
-        type=str,
-        default="process",
-        help="Enable (default) or disable parallel processing"
-    )
-    index_parser.add_argument(
-        "--chunksize",
-        type=int,
-        default=DEFAULT_CHUNKSIZE,
-        help=f"The number of tasks to submit to each worker at a time when using parallel processing (default: {DEFAULT_CHUNKSIZE}). Ignored if not using an executor.",
-    )
     index_parser.set_defaults(func=handle_index)
 
     # Parse arguments and call appropriate handler
@@ -597,6 +542,7 @@ __all__ = (
     "load_index",
     "HasheousIndex",
     "MediaType",
+    "create_index",
 )
 
 if __name__ == "__main__":
