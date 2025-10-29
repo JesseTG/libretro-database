@@ -12,6 +12,7 @@ import tomllib
 from asyncio import TaskGroup
 from collections import ChainMap
 from collections.abc import Collection, Sequence, Iterable, Iterator, Mapping
+from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from functools import cache
 from json import JSONDecodeError
@@ -948,6 +949,12 @@ def get_client_credentials(args: argparse.Namespace) -> tuple[str, str]:
     return client_id, client_secret
 
 
+def load_file(path: Path, playlist: Playlist) -> tuple[PlaylistTitle, Collection[Game]]:
+    with open(path, mode='rb') as infile:
+        json_bytes = infile.read()
+        games = GameTupleCodec.decode(json_bytes)
+        return playlist.title, games
+
 async def load_games(playlists: Mapping[Path, Playlist]) -> Mapping[PlaylistTitle, Collection[Game]]:
     """
     :param playlists: An iterable of tuples,
@@ -956,19 +963,11 @@ async def load_games(playlists: Mapping[Path, Playlist]) -> Mapping[PlaylistTitl
 
     :return: A mapping of playlist titles to collections of the Games they represent.
     """
-    async def _load_file(path: Path, playlist: Playlist) -> tuple[PlaylistTitle, Collection[Game]]:
-        async with aiofiles.open(path, mode='rb') as infile:
-            json_bytes = await infile.read()
-            games = GameTupleCodec.decode(json_bytes)
-            return playlist.title, games
-            # Including path in the return value simplifies the following list comprehension
 
-    async with asyncio.TaskGroup() as group:
-        tasks = tuple(group.create_task(_load_file(k, v), name=k.stem) for (k, v) in playlists.items())
-        # Start loading each playlist file concurrently
-        result = dict(await asyncio.gather(*tasks))
-
-        return result
+    loop = asyncio.get_running_loop()
+    with ProcessPoolExecutor() as executor:
+        futures = (loop.run_in_executor(executor, load_file, k, v) for (k, v) in playlists.items())
+        return dict(await asyncio.gather(*futures))
 
 async def handle_query(args: argparse.Namespace) -> None:
     """Handle the query subcommand."""
