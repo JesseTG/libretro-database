@@ -457,11 +457,12 @@ async def handle_generate(args: argparse.Namespace) -> None:
     dats_by_playlist = {k: [pd[1] for pd in g] for k, g in grouped_playlists_for_dats}
 
     async with TaskGroup() as group:
-        loaded_igdb, loaded_dats, loaded_hasheous = await asyncio.gather(
-            group.create_task(load_games(playlists)),
-            group.create_task(load_dats(dats_by_playlist)),
-            group.create_task(create_hasheous_index(hasheous, playlists.values()))
-        )
+        with ProcessPoolExecutor() as executor:
+            loaded_igdb, loaded_dats, loaded_hasheous = await asyncio.gather(
+                group.create_task(load_games(playlists, executor)),
+                group.create_task(load_dats(dats_by_playlist, executor)),
+                group.create_task(create_hasheous_index(hasheous, playlists.values(), executor))
+            )
 
         keys = set(loaded_igdb.keys()) | set(loaded_dats.keys()) | set(loaded_hasheous.by_playlist.keys())
 

@@ -12,7 +12,7 @@ import tomllib
 from asyncio import TaskGroup
 from collections import ChainMap
 from collections.abc import Collection, Sequence, Iterable, Iterator, Mapping
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import Executor
 from dataclasses import dataclass
 from functools import cache
 from json import JSONDecodeError
@@ -955,7 +955,7 @@ def load_file(path: Path, playlist: Playlist) -> tuple[PlaylistTitle, Collection
         games = GameTupleCodec.decode(json_bytes)
         return playlist.title, games
 
-async def load_games(playlists: Mapping[Path, Playlist]) -> Mapping[PlaylistTitle, Collection[Game]]:
+async def load_games(playlists: Mapping[Path, Playlist], executor: Executor) -> Mapping[PlaylistTitle, Collection[Game]]:
     """
     :param playlists: An iterable of tuples,
     where each tuple contains the path to a playlist file
@@ -965,9 +965,8 @@ async def load_games(playlists: Mapping[Path, Playlist]) -> Mapping[PlaylistTitl
     """
 
     loop = asyncio.get_running_loop()
-    with ProcessPoolExecutor() as executor:
-        futures = (loop.run_in_executor(executor, load_file, k, v) for (k, v) in playlists.items())
-        return dict(await asyncio.gather(*futures))
+    futures = (loop.run_in_executor(executor, load_file, k, v) for (k, v) in playlists.items())
+    return dict(await asyncio.gather(*futures))
 
 async def handle_query(args: argparse.Namespace) -> None:
     """Handle the query subcommand."""

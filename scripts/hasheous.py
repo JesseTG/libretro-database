@@ -303,7 +303,7 @@ async def load_index(path: Path) -> HasheousIndex:
 
 DEFAULT_CHUNKSIZE = 16
 
-async def create_index(zip_paths: Iterable[Path] | Path, playlists: Iterable[Playlist]) -> HasheousIndex:
+async def create_index(zip_paths: Iterable[Path] | Path, playlists: Iterable[Playlist], executor: Executor) -> HasheousIndex:
     """
     Create a HasheousIndex from the given metadata directory for the specified playlists.
 
@@ -324,9 +324,8 @@ async def create_index(zip_paths: Iterable[Path] | Path, playlists: Iterable[Pla
     # so we load the ZIP files and merge the results accordingly.
 
     loop = asyncio.get_running_loop()
-    with ProcessPoolExecutor() as executor:
-        futures = (loop.run_in_executor(executor, parse_zip, p) for p in resolved_zip_paths)
-        zips = dict(await asyncio.gather(*futures))
+    futures = (loop.run_in_executor(executor, parse_zip, p) for p in resolved_zip_paths)
+    zips = dict(await asyncio.gather(*futures))
 
     playlist_map: dict[PlaylistTitle, Iterable[DataObject]] = {}
     for playlist in playlists:
@@ -446,7 +445,8 @@ async def handle_index(args: argparse.Namespace) -> None:
 
     print(f"Indexing all DataObjects...")
     index_start = time.perf_counter_ns()
-    index = await create_index(zip_paths, PLAYLISTS)
+    with ProcessPoolExecutor() as executor:
+        index = await create_index(zip_paths, PLAYLISTS, executor)
     index_finish = time.perf_counter_ns()
     print(f"Indexed all DataObjects in {(index_finish - index_start) / 1_000_000:.2f} ms")
 

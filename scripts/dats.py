@@ -11,8 +11,8 @@ import os.path
 import sys
 import time
 
-from collections.abc import Iterable, Sequence, Iterator, Mapping, Collection, AsyncIterator
-from concurrent.futures import ProcessPoolExecutor
+from collections.abc import Iterable, Sequence, Iterator, Mapping, Collection
+from concurrent.futures import Executor, ProcessPoolExecutor
 from io import BytesIO
 from itertools import groupby
 from pathlib import Path
@@ -508,7 +508,7 @@ def load_dat(dat_path: tuple[PlaylistTitle, Path]) -> LoadedDat | None:
         games=dat[1:]
     )
 
-async def load_dats(dat_playlists: Mapping[PlaylistTitle, Sequence[Path]], parallel=True) -> Mapping[PlaylistTitle, Collection[Game]]:
+async def load_dats(dat_playlists: Mapping[PlaylistTitle, Sequence[Path]], executor: Executor | None) -> Mapping[PlaylistTitle, Collection[Game]]:
     """
     Load game data from DAT files for each playlist.
 
@@ -525,11 +525,10 @@ async def load_dats(dat_playlists: Mapping[PlaylistTitle, Sequence[Path]], paral
     # Break the mapping of playlist names to lists of paths
     # into a flat iterable of (playlist name, path) tuples
 
-    if parallel:
+    if executor:
         loop = asyncio.get_running_loop()
-        with ProcessPoolExecutor() as executor:
-            futures = (loop.run_in_executor(executor, load_dat, p) for p in paths)
-            dat_files = [d for d in await asyncio.gather(*futures) if d]
+        futures = (loop.run_in_executor(executor, load_dat, p) for p in paths)
+        dat_files = [d for d in await asyncio.gather(*futures) if d]
     else:
         dat_files = [d for d in map(load_dat, paths) if d]
 
@@ -612,7 +611,8 @@ async def handle_bench(args: argparse.Namespace):
     datgroups = {k: tuple(vv[1] for vv in v) for k, v in groupby(sorted_by_title, key=lambda x: x[0])}
 
     start = time.perf_counter_ns()
-    dats = await load_dats(datgroups)
+    with ProcessPoolExecutor() as executor:
+        dats = await load_dats(datgroups, executor)
     now = time.perf_counter_ns()
     print(f"Loaded {len(existing_dat_paths)} DAT files in {(now - start) / 1_000_000:.2f} ms")
 
