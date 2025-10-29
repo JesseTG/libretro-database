@@ -526,14 +526,10 @@ async def load_dats(dat_playlists: Mapping[PlaylistTitle, Sequence[Path]], paral
     # into a flat iterable of (playlist name, path) tuples
 
     if parallel:
+        loop = asyncio.get_running_loop()
         with ProcessPoolExecutor() as executor:
-            async def asynciter() -> AsyncIterator[LoadedDat]:
-                for d in executor.map(load_dat, paths, chunksize=16):
-                    if d:
-                        yield d
-                    await asyncio.sleep(0)  # Yield control to the event loop
-
-            dat_files = [pair async for pair in asynciter()]
+            futures = (loop.run_in_executor(executor, load_dat, p) for p in paths)
+            dat_files = [d for d in await asyncio.gather(*futures) if d]
     else:
         dat_files = [d for d in map(load_dat, paths) if d]
 
