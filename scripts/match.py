@@ -20,7 +20,7 @@ import aiofiles
 from pycountry import countries
 
 from dats import Game as DatGame, ClrMamePro, GameDataListCodec, get_existing_dat_files, load_dats
-from hasheous import DataObject, HasheousIndex, create_index as create_hasheous_index
+from hasheous import DataObject, HasheousIndex, load_dataobjects
 from igdb import ANALOG_KEYWORD_IDS, PLAYLIST_TITLES, PLAYLISTS_BY_TITLE, RUMBLE_KEYWORD_IDS, Playlist, Game as IgdbGame, PlaylistTitle, ReleaseDate, get_playlist, load_games
 
 
@@ -461,7 +461,7 @@ async def handle_generate(args: argparse.Namespace) -> None:
             loaded_igdb, loaded_dats, loaded_hasheous = await asyncio.gather(
                 group.create_task(load_games(playlists, executor)),
                 group.create_task(load_dats(dats_by_playlist, executor)),
-                group.create_task(create_hasheous_index(hasheous, playlists.values(), executor))
+                group.create_task(load_dataobjects(hasheous, playlists.values(), executor))
             )
 
         keys = set(loaded_igdb.keys()) | set(loaded_dats.keys()) | set(loaded_hasheous.by_playlist.keys())
