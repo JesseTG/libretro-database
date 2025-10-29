@@ -10,6 +10,7 @@ import sys
 from asyncio import TaskGroup
 from collections.abc import Collection, Iterable, Iterator, Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
+from functools import cache
 from io import StringIO
 from pathlib import Path
 from pprint import pprint
@@ -21,7 +22,7 @@ from pycountry import countries
 
 from dats import Game as DatGame, ClrMamePro, GameDataListCodec, get_existing_dat_files, load_dats
 from hasheous import DataObject, HasheousIndex, load_dataobjects
-from igdb import ANALOG_KEYWORD_IDS, PLAYLIST_TITLES, PLAYLISTS_BY_TITLE, RUMBLE_KEYWORD_IDS, Playlist, Game as IgdbGame, PlaylistTitle, ReleaseDate, get_playlist, load_games
+from igdb import ANALOG_KEYWORD_IDS, PLAYLIST_TITLES, PLAYLISTS_BY_TITLE, RUMBLE_KEYWORD_IDS, IgdbIndex, Playlist, Game as IgdbGame, PlaylistTitle, ReleaseDate, get_playlist, load_games
 
 
 class PlaylistData(NamedTuple):
@@ -120,8 +121,12 @@ def find[T](items: Iterable[T] | None, predicate: Callable[[T], bool]) -> T | No
 
     return None
 
+@cache
+def get_country_name(code: int) -> str | None:
+    country = countries.get(numeric=str(code))
+    return country.name if country else None
 
-def match_games(playlist: PlaylistData, hasheous_index: HasheousIndex) -> Iterable[GameMatch]:
+def match_games(playlist: PlaylistData, hasheous_index: HasheousIndex, igdb_index: IgdbIndex) -> Iterable[GameMatch]:
 
     def generate_game(dat: DatGame, igdb: IgdbGame, hasheous: DataObject) -> DatGame:
         """Generate a new DatGame object by combining data from the given DatGame, IgdbGame, and Hasheous DataObject."""
@@ -249,8 +254,7 @@ def match_games(playlist: PlaylistData, hasheous_index: HasheousIndex) -> Iterab
                 return None
 
             country_codes = {c.company.country for c in igdb.involved_companies if c.developer and c.company.country}
-            country_objects = (countries.get(numeric=str(c)) for c in country_codes)
-            country_names: tuple[str, ...] = tuple(c.name for c in country_objects if c)
+            country_names = tuple(filter(None, (get_country_name(c) for c in country_codes)))
 
             if not country_names:
                 return None
@@ -374,7 +378,7 @@ def match_games(playlist: PlaylistData, hasheous_index: HasheousIndex) -> Iterab
             hasheous_entry = hasheous_index.by_serial.get(serial.upper(), None)
 
         igdb_id = hasheous_index.hasheous_to_igdb.get(hasheous_entry.Id, None) if hasheous_entry else None
-        igdb_entry = find(playlist.igdb, lambda g: g.id == igdb_id)
+        igdb_entry = igdb_index.by_id.get(igdb_id, None) if igdb_id else None
 
         game = generate_game(dat, igdb_entry, hasheous_entry) if (igdb_entry and hasheous_entry) else None
         match_record = MatchRecord(
@@ -464,7 +468,7 @@ async def handle_generate(args: argparse.Namespace) -> None:
                 group.create_task(load_dataobjects(hasheous, playlists.values(), executor))
             )
 
-        keys = set(loaded_igdb.keys()) | set(loaded_dats.keys()) | set(loaded_hasheous.by_playlist.keys())
+        keys = set(loaded_igdb.by_playlist.keys()) | set(loaded_dats.keys()) | set(loaded_hasheous.by_playlist.keys())
 
         playlist_dict: Mapping[str, PlaylistData] = {}
         for k in keys:
@@ -475,7 +479,7 @@ async def handle_generate(args: argparse.Namespace) -> None:
 
             playlist_dict[k] = PlaylistData(
                 playlist=playlist,
-                igdb=loaded_igdb.get(k, ()),
+                igdb=loaded_igdb.by_playlist.get(k, ()),
                 dats=loaded_dats.get(k, ()),
                 hasheous=loaded_hasheous.by_playlist.get(k, ()),
             )
@@ -493,7 +497,7 @@ async def handle_generate(args: argparse.Namespace) -> None:
             )
 
             print(f"Matching games for playlist '{title}' with {len(data.dats)} DAT games, {len(data.igdb)} IGDB games, and {len(data.hasheous)} Hasheous entries")
-            matches = tuple(match_games(data, loaded_hasheous))
+            matches = tuple(match_games(data, loaded_hasheous, loaded_igdb))
             games = (m.generated_dat for m in matches if m.generated_dat is not None)
             await asyncio.sleep(0)
             dat = (clrmamepro, *games, )

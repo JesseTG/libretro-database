@@ -955,7 +955,21 @@ def load_file(path: Path, playlist: Playlist) -> tuple[PlaylistTitle, Collection
         games = GameTupleCodec.decode(json_bytes)
         return playlist.title, games
 
-async def load_games(playlists: Mapping[Path, Playlist], executor: Executor) -> Mapping[PlaylistTitle, Collection[Game]]:
+class IgdbIndex:
+    def __init__(self, games: Iterable[tuple[PlaylistTitle, Iterable[Game]]]):
+        playlists_iterators = dict(games)
+        playlists = {title: tuple(obj_iter) for title, obj_iter in playlists_iterators.items()}
+        self.by_playlist = playlists
+        self.by_id: dict[IgdbId, Game] = {}
+
+        for game in itertools.chain.from_iterable(playlists.values()):
+            self.by_id[game.id] = game
+
+    @property
+    def by_igdb_id(self):
+        return self.by_id
+
+async def load_games(playlists: Mapping[Path, Playlist], executor: Executor) -> IgdbIndex:
     """
     :param playlists: An iterable of tuples,
     where each tuple contains the path to a playlist file
@@ -966,7 +980,8 @@ async def load_games(playlists: Mapping[Path, Playlist], executor: Executor) -> 
 
     loop = asyncio.get_running_loop()
     futures = (loop.run_in_executor(executor, load_file, k, v) for (k, v) in playlists.items())
-    return dict(await asyncio.gather(*futures))
+
+    return IgdbIndex(await asyncio.gather(*futures))
 
 async def handle_query(args: argparse.Namespace) -> None:
     """Handle the query subcommand."""
@@ -1223,6 +1238,7 @@ __all__ = (
     "RUMBLE_KEYWORD_IDS",
     "ANALOG_KEYWORD_IDS",
     "PlaylistTitle",
+    "IgdbIndex",
 )
 
 if __name__ == "__main__":

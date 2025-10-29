@@ -313,6 +313,7 @@ def _build_record_content(args: tuple[KeyValueTuple, ...], **_):
             case _:
                 return result
 
+    # itertools.groupby requires the input to be sorted by the grouping key
     sorted_by_key = sorted(args, key=lambda x: x.key)
     grouped_by_key = itertools.groupby(sorted_by_key, lambda x: x.key)
     result = {k:dedupe_keys(v) for k, v in grouped_by_key}
@@ -451,7 +452,7 @@ def encode_dat(value: typelib.serdes.MarshalledValueT) -> bytes:
 def decode_dat(value: bytes) -> typelib.serdes.MarshalledValueT:
     dat = value.decode('utf-8')
 
-    match_result = dat_parser.match(dat)
+    match_result = dat_parser.match(dat, flags=pe.MEMOIZE)
     if match_result is None:
         raise ValueError("Failed to parse DAT string")
 
@@ -532,9 +533,10 @@ async def load_dats(dat_playlists: Mapping[PlaylistTitle, Sequence[Path]], execu
     else:
         dat_files = [d for d in map(load_dat, paths) if d]
 
+    game_fields = dataclasses.fields(Game)
     def reduce_game(merged: dict[str, bool | str | int | Sequence[Rom]], game: Game) -> dict[str, Any]:
         # Merge the fields of `game` into `merged`, without overwriting existing values
-        for field in dataclasses.fields(Game):
+        for field in game_fields:
             name = field.name
             old = merged.get(name)
             new = getattr(game, name)
