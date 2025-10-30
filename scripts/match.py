@@ -509,9 +509,10 @@ async def handle_generate(args: argparse.Namespace) -> None:
                 await outfile.write(encoded_dat)
             print(f"Wrote DAT at '{dat_path}' with {len(dat)} records")
 
-            csv_path = outdir.joinpath(f"{title}.csv")
-            csv_output = StringIO(newline=None) # csv.DictWriter writes its own newlines
-            writer = csv.DictWriter(csv_output, fieldnames=MatchRecord._fields, dialect='unix')
+            tsv_path = outdir.joinpath(f"{title}.tsv")
+            tsv_output = StringIO(newline=None) # csv.DictWriter writes its own newlines
+            writer = csv.DictWriter(tsv_output, fieldnames=MatchRecord._fields, dialect='excel-tab')
+            # Using the excel-tab dialect because some fields may contain commas
             writer.writeheader()
 
             checkpoint: float = time.perf_counter()
@@ -522,10 +523,10 @@ async def handle_generate(args: argparse.Namespace) -> None:
                     await asyncio.sleep(0)
                     checkpoint = time.perf_counter()
 
-            async with aiofiles.open(csv_path, 'w', encoding='utf-8') as outfile:
-                await outfile.write(csv_output.getvalue())
+            async with aiofiles.open(tsv_path, 'w', encoding='utf-8') as outfile:
+                await outfile.write(tsv_output.getvalue())
 
-            print(f"Wrote CSV at '{csv_path}' with {len(matches)} records (including incomplete matches)")
+            print(f"Wrote TSV at '{tsv_path}' with {len(matches)} records (including incomplete matches)")
 
         dat_tasks = tuple(group.create_task(generate_dat(p), name=p.playlist.title) for p in playlist_dict.values())
 
