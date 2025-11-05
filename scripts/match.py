@@ -501,13 +501,21 @@ async def handle_generate(args: argparse.Namespace) -> None:
             games = (m.generated_dat for m in matches if m.generated_dat is not None)
             await asyncio.sleep(0)
             dat = (clrmamepro, *games, )
-            print(f"Matched {len(dat) - 1} out of {len(matches)} games for playlist '{title}'")
-            encoded_dat = GameDataListCodec.encode(dat)
-            dat_path = outdir.joinpath(f"{title}.dat")
+            num_matches = len(matches)
+            num_matched_dats = len(dat) - 1 # Subtract 1 for the ClrMamePro header
+            match_rate = (num_matched_dats / num_matches * 100.0) if num_matches > 0 else 0.0
+            print(f"Matched {num_matched_dats} of {num_matches} ({match_rate:.2f}%) DAT records in playlist '{title}'")
+            if not num_matched_dats:
+                # If nothing was matched, don't write any files
+                print(f"Skipping DAT output for playlist '{title}' because no records were matched")
+            else:
+                encoded_dat = GameDataListCodec.encode(dat)
+                dat_path = outdir.joinpath(f"{title}.dat")
 
-            async with aiofiles.open(dat_path, 'wb') as outfile:
-                await outfile.write(encoded_dat)
-            print(f"Wrote DAT at '{dat_path}' with {len(dat)} records")
+                async with aiofiles.open(dat_path, 'wb') as outfile:
+                    await outfile.write(encoded_dat)
+
+                print(f"Wrote DAT at '{dat_path}' with {num_matched_dats} records")
 
             tsv_path = outdir.joinpath(f"{title}.tsv")
             tsv_output = StringIO(newline=None) # csv.DictWriter writes its own newlines
