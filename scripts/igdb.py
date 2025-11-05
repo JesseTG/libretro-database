@@ -567,8 +567,7 @@ class Playlist:
 
     hasheous_dirs: Sequence[str]
     '''
-    The name of zero or more directories within a Hasheous dump.
-    Can have slashes for subdirectories (e.g. "Commodore Plus/4")
+    The names of zero or more Hasheous dump files, excluding the zip suffix.
     '''
 
     def __init__(
