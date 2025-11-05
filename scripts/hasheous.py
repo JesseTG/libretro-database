@@ -329,7 +329,11 @@ async def load_dataobjects(zip_paths: Iterable[Path] | Path, playlists: Iterable
 
     playlist_map: dict[PlaylistTitle, Iterable[DataObject]] = {}
     for playlist in playlists:
-        objects = itertools.chain.from_iterable(zips[d] for d in playlist.hasheous_dirs if d in zips)
+        dirs = tuple(playlist.hasheous_dirs) + ("Unknown Platform",)
+        # Add "Unknown Platform" to the list of dump files to search,
+        # since its entries still have CRCs.
+
+        objects = itertools.chain.from_iterable(zips[d] for d in dirs if d in zips)
         playlist_map[playlist.title] = objects
 
     return HasheousIndex(playlist_map.items())
@@ -367,8 +371,12 @@ def _giveup(e: Exception):
 
 async def handle_fetch(args: argparse.Namespace) -> None:
     outdir: Path = args.outdir
-    dumps: Collection[str] = sorted(args.dumps or set(itertools.chain.from_iterable(p.hasheous_dirs for p in PLAYLISTS)))
+    dumps = set(args.dumps or itertools.chain.from_iterable(p.hasheous_dirs for p in PLAYLISTS))
     verbose = bool(args.verbose)
+
+    dumps.add("Unknown Platform")
+    # "Unknown Platform" entries don't identify a specific platform,
+    # but a lot of them do have CRCs that can be useful.
 
     if verbose:
         print(f"Output directory: {outdir}")
@@ -484,7 +492,7 @@ def main():
     fetch_parser.add_argument(
         "--dumps",
         type=str,
-        help="The names of the Hasheous dumps to fetch. Defaults to all 'hasheous' entries in metadat/igdb/igdb.toml",
+        help="The names of the Hasheous dumps to fetch. Defaults to all 'hasheous' entries in metadat/igdb/igdb.toml plus 'Unknown Platform'.",
         action="extend",
         nargs="*",
         default=None
