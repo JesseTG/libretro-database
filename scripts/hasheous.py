@@ -265,6 +265,78 @@ class HasheousIndex:
                             self.by_serial[serial_upper] = obj
 
 
+class MatchRecord(NamedTuple):
+    """
+    A record of an attempt to match a game listed in one of this repo's DAT files
+    with an entry in IGDB and/or Hasheous.
+    Intended for output to a CSV file for later analysis.
+    """
+
+    name: str
+    """
+    The name of the game as listed in the DAT file.
+    If the game is listed under multiple names,
+    the first one found wins.
+    """
+
+    crc: Optional[str]
+    """
+    The CRC32 of the game's ROM, if available.
+    """
+
+    md5: Optional[str]
+    """
+    The MD5 hash of the game's ROM, if available.
+    """
+
+    sha1: Optional[str]
+    """
+    The SHA-1 hash of the game's ROM, if available.
+    """
+
+    serial: Optional[str]
+    """
+    The serial number of the game's ROM, if available.
+    """
+
+    hasheous_id: Optional[int]
+    """
+    The ID number of this game's entry on Hasheous, if one was found.
+    """
+
+    hasheous_url: Optional[str]
+    """
+    The URL of this game's entry on Hasheous, if one was found.
+    """
+
+    igdb_id: Optional[int]
+    """
+    The ID number of this game's entry on IGDB, if one was found.
+    """
+
+    igdb_url: Optional[str]
+    """
+    The URL of this game's entry on IGDB, if one was found.
+    """
+
+    igdb_release_id: Optional[int]
+    """
+    The ID number of this game's release on IGDB for the platform named by igdb_platform_id.
+    """
+
+    igdb_platform_id: Optional[int]
+    """
+    The ID number of the platform on IGDB that this game was released for.
+    """
+
+    @property
+    def matched(self) -> bool:
+        return \
+            self.igdb_id is not None and \
+            self.hasheous_id is not None and \
+            (self.crc is not None or self.serial is not None)
+
+
 class HasheousZip(NamedTuple):
     name: str
     objects: Sequence[DataObject]
