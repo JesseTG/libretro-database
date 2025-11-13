@@ -1039,7 +1039,7 @@ async def handle_query(args: argparse.Namespace) -> None:
 async def handle_fetch(args: argparse.Namespace) -> None:
     """Handle the fetch subcommand."""
 
-    playlist_args: Iterable[str] | None = args.playlists
+    playlist_args: Iterable[str] | None = args.playlist
     if not playlist_args:
         # If no playlists specified, use all known playlists
         playlist_args = (p.title for p in PLAYLISTS)
