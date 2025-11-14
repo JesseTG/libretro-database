@@ -250,18 +250,47 @@ where = "game_engines = (71)"
 # title = "Hartung - Game Master"
 # hasheous = ["Hartung Game Master"]
 
-# TODO: all the MAME playlists
-# [[igdb.playlists]]
-# title = "MAME"
-# hasheous = ["Arcade"]
-## Arcade games
-# where = "platforms = (52)"
+[[igdb.playlists]]
+title = "MAME"
+hasheous = ["Arcade", "Neo Geo"]
+# Arcade games
+where = "platforms = (52, 79, 80)"
 
-# [[igdb.playlists]]
-# title = "MAME 2003-Plus"
-# hasheous = ["Arcade"]
-## Arcade games
-# where = "platforms = (52)"
+[[igdb.playlists]]
+title = "MAME 2000"
+hasheous = ["Arcade", "Neo Geo"]
+# Arcade games, Neo Geo MVS, Neo Geo AES
+where = "platforms = (52, 79, 80)"
+
+[[igdb.playlists]]
+title = "MAME 2003"
+hasheous = ["Arcade", "Neo Geo"]
+# Arcade games, Neo Geo MVS, Neo Geo AES
+where = "platforms = (52, 79, 80)"
+
+[[igdb.playlists]]
+title = "MAME 2003-Plus"
+hasheous = ["Arcade", "Neo Geo"]
+# Arcade games, Neo Geo MVS, Neo Geo AES
+where = "platforms = (52, 79, 80)"
+
+[[igdb.playlists]]
+title = "MAME 2010"
+hasheous = ["Arcade", "Neo Geo"]
+# Arcade games, Neo Geo MVS, Neo Geo AES
+where = "platforms = (52, 79, 80)"
+
+[[igdb.playlists]]
+title = "MAME 2015"
+hasheous = ["Arcade", "Neo Geo"]
+# Arcade games, Neo Geo MVS, Neo Geo AES
+where = "platforms = (52, 79, 80)"
+
+[[igdb.playlists]]
+title = "MAME 2016"
+hasheous = ["Arcade", "Neo Geo"]
+# Arcade games, Neo Geo MVS, Neo Geo AES
+where = "platforms = (52, 79, 80)"
 
 # TODO: Add the levels to the playlist somehow (individual level packs don't have IGDB entries)
 [[igdb.playlists]]
