@@ -1,9 +1,11 @@
+#!/usr/bin/env python3
 """
 Dictionary definitions taken from https://github.com/gaseous-project/hasheous/blob/main/hasheous-lib/Models/DataObjectItem.cs
 """
 
 import argparse
 import asyncio
+import csv
 import dataclasses
 import itertools
 import os
@@ -17,7 +19,7 @@ from collections import ChainMap
 from concurrent.futures import Executor, ProcessPoolExecutor, ThreadPoolExecutor
 from pathlib import Path
 from pprint import pprint
-from typing import Collection, Literal, NamedTuple, NewType, Optional, TypeAlias, Union
+from typing import Collection, Literal, NamedTuple, NewType, Optional, TypeAlias, TypedDict, Union
 from zipfile import ZipFile
 
 
@@ -484,17 +486,6 @@ async def handle_fetch(args: argparse.Namespace) -> None:
 
 ExecutorTypeName: TypeAlias = Literal["none", "process", "thread", "interpreter"]
 
-def executor_type(s: Optional[str]) -> type[Executor] | None:
-    match s:
-        case None | "none":
-            return None
-        case "process":
-            return ProcessPoolExecutor
-        case "thread":
-            return ThreadPoolExecutor
-        case _:
-            raise argparse.ArgumentTypeError(f"Invalid executor type: {s}")
-
 async def handle_index(args: argparse.Namespace) -> None:
     input_paths: Collection[str] = args.paths
     verbose = bool(args.verbose)
@@ -536,6 +527,102 @@ async def handle_index(args: argparse.Namespace) -> None:
         pickle.dump(index, out_file, protocol=5)
     dump_finish = time.perf_counter_ns()
     print(f"Saved index to {output} in {(dump_finish - dump_start) / 1_000_000:.2f} ms")
+
+
+class MetadataMatch(TypedDict):
+    source: Literal["IGDB"] # Only IGDB is supported for now
+    platformId: str
+    gameId: str
+
+class FixMatchBody(TypedDict):
+    mD5: Optional[str]
+    shA1: Optional[str]
+    metadataMatches: Sequence[MetadataMatch]
+
+# See https://github.com/gaseous-project/hasheous/wiki/API:-Submission-%E2%80%90-FixMatch for API guidance
+async def submit_matches(tsv_path: Path, api_key: str, dry_run: bool = False, verbose: bool = False) -> None:
+    def read_match(row: dict[str, str]) -> MatchRecord:
+        def parse_optional_int(value: str) -> Optional[int]:
+            value = value.strip()
+            if not value:
+                return None
+            return int(value)
+
+        def parse_optional_str(value: str) -> Optional[str]:
+            value = value.strip()
+            if not value:
+                return None
+            return value
+
+        return MatchRecord(
+            name=row['name'].strip(),
+            crc=parse_optional_str(row['crc']),
+            md5=parse_optional_str(row['md5']),
+            sha1=parse_optional_str(row['sha1']),
+            serial=parse_optional_str(row['serial']),
+            hasheous_id=parse_optional_int(row['hasheous_id']),
+            hasheous_url=parse_optional_str(row['hasheous_url']),
+            igdb_id=parse_optional_int(row['igdb_id']),
+            igdb_url=parse_optional_str(row['igdb_url']),
+            igdb_release_id=parse_optional_int(row['igdb_release_id']),
+            igdb_platform_id=parse_optional_int(row['igdb_platform_id']),
+        )
+
+    def can_submit(match: MatchRecord) -> bool:
+        return match.igdb_id is not None and \
+               match.hasheous_id is not None and \
+               ((match.md5 or match.sha1) is not None) and \
+               match.crc is not None
+
+    def make_body(match: MatchRecord) -> FixMatchBody:
+        metadata_matches: Sequence[MetadataMatch] = [{
+            "source": "IGDB",
+            "platformId": str(match.igdb_platform_id),
+            "gameId": str(match.igdb_release_id),
+        }]
+
+        return FixMatchBody(
+            mD5=match.md5,
+            shA1=match.sha1,
+            metadataMatches=metadata_matches,
+        )
+
+    async with aiofiles.open(tsv_path, "r", encoding="utf-8") as tsv_file:
+        lines = await tsv_file.readlines()
+        reader = csv.DictReader(lines, fieldnames=MatchRecord._fields, dialect='excel-tab')
+        matches = (read_match(m) for m in reader)
+        valid_matches = filter(can_submit, matches)
+
+
+
+
+
+
+async def handle_submit(args: argparse.Namespace) -> None:
+    matchfiles: Collection[Path] = args.matchfiles
+    api_key: Optional[str] = args.api_key or os.getenv("HASHEOUS_API_KEY", None)
+    dry_run: bool = bool(args.dry_run)
+    verbose: bool = bool(args.verbose)
+
+    if api_key is None:
+        print("Error: No Hasheous API key provided. Use --api-key or set the HASHEOUS_API_KEY environment variable.", file=sys.stderr)
+        return
+
+    if verbose:
+        print("Match files to submit:", matchfiles)
+        print("Dry run:", dry_run)
+
+    async with asyncio.TaskGroup() as group:
+        for matchfile in matchfiles:
+            group.create_task(
+                submit_matches(
+                    matchfile,
+                    api_key,
+                    dry_run=dry_run,
+                    verbose=verbose
+                ),
+                name="submit_matches_" + matchfile.stem
+            )
 
 def main():
     """Main entry point for the script."""
@@ -598,7 +685,28 @@ def main():
     )
     index_parser.set_defaults(func=handle_index)
 
-    # Parse arguments and call appropriate handler
+    # `submit` subcommand
+    submit_parser = subparsers.add_parser(
+        "submit",
+        help="Submit match data to Hasheous."
+    )
+    submit_parser.add_argument(
+        "--api-key",
+        type=str,
+        help="The Hasheous API key to use for submission. Overrides the HASHEOUS_API_KEY environment variable if provided.",
+    )
+    submit_parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Don't actually submit anything; just show what would be submitted."
+    )
+    submit_parser.add_argument(
+        "matchfiles",
+        type=Path,
+        nargs="+",
+        help="One or more TSV files containing match data to submit, as generated by match.py's `generate` subcommand. Only rows that include an IGDB ID, a Hasheous ID, a CRC, and an MD5 or SHA1 will be included.",
+    )
+    submit_parser.set_defaults(func=handle_submit)
 
     args = parser.parse_args()
     asyncio.run(args.func(args))
@@ -615,6 +723,7 @@ __all__ = (
     "load_index",
     "MappingStatus",
     "MatchMethodType",
+    "MatchRecord",
     "MediaType",
     "METADATA_MAP_URL",
     "MetadataItem",
