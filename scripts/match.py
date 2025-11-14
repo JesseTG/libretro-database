@@ -313,7 +313,7 @@ def match_games(playlist: PlaylistData, hasheous_index: HasheousIndex, igdb_inde
         game = generate_game(dat, igdb_entry, hasheous_entry) if (igdb_entry and hasheous_entry) else None
         match_record = MatchRecord(
             name=dat.name_key,
-            crc=crc,
+            crc=crc.lower() if crc else None,
             md5=md5,
             sha1=sha1,
             serial=serial,
