@@ -657,6 +657,7 @@ if __name__ == "__main__":
 __all__ = [
     "ClrMamePro",
     "Game",
+    "GameDataListCodec",
     "get_existing_dat_files",
     "load_dat",
     "load_dats",
