@@ -1225,6 +1225,7 @@ __all__ = (
     "PlatformType",
     "PlatformVersion",
     "PlayerPerspective",
+    "PLAYLIST_TITLES",
     "Playlist",
     "PLAYLISTS_BY_TITLE",
     "PLAYLISTS",
