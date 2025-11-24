@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from __future__ import annotations
+
 import argparse
 import asyncio
 import csv
@@ -14,16 +16,21 @@ from functools import cache
 from io import StringIO
 from pathlib import Path
 from pprint import pprint
-from typing import Callable, NamedTuple, Optional
+from typing import Callable, Literal, NamedTuple, Optional, TYPE_CHECKING, TypeAlias
+
+if TYPE_CHECKING:
+    from _typeshed import DataclassInstance
 
 import aiofiles
+import aiosqlite
 
 from pycountry import countries
 
-from dats import Game as DatGame, ClrMamePro, GameDataListCodec, get_existing_dat_files, load_dats
-from hasheous import DataObject, HasheousIndex, load_dataobjects, MatchRecord
-from igdb import ANALOG_KEYWORD_IDS, PLAYLIST_TITLES, PLAYLISTS_BY_TITLE, RUMBLE_KEYWORD_IDS, IgdbIndex, Playlist, Game as IgdbGame, PlaylistTitle, ReleaseDate, get_playlist, load_games
-
+from dats import Game as DatGame
+from dats import *
+from hasheous import *
+from igdb import *
+from igdb import Game as IgdbGame
 
 class PlaylistData(NamedTuple):
     playlist: Playlist
@@ -345,6 +352,346 @@ def get_target_dat_paths(outpath: Path, playlist_titles: Iterable[str]) -> Itera
     for title in playlist_titles:
         yield outpath / f"{title}.dat"
 
+# Simple SQLite query builder helpers,
+# for the parts that we actually use
+
+PrimaryKeyColumnConstraint: TypeAlias = Literal["PRIMARY KEY"]
+NotNullColumnConstraint: TypeAlias = Literal["NOT NULL"]
+
+class ForeignKeyColumnConstraint(NamedTuple):
+    foreign_table: str
+    foreign_column: str
+
+    def __str__(self) -> str:
+        return f"REFERENCES {self.foreign_table}({self.foreign_column})"
+
+ColumnConstraint: TypeAlias = PrimaryKeyColumnConstraint | NotNullColumnConstraint | ForeignKeyColumnConstraint | str
+
+class ColumnDefinition(NamedTuple):
+    name: str
+    type: Optional[str]
+    constraints: tuple[ColumnConstraint, ...]
+
+    def __str__(self) -> str:
+        tokens = [self.name]
+
+        if self.type:
+            tokens.append(self.type)
+
+        if self.constraints:
+            tokens += map(str, self.constraints)
+
+        return ' '.join(tokens)
+
+class PrimaryKeyTableConstraint(NamedTuple):
+    columns: tuple[str, ...]
+
+    def __str__(self) -> str:
+        cols = ', '.join(self.columns)
+        return f"PRIMARY KEY ({cols})"
+
+class ForeignKeyTableConstraint(NamedTuple):
+    columns: tuple[str, ...]
+    foreign_table: str
+    foreign_columns: tuple[str, ...]
+
+    def __str__(self) -> str:
+        cols = ', '.join(self.columns)
+        foreign_cols = ', '.join(self.foreign_columns)
+        return f"FOREIGN KEY ({cols}) REFERENCES {self.foreign_table}({foreign_cols})"
+
+class UniqueTableConstraint(NamedTuple):
+    columns: tuple[str, ...]
+
+    def __str__(self) -> str:
+        cols = ', '.join(self.columns)
+        return f"UNIQUE ({cols})"
+
+TableConstraint: TypeAlias = PrimaryKeyTableConstraint | ForeignKeyTableConstraint | UniqueTableConstraint
+
+class TableDefinition(NamedTuple):
+    name: str
+    columns: tuple[ColumnDefinition, ...]
+    constraints: tuple[TableConstraint, ...]
+
+    def __str__(self) -> str:
+        defs = ',\n    '.join(map(str, self.columns + self.constraints))
+        return f"CREATE TABLE IF NOT EXISTS {self.name} (\n    {defs}\n)"
+
+
+
+async def create_schema(db: aiosqlite.Connection) -> None:
+    """Create all tables needed for the database schema."""
+
+    # TODO: Use the TableDefinition and ColumnDefinition classes to build these
+    # from the dataclasses defined in dats.py, igdb.py, and hasheous.py
+
+    # DAT-related tables
+    await db.execute("""
+        CREATE TABLE IF NOT EXISTS clrmamepro (
+            name TEXT PRIMARY KEY,
+            description TEXT,
+            category TEXT,
+            date TEXT,
+            author TEXT,
+            email TEXT,
+            url TEXT,
+            version TEXT,
+            comment TEXT,
+            homepage TEXT
+        )
+    """)
+
+    await db.execute("""
+        CREATE TABLE IF NOT EXISTS game (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            comment TEXT,
+            description TEXT,
+            game_id TEXT,
+            achievements INTEGER,
+            analog INTEGER,
+            artstyle TEXT,
+            bbfc_rating TEXT,
+            category TEXT,
+            cero_rating TEXT,
+            code TEXT,
+            console_exclusive INTEGER,
+            controls TEXT,
+            coop INTEGER,
+            date TEXT,
+            developer TEXT,
+            download TEXT,
+            edge_issue INTEGER,
+            edge_rating INTEGER,
+            elspa_rating TEXT,
+            enhancement_hardware TEXT,
+            enhancement_hw TEXT,
+            esrb_rating TEXT,
+            famitsu_rating INTEGER,
+            franchise TEXT,
+            gameplay TEXT,
+            genre TEXT,
+            homepage TEXT,
+            igdb_id INTEGER,
+            igdb_url TEXT,
+            igdb_platform_id INTEGER,
+            igdb_release_date_id INTEGER,
+            language TEXT,
+            license TEXT,
+            manufacturer TEXT,
+            media TEXT,
+            narrative TEXT,
+            origin TEXT,
+            pacing TEXT,
+            patch TEXT,
+            pegi_rating TEXT,
+            perspective TEXT,
+            platform_exclusive INTEGER,
+            publisher TEXT,
+            region TEXT,
+            releaseday INTEGER,
+            releasemonth INTEGER,
+            releaseyear INTEGER,
+            rumble INTEGER,
+            score TEXT,
+            serial TEXT,
+            setting TEXT,
+            tags TEXT,
+            users INTEGER,
+            vehicular TEXT,
+            version TEXT,
+            visual TEXT,
+            year TEXT
+        )
+    """)
+
+    await db.execute("""
+        CREATE TABLE IF NOT EXISTS rom (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            game_id INTEGER,
+            crc TEXT,
+            serial TEXT,
+            image TEXT,
+            name TEXT,
+            size INTEGER,
+            md5 TEXT,
+            sha1 TEXT,
+            sha1sum TEXT,
+            genre TEXT,
+            users TEXT,
+            FOREIGN KEY (game_id) REFERENCES game(id)
+        )
+    """)
+
+    # IGDB-related tables
+    await db.execute("""
+        CREATE TABLE IF NOT EXISTS igdb_game (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            slug TEXT,
+            first_release_date INTEGER,
+            storyline TEXT,
+            summary TEXT,
+            url TEXT,
+            version_title TEXT,
+            aggregated_rating REAL,
+            aggregated_rating_count INTEGER,
+            total_rating REAL,
+            total_rating_count INTEGER
+        )
+    """)
+
+    await db.execute("""
+        CREATE TABLE IF NOT EXISTS igdb_platform (
+            id INTEGER PRIMARY KEY,
+            abbreviation TEXT,
+            alternative_name TEXT,
+            generation INTEGER,
+            name TEXT NOT NULL,
+            slug TEXT,
+            summary TEXT
+        )
+    """)
+
+    await db.execute("""
+        CREATE TABLE IF NOT EXISTS igdb_company (
+            id INTEGER PRIMARY KEY,
+            country INTEGER,
+            name TEXT NOT NULL,
+            slug TEXT
+        )
+    """)
+
+    await db.execute("""
+        CREATE TABLE IF NOT EXISTS igdb_genre (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL
+        )
+    """)
+
+    await db.execute("""
+        CREATE TABLE IF NOT EXISTS igdb_keyword (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            slug TEXT
+        )
+    """)
+
+    await db.execute("""
+        CREATE TABLE IF NOT EXISTS igdb_theme (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL
+        )
+    """)
+
+    await db.execute("""
+        CREATE TABLE IF NOT EXISTS igdb_release_date (
+            id INTEGER PRIMARY KEY,
+            game_id INTEGER,
+            platform_id INTEGER,
+            date INTEGER,
+            human TEXT,
+            m INTEGER,
+            y INTEGER,
+            region TEXT,
+            FOREIGN KEY (game_id) REFERENCES igdb_game(id),
+            FOREIGN KEY (platform_id) REFERENCES igdb_platform(id)
+        )
+    """)
+
+    # Hasheous-related tables
+    await db.execute("""
+        CREATE TABLE IF NOT EXISTS hasheous_data_object (
+            id INTEGER PRIMARY KEY,
+            object_type TEXT,
+            name TEXT,
+            created_date TEXT,
+            updated_date TEXT
+        )
+    """)
+
+    await db.execute("""
+        CREATE TABLE IF NOT EXISTS hasheous_rom (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            data_object_id INTEGER,
+            name TEXT,
+            size INTEGER,
+            crc TEXT,
+            md5 TEXT,
+            sha1 TEXT,
+            sha256 TEXT,
+            serial TEXT,
+            FOREIGN KEY (data_object_id) REFERENCES hasheous_data_object(id)
+        )
+    """)
+
+    await db.execute("""
+        CREATE TABLE IF NOT EXISTS hasheous_metadata (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            data_object_id INTEGER,
+            immutable_id TEXT,
+            status TEXT,
+            match_method TEXT,
+            source TEXT,
+            link TEXT,
+            FOREIGN KEY (data_object_id) REFERENCES hasheous_data_object(id)
+        )
+    """)
+
+    # Relationship tables
+    await db.execute("""
+        CREATE TABLE IF NOT EXISTS igdb_game_genre (
+            game_id INTEGER,
+            genre_id INTEGER,
+            PRIMARY KEY (game_id, genre_id),
+            FOREIGN KEY (game_id) REFERENCES igdb_game(id),
+            FOREIGN KEY (genre_id) REFERENCES igdb_genre(id)
+        )
+    """)
+
+    await db.execute("""
+        CREATE TABLE IF NOT EXISTS igdb_game_keyword (
+            game_id INTEGER,
+            keyword_id INTEGER,
+            PRIMARY KEY (game_id, keyword_id),
+            FOREIGN KEY (game_id) REFERENCES igdb_game(id),
+            FOREIGN KEY (keyword_id) REFERENCES igdb_keyword(id)
+        )
+    """)
+
+    await db.execute("""
+        CREATE TABLE IF NOT EXISTS igdb_game_theme (
+            game_id INTEGER,
+            theme_id INTEGER,
+            PRIMARY KEY (game_id, theme_id),
+            FOREIGN KEY (game_id) REFERENCES igdb_game(id),
+            FOREIGN KEY (theme_id) REFERENCES igdb_theme(id)
+        )
+    """)
+
+    await db.execute("""
+        CREATE TABLE IF NOT EXISTS igdb_game_platform (
+            game_id INTEGER,
+            platform_id INTEGER,
+            PRIMARY KEY (game_id, platform_id),
+            FOREIGN KEY (game_id) REFERENCES igdb_game(id),
+            FOREIGN KEY (platform_id) REFERENCES igdb_platform(id)
+        )
+    """)
+
+    # Create indexes for common queries
+    await db.execute("CREATE INDEX IF NOT EXISTS idx_rom_crc ON rom(crc)")
+    await db.execute("CREATE INDEX IF NOT EXISTS idx_rom_md5 ON rom(md5)")
+    await db.execute("CREATE INDEX IF NOT EXISTS idx_rom_sha1 ON rom(sha1)")
+    await db.execute("CREATE INDEX IF NOT EXISTS idx_rom_serial ON rom(serial)")
+    await db.execute("CREATE INDEX IF NOT EXISTS idx_hasheous_rom_crc ON hasheous_rom(crc)")
+    await db.execute("CREATE INDEX IF NOT EXISTS idx_hasheous_rom_md5 ON hasheous_rom(md5)")
+    await db.execute("CREATE INDEX IF NOT EXISTS idx_hasheous_rom_sha1 ON hasheous_rom(sha1)")
+    await db.execute("CREATE INDEX IF NOT EXISTS idx_hasheous_metadata_source ON hasheous_metadata(source, immutable_id)")
+
+    await db.commit()
+
 async def handle_generate(args: argparse.Namespace) -> None:
     """Handle the generate subcommand."""
 
@@ -470,6 +817,145 @@ async def handle_generate(args: argparse.Namespace) -> None:
 
         await asyncio.gather(*dat_tasks)
 
+async def handle_index(args: argparse.Namespace) -> None:
+    """Handle the index subcommand."""
+    verbose = bool(args.verbose)
+    igdb: Path = args.igdb
+    hasheous: Path = args.hasheous
+    output: Path = args.output
+
+    if not igdb.exists():
+        raise FileNotFoundError(f"IGDB directory not found: {igdb}")
+
+    if not hasheous.exists():
+        raise FileNotFoundError(f"Hasheous directory not found: {hasheous}")
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+
+    # Remove existing database file if it exists
+    output.unlink(missing_ok=True)
+
+    async with aiosqlite.connect(output) as db:
+        print("Creating database schema...")
+        await create_schema(db)
+
+        # Load IGDB data
+        print("Loading IGDB data...")
+        playlists = {p: pl for p, pl in get_playlists(igdb)}
+
+        with ProcessPoolExecutor() as executor:
+            igdb_index = await load_games(playlists, executor)
+
+        print(f"Loaded {len(igdb_index.by_id)} IGDB games")
+
+        # Insert IGDB data
+        print("Inserting IGDB games...")
+        for game in igdb_index.by_id.values():
+            await db.execute("""
+                INSERT OR REPLACE INTO igdb_game
+                (id, name, slug, first_release_date, storyline, summary, url, version_title,
+                 aggregated_rating, aggregated_rating_count, total_rating, total_rating_count)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                game.id, game.name, game.slug, game.first_release_date,
+                game.storyline, game.summary, game.url, game.version_title,
+                game.aggregated_rating, game.aggregated_rating_count,
+                game.total_rating, game.total_rating_count
+            ))
+
+            # Insert related data
+            if game.genres:
+                for genre in game.genres:
+                    await db.execute("INSERT OR IGNORE INTO igdb_genre (id, name) VALUES (?, ?)",
+                                   (genre.id, genre.name))
+                    await db.execute("INSERT OR IGNORE INTO igdb_game_genre (game_id, genre_id) VALUES (?, ?)",
+                                   (game.id, genre.id))
+
+            if game.keywords:
+                for keyword in game.keywords:
+                    await db.execute("INSERT OR IGNORE INTO igdb_keyword (id, name, slug) VALUES (?, ?, ?)",
+                                   (keyword.id, keyword.name, keyword.slug))
+                    await db.execute("INSERT OR IGNORE INTO igdb_game_keyword (game_id, keyword_id) VALUES (?, ?)",
+                                   (game.id, keyword.id))
+
+            if game.themes:
+                for theme in game.themes:
+                    await db.execute("INSERT OR IGNORE INTO igdb_theme (id, name) VALUES (?, ?)",
+                                   (theme.id, theme.name))
+                    await db.execute("INSERT OR IGNORE INTO igdb_game_theme (game_id, theme_id) VALUES (?, ?)",
+                                   (game.id, theme.id))
+
+            if game.platforms:
+                for platform in game.platforms:
+                    await db.execute("""
+                        INSERT OR IGNORE INTO igdb_platform
+                        (id, abbreviation, alternative_name, generation, name, slug, summary)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """, (
+                        platform.id, platform.abbreviation, platform.alternative_name,
+                        platform.generation, platform.name, platform.slug, platform.summary
+                    ))
+                    await db.execute("INSERT OR IGNORE INTO igdb_game_platform (game_id, platform_id) VALUES (?, ?)",
+                                   (game.id, platform.id))
+
+            if game.release_dates:
+                for rd in game.release_dates:
+                    await db.execute("""
+                        INSERT OR REPLACE INTO igdb_release_date
+                        (id, game_id, platform_id, date, human, m, y, region)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (
+                        rd.id, game.id, rd.platform.id, rd.date, rd.human,
+                        rd.m, rd.y, rd.release_region.region
+                    ))
+
+        await db.commit()
+        print("IGDB data inserted")
+
+        # Load Hasheous data
+        print("Loading Hasheous data...")
+        with ProcessPoolExecutor() as executor:
+            hasheous_index = await load_dataobjects(hasheous, playlists.values(), executor)
+
+        print(f"Loaded {len(hasheous_index.by_id)} Hasheous data objects")
+
+        # Insert Hasheous data
+        print("Inserting Hasheous data...")
+        for obj in hasheous_index.by_id.values():
+            await db.execute("""
+                INSERT OR REPLACE INTO hasheous_data_object
+                (id, object_type, name, created_date, updated_date)
+                VALUES (?, ?, ?, ?, ?)
+            """, (obj.Id, obj.ObjectType, obj.Name, obj.CreatedDate, obj.UpdatedDate))
+
+            # Insert metadata
+            for meta in obj.Metadata:
+                if meta.Status == 'Mapped':
+                    await db.execute("""
+                        INSERT INTO hasheous_metadata
+                        (data_object_id, immutable_id, status, match_method, source, link)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                    """, (obj.Id, meta.ImmutableId, meta.Status, meta.MatchMethod, meta.Source, meta.Link))
+
+            # Insert ROM data
+            for attr in obj.Attributes:
+                if attr.attributeName == 'ROMs' and isinstance(attr.Value, Sequence) and not isinstance(attr.Value, str):
+                    for rom in attr.Value:
+                        serial = rom.Attributes.get('serial') if rom.Attributes else None
+                        await db.execute("""
+                            INSERT INTO hasheous_rom
+                            (data_object_id, name, size, crc, md5, sha1, sha256, serial)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        """, (
+                            obj.Id, rom.Name, rom.Size, rom.Crc, rom.Md5,
+                            rom.Sha1, rom.Sha256, serial
+                        ))
+
+        await db.commit()
+        print("Hasheous data inserted")
+
+        print(f"Database created successfully at {output}")
+
 def main():
     """Main entry point for the script."""
     parser = argparse.ArgumentParser(
@@ -526,6 +1012,31 @@ def main():
         help="The output directory for the processed DAT files.",
     )
     generate_parser.set_defaults(func=handle_generate)
+
+    # `index` subcommand
+    index_parser = subparsers.add_parser(
+        "index",
+        help="Create an SQLite database that indexes data from the various data sources used by this script."
+    )
+    index_parser.add_argument(
+        "--igdb",
+        help="Path to a directory containing JSON files downloaded with `igdb fetch`.",
+        type=Path,
+        default="tmp/igdb",
+    )
+    index_parser.add_argument(
+        "--hasheous",
+        help="Path to a directory containing ZIP archives downloaded with `hasheous fetch`.",
+        type=Path,
+        default="tmp/hasheous",
+    )
+    index_parser.add_argument(
+        "output",
+        help="Path to the output SQLite database file.",
+        type=Path,
+    )
+    index_parser.set_defaults(func=handle_index)
+
 
     args = parser.parse_args()
     asyncio.run(args.func(args))
