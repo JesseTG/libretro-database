@@ -16,7 +16,7 @@ from functools import cache
 from io import StringIO
 from pathlib import Path
 from pprint import pprint
-from typing import Callable, Literal, NamedTuple, Optional, TYPE_CHECKING, TypeAlias
+from typing import Callable, ClassVar, Literal, NamedTuple, Optional, TYPE_CHECKING, Protocol, TypeAlias, TypeVar
 
 if TYPE_CHECKING:
     from _typeshed import DataclassInstance
@@ -418,6 +418,13 @@ class TableDefinition(NamedTuple):
         defs = ',\n    '.join(map(str, self.columns + self.constraints))
         return f"CREATE TABLE IF NOT EXISTS {self.name} (\n    {defs}\n)"
 
+
+if TYPE_CHECKING:
+    from _typeshed import DataclassInstance
+
+    D = TypeVar('D', bound=DataclassInstance, covariant=True)
+    class DataModelType(DataclassInstance, Protocol[D]):
+        __tablename__: ClassVar[str]
 
 
 async def create_schema(db: aiosqlite.Connection) -> None:
