@@ -13,11 +13,11 @@ from asyncio import TaskGroup
 from collections import ChainMap
 from collections.abc import Collection, Sequence, Iterable, Iterator, Mapping
 from concurrent.futures import Executor
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import cache
 from json import JSONDecodeError
 from pathlib import Path
-from typing import Never, Optional, Literal, NewType, Required, Self, TypeAlias, TypedDict, cast, overload
+from typing import ClassVar, Never, Optional, Literal, NewType, Required, Self, TypeAlias, TypedDict, cast, overload
 
 import aiofiles
 import aiofiles.os
@@ -34,152 +34,177 @@ from httpx import HTTPStatusError, Response, Timeout
 IgdbId = NewType('IgdbId', int)
 PlaylistTitle = NewType('PlaylistTitle', str)
 
+PRIMARY_KEY = {'primary': True}
+
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class AgeRatingOrganization:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     name: str
+    __tablename__: ClassVar[str] = "IgdbAgeRatingOrganization"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class AgeRatingCategory:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     rating: str
+    __tablename__: ClassVar[str] = "IgdbAgeRatingCategory"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class AgeRatingContentDescriptionType:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     name: str
+    __tablename__: ClassVar[str] = "IgdbAgeRatingContentDescriptionType"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class AgeRatingContentDescriptionV2:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     description: str
     description_type: AgeRatingContentDescriptionType
-
+    __tablename__: ClassVar[str] = "IgdbAgeRatingContentDescriptionV2"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class AgeRating:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     organization: AgeRatingOrganization
     rating_category: AgeRatingCategory
     rating_content_descriptions: Optional[Sequence[AgeRatingContentDescriptionV2]] = None
     rating_cover_url: Optional[str] = None
     synopsis: Optional[str] = None
+    __tablename__: ClassVar[str] = "IgdbAgeRating"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class AlternativeName:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     name: str
     comment: Optional[str] = None
+    __tablename__: ClassVar[str] = "IgdbAlternativeName"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Franchise:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     name: str
     slug: str
+    __tablename__: ClassVar[str] = "IgdbFranchise"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class GameEngine:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     name: str
     slug: str
+    __tablename__: ClassVar[str] = "IgdbGameEngine"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class GameLocalization:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     name: Optional[str] = None
     region: 'Region'
+    __tablename__: ClassVar[str] = "IgdbGameLocalization"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class GameMode:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     name: str
+    __tablename__: ClassVar[str] = "IgdbGameMode"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class GameStatus:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     status: str
+    __tablename__: ClassVar[str] = "IgdbGameStatus"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class GameType:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     type: str
+    __tablename__: ClassVar[str] = "IgdbGameType"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Genre:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     name: str
+    __tablename__: ClassVar[str] = "IgdbGenre"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class CompanyStatus:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     name: str
+    __tablename__: ClassVar[str] = "IgdbCompanyStatus"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Company:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     country: Optional[int] = None # ISO 3166-1 code
     name: str
     slug: str
     status: Optional[CompanyStatus] = None
+    __tablename__: ClassVar[str] = "IgdbCompany"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class InvolvedCompany:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     company: Company
     developer: bool
     porting: bool
     publisher: bool
     supporting: bool
+    __tablename__: ClassVar[str] = "IgdbInvolvedCompany"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Region:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     identifier: Optional[str] = None
     name: Optional[str] = None
     category: Optional[Literal['locale', 'continent']] = None
+    __tablename__: ClassVar[str] = "IgdbRegion"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Keyword:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     name: str
     slug: str
+    __tablename__: ClassVar[str] = "IgdbKeyword"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Language:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     locale: str
     name: str
+    __tablename__: ClassVar[str] = "IgdbLanguage"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class LanguageSupportType:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     name: str
+    __tablename__: ClassVar[str] = "IgdbLanguageSupportType"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class LanguageSupport:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     language: Language
     language_support_type: LanguageSupportType
+    __tablename__: ClassVar[str] = "IgdbLanguageSupport"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class PlatformFamily:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     name: str
+    __tablename__: ClassVar[str] = "IgdbPlatformFamily"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class PlatformType:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     name: str
+    __tablename__: ClassVar[str] = "IgdbPlatformType"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class PlatformVersion:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     name: str
     slug: str
+    __tablename__: ClassVar[str] = "IgdbPlatformVersion"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Platform:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     abbreviation: Optional[str] = None
     alternative_name: Optional[str] = None
     generation: Optional[int] = None
@@ -188,10 +213,11 @@ class Platform:
     platform_type: Optional[PlatformType] = None
     slug: Optional[str] = None
     summary: Optional[str] = None
+    __tablename__: ClassVar[str] = "IgdbPlatform"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class MultiplayerMode:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     campaigncoop: bool
     dropin: bool
     lancoop: bool
@@ -204,6 +230,7 @@ class MultiplayerMode:
     platform: Optional[Platform] = None
     splitscreen: bool
     splitscreenonline: Optional[bool] = None
+    __tablename__: ClassVar[str] = "IgdbMultiplayerMode"
 
     @property
     def coop(self) -> bool:
@@ -211,28 +238,32 @@ class MultiplayerMode:
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class PlayerPerspective:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     name: str
+    __tablename__: ClassVar[str] = "IgdbPlayerPerspective"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class DateFormat:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     format: str
+    __tablename__: ClassVar[str] = "IgdbDateFormat"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class ReleaseDateRegion:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     region: str
+    __tablename__: ClassVar[str] = "IgdbReleaseDateRegion"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class ReleaseDateStatus:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     description: str
     name: str
+    __tablename__: ClassVar[str] = "IgdbReleaseDateStatus"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class ReleaseDate:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     date: Optional[int] = None
     date_format: DateFormat
     human: str
@@ -242,14 +273,17 @@ class ReleaseDate:
     status: Optional[ReleaseDateStatus] = None
     y: Optional[int] = None  # Year
 
+    __tablename__: ClassVar[str] = "IgdbReleaseDate"
+
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Theme:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     name: str
+    __tablename__: ClassVar[str] = "IgdbTheme"
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Game:
-    id: IgdbId
+    id: IgdbId = field(metadata=PRIMARY_KEY)
     age_ratings: Optional[Sequence[AgeRating]] = None
     aggregated_rating: Optional[float] = None
     aggregated_rating_count: Optional[int] = None
@@ -291,6 +325,7 @@ class Game:
     url: Optional[str] = None # TODO: Parse with urllib
     version_parent: Optional['Game'] = None
     version_title: Optional[str] = None
+    __tablename__: ClassVar[str] = "IgdbGame"
 
 DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
     "age_ratings.organization.name",
@@ -1208,6 +1243,7 @@ __all__ = (
     "get_by_title",
     "get_playlist",
     "IgdbIndex",
+    "IgdbId",
     "InvolvedCompany",
     "Keyword",
     "Language",
