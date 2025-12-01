@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """
-Dictionary definitions taken from https://github.com/gaseous-project/hasheous/blob/main/hasheous-lib/Models/DataObjectItem.cs
+Dictionary definitions taken from the following Hasheous source files:
+
+- https://github.com/gaseous-project/hasheous/blob/main/hasheous-lib/Models/DataObjectItem.cs
+- https://github.com/gaseous-project/hasheous/blob/main/hasheous-lib/Models/DataObjectItemModel.cs
+- https://github.com/gaseous-project/hasheous/blob/main/hasheous-lib/Models/Signatures_Games.cs
+- https://github.com/gaseous-project/gaseous-signature-parser/blob/main/gaseous-signature-parser/models/RomSignatureObject.cs
 """
 
 import argparse
@@ -16,10 +21,10 @@ import zipfile
 
 from collections.abc import Iterable, Sequence, Mapping
 from collections import ChainMap
-from concurrent.futures import Executor, ProcessPoolExecutor, ThreadPoolExecutor
+from concurrent.futures import Executor, ProcessPoolExecutor
 from pathlib import Path
 from pprint import pprint
-from typing import Collection, Literal, NamedTuple, NewType, Optional, TypeAlias, TypedDict, Union
+from typing import ClassVar, Collection, Literal, LiteralString, NamedTuple, NewType, Optional, TypeAlias, TypedDict, Union
 from zipfile import ZipFile
 
 
@@ -35,7 +40,6 @@ METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
 
 HasheousId = NewType('HasheousId', int)
 
-
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class SignatureDataObject:
     SignatureId: Optional[str] = None
@@ -46,6 +50,17 @@ class SignatureDataObject:
     Publisher: Optional[str] = None
     MetadataSource: Optional[str] = None
 
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS HasheousSignatureDataObject (
+            SignatureId TEXT
+            Name TEXT,
+            Year TEXT,
+            Platform TEXT,
+            SourceId TEXT,
+            Publisher TEXT,
+            MetadataSource TEXT
+        );
+    """
 
 MappingStatus: TypeAlias = Literal["NotMapped", "Mapped", "MappedWithErrors"]
 
@@ -84,6 +99,24 @@ class MetadataItem:
     WinningVoteCount: int
     TotalVoteCount: int
     WinningVotePercent: int
+
+    # TODO: Only insert metadata objects with a status of Matched
+    # TODO: Exclude LastSearch, NextSearch, WinningVoteCount, TotalVoteCount, WinningVotePercent
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS HasheousMetadataItem (
+            Id TEXT COLLATE RTRIM,
+            ImmutableId TEXT PRIMARY KEY COLLATE RTRIM,
+            Status TEXT,
+            MatchMethod TEXT,
+            Source TEXT,
+            Link TEXT,
+            LastSearch TEXT,
+            NextSearch TEXT,
+            WinningVoteCount INTEGER,
+            TotalVoteCount INTEGER,
+            WinningVotePercent INTEGER,
+        ) WITHOUT ROWID;
+    """
 
 AttributeType: TypeAlias = Literal[
     "LongString",
@@ -147,6 +180,17 @@ class MediaType:
     Count: Optional[int] = None
     Side: Optional[str] = None
 
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS HasheousMediaType (
+            MediaType TEXT,
+            Media TEXT,
+            Number INTEGER,
+            Count INTEGER,
+            Side TEXT
+        );
+    """
+
+
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class RomItem:
     Score: int
@@ -167,6 +211,52 @@ class RomItem:
     MediaDetail: Optional[MediaType] = None
     MediaLabel: Optional[str] = None
     SignatureSource: Optional[SignatureSourceType] = None
+
+    # TODO: What should I do with Score? Ask what it represents
+    # TODO: Save empty strings as NULL
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS HasheousRomItem (
+            Score INTEGER NOT NULL,
+            RomType TEXT NOT NULL,
+            Id TEXT COLLATE RTRIM,
+            Name TEXT,
+            Size INTEGER,
+            Crc TEXT COLLATE RTRIM,
+            Md5 TEXT COLLATE RTRIM,
+            Sha1 TEXT COLLATE RTRIM,
+            Sha256 TEXT COLLATE RTRIM,
+            Status TEXT,
+            DevelopmentStatus TEXT,
+            RomTypeMedia TEXT,
+            MediaDetail INTEGER REFERENCES HasheousMediaType(rowid),
+            MediaLabel TEXT,
+            SignatureSource TEXT,
+        );
+        CREATE TABLE IF NOT EXISTS HasheousRomItem_Attributes (
+            HasheousRomItem_rowid INTEGER NOT NULL REFERENCES HasheousRomItem(rowid),
+            Key TEXT NOT NULL,
+            Value TEXT NOT NULL,
+
+            UNIQUE (HasheousRomItem_rowid, Key),
+            PRIMARY KEY (HasheousRomItem_rowid, Key, Value)
+        );
+        CREATE TABLE IF NOT EXISTS HasheousRomItem_Country (
+            HasheousRomItem_rowid INTEGER NOT NULL REFERENCES HasheousRomItem(rowid),
+            Key TEXT NOT NULL,
+            Value TEXT NOT NULL,
+
+            UNIQUE (HasheousRomItem_rowid, Key),
+            PRIMARY KEY (HasheousRomItem_rowid, Key, Value)
+        );
+        CREATE TABLE IF NOT EXISTS HasheousRomItem_Language (
+            HasheousRomItem_rowid INTEGER NOT NULL REFERENCES HasheousRomItem(rowid),
+            Key TEXT NOT NULL,
+            Value TEXT NOT NULL,
+
+            UNIQUE (HasheousRomItem_rowid, Key),
+            PRIMARY KEY (HasheousRomItem_rowid, Key, Value)
+        );
+    """
 
 AttributeValue: TypeAlias = Union["DataObject", Sequence[RomItem], str]
 
@@ -195,6 +285,34 @@ class DataObject:
     CreatedDate: str
     UpdatedDate: str
     Name: str
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS HasheousDataObject (
+            Id INTEGER PRIMARY KEY,
+            ObjectType TEXT,
+            Name TEXT,
+            CreatedDate TEXT,
+            UpdatedDate TEXT
+        );
+        CREATE TABLE IF NOT EXISTS HasheousDataObject_SignatureDataObjects (
+            HasheousDataObject_Id INTEGER NOT NULL REFERENCES HasheousDataObject(Id),
+            HasheousSignatureDataObject_rowid INTEGER NOT NULL REFERENCES HasheousSignatureDataObject(rowid),
+
+            PRIMARY KEY (HasheousDataObject_Id, HasheousSignatureDataObject_rowid)
+        );
+        CREATE TABLE IF NOT EXISTS HasheousDataObject_Metadata (
+            HasheousDataObject_Id INTEGER NOT NULL REFERENCES HasheousDataObject(Id),
+            HasheousMetadataItem_ImmutableId TEXT NOT NULL REFERENCES HasheousMetadataItem(ImmutableId),
+
+            PRIMARY KEY (HasheousDataObject_Id, HasheousMetadataItem_ImmutableId)
+        );
+        CREATE TABLE IF NOT EXISTS HasheousDataObject_HasheousRomItem (
+            HasheousDataObject_Id INTEGER NOT NULL REFERENCES HasheousDataObject(Id),
+            HasheousRomItem_rowid INTEGER NOT NULL REFERENCES HasheousRomItem(rowid),
+
+            PRIMARY KEY (HasheousDataObject_Id, HasheousRomItem_rowid)
+        );
+    """
 
 DataObjectCodec: typelib.Codec[DataObject] = typelib.codec(DataObject)
 

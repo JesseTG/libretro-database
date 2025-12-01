@@ -13,10 +13,11 @@ import time
 
 from collections.abc import Iterable, Sequence, Iterator, Mapping, Collection
 from concurrent.futures import Executor, ProcessPoolExecutor
+from dataclasses import field, InitVar
 from io import BytesIO
 from itertools import groupby
 from pathlib import Path
-from typing import Any, NamedTuple, Optional, TypeAlias, TypedDict, Union
+from typing import Any, ClassVar, LiteralString, NamedTuple, Optional, TypeAlias, TypedDict, Union
 
 # pe lacks type stubs, so let's silence MyPy's complaints
 import pe  # type: ignore
@@ -44,6 +45,21 @@ class ClrMamePro:
     comment: Optional[str] = None
     homepage: Optional[str] = None
 
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS ClrMamePro (
+            name TEXT NOT NULL,
+            description TEXT,
+            category TEXT,
+            date TEXT,
+            author TEXT,
+            email TEXT,
+            url TEXT,
+            version TEXT,
+            comment TEXT,
+            homepage TEXT
+        );
+    """
+
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Rom:
     crc: Optional[str] = None
@@ -53,14 +69,39 @@ class Rom:
     size: Optional[int] = None
     md5: Optional[str] = None
     sha1: Optional[str] = None
-    sha1sum: Optional[str] = None
+    sha1sum: InitVar[Optional[str]] = None
+    """
+    Alias for sha1, for compatibility with some DAT files.
+    """
+
     genre: Optional[str] = None
     users: Optional[str] = None
 
-    def __post_init__(self):
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS DatRom (
+            crc TEXT COLLATE RTRIM UNIQUE,
+            serial TEXT COLLATE RTRIM UNIQUE,
+            image TEXT COLLATE RTRIM,
+            name TEXT,
+            size INTEGER,
+            md5 TEXT COLLATE RTRIM UNIQUE,
+            sha1 TEXT COLLATE RTRIM UNIQUE,
+            genre TEXT,
+            users TEXT,
+
+            CHECK (crc IS NOT NULL OR serial IS NOT NULL)
+        );
+    """
+
+    def __post_init__(self, sha1sum: Optional[str]):
         # Called by dataclasses after __init__, but before the instance is returned
         if not self.crc and not self.serial:
             raise ValueError("Rom record must have at least a 'crc' or 'serial' field.")
+
+        if not self.sha1 and sha1sum:
+            object.__setattr__(self, "sha1", sha1sum)
+        elif self.sha1 and sha1sum and self.sha1.lower() != sha1sum.lower():
+            raise ValueError(f"Rom record has conflicting 'sha1' and 'sha1sum' fields ({self.sha1} != {sha1sum}).")
 
     def same_as(self, other: 'Rom') -> bool:
         if self.crc and other.crc and self.crc.lower() == other.crc.lower():
@@ -72,10 +113,7 @@ class Rom:
         if self.md5 and other.md5 and self.md5.lower() == other.md5.lower():
             return True
 
-        selfsha = self.sha1 or self.sha1sum
-        othersha = other.sha1 or other.sha1sum
-
-        if selfsha and othersha and selfsha.lower() == othersha.lower():
+        if self.sha1 and other.sha1 and self.sha1.lower() == other.sha1.lower():
             return True
 
         return False
@@ -202,6 +240,77 @@ class Game:
 
     # Declared last so that it appears last in the generated DATs
     rom: Optional[Sequence[Rom]] = None
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS DatGame (
+            name TEXT,
+            comment TEXT,
+            description TEXT,
+            id TEXT,
+            achievements INTEGER,
+            analog INTEGER,
+            artstyle TEXT,
+            bbfc_rating TEXT,
+            category TEXT,
+            cero_rating TEXT,
+            code TEXT,
+            console_exclusive INTEGER,
+            controls TEXT,
+            coop INTEGER,
+            date TEXT,
+            developer TEXT,
+            download TEXT,
+            edge_issue INTEGER,
+            edge_rating INTEGER,
+            elspa_rating TEXT,
+            enhancement_hardware TEXT,
+            enhancement_hw TEXT,
+            esrb_rating TEXT,
+            famitsu_rating INTEGER,
+            franchise TEXT,
+            gameplay TEXT,
+            genre TEXT,
+            homepage TEXT,
+            igdb_id INTEGER,
+            igdb_url TEXT,
+            igdb_platform_id INTEGER,
+            igdb_release_date_id INTEGER,
+            language TEXT,
+            license TEXT,
+            manufacturer TEXT,
+            media TEXT,
+            narrative TEXT,
+            origin TEXT,
+            pacing TEXT,
+            patch TEXT,
+            pegi_rating TEXT,
+            perspective TEXT,
+            platform_exclusive INTEGER,
+            publisher TEXT,
+            region TEXT,
+            releaseday INTEGER,
+            releasemonth INTEGER,
+            releaseyear INTEGER,
+            rumble INTEGER,
+            score TEXT,
+            serial TEXT,
+            setting TEXT,
+            tags TEXT,
+            users INTEGER,
+            vehicular TEXT,
+            version TEXT,
+            visual TEXT,
+            year TEXT
+        );
+        CREATE TABLE IF NOT EXISTS DatGame_rom (
+            DatGame_rowid INTEGER,
+            DatRom_rowid INTEGER,
+
+            PRIMARY KEY (DatGame_rowid, DatRom_rowid),
+            FOREIGN KEY (DatGame_rowid) REFERENCES DatGame(rowid),
+            FOREIGN KEY (DatRom_rowid) REFERENCES DatRom(rowid)
+        );
+    """
 
     @property
     def name_key(self) -> str:

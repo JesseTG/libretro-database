@@ -13,11 +13,11 @@ from asyncio import TaskGroup
 from collections import ChainMap
 from collections.abc import Collection, Sequence, Iterable, Iterator, Mapping
 from concurrent.futures import Executor
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from functools import cache
 from json import JSONDecodeError
 from pathlib import Path
-from typing import ClassVar, Never, Optional, Literal, NewType, Required, Self, TypeAlias, TypedDict, cast, overload
+from typing import ClassVar, LiteralString, Never, Optional, Literal, NewType, Required, Self, TypeAlias, TypedDict, cast, overload
 
 import aiofiles
 import aiofiles.os
@@ -34,177 +34,341 @@ from httpx import HTTPStatusError, Response, Timeout
 IgdbId = NewType('IgdbId', int)
 PlaylistTitle = NewType('PlaylistTitle', str)
 
-PRIMARY_KEY = {'primary': True}
-
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class AgeRatingOrganization:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     name: str
-    __tablename__: ClassVar[str] = "IgdbAgeRatingOrganization"
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbAgeRatingOrganization (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL COLLATE RTRIM
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class AgeRatingCategory:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     rating: str
-    __tablename__: ClassVar[str] = "IgdbAgeRatingCategory"
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbAgeRatingCategory (
+            id INTEGER PRIMARY KEY,
+            rating TEXT NOT NULL COLLATE RTRIM
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class AgeRatingContentDescriptionType:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     name: str
-    __tablename__: ClassVar[str] = "IgdbAgeRatingContentDescriptionType"
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbAgeRatingContentDescriptionType (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class AgeRatingContentDescriptionV2:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     description: str
     description_type: AgeRatingContentDescriptionType
-    __tablename__: ClassVar[str] = "IgdbAgeRatingContentDescriptionV2"
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbAgeRatingContentDescriptionV2 (
+            id INTEGER PRIMARY KEY,
+            description TEXT NOT NULL,
+            description_type INTEGER NOT NULL REFERENCES IgdbAgeRatingContentDescriptionType(id)
+        )
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class AgeRating:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     organization: AgeRatingOrganization
     rating_category: AgeRatingCategory
     rating_content_descriptions: Optional[Sequence[AgeRatingContentDescriptionV2]] = None
     rating_cover_url: Optional[str] = None
     synopsis: Optional[str] = None
-    __tablename__: ClassVar[str] = "IgdbAgeRating"
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbAgeRating (
+            id INTEGER PRIMARY KEY,
+            organization INTEGER NOT NULL REFERENCES IgdbAgeRatingOrganization(id),
+            rating_category INTEGER NOT NULL REFERENCES IgdbAgeRatingCategory(id),
+            rating_cover_url TEXT,
+            synopsis TEXT
+        );
+        CREATE TABLE IF NOT EXISTS IgdbAgeRating_rating_content_descriptions (
+            IgdbAgeRating_id INTEGER NOT NULL REFERENCES IgdbAgeRating(id),
+            IgdbAgeRatingContentDescriptionV2_id INTEGER NOT NULL REFERENCES IgdbAgeRatingContentDescriptionV2(id),
+
+            PRIMARY KEY (IgdbAgeRating_id, IgdbAgeRatingContentDescriptionV2_id)
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class AlternativeName:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     name: str
     comment: Optional[str] = None
-    __tablename__: ClassVar[str] = "IgdbAlternativeName"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbAlternativeName (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            comment TEXT
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Franchise:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     name: str
     slug: str
-    __tablename__: ClassVar[str] = "IgdbFranchise"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbFranchise (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            slug TEXT NOT NULL COLLATE RTRIM
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class GameEngine:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     name: str
     slug: str
-    __tablename__: ClassVar[str] = "IgdbGameEngine"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbGameEngine (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            slug TEXT NOT NULL COLLATE RTRIM
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class GameLocalization:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     name: Optional[str] = None
     region: 'Region'
-    __tablename__: ClassVar[str] = "IgdbGameLocalization"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbGameLocalization (
+            id INTEGER PRIMARY KEY,
+            name TEXT,
+            region INTEGER NOT NULL REFERENCES IgdbRegion(id)
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class GameMode:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     name: str
-    __tablename__: ClassVar[str] = "IgdbGameMode"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbGameMode (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class GameStatus:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     status: str
-    __tablename__: ClassVar[str] = "IgdbGameStatus"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbGameStatus (
+            id INTEGER PRIMARY KEY,
+            status TEXT NOT NULL
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class GameType:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     type: str
-    __tablename__: ClassVar[str] = "IgdbGameType"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbGameType (
+            id INTEGER PRIMARY KEY,
+            type TEXT NOT NULL
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Genre:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     name: str
-    __tablename__: ClassVar[str] = "IgdbGenre"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbGenre (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class CompanyStatus:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     name: str
-    __tablename__: ClassVar[str] = "IgdbCompanyStatus"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbCompanyStatus (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Company:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     country: Optional[int] = None # ISO 3166-1 code
     name: str
     slug: str
     status: Optional[CompanyStatus] = None
-    __tablename__: ClassVar[str] = "IgdbCompany"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbCompany (
+            id INTEGER PRIMARY KEY,
+            country INTEGER, -- ISO 3166-1 code
+            name TEXT NOT NULL,
+            slug TEXT NOT NULL COLLATE RTRIM,
+            status INTEGER REFERENCES IgdbCompanyStatus(id)
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class InvolvedCompany:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     company: Company
     developer: bool
     porting: bool
     publisher: bool
     supporting: bool
-    __tablename__: ClassVar[str] = "IgdbInvolvedCompany"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbInvolvedCompany (
+            id INTEGER PRIMARY KEY,
+            company INTEGER NOT NULL REFERENCES IgdbCompany(id),
+            developer BOOLEAN,
+            porting BOOLEAN,
+            publisher BOOLEAN,
+            supporting BOOLEAN
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Region:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     identifier: Optional[str] = None
     name: Optional[str] = None
     category: Optional[Literal['locale', 'continent']] = None
-    __tablename__: ClassVar[str] = "IgdbRegion"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbRegion (
+            id INTEGER PRIMARY KEY,
+            identifier TEXT COLLATE RTRIM,
+            name TEXT COLLATE RTRIM,
+            category TEXT COLLATE RTRIM
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Keyword:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     name: str
     slug: str
-    __tablename__: ClassVar[str] = "IgdbKeyword"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbKeyword (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            slug TEXT NOT NULL COLLATE RTRIM
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Language:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     locale: str
     name: str
-    __tablename__: ClassVar[str] = "IgdbLanguage"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbLanguage (
+            id INTEGER PRIMARY KEY,
+            locale TEXT NOT NULL,
+            name TEXT NOT NULL
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class LanguageSupportType:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     name: str
-    __tablename__: ClassVar[str] = "IgdbLanguageSupportType"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbLanguageSupportType (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class LanguageSupport:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     language: Language
     language_support_type: LanguageSupportType
-    __tablename__: ClassVar[str] = "IgdbLanguageSupport"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbLanguageSupport (
+            id INTEGER PRIMARY KEY,
+            language INTEGER NOT NULL REFERENCES IgdbLanguage(id),
+            language_support_type INTEGER NOT NULL REFERENCES IgdbLanguageSupportType(id)
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class PlatformFamily:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     name: str
-    __tablename__: ClassVar[str] = "IgdbPlatformFamily"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbPlatformFamily (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL COLLATE RTRIM
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class PlatformType:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     name: str
-    __tablename__: ClassVar[str] = "IgdbPlatformType"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbPlatformType (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL COLLATE RTRIM
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class PlatformVersion:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     name: str
     slug: str
-    __tablename__: ClassVar[str] = "IgdbPlatformVersion"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbPlatformVersion (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL COLLATE RTRIM,
+            slug TEXT NOT NULL COLLATE RTRIM
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Platform:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     abbreviation: Optional[str] = None
     alternative_name: Optional[str] = None
     generation: Optional[int] = None
@@ -213,11 +377,24 @@ class Platform:
     platform_type: Optional[PlatformType] = None
     slug: Optional[str] = None
     summary: Optional[str] = None
-    __tablename__: ClassVar[str] = "IgdbPlatform"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbPlatform (
+            id INTEGER PRIMARY KEY,
+            abbreviation TEXT COLLATE RTRIM,
+            alternative_name TEXT COLLATE RTRIM,
+            generation INTEGER,
+            name TEXT NOT NULL COLLATE RTRIM,
+            platform_family INTEGER REFERENCES IgdbPlatformFamily(id),
+            platform_type INTEGER REFERENCES IgdbPlatformType(id),
+            slug TEXT COLLATE RTRIM,
+            summary TEXT
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class MultiplayerMode:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     campaigncoop: bool
     dropin: bool
     lancoop: bool
@@ -230,7 +407,24 @@ class MultiplayerMode:
     platform: Optional[Platform] = None
     splitscreen: bool
     splitscreenonline: Optional[bool] = None
-    __tablename__: ClassVar[str] = "IgdbMultiplayerMode"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbMultiplayerMode (
+            id INTEGER PRIMARY KEY,
+            campaigncoop BOOLEAN NOT NULL,
+            dropin BOOLEAN NOT NULL,
+            lancoop BOOLEAN NOT NULL,
+            offlinecoop BOOLEAN NOT NULL,
+            offlinecoopmax INTEGER,
+            offlinemax INTEGER,
+            onlinecoop BOOLEAN NOT NULL,
+            onlinecoopmax INTEGER,
+            onlinemax INTEGER,
+            platform INTEGER REFERENCES IgdbPlatform(id),
+            splitscreen BOOLEAN NOT NULL,
+            splitscreenonline BOOLEAN
+        );
+    """
 
     @property
     def coop(self) -> bool:
@@ -238,32 +432,57 @@ class MultiplayerMode:
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class PlayerPerspective:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     name: str
-    __tablename__: ClassVar[str] = "IgdbPlayerPerspective"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbPlayerPerspective (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL COLLATE RTRIM
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class DateFormat:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     format: str
-    __tablename__: ClassVar[str] = "IgdbDateFormat"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbDateFormat (
+            id INTEGER PRIMARY KEY,
+            format TEXT NOT NULL COLLATE RTRIM
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class ReleaseDateRegion:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     region: str
-    __tablename__: ClassVar[str] = "IgdbReleaseDateRegion"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbReleaseDateRegion (
+            id INTEGER PRIMARY KEY,
+            region TEXT NOT NULL COLLATE RTRIM
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class ReleaseDateStatus:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     description: str
     name: str
-    __tablename__: ClassVar[str] = "IgdbReleaseDateStatus"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbReleaseDateStatus (
+            id INTEGER PRIMARY KEY,
+            description TEXT NOT NULL,
+            name TEXT NOT NULL
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class ReleaseDate:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     date: Optional[int] = None
     date_format: DateFormat
     human: str
@@ -273,17 +492,35 @@ class ReleaseDate:
     status: Optional[ReleaseDateStatus] = None
     y: Optional[int] = None  # Year
 
-    __tablename__: ClassVar[str] = "IgdbReleaseDate"
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbReleaseDate (
+            id INTEGER PRIMARY KEY,
+            date INTEGER,
+            date_format INTEGER NOT NULL REFERENCES IgdbDateFormat(id),
+            human TEXT,
+            m INTEGER,
+            platform INTEGER NOT NULL REFERENCES IgdbPlatform(id),
+            release_region INTEGER NOT NULL REFERENCES IgdbReleaseDateRegion(id),
+            status INTEGER REFERENCES IgdbReleaseDateStatus(id),
+            y INTEGER
+        );
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Theme:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     name: str
-    __tablename__: ClassVar[str] = "IgdbTheme"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbTheme (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL
+        )
+    """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class Game:
-    id: IgdbId = field(metadata=PRIMARY_KEY)
+    id: IgdbId
     age_ratings: Optional[Sequence[AgeRating]] = None
     aggregated_rating: Optional[float] = None
     aggregated_rating_count: Optional[int] = None
@@ -325,7 +562,155 @@ class Game:
     url: Optional[str] = None # TODO: Parse with urllib
     version_parent: Optional['Game'] = None
     version_title: Optional[str] = None
-    __tablename__: ClassVar[str] = "IgdbGame"
+
+    __table__: ClassVar[LiteralString] = """
+        CREATE TABLE IF NOT EXISTS IgdbGame (
+            id INTEGER PRIMARY KEY,
+            aggregate_rating REAL,
+            aggregated_rating_count INTEGER,
+            first_release_date INTEGER,
+            franchise INTEGER REFERENCES IgdbFranchise(id),
+            game_status INTEGER REFERENCES IgdbGameStatus(id),
+            game_type INTEGER REFERENCES IgdbGameType(id),
+            name TEXT NOT NULL COLLATE RTRIM,
+            parent_game INTEGER REFERENCES IgdbGame(id),
+            slug TEXT COLLATE RTRIM,
+            storyline TEXT,
+            summary TEXT,
+            total_rating REAL,
+            total_rating_count INTEGER,
+            url TEXT COLLATE RTRIM,
+            version_parent INTEGER REFERENCES IgdbGame(id),
+            version_title TEXT COLLATE RTRIM
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_age_ratings (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbAgeRating_id INTEGER NOT NULL REFERENCES IgdbAgeRating(id),
+
+            PRIMARY KEY (IgdbGame_id, IgdbAgeRating_id)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_alternative_names (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbAlternativeName_id INTEGER NOT NULL REFERENCES IgdbAlternativeName(id),
+
+            PRIMARY KEY (IgdbGame_id, IgdbAlternativeName_id)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_bundles (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbGame_id_bundle INTEGER NOT NULL REFERENCES IgdbGame(id),
+            PRIMARY KEY (IgdbGame_id, IgdbGame_id_bundle)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_collections (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbGame_id_collection INTEGER NOT NULL REFERENCES IgdbGame(id),
+            PRIMARY KEY (IgdbGame_id, IgdbGame_id_collection)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_dlcs (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbGame_id_dlc INTEGER NOT NULL REFERENCES IgdbGame(id),
+            PRIMARY KEY (IgdbGame_id, IgdbGame_id_dlc)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_expanded_games (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbGame_id_expanded INTEGER NOT NULL REFERENCES IgdbGame(id),
+            PRIMARY KEY (IgdbGame_id, IgdbGame_id_expanded)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_expansions (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbGame_id_expansion INTEGER NOT NULL REFERENCES IgdbGame(id),
+            PRIMARY KEY (IgdbGame_id, IgdbGame_id_expansion)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_forks (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbGame_id_fork INTEGER NOT NULL REFERENCES IgdbGame(id),
+            PRIMARY KEY (IgdbGame_id, IgdbGame_id_fork)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_franchises (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbFranchise_id INTEGER NOT NULL REFERENCES IgdbFranchise(id),
+            PRIMARY KEY (IgdbGame_id, IgdbFranchise_id)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_game_engines (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbGameEngine_id INTEGER NOT NULL REFERENCES IgdbGameEngine(id),
+            PRIMARY KEY (IgdbGame_id, IgdbGameEngine_id)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_game_localizations (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbGameLocalization_id INTEGER NOT NULL REFERENCES IgdbGameLocalization(id),
+            PRIMARY KEY (IgdbGame_id, IgdbGameLocalization_id)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_game_modes (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbGameMode_id INTEGER NOT NULL REFERENCES IgdbGameMode(id),
+            PRIMARY KEY (IgdbGame_id, IgdbGameMode_id)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_genres (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbGenre_id INTEGER NOT NULL REFERENCES IgdbGenre(id),
+            PRIMARY KEY (IgdbGame_id, IgdbGenre_id)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_involved_companies (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbInvolvedCompany_id INTEGER NOT NULL REFERENCES IgdbInvolvedCompany(id),
+            PRIMARY KEY (IgdbGame_id, IgdbInvolvedCompany_id)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_keywords (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbKeyword_id INTEGER NOT NULL REFERENCES IgdbKeyword(id),
+            PRIMARY KEY (IgdbGame_id, IgdbKeyword_id)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_language_supports (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbLanguageSupport_id INTEGER NOT NULL REFERENCES IgdbLanguageSupport(id),
+            PRIMARY KEY (IgdbGame_id, IgdbLanguageSupport_id)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_multiplayer_modes (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbMultiplayerMode_id INTEGER NOT NULL REFERENCES IgdbMultiplayerMode(id),
+            PRIMARY KEY (IgdbGame_id, IgdbMultiplayerMode_id)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_platforms (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbPlatform_id INTEGER NOT NULL REFERENCES IgdbPlatform(id),
+            PRIMARY KEY (IgdbGame_id, IgdbPlatform_id)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_player_perspectives (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbPlayerPerspective_id INTEGER NOT NULL REFERENCES IgdbPlayerPerspective(id),
+            PRIMARY KEY (IgdbGame_id, IgdbPlayerPerspective_id)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_ports (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbGame_id_port INTEGER NOT NULL REFERENCES IgdbGame(id),
+            PRIMARY KEY (IgdbGame_id, IgdbGame_id_port)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_release_dates (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbReleaseDate_id INTEGER NOT NULL REFERENCES IgdbReleaseDate(id),
+            PRIMARY KEY (IgdbGame_id, IgdbReleaseDate_id)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_remakes (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbGame_id_remake INTEGER NOT NULL REFERENCES IgdbGame(id),
+            PRIMARY KEY (IgdbGame_id, IgdbGame_id_remake)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_remasters (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbGame_id_remaster INTEGER NOT NULL REFERENCES IgdbGame(id),
+            PRIMARY KEY (IgdbGame_id, IgdbGame_id_remaster)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_standalone_expansions (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbGame_id_standalone_expansion INTEGER NOT NULL REFERENCES IgdbGame(id),
+            PRIMARY KEY (IgdbGame_id, IgdbGame_id_standalone_expansion)
+        );
+        CREATE TABLE IF NOT EXISTS IgdbGame_themes (
+            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
+            IgdbTheme_id INTEGER NOT NULL REFERENCES IgdbTheme(id),
+            PRIMARY KEY (IgdbGame_id, IgdbTheme_id)
+        );
+    """
 
 DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
     "age_ratings.organization.name",
