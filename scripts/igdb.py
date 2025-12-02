@@ -17,7 +17,7 @@ from dataclasses import dataclass
 from functools import cache
 from json import JSONDecodeError
 from pathlib import Path
-from typing import ClassVar, LiteralString, Never, Optional, Literal, NewType, Required, Self, TypeAlias, TypedDict, cast, overload
+from typing import ClassVar, Never, Optional, Literal, NewType, Required, Self, TypeAlias, TypedDict, cast, overload
 
 import aiofiles
 import aiofiles.os
@@ -33,6 +33,7 @@ from httpx import HTTPStatusError, Response, Timeout
 
 IgdbId = NewType('IgdbId', int)
 PlaylistTitle = NewType('PlaylistTitle', str)
+SqliteRowParameters = dict[str, str | int | float | None]
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class AgeRatingOrganization:
@@ -103,6 +104,15 @@ class AgeRating:
             PRIMARY KEY (IgdbAgeRating_id, IgdbAgeRatingContentDescriptionV2_id)
         );
     """
+
+    def to_row(self) -> SqliteRowParameters:
+        return {
+            'id': self.id,
+            'organization': self.organization.id,
+            'rating_category': self.rating_category.id,
+            'rating_cover_url': self.rating_cover_url,
+            'synopsis': self.synopsis,
+        }
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
 class AlternativeName:
@@ -711,6 +721,27 @@ class Game:
             PRIMARY KEY (IgdbGame_id, IgdbTheme_id)
         );
     """
+
+    def to_row(self) -> dict[str, str | int | float | None]:
+        return {
+            'id': self.id,
+            'aggregate_rating': self.aggregated_rating,
+            'aggregate_rating_count': self.aggregated_rating_count,
+            'first_release_date': self.first_release_date,
+            'franchise': self.franchise.id if self.franchise else None,
+            'game_status': self.game_status.id if self.game_status else None,
+            'game_type': self.game_type.id if self.game_type else None,
+            'name': self.name,
+            'parent_game': self.parent_game.id if self.parent_game else None,
+            'slug': self.slug,
+            'storyline': self.storyline,
+            'summary': self.summary,
+            'total_rating': self.total_rating,
+            'total_rating_count': self.total_rating_count,
+            'url': self.url,
+            'version_parent': self.version_parent.id if self.version_parent else None,
+            'version_title': self.version_title,
+        }
 
 DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
     "age_ratings.organization.name",
@@ -1401,6 +1432,13 @@ async def load_games(playlists: Mapping[Path, Playlist], executor: Executor) -> 
     futures = (loop.run_in_executor(executor, load_file, k, v) for (k, v) in playlists.items())
 
     return IgdbIndex(await asyncio.gather(*futures))
+
+
+async def load_game_file(path: Path, playlist: Playlist) -> tuple[PlaylistTitle, Collection[Game]]:
+    async with aiofiles.open(path, mode='rb') as infile:
+        json_bytes = await infile.read()
+        games = GameTupleCodec.decode(json_bytes)
+        return playlist.title, games
 
 async def handle_query(args: argparse.Namespace) -> None:
     """Handle the query subcommand."""

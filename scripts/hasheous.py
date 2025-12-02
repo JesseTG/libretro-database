@@ -19,12 +19,12 @@ import sys
 import time
 import zipfile
 
-from collections.abc import Iterable, Sequence, Mapping
+from collections.abc import Collection, Iterable, Sequence, Mapping
 from collections import ChainMap
 from concurrent.futures import Executor, ProcessPoolExecutor
 from pathlib import Path
 from pprint import pprint
-from typing import ClassVar, Collection, Literal, LiteralString, NamedTuple, NewType, Optional, TypeAlias, TypedDict, Union
+from typing import ClassVar, Literal, NamedTuple, NewType, Optional, TypeAlias, TypedDict, Union
 from zipfile import ZipFile
 
 

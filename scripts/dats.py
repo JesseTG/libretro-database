@@ -13,11 +13,11 @@ import time
 
 from collections.abc import Iterable, Sequence, Iterator, Mapping, Collection
 from concurrent.futures import Executor, ProcessPoolExecutor
-from dataclasses import field, InitVar
+from dataclasses import InitVar
 from io import BytesIO
 from itertools import groupby
 from pathlib import Path
-from typing import Any, ClassVar, LiteralString, NamedTuple, Optional, TypeAlias, TypedDict, Union
+from typing import Any, ClassVar, NamedTuple, Optional, TypeAlias, TypedDict, Union
 
 # pe lacks type stubs, so let's silence MyPy's complaints
 import pe  # type: ignore
