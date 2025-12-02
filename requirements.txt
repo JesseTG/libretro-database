@@ -1,4 +1,6 @@
 aiofiles==24.1.*
+aioitertools==0.13.*
+aiomultiprocess==0.9.*
 aiosqlite==0.21.*
 asynciolimiter==1.2.*
 Authlib==1.6.*
