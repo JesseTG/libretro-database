@@ -45,7 +45,7 @@ class ClrMamePro:
     comment: Optional[str] = None
     homepage: Optional[str] = None
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS ClrMamePro (
             name TEXT NOT NULL,
             description TEXT,
@@ -77,7 +77,7 @@ class Rom:
     genre: Optional[str] = None
     users: Optional[str] = None
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS DatRom (
             crc TEXT COLLATE RTRIM UNIQUE,
             serial TEXT COLLATE RTRIM UNIQUE,
@@ -241,7 +241,7 @@ class Game:
     # Declared last so that it appears last in the generated DATs
     rom: Optional[Sequence[Rom]] = None
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS DatGame (
             name TEXT,
             comment TEXT,

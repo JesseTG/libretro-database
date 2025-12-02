@@ -50,7 +50,7 @@ class SignatureDataObject:
     Publisher: Optional[str] = None
     MetadataSource: Optional[str] = None
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS HasheousSignatureDataObject (
             SignatureId TEXT
             Name TEXT,
@@ -102,7 +102,7 @@ class MetadataItem:
 
     # TODO: Only insert metadata objects with a status of Matched
     # TODO: Exclude LastSearch, NextSearch, WinningVoteCount, TotalVoteCount, WinningVotePercent
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS HasheousMetadataItem (
             Id TEXT COLLATE RTRIM,
             ImmutableId TEXT PRIMARY KEY COLLATE RTRIM,
@@ -180,7 +180,7 @@ class MediaType:
     Count: Optional[int] = None
     Side: Optional[str] = None
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS HasheousMediaType (
             MediaType TEXT,
             Media TEXT,
@@ -214,7 +214,7 @@ class RomItem:
 
     # TODO: What should I do with Score? Ask what it represents
     # TODO: Save empty strings as NULL
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS HasheousRomItem (
             Score INTEGER NOT NULL,
             RomType TEXT NOT NULL,
@@ -286,7 +286,7 @@ class DataObject:
     UpdatedDate: str
     Name: str
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS HasheousDataObject (
             Id INTEGER PRIMARY KEY,
             ObjectType TEXT,

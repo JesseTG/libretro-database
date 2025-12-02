@@ -38,7 +38,7 @@ PlaylistTitle = NewType('PlaylistTitle', str)
 class AgeRatingOrganization:
     id: IgdbId
     name: str
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbAgeRatingOrganization (
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL COLLATE RTRIM
@@ -49,7 +49,7 @@ class AgeRatingOrganization:
 class AgeRatingCategory:
     id: IgdbId
     rating: str
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbAgeRatingCategory (
             id INTEGER PRIMARY KEY,
             rating TEXT NOT NULL COLLATE RTRIM
@@ -60,7 +60,7 @@ class AgeRatingCategory:
 class AgeRatingContentDescriptionType:
     id: IgdbId
     name: str
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbAgeRatingContentDescriptionType (
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL
@@ -72,7 +72,7 @@ class AgeRatingContentDescriptionV2:
     id: IgdbId
     description: str
     description_type: AgeRatingContentDescriptionType
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbAgeRatingContentDescriptionV2 (
             id INTEGER PRIMARY KEY,
             description TEXT NOT NULL,
@@ -88,7 +88,7 @@ class AgeRating:
     rating_content_descriptions: Optional[Sequence[AgeRatingContentDescriptionV2]] = None
     rating_cover_url: Optional[str] = None
     synopsis: Optional[str] = None
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbAgeRating (
             id INTEGER PRIMARY KEY,
             organization INTEGER NOT NULL REFERENCES IgdbAgeRatingOrganization(id),
@@ -110,7 +110,7 @@ class AlternativeName:
     name: str
     comment: Optional[str] = None
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbAlternativeName (
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL,
@@ -124,7 +124,7 @@ class Franchise:
     name: str
     slug: str
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbFranchise (
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL,
@@ -138,7 +138,7 @@ class GameEngine:
     name: str
     slug: str
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbGameEngine (
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL,
@@ -152,7 +152,7 @@ class GameLocalization:
     name: Optional[str] = None
     region: 'Region'
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbGameLocalization (
             id INTEGER PRIMARY KEY,
             name TEXT,
@@ -165,7 +165,7 @@ class GameMode:
     id: IgdbId
     name: str
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbGameMode (
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL
@@ -177,7 +177,7 @@ class GameStatus:
     id: IgdbId
     status: str
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbGameStatus (
             id INTEGER PRIMARY KEY,
             status TEXT NOT NULL
@@ -189,7 +189,7 @@ class GameType:
     id: IgdbId
     type: str
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbGameType (
             id INTEGER PRIMARY KEY,
             type TEXT NOT NULL
@@ -201,7 +201,7 @@ class Genre:
     id: IgdbId
     name: str
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbGenre (
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL
@@ -213,7 +213,7 @@ class CompanyStatus:
     id: IgdbId
     name: str
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbCompanyStatus (
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL
@@ -228,7 +228,7 @@ class Company:
     slug: str
     status: Optional[CompanyStatus] = None
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbCompany (
             id INTEGER PRIMARY KEY,
             country INTEGER, -- ISO 3166-1 code
@@ -247,7 +247,7 @@ class InvolvedCompany:
     publisher: bool
     supporting: bool
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbInvolvedCompany (
             id INTEGER PRIMARY KEY,
             company INTEGER NOT NULL REFERENCES IgdbCompany(id),
@@ -265,7 +265,7 @@ class Region:
     name: Optional[str] = None
     category: Optional[Literal['locale', 'continent']] = None
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbRegion (
             id INTEGER PRIMARY KEY,
             identifier TEXT COLLATE RTRIM,
@@ -280,7 +280,7 @@ class Keyword:
     name: str
     slug: str
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbKeyword (
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL,
@@ -294,7 +294,7 @@ class Language:
     locale: str
     name: str
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbLanguage (
             id INTEGER PRIMARY KEY,
             locale TEXT NOT NULL,
@@ -307,7 +307,7 @@ class LanguageSupportType:
     id: IgdbId
     name: str
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbLanguageSupportType (
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL
@@ -320,7 +320,7 @@ class LanguageSupport:
     language: Language
     language_support_type: LanguageSupportType
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbLanguageSupport (
             id INTEGER PRIMARY KEY,
             language INTEGER NOT NULL REFERENCES IgdbLanguage(id),
@@ -333,7 +333,7 @@ class PlatformFamily:
     id: IgdbId
     name: str
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbPlatformFamily (
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL COLLATE RTRIM
@@ -345,7 +345,7 @@ class PlatformType:
     id: IgdbId
     name: str
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbPlatformType (
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL COLLATE RTRIM
@@ -358,7 +358,7 @@ class PlatformVersion:
     name: str
     slug: str
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbPlatformVersion (
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL COLLATE RTRIM,
@@ -378,7 +378,7 @@ class Platform:
     slug: Optional[str] = None
     summary: Optional[str] = None
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbPlatform (
             id INTEGER PRIMARY KEY,
             abbreviation TEXT COLLATE RTRIM,
@@ -408,7 +408,7 @@ class MultiplayerMode:
     splitscreen: bool
     splitscreenonline: Optional[bool] = None
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbMultiplayerMode (
             id INTEGER PRIMARY KEY,
             campaigncoop BOOLEAN NOT NULL,
@@ -435,7 +435,7 @@ class PlayerPerspective:
     id: IgdbId
     name: str
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbPlayerPerspective (
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL COLLATE RTRIM
@@ -447,7 +447,7 @@ class DateFormat:
     id: IgdbId
     format: str
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbDateFormat (
             id INTEGER PRIMARY KEY,
             format TEXT NOT NULL COLLATE RTRIM
@@ -459,7 +459,7 @@ class ReleaseDateRegion:
     id: IgdbId
     region: str
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbReleaseDateRegion (
             id INTEGER PRIMARY KEY,
             region TEXT NOT NULL COLLATE RTRIM
@@ -472,7 +472,7 @@ class ReleaseDateStatus:
     description: str
     name: str
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbReleaseDateStatus (
             id INTEGER PRIMARY KEY,
             description TEXT NOT NULL,
@@ -492,7 +492,7 @@ class ReleaseDate:
     status: Optional[ReleaseDateStatus] = None
     y: Optional[int] = None  # Year
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbReleaseDate (
             id INTEGER PRIMARY KEY,
             date INTEGER,
@@ -511,7 +511,7 @@ class Theme:
     id: IgdbId
     name: str
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbTheme (
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL
@@ -563,7 +563,7 @@ class Game:
     version_parent: Optional['Game'] = None
     version_title: Optional[str] = None
 
-    __table__: ClassVar[LiteralString] = """
+    __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbGame (
             id INTEGER PRIMARY KEY,
             aggregate_rating REAL,
