@@ -89,7 +89,7 @@ class Rom:
             genre TEXT,
             users TEXT,
 
-            CHECK (crc IS NOT NULL OR serial IS NOT NULL)
+            CHECK ((crc NOT NULL) OR (serial NOT NULL))
         );
     """
 
@@ -303,12 +303,10 @@ class Game:
             year TEXT
         );
         CREATE TABLE IF NOT EXISTS DatGame_rom (
-            DatGame_rowid INTEGER,
-            DatRom_rowid INTEGER,
+            DatGame_rowid INTEGER REFERENCES DatGame(rowid),
+            DatRom_rowid INTEGER REFERENCES DatRom(rowid),
 
-            PRIMARY KEY (DatGame_rowid, DatRom_rowid),
-            FOREIGN KEY (DatGame_rowid) REFERENCES DatGame(rowid),
-            FOREIGN KEY (DatRom_rowid) REFERENCES DatRom(rowid)
+            PRIMARY KEY (DatGame_rowid, DatRom_rowid)
         );
     """
 

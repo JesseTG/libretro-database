@@ -77,7 +77,7 @@ class AgeRatingContentDescriptionV2:
             id INTEGER PRIMARY KEY,
             description TEXT NOT NULL,
             description_type INTEGER NOT NULL REFERENCES IgdbAgeRatingContentDescriptionType(id)
-        )
+        );
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
@@ -515,7 +515,7 @@ class Theme:
         CREATE TABLE IF NOT EXISTS IgdbTheme (
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL
-        )
+        );
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)

@@ -114,7 +114,7 @@ class MetadataItem:
             NextSearch TEXT,
             WinningVoteCount INTEGER,
             TotalVoteCount INTEGER,
-            WinningVotePercent INTEGER,
+            WinningVotePercent INTEGER
         ) WITHOUT ROWID;
     """
 
@@ -230,7 +230,7 @@ class RomItem:
             RomTypeMedia TEXT,
             MediaDetail INTEGER REFERENCES HasheousMediaType(rowid),
             MediaLabel TEXT,
-            SignatureSource TEXT,
+            SignatureSource TEXT
         );
         CREATE TABLE IF NOT EXISTS HasheousRomItem_Attributes (
             HasheousRomItem_rowid INTEGER NOT NULL REFERENCES HasheousRomItem(rowid),
