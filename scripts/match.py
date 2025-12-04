@@ -13,6 +13,7 @@ import sys
 
 from asyncio import TaskGroup
 from collections.abc import Callable, Collection, Iterable, Iterator, Mapping, Sequence
+from collections import defaultdict
 from concurrent.futures import ProcessPoolExecutor
 from functools import cache
 from io import StringIO
@@ -377,12 +378,15 @@ if TYPE_CHECKING:
         __table__: ClassVar[str]
 
     class RowConvertible(Protocol):
-        def to_row(self) -> dict[str, str | int | None]: ...
+        def to_row(self) -> dict[str, str | float | int | None]: ...
 
 def has_row_function(obj: DataModelType) -> TypeGuard[RowConvertible]:
+    """Returns true if the given data class instance has a to_row() method."""
     return callable(getattr(obj, 'to_row', None))
 
-def to_row(obj: DataModelType) -> dict[str, str | int | None]:
+def to_row(obj: DataModelType) -> dict[str, str | float | int | None]:
+    """Convert the given data class instance to a dictionary suitable for database insertion;
+    uses the to_row() method if available, otherwise falls back to dataclasses.asdict()."""
     if has_row_function(obj):
         return obj.to_row()
     else:
@@ -405,39 +409,7 @@ async def configure_db(db: aiosqlite.Connection) -> None:
         hasheous.DataObject,
 
         # IGDB-related tables
-        igdb.AgeRatingOrganization,
-        igdb.AgeRatingCategory,
-        igdb.AgeRatingContentDescriptionType,
-        igdb.AgeRatingContentDescriptionV2,
-        igdb.AgeRating,
-        igdb.AlternativeName,
-        igdb.Franchise,
-        igdb.GameEngine,
-        igdb.GameLocalization,
-        igdb.GameMode,
-        igdb.GameStatus,
-        igdb.GameType,
-        igdb.Genre,
-        igdb.CompanyStatus,
-        igdb.Company,
-        igdb.InvolvedCompany,
-        igdb.Region,
-        igdb.Keyword,
-        igdb.Language,
-        igdb.LanguageSupportType,
-        igdb.LanguageSupport,
-        igdb.PlatformFamily,
-        igdb.PlatformType,
-        igdb.PlatformVersion,
-        igdb.Platform,
-        igdb.MultiplayerMode,
-        igdb.PlayerPerspective,
-        igdb.DateFormat,
-        igdb.ReleaseDateRegion,
-        igdb.ReleaseDateStatus,
-        igdb.ReleaseDate,
-        igdb.Theme,
-        igdb.Game,
+        *IGDB_OBJECT_TYPES,
     )
 
     def get_table_creation_statement(t: type[DataModelType]) -> str:
@@ -585,35 +557,148 @@ async def handle_generate(args: argparse.Namespace) -> None:
         await asyncio.gather(*dat_tasks)
 
 async def insert_igdb_games(db: aiosqlite.Connection, pool: Pool, playlists: Mapping[Path, Playlist]):
+    # Load all playlists concurrently, yielding them as they're loaded.
+    game_iterator = as_completed(pool.apply(load_game_file, p) for p in playlists.items())
     # Not using pool.map or pool.starmap because
     # they always yield results in the same order as the input,
     # even if some tasks take much longer than others.
     # https://github.com/omnilib/aiomultiprocess/issues/118
-    game_iterator = as_completed(pool.apply(load_game_file, p) for p in playlists.items())
 
     async for (title, games) in game_iterator:
-        # TODO: See if I need to create a transaction here
-        await db.executemany("""
-            INSERT OR REPLACE INTO IgdbGame VALUES (
-                :id,
-                :aggregate_rating,
-                :aggregate_rating_count,
-                :first_release_date,
-                :franchise,
-                :game_status,
-                :game_type,
-                :name,
-                :parent_game,
-                :slug,
-                :storyline,
-                :summary,
-                :total_rating,
-                :total_rating_count,
-                :url,
-                :version_parent,
-                :version_title
-            )
-        """, tuple(to_row(g) for g in games))
+        # Collect all unique objects across all games in this playlist,
+        # so that we can insert them all in one transaction.
+        objects: defaultdict[type[IgdbObject], list[dict[str, str | int | float | None]]] = defaultdict(list)
+        relationships: defaultdict[str, set[tuple[IgdbId, IgdbId]]] = defaultdict(set)
+
+        for game in games:
+            objects[IgdbGame].append(to_row(game))
+
+            for rating in game.age_ratings or ():
+                relationships['IgdbGame_age_ratings'].add((game.id, rating.id))
+                objects[AgeRating].append(to_row(rating))
+                objects[AgeRatingOrganization].append(to_row(rating.organization))
+                objects[AgeRatingCategory].append(to_row(rating.rating_category))
+                for desc in rating.rating_content_descriptions or ():
+                    objects[AgeRatingContentDescriptionV2].append(to_row(desc))
+                    objects[AgeRatingContentDescriptionType].append(to_row(desc.description_type))
+                    relationships['IgdbAgeRating_rating_content_descriptions'].add((rating.id, desc.id))
+
+            for name in game.alternative_names or ():
+                objects[AlternativeName].append(to_row(name))
+                relationships['IgdbGame_alternative_names'].add((game.id, name.id))
+
+            for bundle in game.bundles or ():
+                relationships['IgdbGame_bundles'].add((game.id, bundle.id))
+
+            for collection in game.collections or ():
+                relationships['IgdbGame_collections'].add((game.id, collection.id))
+
+            for dlc in game.dlcs or ():
+                relationships['IgdbGame_dlcs'].add((game.id, dlc.id))
+
+            for expanded_game in game.expanded_games or ():
+                relationships['IgdbGame_expanded_games'].add((game.id, expanded_game.id))
+
+            for expansion in game.expansions or ():
+                relationships['IgdbGame_expansions'].add((game.id, expansion.id))
+
+            for fork in game.forks or ():
+                relationships['IgdbGame_forks'].add((game.id, fork.id))
+
+            if game.franchise:
+                objects[Franchise].append(to_row(game.franchise))
+
+            for f in game.franchises or ():
+                objects[Franchise].append(to_row(f))
+                relationships['IgdbGame_franchises'].add((game.id, f.id))
+
+            for engine in game.game_engines or ():
+                objects[GameEngine].append(to_row(engine))
+                relationships['IgdbGame_game_engines'].add((game.id, engine.id))
+
+            for loc in game.game_localizations or ():
+                relationships['IgdbGame_game_localizations'].add((game.id, loc.id))
+                objects[GameLocalization].append(to_row(loc))
+                objects[Region].append(to_row(loc.region))
+
+            for mode in game.game_modes or ():
+                objects[GameMode].append(to_row(mode))
+                relationships['IgdbGame_game_modes'].add((game.id, mode.id))
+
+            if game.game_status:
+                objects[GameStatus].append(to_row(game.game_status))
+            if game.game_type:
+                objects[GameType].append(to_row(game.game_type))
+
+            for genre in game.genres or ():
+                objects[Genre].append(to_row(genre))
+                relationships['IgdbGame_genres'].add((game.id, genre.id))
+
+            for c in game.involved_companies or ():
+                relationships['IgdbGame_involved_companies'].add((game.id, c.id))
+                objects[InvolvedCompany].append(to_row(c))
+                objects[Company].append(to_row(c.company))
+                if c.company.status:
+                    objects[CompanyStatus].append(to_row(c.company.status))
+
+            for keyword in game.keywords or ():
+                objects[Keyword].append(to_row(keyword))
+                relationships['IgdbGame_keywords'].add((game.id, keyword.id))
+
+            for ls in game.language_supports or ():
+                objects[Language].append(to_row(ls.language))
+                objects[LanguageSupportType].append(to_row(ls.language_support_type))
+                objects[LanguageSupport].append(to_row(ls))
+                relationships['IgdbGame_language_supports'].add((game.id, ls.id))
+
+            for mode in game.multiplayer_modes or ():
+                objects[MultiplayerMode].append(to_row(mode))
+                relationships['IgdbGame_multiplayer_modes'].add((game.id, mode.id))
+
+            for platform in game.platforms or ():
+                objects[Platform].append(to_row(platform))
+                if platform.platform_family:
+                    objects[PlatformFamily].append(to_row(platform.platform_family))
+                if platform.platform_type:
+                    objects[PlatformType].append(to_row(platform.platform_type))
+                relationships['IgdbGame_platforms'].add((game.id, platform.id))
+
+            for perspective in game.player_perspectives or ():
+                objects[PlayerPerspective].append(to_row(perspective))
+                relationships['IgdbGame_player_perspectives'].add((game.id, perspective.id))
+
+            for port in game.ports or ():
+                relationships['IgdbGame_ports'].add((game.id, port.id))
+
+            for date in game.release_dates or ():
+                relationships['IgdbGame_release_dates'].add((game.id, date.id))
+                objects[ReleaseDate].append(to_row(date))
+                objects[DateFormat].append(to_row(date.date_format))
+                objects[ReleaseDateRegion].append(to_row(date.release_region))
+                if date.status:
+                    objects[ReleaseDateStatus].append(to_row(date.status))
+            for remake in game.remakes or ():
+                relationships['IgdbGame_remakes'].add((game.id, remake.id))
+
+            for remaster in game.remasters or ():
+                relationships['IgdbGame_remasters'].add((game.id, remaster.id))
+
+            for standalone_expansion in game.standalone_expansions or ():
+                relationships['IgdbGame_standalone_expansions'].add((game.id, standalone_expansion.id))
+
+            for theme in game.themes or ():
+                objects[Theme].append(to_row(theme))
+                relationships['IgdbGame_themes'].add((game.id, theme.id))
+
+        for (objtype, objs) in objects.items():
+            assert len(objs) > 0
+
+            keys = objs[0].keys()
+            placeholders = ', '.join(f":{key}" for key in keys)
+            await db.executemany(f"INSERT OR REPLACE INTO Igdb{objtype.__name__} VALUES ({placeholders})", objs)
+
+        for (table, pairs) in relationships.items():
+            await db.executemany(f"INSERT OR REPLACE INTO {table} VALUES (?, ?)", pairs)
 
         await db.commit()
         print(f"Inserted {len(games)} IGDB games for playlist '{title}' into database")
