@@ -11,13 +11,13 @@ import tomllib
 
 from asyncio import TaskGroup
 from collections import ChainMap
-from collections.abc import Collection, Sequence, Iterable, Iterator, Mapping
+from collections.abc import Collection, Sequence, Iterable, Iterator, Mapping, Set
 from concurrent.futures import Executor
-from dataclasses import dataclass
+from dataclasses import dataclass, Field
 from functools import cache
 from json import JSONDecodeError
 from pathlib import Path
-from typing import ClassVar, Never, Optional, Literal, NewType, Required, Self, TypeAlias, TypedDict, cast, overload
+from typing import ClassVar, Never, Optional, Literal, NewType, Protocol, Required, Self, TypeAlias, TypeVar, TypedDict, cast, overload, TYPE_CHECKING, override, runtime_checkable
 
 import aiofiles
 import aiofiles.os
@@ -33,10 +33,37 @@ from httpx import HTTPStatusError, Response, Timeout
 
 IgdbId = NewType('IgdbId', int)
 PlaylistTitle = NewType('PlaylistTitle', str)
-SqliteRowParameters = dict[str, str | int | float | None]
+IgdbIndexRow = Mapping[str, int | bool | float | str | None]
+IgdbIndexRelationships = Mapping[str, Set[tuple[IgdbId, IgdbId]]]
+
+if TYPE_CHECKING:
+    from _typeshed import DataclassInstance
+else:
+    class DataclassInstance(Protocol):
+        # The real thing has a __dataclass_fields__ member,
+        # but we don't need it here.
+        # Adding it makes typelib raise a warning anyway,
+        # since its definition includes `Any`.
+        pass
+
+
+D = TypeVar('D', bound=DataclassInstance, covariant=True)
+
+@runtime_checkable
+class IgdbObject(DataclassInstance, Protocol[D]):
+    id: IgdbId
+
+    def to_row(self) -> IgdbIndexRow:
+        return dataclasses.asdict(self)
+
+    def to_relationships(self) -> IgdbIndexRelationships:
+        return {}
+
+    __table__: ClassVar[str]
+
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class AgeRatingOrganization:
+class AgeRatingOrganization(IgdbObject):
     id: IgdbId
     name: str
     __table__: ClassVar[str] = """
@@ -47,7 +74,7 @@ class AgeRatingOrganization:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class AgeRatingCategory:
+class AgeRatingCategory(IgdbObject):
     id: IgdbId
     rating: str
     __table__: ClassVar[str] = """
@@ -58,7 +85,7 @@ class AgeRatingCategory:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class AgeRatingContentDescriptionType:
+class AgeRatingContentDescriptionType(IgdbObject):
     id: IgdbId
     name: str
     __table__: ClassVar[str] = """
@@ -69,7 +96,7 @@ class AgeRatingContentDescriptionType:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class AgeRatingContentDescriptionV2:
+class AgeRatingContentDescriptionV2(IgdbObject):
     id: IgdbId
     description: str
     description_type: AgeRatingContentDescriptionType
@@ -81,8 +108,16 @@ class AgeRatingContentDescriptionV2:
         );
     """
 
+    @override
+    def to_row(self) -> IgdbIndexRow:
+        return {
+            'id': self.id,
+            'description': self.description,
+            'description_type': self.description_type.id,
+        }
+
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class AgeRating:
+class AgeRating(IgdbObject):
     id: IgdbId
     organization: AgeRatingOrganization
     rating_category: AgeRatingCategory
@@ -98,14 +133,19 @@ class AgeRating:
             synopsis TEXT
         );
         CREATE TABLE IF NOT EXISTS IgdbAgeRating_rating_content_descriptions (
-            IgdbAgeRating_id INTEGER NOT NULL REFERENCES IgdbAgeRating(id),
-            IgdbAgeRatingContentDescriptionV2_id INTEGER NOT NULL REFERENCES IgdbAgeRatingContentDescriptionV2(id),
+            age_rating INTEGER NOT NULL REFERENCES IgdbAgeRating(id),
+            rating_content_description INTEGER NOT NULL REFERENCES IgdbAgeRatingContentDescriptionV2(id),
 
-            PRIMARY KEY (IgdbAgeRating_id, IgdbAgeRatingContentDescriptionV2_id)
+            PRIMARY KEY (age_rating, rating_content_description)
         );
     """
 
-    def to_row(self) -> SqliteRowParameters:
+    def __post_init__(self) -> None:
+        if self.rating_content_descriptions is not None and not isinstance(self.rating_content_descriptions, tuple):
+            object.__setattr__(self, 'rating_content_descriptions', tuple(self.rating_content_descriptions))
+
+    @override
+    def to_row(self) -> IgdbIndexRow:
         return {
             'id': self.id,
             'organization': self.organization.id,
@@ -114,8 +154,19 @@ class AgeRating:
             'synopsis': self.synopsis,
         }
 
+    @override
+    def to_relationships(self) -> IgdbIndexRelationships:
+        if not self.rating_content_descriptions:
+            return {}
+
+        return {
+            "IgdbAgeRating_rating_content_descriptions": {
+                (self.id, description.id) for description in self.rating_content_descriptions
+            }
+        }
+
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class AlternativeName:
+class AlternativeName(IgdbObject):
     id: IgdbId
     name: str
     comment: Optional[str] = None
@@ -129,7 +180,7 @@ class AlternativeName:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class Franchise:
+class Franchise(IgdbObject):
     id: IgdbId
     name: str
     slug: str
@@ -143,7 +194,7 @@ class Franchise:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class GameEngine:
+class GameEngine(IgdbObject):
     id: IgdbId
     name: str
     slug: str
@@ -157,7 +208,7 @@ class GameEngine:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class GameLocalization:
+class GameLocalization(IgdbObject):
     id: IgdbId
     name: Optional[str] = None
     region: 'Region'
@@ -170,8 +221,16 @@ class GameLocalization:
         );
     """
 
+    @override
+    def to_row(self) -> IgdbIndexRow:
+        return {
+            'id': self.id,
+            'name': self.name,
+            'region': self.region.id,
+        }
+
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class GameMode:
+class GameMode(IgdbObject):
     id: IgdbId
     name: str
 
@@ -183,7 +242,7 @@ class GameMode:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class GameStatus:
+class GameStatus(IgdbObject):
     id: IgdbId
     status: str
 
@@ -195,7 +254,7 @@ class GameStatus:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class GameType:
+class GameType(IgdbObject):
     id: IgdbId
     type: str
 
@@ -207,7 +266,7 @@ class GameType:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class Genre:
+class Genre(IgdbObject):
     id: IgdbId
     name: str
 
@@ -219,7 +278,7 @@ class Genre:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class CompanyStatus:
+class CompanyStatus(IgdbObject):
     id: IgdbId
     name: str
 
@@ -231,7 +290,7 @@ class CompanyStatus:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class Company:
+class Company(IgdbObject):
     id: IgdbId
     country: Optional[int] = None # ISO 3166-1 code
     name: str
@@ -248,8 +307,18 @@ class Company:
         );
     """
 
+    @override
+    def to_row(self) -> IgdbIndexRow:
+        return {
+            'id': self.id,
+            'country': self.country,
+            'name': self.name,
+            'slug': self.slug,
+            'status': self.status.id if self.status else None,
+        }
+
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class InvolvedCompany:
+class InvolvedCompany(IgdbObject):
     id: IgdbId
     company: Company
     developer: bool
@@ -268,8 +337,19 @@ class InvolvedCompany:
         );
     """
 
+    @override
+    def to_row(self) -> IgdbIndexRow:
+        return {
+            'id': self.id,
+            'company': self.company.id,
+            'developer': self.developer,
+            'porting': self.porting,
+            'publisher': self.publisher,
+            'supporting': self.supporting,
+        }
+
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class Region:
+class Region(IgdbObject):
     id: IgdbId
     identifier: Optional[str] = None
     name: Optional[str] = None
@@ -285,7 +365,7 @@ class Region:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class Keyword:
+class Keyword(IgdbObject):
     id: IgdbId
     name: str
     slug: str
@@ -299,7 +379,7 @@ class Keyword:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class Language:
+class Language(IgdbObject):
     id: IgdbId
     locale: str
     name: str
@@ -313,7 +393,7 @@ class Language:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class LanguageSupportType:
+class LanguageSupportType(IgdbObject):
     id: IgdbId
     name: str
 
@@ -325,7 +405,7 @@ class LanguageSupportType:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class LanguageSupport:
+class LanguageSupport(IgdbObject):
     id: IgdbId
     language: Language
     language_support_type: LanguageSupportType
@@ -338,8 +418,16 @@ class LanguageSupport:
         );
     """
 
+    @override
+    def to_row(self) -> IgdbIndexRow:
+        return {
+            'id': self.id,
+            'language': self.language.id,
+            'language_support_type': self.language_support_type.id,
+        }
+
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class PlatformFamily:
+class PlatformFamily(IgdbObject):
     id: IgdbId
     name: str
 
@@ -351,7 +439,7 @@ class PlatformFamily:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class PlatformType:
+class PlatformType(IgdbObject):
     id: IgdbId
     name: str
 
@@ -363,7 +451,7 @@ class PlatformType:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class PlatformVersion:
+class PlatformVersion(IgdbObject):
     id: IgdbId
     name: str
     slug: str
@@ -377,7 +465,7 @@ class PlatformVersion:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class Platform:
+class Platform(IgdbObject):
     id: IgdbId
     abbreviation: Optional[str] = None
     alternative_name: Optional[str] = None
@@ -402,8 +490,22 @@ class Platform:
         );
     """
 
+    @override
+    def to_row(self) -> IgdbIndexRow:
+        return {
+            'id': self.id,
+            'abbreviation': self.abbreviation,
+            'alternative_name': self.alternative_name,
+            'generation': self.generation,
+            'name': self.name,
+            'platform_family': self.platform_family.id if self.platform_family else None,
+            'platform_type': self.platform_type.id if self.platform_type else None,
+            'slug': self.slug,
+            'summary': self.summary,
+        }
+
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class MultiplayerMode:
+class MultiplayerMode(IgdbObject):
     id: IgdbId
     campaigncoop: bool
     dropin: bool
@@ -436,12 +538,30 @@ class MultiplayerMode:
         );
     """
 
+    @override
+    def to_row(self) -> IgdbIndexRow:
+        return {
+            'id': self.id,
+            'campaigncoop': self.campaigncoop,
+            'dropin': self.dropin,
+            'lancoop': self.lancoop,
+            'offlinecoop': self.offlinecoop,
+            'offlinecoopmax': self.offlinecoopmax,
+            'offlinemax': self.offlinemax,
+            'onlinecoop': self.onlinecoop,
+            'onlinecoopmax': self.onlinecoopmax,
+            'onlinemax': self.onlinemax,
+            'platform': self.platform.id if self.platform else None,
+            'splitscreen': self.splitscreen,
+            'splitscreenonline': self.splitscreenonline,
+        }
+
     @property
     def coop(self) -> bool:
         return self.campaigncoop or self.lancoop or self.offlinecoop or self.onlinecoop
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class PlayerPerspective:
+class PlayerPerspective(IgdbObject):
     id: IgdbId
     name: str
 
@@ -453,7 +573,7 @@ class PlayerPerspective:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class DateFormat:
+class DateFormat(IgdbObject):
     id: IgdbId
     format: str
 
@@ -465,7 +585,7 @@ class DateFormat:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class ReleaseDateRegion:
+class ReleaseDateRegion(IgdbObject):
     id: IgdbId
     region: str
 
@@ -477,7 +597,7 @@ class ReleaseDateRegion:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class ReleaseDateStatus:
+class ReleaseDateStatus(IgdbObject):
     id: IgdbId
     description: str
     name: str
@@ -491,7 +611,7 @@ class ReleaseDateStatus:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class ReleaseDate:
+class ReleaseDate(IgdbObject):
     id: IgdbId
     date: Optional[int] = None
     date_format: DateFormat
@@ -516,8 +636,22 @@ class ReleaseDate:
         );
     """
 
+    @override
+    def to_row(self) -> IgdbIndexRow:
+        return {
+            'id': self.id,
+            'date': self.date,
+            'date_format': self.date_format.id,
+            'human': self.human,
+            'm': self.m,
+            'platform': self.platform.id,
+            'release_region': self.release_region.id,
+            'status': self.status.id if self.status else None,
+            'y': self.y,
+        }
+
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class Theme:
+class Theme(IgdbObject):
     id: IgdbId
     name: str
 
@@ -529,7 +663,7 @@ class Theme:
     """
 
 @dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class Game:
+class Game(IgdbObject):
     id: IgdbId
     age_ratings: Optional[Sequence[AgeRating]] = None
     aggregated_rating: Optional[float] = None
@@ -573,6 +707,58 @@ class Game:
     version_parent: Optional['Game'] = None
     version_title: Optional[str] = None
 
+    def __post_init__(self) -> None:
+        if self.age_ratings is not None and not isinstance(self.age_ratings, tuple):
+            object.__setattr__(self, 'age_ratings', tuple(self.age_ratings))
+        if self.alternative_names is not None and not isinstance(self.alternative_names, tuple):
+            object.__setattr__(self, 'alternative_names', tuple(self.alternative_names))
+        if self.bundles is not None and not isinstance(self.bundles, tuple):
+            object.__setattr__(self, 'bundles', tuple(self.bundles))
+        if self.collections is not None and not isinstance(self.collections, tuple):
+            object.__setattr__(self, 'collections', tuple(self.collections))
+        if self.dlcs is not None and not isinstance(self.dlcs, tuple):
+            object.__setattr__(self, 'dlcs', tuple(self.dlcs))
+        if self.expanded_games is not None and not isinstance(self.expanded_games, tuple):
+            object.__setattr__(self, 'expanded_games', tuple(self.expanded_games))
+        if self.expansions is not None and not isinstance(self.expansions, tuple):
+            object.__setattr__(self, 'expansions', tuple(self.expansions))
+        if self.forks is not None and not isinstance(self.forks, tuple):
+            object.__setattr__(self, 'forks', tuple(self.forks))
+        if self.franchises is not None and not isinstance(self.franchises, tuple):
+            object.__setattr__(self, 'franchises', tuple(self.franchises))
+        if self.game_engines is not None and not isinstance(self.game_engines, tuple):
+            object.__setattr__(self, 'game_engines', tuple(self.game_engines))
+        if self.game_localizations is not None and not isinstance(self.game_localizations, tuple):
+            object.__setattr__(self, 'game_localizations', tuple(self.game_localizations))
+        if self.game_modes is not None and not isinstance(self.game_modes, tuple):
+            object.__setattr__(self, 'game_modes', tuple(self.game_modes))
+        if self.genres is not None and not isinstance(self.genres, tuple):
+            object.__setattr__(self, 'genres', tuple(self.genres))
+        if self.involved_companies is not None and not isinstance(self.involved_companies, tuple):
+            object.__setattr__(self, 'involved_companies', tuple(self.involved_companies))
+        if self.keywords is not None and not isinstance(self.keywords, tuple):
+            object.__setattr__(self, 'keywords', tuple(self.keywords))
+        if self.language_supports is not None and not isinstance(self.language_supports, tuple):
+            object.__setattr__(self, 'language_supports', tuple(self.language_supports))
+        if self.multiplayer_modes is not None and not isinstance(self.multiplayer_modes, tuple):
+            object.__setattr__(self, 'multiplayer_modes', tuple(self.multiplayer_modes))
+        if self.platforms is not None and not isinstance(self.platforms, tuple):
+            object.__setattr__(self, 'platforms', tuple(self.platforms))
+        if self.player_perspectives is not None and not isinstance(self.player_perspectives, tuple):
+            object.__setattr__(self, 'player_perspectives', tuple(self.player_perspectives))
+        if self.ports is not None and not isinstance(self.ports, tuple):
+            object.__setattr__(self, 'ports', tuple(self.ports))
+        if self.release_dates is not None and not isinstance(self.release_dates, tuple):
+            object.__setattr__(self, 'release_dates', tuple(self.release_dates))
+        if self.remakes is not None and not isinstance(self.remakes, tuple):
+            object.__setattr__(self, 'remakes', tuple(self.remakes))
+        if self.remasters is not None and not isinstance(self.remasters, tuple):
+            object.__setattr__(self, 'remasters', tuple(self.remasters))
+        if self.standalone_expansions is not None and not isinstance(self.standalone_expansions, tuple):
+            object.__setattr__(self, 'standalone_expansions', tuple(self.standalone_expansions))
+        if self.themes is not None and not isinstance(self.themes, tuple):
+            object.__setattr__(self, 'themes', tuple(self.themes))
+
     __table__: ClassVar[str] = """
         CREATE TABLE IF NOT EXISTS IgdbGame (
             id INTEGER PRIMARY KEY,
@@ -594,135 +780,134 @@ class Game:
             version_title TEXT COLLATE RTRIM
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_age_ratings (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbAgeRating_id INTEGER NOT NULL REFERENCES IgdbAgeRating(id),
-
-            PRIMARY KEY (IgdbGame_id, IgdbAgeRating_id)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            age_rating INTEGER NOT NULL REFERENCES IgdbAgeRating(id),
+            PRIMARY KEY (game, age_rating)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_alternative_names (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbAlternativeName_id INTEGER NOT NULL REFERENCES IgdbAlternativeName(id),
-
-            PRIMARY KEY (IgdbGame_id, IgdbAlternativeName_id)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            alternative_name INTEGER NOT NULL REFERENCES IgdbAlternativeName(id),
+            PRIMARY KEY (game, alternative_name)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_bundles (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbGame_id_bundle INTEGER NOT NULL REFERENCES IgdbGame(id),
-            PRIMARY KEY (IgdbGame_id, IgdbGame_id_bundle)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            bundle INTEGER NOT NULL REFERENCES IgdbGame(id),
+            PRIMARY KEY (game, bundle)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_collections (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbGame_id_collection INTEGER NOT NULL REFERENCES IgdbGame(id),
-            PRIMARY KEY (IgdbGame_id, IgdbGame_id_collection)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            collection INTEGER NOT NULL REFERENCES IgdbGame(id),
+            PRIMARY KEY (game, collection)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_dlcs (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbGame_id_dlc INTEGER NOT NULL REFERENCES IgdbGame(id),
-            PRIMARY KEY (IgdbGame_id, IgdbGame_id_dlc)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            dlc INTEGER NOT NULL REFERENCES IgdbGame(id),
+            PRIMARY KEY (game, dlc)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_expanded_games (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbGame_id_expanded INTEGER NOT NULL REFERENCES IgdbGame(id),
-            PRIMARY KEY (IgdbGame_id, IgdbGame_id_expanded)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            expanded_game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            PRIMARY KEY (game, expanded_game)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_expansions (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbGame_id_expansion INTEGER NOT NULL REFERENCES IgdbGame(id),
-            PRIMARY KEY (IgdbGame_id, IgdbGame_id_expansion)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            expansion INTEGER NOT NULL REFERENCES IgdbGame(id),
+            PRIMARY KEY (game, expansion)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_forks (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbGame_id_fork INTEGER NOT NULL REFERENCES IgdbGame(id),
-            PRIMARY KEY (IgdbGame_id, IgdbGame_id_fork)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            fork INTEGER NOT NULL REFERENCES IgdbGame(id),
+            PRIMARY KEY (game, fork)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_franchises (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbFranchise_id INTEGER NOT NULL REFERENCES IgdbFranchise(id),
-            PRIMARY KEY (IgdbGame_id, IgdbFranchise_id)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            franchise INTEGER NOT NULL REFERENCES IgdbFranchise(id),
+            PRIMARY KEY (game, franchise)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_game_engines (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbGameEngine_id INTEGER NOT NULL REFERENCES IgdbGameEngine(id),
-            PRIMARY KEY (IgdbGame_id, IgdbGameEngine_id)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            game_engine INTEGER NOT NULL REFERENCES IgdbGameEngine(id),
+            PRIMARY KEY (game, game_engine)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_game_localizations (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbGameLocalization_id INTEGER NOT NULL REFERENCES IgdbGameLocalization(id),
-            PRIMARY KEY (IgdbGame_id, IgdbGameLocalization_id)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            game_localization INTEGER NOT NULL REFERENCES IgdbGameLocalization(id),
+            PRIMARY KEY (game, game_localization)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_game_modes (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbGameMode_id INTEGER NOT NULL REFERENCES IgdbGameMode(id),
-            PRIMARY KEY (IgdbGame_id, IgdbGameMode_id)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            game_mode INTEGER NOT NULL REFERENCES IgdbGameMode(id),
+            PRIMARY KEY (game, game_mode)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_genres (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbGenre_id INTEGER NOT NULL REFERENCES IgdbGenre(id),
-            PRIMARY KEY (IgdbGame_id, IgdbGenre_id)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            genre INTEGER NOT NULL REFERENCES IgdbGenre(id),
+            PRIMARY KEY (game, genre)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_involved_companies (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbInvolvedCompany_id INTEGER NOT NULL REFERENCES IgdbInvolvedCompany(id),
-            PRIMARY KEY (IgdbGame_id, IgdbInvolvedCompany_id)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            involved_company INTEGER NOT NULL REFERENCES IgdbInvolvedCompany(id),
+            PRIMARY KEY (game, involved_company)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_keywords (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbKeyword_id INTEGER NOT NULL REFERENCES IgdbKeyword(id),
-            PRIMARY KEY (IgdbGame_id, IgdbKeyword_id)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            keyword INTEGER NOT NULL REFERENCES IgdbKeyword(id),
+            PRIMARY KEY (game, keyword)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_language_supports (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbLanguageSupport_id INTEGER NOT NULL REFERENCES IgdbLanguageSupport(id),
-            PRIMARY KEY (IgdbGame_id, IgdbLanguageSupport_id)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            language_support INTEGER NOT NULL REFERENCES IgdbLanguageSupport(id),
+            PRIMARY KEY (game, language_support)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_multiplayer_modes (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbMultiplayerMode_id INTEGER NOT NULL REFERENCES IgdbMultiplayerMode(id),
-            PRIMARY KEY (IgdbGame_id, IgdbMultiplayerMode_id)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            multiplayer_mode INTEGER NOT NULL REFERENCES IgdbMultiplayerMode(id),
+            PRIMARY KEY (game, multiplayer_mode)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_platforms (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbPlatform_id INTEGER NOT NULL REFERENCES IgdbPlatform(id),
-            PRIMARY KEY (IgdbGame_id, IgdbPlatform_id)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            platform INTEGER NOT NULL REFERENCES IgdbPlatform(id),
+            PRIMARY KEY (game, platform)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_player_perspectives (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbPlayerPerspective_id INTEGER NOT NULL REFERENCES IgdbPlayerPerspective(id),
-            PRIMARY KEY (IgdbGame_id, IgdbPlayerPerspective_id)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            player_perspective INTEGER NOT NULL REFERENCES IgdbPlayerPerspective(id),
+            PRIMARY KEY (game, player_perspective)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_ports (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbGame_id_port INTEGER NOT NULL REFERENCES IgdbGame(id),
-            PRIMARY KEY (IgdbGame_id, IgdbGame_id_port)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            port INTEGER NOT NULL REFERENCES IgdbGame(id),
+            PRIMARY KEY (game, port)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_release_dates (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbReleaseDate_id INTEGER NOT NULL REFERENCES IgdbReleaseDate(id),
-            PRIMARY KEY (IgdbGame_id, IgdbReleaseDate_id)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            release_date INTEGER NOT NULL REFERENCES IgdbReleaseDate(id),
+            PRIMARY KEY (game, release_date)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_remakes (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbGame_id_remake INTEGER NOT NULL REFERENCES IgdbGame(id),
-            PRIMARY KEY (IgdbGame_id, IgdbGame_id_remake)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            remake INTEGER NOT NULL REFERENCES IgdbGame(id),
+            PRIMARY KEY (game, remake)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_remasters (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbGame_id_remaster INTEGER NOT NULL REFERENCES IgdbGame(id),
-            PRIMARY KEY (IgdbGame_id, IgdbGame_id_remaster)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            remaster INTEGER NOT NULL REFERENCES IgdbGame(id),
+            PRIMARY KEY (game, remaster)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_standalone_expansions (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbGame_id_standalone_expansion INTEGER NOT NULL REFERENCES IgdbGame(id),
-            PRIMARY KEY (IgdbGame_id, IgdbGame_id_standalone_expansion)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            standalone_expansion INTEGER NOT NULL REFERENCES IgdbGame(id),
+            PRIMARY KEY (game, standalone_expansion)
         );
         CREATE TABLE IF NOT EXISTS IgdbGame_themes (
-            IgdbGame_id INTEGER NOT NULL REFERENCES IgdbGame(id),
-            IgdbTheme_id INTEGER NOT NULL REFERENCES IgdbTheme(id),
-            PRIMARY KEY (IgdbGame_id, IgdbTheme_id)
+            game INTEGER NOT NULL REFERENCES IgdbGame(id),
+            theme INTEGER NOT NULL REFERENCES IgdbTheme(id),
+            PRIMARY KEY (game, theme)
         );
     """
 
-    def to_row(self) -> dict[str, str | int | float | None]:
+    @override
+    def to_row(self) -> IgdbIndexRow:
         return {
             'id': self.id,
             'aggregate_rating': self.aggregated_rating,
@@ -741,6 +926,39 @@ class Game:
             'url': self.url,
             'version_parent': self.version_parent.id if self.version_parent else None,
             'version_title': self.version_title,
+        }
+
+    @override
+    def to_relationships(self) -> IgdbIndexRelationships:
+        def make_set(items: Optional[Sequence[IgdbObject]]):
+            return {(self.id, item.id) for item in (items or ())}
+
+        return {
+            'age_ratings': make_set(self.age_ratings),
+            'alternative_names': make_set(self.alternative_names),
+            'bundles': make_set(self.bundles),
+            'collections': make_set(self.collections),
+            'dlcs': make_set(self.dlcs),
+            'expanded_games': make_set(self.expanded_games),
+            'expansions': make_set(self.expansions),
+            'forks': make_set(self.forks),
+            'franchises': make_set(self.franchises),
+            'game_engines': make_set(self.game_engines),
+            'game_localizations': make_set(self.game_localizations),
+            'game_modes': make_set(self.game_modes),
+            'genres': make_set(self.genres),
+            'involved_companies': make_set(self.involved_companies),
+            'keywords': make_set(self.keywords),
+            'language_supports': make_set(self.language_supports),
+            'multiplayer_modes': make_set(self.multiplayer_modes),
+            'platforms': make_set(self.platforms),
+            'player_perspectives': make_set(self.player_perspectives),
+            'ports': make_set(self.ports),
+            'release_dates': make_set(self.release_dates),
+            'remakes': make_set(self.remakes),
+            'remasters': make_set(self.remasters),
+            'standalone_expansions': make_set(self.standalone_expansions),
+            'themes': make_set(self.themes),
         }
 
 DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
@@ -843,6 +1061,42 @@ DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
     "version_parent.name",
     "version_parent.platforms.name",
     "version_title",
+)
+
+IGDB_OBJECT_TYPES = (
+    AgeRatingOrganization,
+    AgeRatingCategory,
+    AgeRatingContentDescriptionType,
+    AgeRatingContentDescriptionV2,
+    AgeRating,
+    AlternativeName,
+    Franchise,
+    GameEngine,
+    GameLocalization,
+    GameMode,
+    GameStatus,
+    GameType,
+    Genre,
+    CompanyStatus,
+    Company,
+    InvolvedCompany,
+    Region,
+    Keyword,
+    Language,
+    LanguageSupportType,
+    LanguageSupport,
+    PlatformFamily,
+    PlatformType,
+    PlatformVersion,
+    Platform,
+    MultiplayerMode,
+    PlayerPerspective,
+    DateFormat,
+    ReleaseDateRegion,
+    ReleaseDateStatus,
+    ReleaseDate,
+    Theme,
+    Game,
 )
 
 SortDirection = Literal['asc', 'desc']
@@ -1667,6 +1921,8 @@ __all__ = (
     "get_playlist",
     "IgdbIndex",
     "IgdbId",
+    "IgdbObject",
+    "IGDB_OBJECT_TYPES",
     "InvolvedCompany",
     "Keyword",
     "Language",
