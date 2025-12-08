@@ -30,6 +30,8 @@ import typelib
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
 from httpx import HTTPStatusError, Response, Timeout
+from pydantic import TypeAdapter, JsonValue, ValidationError
+from pydantic_core import from_json, to_json
 
 IgdbId = NewType('IgdbId', int)
 PlaylistTitle = NewType('PlaylistTitle', str)
@@ -970,26 +972,16 @@ DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
     "aggregated_rating",
     "alternative_names.comment",
     "alternative_names.name",
-    "bundles.name",
-    "collections.name",
-    "collections.type.name",
-    "dlcs.name",
+    "bundles",
     "dlcs",
     "expanded_games.name",
     "expanded_games.platforms.name",
     "expanded_games",
-    "expansions.name",
-    "expansions.platforms.name",
     "expansions",
-    "first_release_date",
-    "forks.name",
-    "forks.platforms.name",
+    "forks",
     "franchise.name",
-    "franchise.slug",
     "franchises.name",
-    "franchises.slug",
     "game_engines.name",
-    "game_engines.slug",
     "game_localizations.name",
     "game_localizations.region.category",
     "game_localizations.region.identifier",
@@ -1007,7 +999,6 @@ DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
     "involved_companies.publisher",
     "involved_companies.supporting",
     "keywords.name",
-    "keywords.slug",
     "language_supports.language_support_type.name",
     "language_supports.language.locale",
     "language_supports.language.name",
@@ -1020,22 +1011,20 @@ DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
     "multiplayer_modes.onlinecoop",
     "multiplayer_modes.onlinecoopmax",
     "multiplayer_modes.onlinemax",
-    "multiplayer_modes.platform.name",
+    "multiplayer_modes.platform",
     "multiplayer_modes.splitscreen",
     "multiplayer_modes.splitscreenonline",
     "name",
-    "parent_game.name",
+    "parent_game",
     "platforms.abbreviation",
     "platforms.alternative_name",
     "platforms.generation",
     "platforms.name",
     "platforms.platform_family.name",
     "platforms.platform_type.name",
-    "platforms.slug",
     "platforms.summary",
     "player_perspectives.name",
-    "ports.name",
-    "ports.platforms.name",
+    "ports",
     "release_dates.date_format.format",
     "release_dates.date",
     "release_dates.human",
@@ -1045,21 +1034,14 @@ DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
     "release_dates.status.description",
     "release_dates.status.name",
     "release_dates.y",
-    "remakes.name",
-    "remakes.platforms.name",
-    "remasters.name",
-    "remasters.platforms.name",
-    "slug",
-    "standalone_expansions.name",
-    "standalone_expansions.platforms.name",
+    "remakes",
+    "remasters",
+    "standalone_expansions",
     "storyline",
     "summary",
     "themes.name",
-    "total_rating_count",
-    "total_rating",
     "url",
-    "version_parent.name",
-    "version_parent.platforms.name",
+    "version_parent",
     "version_title",
 )
 
@@ -1103,16 +1085,19 @@ SortDirection = Literal['asc', 'desc']
 DEFAULT_SORT: tuple[str, SortDirection] = ('name', 'asc')
 QUERY_CLAUSE = r'(fields|f|exclude|x|where|w|limit|l|offset|o|sort|s|search)\s+([^;]+)\s*;'
 
-JsonPrimitive = str | int | float | bool | None
-JsonArray: TypeAlias = Sequence["JsonPrimitive | JsonObject | JsonArray"]
-JsonObject: TypeAlias = Mapping[str, "JsonPrimitive | JsonArray | JsonObject"]
-
 class GameResponse(TypedDict, total=False):
     name: Required[str]
 
-class MultiqueryResponse(TypedDict):
+class MultiqueryResult(TypedDict):
     name: str
-    result: Sequence[GameResponse]
+    count: NotRequired[int]
+    result: NotRequired[GameResponse]
+
+type MultiqueryResponse = list[MultiqueryResult]
+
+GameResponseAdapter = TypeAdapter(GameResponse)
+MultiqueryResponseAdapter = TypeAdapter(MultiqueryResponse)
+MultiqueryResponseListAdapter = TypeAdapter(list[list[dict[str, JsonValue]]])
 
 class CountResponse(TypedDict):
     count: int
@@ -1360,7 +1345,6 @@ class Multiquery:
 
         return '\n'.join(queries)
 
-
 RETRY_CODES = (
     httpx.codes.REQUEST_TIMEOUT,
     httpx.codes.TOO_MANY_REQUESTS,
@@ -1369,8 +1353,6 @@ RETRY_CODES = (
     httpx.codes.SERVICE_UNAVAILABLE,
     httpx.codes.GATEWAY_TIMEOUT,
 )
-
-QueryType: TypeAlias = str | Query | Multiquery
 
 class QueryClient:
     def __init__(self, client_id: str, client_secret: str, max_queries: int = MAX_ACTIVE_QUERIES, max_rate: int = MAX_QUERY_RATE):
@@ -1427,7 +1409,6 @@ class QueryClient:
 
     @staticmethod
     def _giveup(e: Exception):
-        print("Exception raised during query:", e, file=sys.stderr)
         if not isinstance(e, HTTPStatusError):
             # Give up if query_endpoint failed with something besides HTTPStatusError
             return True
@@ -1480,33 +1461,60 @@ class QueryClient:
             return response
 
     @overload
-    async def query(self, endpoint: Literal["multiquery"], query: str | Multiquery) -> JsonArray: ...
+    async def query(self, endpoint: Literal["multiquery"], query: str | Multiquery) -> JsonValue: ...
 
     @overload
     async def query(self, endpoint: Literal["multiquery"], query: Query) -> Never: ...
 
     @overload
-    async def query(self, endpoint: str, query: str | Query | Multiquery) -> JsonArray | JsonObject: ...
+    async def query(self, endpoint: str, query: str | Query | Multiquery) -> JsonValue: ...
 
-    async def query(self, endpoint: str, query: str | Query | Multiquery) -> JsonArray | JsonObject:
+    async def query(self, endpoint: str, query: str | Query | Multiquery) -> JsonValue:
         if endpoint == "multiquery" and isinstance(query, Query):
             raise TypeError("Expected a str or Multiquery for 'multiquery' endpoint; got Query")
 
         try:
             response = await self._query(endpoint, query)
-            response_json = orjson.loads(response.content)
-
-            return response_json
+            return from_json(response.content)
         except HTTPStatusError as e:
-            print(e.response.headers, file=sys.stderr)
-            raise
+            if not (isinstance(query, Multiquery) and e.response.status_code == httpx.codes.REQUEST_ENTITY_TOO_LARGE):
+                # If the error is not due to multiquery size limit, re-raise
+                raise
+
+            print(f"Multiquery too large (HTTP 413); splitting into {len(query.queries)} individual queries...", file=sys.stderr)
+
+            return await self._split_multiquery(query)
+            # MultiqueryResponse is a list[TypedDict], which is suitable as a JsonValue
+
+    async def _split_multiquery(self, multiquery: Multiquery) -> list[JsonValue]:
+        tasks: list[Task[JsonValue]] = []
+
+        async with asyncio.TaskGroup() as group:
+            for name, (query_endpoint, query_obj) in multiquery.queries.items():
+                tasks.append(group.create_task(
+                    self.query(query_endpoint, query_obj),
+                    name=name
+                ))
+
+            # Wait for all individual queries to complete
+            # This is better than sequential execution because we can still benefit from concurrency
+            results = await asyncio.gather(*tasks)
+            print(f"Completed {len(results)} individual queries (split from oversized multiquery)", file=sys.stderr)
+            response: list[JsonValue] = []
+            for task in tasks:
+                response.append({
+                    "name": task.get_name(),
+                    "result": task.result(),
+                })
+
+            return response
 
     async def count(self, endpoint: str, query: str | Query) -> int:
         if not endpoint.endswith('/count'):
             endpoint += '/count'
 
         response = await self._query(endpoint, query)
-        response_json = orjson.loads(response.content)
+        response_json = from_json(response.content)
 
         if not isinstance(response_json, Mapping):
             raise ValueError(f"Expected {endpoint} response to be a JSON object, got {type(response_json)} ({response_json})")
@@ -1726,7 +1734,7 @@ async def handle_query(args: argparse.Namespace) -> None:
 
                 query = Query(body)
                 async with asyncio.TaskGroup() as group:
-                    tasks: list[asyncio.Task[JsonArray]] = []
+                    tasks: list[Task[JsonValue]] = []
                     for q in itertools.batched(query.query_pages(count), MULTIQUERY_MAX):
                         if verbose:
                             print(f"Fetching records {q[0].offset} to {q[-1].offset + q[-1].limit - 1}", file=sys.stderr)
@@ -1735,12 +1743,11 @@ async def handle_query(args: argparse.Namespace) -> None:
                         task = group.create_task(client.query("multiquery", multiquery))
                         tasks.append(task)
 
-                    responses: Sequence[Sequence[MultiqueryResponse]] = await asyncio.gather(*tasks) # type: ignore[type-var]
+                    responses = await asyncio.gather(*tasks)
 
-
-                results = tuple(r['result'] for r in itertools.chain.from_iterable(responses))
-                records = tuple(itertools.chain.from_iterable(results))
-                json = orjson.dumps(records, option=orjson.OPT_INDENT_2 | orjson.OPT_APPEND_NEWLINE)
+                multiquery_responses = MultiqueryResponseListAdapter.validate_python(responses, extra='allow')
+                results = tuple(itertools.chain.from_iterable(multiquery_responses))
+                json = to_json(results, indent=2)
                 await aiofiles.stdout_bytes.write(json)
         except JSONDecodeError as e:
             print(e.doc, file=sys.stderr)
