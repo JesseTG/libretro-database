@@ -5,50 +5,45 @@ from __future__ import annotations
 import argparse
 import asyncio
 import csv
-import dataclasses
 import itertools
 import time
-import sqlite3
 import sys
 
 from asyncio import TaskGroup
 from collections.abc import Callable, Collection, Iterable, Iterator, Mapping, Sequence
-from collections import defaultdict
 from concurrent.futures import ProcessPoolExecutor
-from functools import cache
+from datetime import date, datetime
 from io import StringIO
+from itertools import chain
 from pathlib import Path
 from pprint import pprint
-from typing import ClassVar, NamedTuple, Optional, TYPE_CHECKING, Protocol, TypeGuard, TypeVar
-
-if TYPE_CHECKING:
-    # DataclassInstance doesn't exist at runtime,
-    # but using it here for type checking is useful.
-    from _typeshed import DataclassInstance
+from types import EllipsisType
+from typing import Any, ForwardRef, NamedTuple, NewType, Optional, get_args
 
 import aiofiles
-import aiosqlite
+import sqlalchemy
 
 from aioitertools.asyncio import as_completed
 from aiomultiprocess import Pool
-from pycountry import countries
+from pydantic import BaseModel, HttpUrl
+from pydantic_extra_types.country import CountryNumericCode
+from sqlalchemy import Column, ForeignKey, Index, MetaData, PrimaryKeyConstraint, Table, UniqueConstraint, text
+from sqlalchemy.dialects.sqlite import insert
+from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
+from sqlalchemy.types import TypeEngine
+from sqlalchemy.util.typing import GenericProtocol, de_optionalize_union_types, eval_expression, flatten_newtype, includes_none, is_fwd_ref, is_generic, is_literal, is_newtype, TypeAliasType, is_pep695, pep695_values
 
-import hasheous
-import igdb
 
-from dats import Game as DatGame
-from dats import *
-from hasheous import *
-from igdb import *
+from dats import Game as DatGame, load_dats, get_existing_dat_files, ClrMamePro, GameDataListCodec
 from igdb import Game as IgdbGame, load_game_file
+from igdb import *
+from hasheous import DataObject, MatchRecord, HasheousIndex, load_dataobjects
 
 class PlaylistData(NamedTuple):
     playlist: Playlist
     igdb: Collection[IgdbGame]
     dats: Collection[DatGame]
     hasheous: Collection[DataObject]
-
-
 
 class GameMatch(NamedTuple):
     source_dat: DatGame
@@ -67,11 +62,6 @@ def find[T](items: Iterable[T] | None, predicate: Callable[[T], bool]) -> T | No
             return item
 
     return None
-
-@cache
-def get_country_name(code: int) -> str | None:
-    country = countries.get(numeric=str(code))
-    return country.name if country else None
 
 def match_games(playlist: PlaylistData, hasheous_index: HasheousIndex, igdb_index: IgdbIndex) -> Iterable[GameMatch]:
 
@@ -110,7 +100,7 @@ def match_games(playlist: PlaylistData, hasheous_index: HasheousIndex, igdb_inde
         def get_coop(release: ReleaseDate | None):
             if igdb.multiplayer_modes:
                 for m in igdb.multiplayer_modes:
-                    if m.coop and m.platform and release and m.platform.id == release.platform.id:
+                    if m.coop and m.platform and release and m.platform == release.platform:
                         return True
 
             if igdb.game_modes:
@@ -191,8 +181,7 @@ def match_games(playlist: PlaylistData, hasheous_index: HasheousIndex, igdb_inde
             num_remakes = len(igdb.remakes or ()) # TODO: Only count remakes on different platforms
             num_ports = len(igdb.ports or ()) # TODO: Only count ports on different platforms
             num_remasters = len(igdb.remasters or ()) # TODO: Only count remasters on different platforms
-            num_collections = len(igdb.collections or ()) # TODO: Only count collections on different platforms
-            total_releases = num_platforms + num_remakes + num_ports + num_remasters + num_collections
+            total_releases = num_platforms + num_remakes + num_ports + num_remasters
 
             return total_releases == 1
 
@@ -200,8 +189,7 @@ def match_games(playlist: PlaylistData, hasheous_index: HasheousIndex, igdb_inde
             if not igdb.involved_companies:
                 return None
 
-            country_codes = {c.company.country for c in igdb.involved_companies if c.developer and c.company.country}
-            country_names = tuple(filter(None, (get_country_name(c) for c in country_codes)))
+            country_names = {c.company.country.short_name for c in igdb.involved_companies if c.developer and c.company.country}
 
             if not country_names:
                 return None
@@ -282,8 +270,8 @@ def match_games(playlist: PlaylistData, hasheous_index: HasheousIndex, igdb_inde
             franchise=get_franchise(),
             genre=get_genre(),
             igdb_id=igdb.id,
-            igdb_url=igdb.url,
-            igdb_platform_id=release.platform.id if release else None,
+            igdb_url=str(igdb.url) if igdb.url else None,
+            igdb_platform_id=release.platform if release else None,
             igdb_release_date_id=release.id if release else None,
             language=get_language(),
             origin=get_origin(),
@@ -335,7 +323,7 @@ def match_games(playlist: PlaylistData, hasheous_index: HasheousIndex, igdb_inde
             sha1=sha1,
             serial=serial,
             igdb_id=igdb_entry.id if igdb_entry else None,
-            igdb_url=igdb_entry.url if igdb_entry else None,
+            igdb_url=str(igdb_entry.url) if igdb_entry else None,
             igdb_release_id=game.igdb_release_date_id if game else None,
             igdb_platform_id=game.igdb_platform_id if game else None,
             hasheous_id=hasheous_entry.Id if hasheous_entry else None,
@@ -362,74 +350,139 @@ def get_target_dat_paths(outpath: Path, playlist_titles: Iterable[str]) -> Itera
     for title in playlist_titles:
         yield outpath / f"{title}.dat"
 
+type AnnotationScanType = type[Any] | str | ForwardRef | NewType | TypeAliasType | GenericProtocol[Any]
 
-if TYPE_CHECKING:
-    from _typeshed import DataclassInstance
+def flatten_type(t: AnnotationScanType) -> type:
+    if includes_none(t):
+        return flatten_type(de_optionalize_union_types(t))
 
-    D = TypeVar('D', bound=DataclassInstance, covariant=True)
-    class DataModelType(DataclassInstance, Protocol[D]):
-        """
-        A protocol for dataclass types that represent database tables.
-        The data classes don't need to explicitly implement this protocol;
-        it's enough to just provide the methods and attributes defined here.
-        """
-        # TODO: Replace with LiteralString
-        # when https://github.com/seandstewart/python-typelib/issues/10 is resolved
-        __table__: ClassVar[str]
+    if is_pep695(t):
+        # If this is a TypeAliasType as defined by PEP 695...
+        values = pep695_values(t)
+        if len(values) != 1:
+            raise NotImplementedError(f"PEP 695 TypeAliasType {t} with multiple different argument types ({values}) is not supported")
 
-    class RowConvertible(Protocol):
-        def to_row(self) -> dict[str, str | float | int | None]: ...
+        return flatten_type(values.pop())
 
-def has_row_function(obj: DataModelType) -> TypeGuard[RowConvertible]:
-    """Returns true if the given data class instance has a to_row() method."""
-    return callable(getattr(obj, 'to_row', None))
+    if is_literal(t):
+        args = get_args(t)
+        literal_types = set(map(type, args))
+        if len(literal_types) > 1:
+            raise NotImplementedError(f"Literal {t} with multiple different argument types ({literal_types}) is not supported")
 
-def to_row(obj: DataModelType) -> dict[str, str | float | int | None]:
-    """Convert the given data class instance to a dictionary suitable for database insertion;
-    uses the to_row() method if available, otherwise falls back to dataclasses.asdict()."""
-    if has_row_function(obj):
-        return obj.to_row()
-    else:
-        return dataclasses.asdict(obj)
+        return type(args[0])
 
-async def configure_db(db: aiosqlite.Connection) -> None:
-    """Create all tables needed for the database schema."""
+    if is_newtype(t):
+        return flatten_newtype(t)
 
-    TYPES: tuple[type[DataModelType], ...] = (
-        # DAT-related tables
-        ClrMamePro,
-        Rom,
-        DatGame,
+    if is_generic(t):
+        return t.__origin__
 
-        # Hasheous-related tables
-        hasheous.SignatureDataObject,
-        hasheous.MetadataItem,
-        hasheous.MediaType,
-        hasheous.RomItem,
-        hasheous.DataObject,
+    if is_fwd_ref(t, check_generic=True, check_for_plain_string=True):
+        return flatten_type(eval_expression(t.__forward_arg__, __name__))
 
-        # IGDB-related tables
+    if isinstance(t, str):
+        return flatten_type(eval_expression(t, __name__))
+
+    assert isinstance(t, type), f"Unexpected type annotation: {t} ({type(t)})"
+    return t
+
+
+def define_tables() -> MetaData:
+    model_types = (
         *IGDB_OBJECT_TYPES,
     )
 
-    def get_table_creation_statement(t: type[DataModelType]) -> str:
-        if not sqlite3.complete_statement(t.__table__):
-            raise ValueError(f"Table definition for {t.__name__} is not a complete SQL statement (did you forget to end with a semicolon?)")
+    metadata = MetaData()
+    def get_column_type(annotation: AnnotationScanType) -> type[TypeEngine] | ForeignKey | tuple[type, EllipsisType]:
+        field_type = flatten_type(annotation)
 
-        return t.__table__
+        if field_type == bool:
+            return sqlalchemy.Boolean
 
-    create_statements = map(get_table_creation_statement, TYPES)
-    pragmas = (
-        # Use in-memory journaling for better performance
-        # (at the expense of durability, but since this is a local cache that's acceptable)
-        "PRAGMA journal_mode = MEMORY;",
-        "PRAGMA synchronous = OFF;",
-    )
-    create_statement = '\n'.join(create_statements)
+        if issubclass(field_type, (int, CountryNumericCode)):
+            return sqlalchemy.Integer
 
-    await db.executescript('\n'.join(pragmas))
-    await db.executescript(create_statement)
-    await db.commit()
+        if issubclass(field_type, (str, HttpUrl)):
+            return sqlalchemy.String
+
+        if field_type == datetime:
+            return sqlalchemy.DateTime
+
+        if field_type == date:
+            return sqlalchemy.Date
+
+        if field_type == float:
+            return sqlalchemy.Float
+
+        if issubclass(field_type, BaseModel):
+            # If this field refers to a specific model, create a ForeignKey to that model's table
+            tablename = getattr(field_type, '__tablename__', field_type.__name__)
+            foreign_fields = field_type.model_fields
+            pk_fields = tuple(fname for (fname, f) in foreign_fields.items() if PrimaryKeyConstraint in f.metadata)
+            if len(pk_fields) != 1:
+                # TODO: Add more useful information
+                raise TypeError(f"Can't define composite foreign keys on a single field, add constraints manually")
+
+            return ForeignKey(f"{tablename}.{pk_fields[0]}")
+
+        if issubclass(field_type, tuple):
+            # If the field type annotation is a parameterized tuple (e.g. Tuple[SomeModel, ...])
+            args = get_args(annotation)
+            if not (len(args) == 2 and args[1] is ...):
+                raise NotImplementedError(f"To generate a relationship table, tuple types must have one type and Ellipsis, got: {annotation}")
+
+            # TODO: Return a special marker indicating this is a relationship table
+            return args
+
+        # TODO: Add guidance on adding support for more types
+        raise NotImplementedError(f"Unsupported field type: {field_type}")
+
+    for t in model_types:
+        tablename = getattr(t, '__tablename__', t.__name__)
+        table = Table(tablename, metadata)
+
+        for (colname, field) in t.model_fields.items():
+            annotation: type[Any] | None = field.annotation
+            if not annotation:
+                raise TypeError(f"Field '{colname}' in model '{t.__name__}' must have a Pydantic-recognized type annotation to generate a column for it")
+
+            column_type = get_column_type(annotation)
+            if isinstance(column_type, tuple):
+                # If this field represents a collection (i.e. a one-to-many relationship)...
+                foreign_keys = {m for m in field.metadata if isinstance(m, ForeignKey)}
+                tuple_args = get_args(annotation)
+                num_foreign_keys = len(foreign_keys)
+                if num_foreign_keys == 1:
+                    # If there's an explicit ForeignKey constraint, use that
+                    child_id_constraint = foreign_keys.pop()
+                else:
+                    child_type = column_type[0]
+                    child_tablename = getattr(child_type, '__tablename__', child_type.__name__)
+                    child_id_constraint = ForeignKey(f"{child_tablename}.id") # TODO: Don't assume the pk name, find it
+
+                relationship = Table(
+                    f"{tablename}_{colname}",
+                    metadata,
+                    Column(f"{tablename}_id", ForeignKey(f"{tablename}.id"), primary_key=True),
+                    Column(f"{tablename}_{colname}", child_id_constraint, primary_key=True)
+                )
+            else:
+                table.append_column(
+                    Column(
+                        colname,
+                        column_type,
+                        primary_key=(PrimaryKeyConstraint in field.metadata),
+                        nullable=includes_none(annotation),
+                        unique=(UniqueConstraint in field.metadata),
+                        index=(Index in field.metadata),
+                    )
+                )
+            # TODO: Add support for custom table-level constraints
+            #   with a __constraints__ attribute on the model
+            #   (or something more Pydantic-idiomatic)
+
+    return metadata
 
 async def handle_generate(args: argparse.Namespace) -> None:
     """Handle the generate subcommand."""
@@ -556,186 +609,149 @@ async def handle_generate(args: argparse.Namespace) -> None:
 
         await asyncio.gather(*dat_tasks)
 
-async def insert_igdb_games(db: aiosqlite.Connection, pool: Pool, playlists: Mapping[Path, Playlist]):
+async def insert_igdb_games(db: AsyncEngine, pool: Pool, metadata: MetaData, playlists: Mapping[Path, Playlist]):
     # Load all playlists concurrently, yielding them as they're loaded.
-    game_iterator = as_completed(pool.apply(load_game_file, p) for p in playlists.items())
-    # Not using pool.map or pool.starmap because
-    # they always yield results in the same order as the input,
-    # even if some tasks take much longer than others.
-    # https://github.com/omnilib/aiomultiprocess/issues/118
+    playlist_iterator = as_completed(pool.apply(load_game_file, p) for p in playlists.items())
 
-    async for (title, games) in game_iterator:
-        # Collect all unique objects across all games in this playlist,
-        # so that we can insert them all in one transaction.
-        objects: defaultdict[type[IgdbObject], list[dict[str, str | int | float | None]]] = defaultdict(list)
-        relationships: defaultdict[str, set[tuple[IgdbId, IgdbId]]] = defaultdict(set)
+    db.echo = False
+    # TODO: Process each playlist in a separate task
+    # (unless it doesn't offer the improved concurrency I want)
+    async for (title, games) in playlist_iterator:
+        # Collect all unique objects to insert
 
-        for game in games:
-            objects[IgdbGame].append(to_row(game))
+        types: dict[type[IgdbObject], Iterable[IgdbObject]] = {}
 
-            for rating in game.age_ratings or ():
-                relationships['IgdbGame_age_ratings'].add((game.id, rating.id))
-                objects[AgeRating].append(to_row(rating))
-                objects[AgeRatingOrganization].append(to_row(rating.organization))
-                objects[AgeRatingCategory].append(to_row(rating.rating_category))
-                for desc in rating.rating_content_descriptions or ():
-                    objects[AgeRatingContentDescriptionV2].append(to_row(desc))
-                    objects[AgeRatingContentDescriptionType].append(to_row(desc.description_type))
-                    relationships['IgdbAgeRating_rating_content_descriptions'].add((rating.id, desc.id))
+        # TODO: Collect relationship tables
+        relationships: dict[tuple[type[IgdbObject], type[IgdbObject]], set[tuple[IgdbId, IgdbId]]] = {}
 
-            for name in game.alternative_names or ():
-                objects[AlternativeName].append(to_row(name))
-                relationships['IgdbGame_alternative_names'].add((game.id, name.id))
+        age_ratings = tuple(chain.from_iterable(g.age_ratings for g in games))
+        age_rating_content_descriptions = tuple(chain.from_iterable(
+            r.rating_content_descriptions for r in age_ratings
+        ))
+        types[AgeRating] = age_ratings
+        types[AgeRatingOrganization] = (r.organization for r in age_ratings)
+        types[AgeRatingCategory] = (r.rating_category for r in age_ratings)
+        types[AgeRatingContentDescriptionV2] = age_rating_content_descriptions
+        types[AgeRatingContentDescriptionType] = (d.description_type for d in age_rating_content_descriptions)
+        types[AlternativeName] = chain.from_iterable(g.alternative_names for g in games)
+        types[Franchise] = chain(
+            (g.franchise for g in games if g.franchise), # The game's primary franchise
+            chain.from_iterable(g.franchises for g in games) # Additional franchises
+        )
+        types[GameEngine] = chain.from_iterable(g.game_engines for g in games)
+        types[GameLocalization] = chain.from_iterable(g.game_localizations for g in games)
+        types[GameMode] = chain.from_iterable(g.game_modes for g in games)
+        types[GameStatus] = (g.game_status for g in games if g.game_status)
+        types[GameType] = (g.game_type for g in games if g.game_type)
+        types[Genre] = chain.from_iterable(g.genres for g in games)
 
-            for bundle in game.bundles or ():
-                relationships['IgdbGame_bundles'].add((game.id, bundle.id))
+        involved_companies = tuple(chain.from_iterable(g.involved_companies for g in games))
+        types[InvolvedCompany] = involved_companies
+        types[Company] = (c.company for c in involved_companies)
+        types[CompanyStatus] = (c.company.status for c in involved_companies if c.company.status)
+        types[Keyword] = chain.from_iterable(g.keywords for g in games)
 
-            for collection in game.collections or ():
-                relationships['IgdbGame_collections'].add((game.id, collection.id))
+        language_supports = tuple(chain.from_iterable(g.language_supports for g in games))
+        types[LanguageSupport] = language_supports
+        types[Language] = (ls.language for ls in language_supports)
+        types[LanguageSupportType] = (ls.language_support_type for ls in language_supports)
+        types[MultiplayerMode] = chain.from_iterable(g.multiplayer_modes for g in games)
 
-            for dlc in game.dlcs or ():
-                relationships['IgdbGame_dlcs'].add((game.id, dlc.id))
+        platforms = tuple(chain.from_iterable(g.platforms for g in games))
+        types[Platform] = platforms
+        types[PlatformFamily] = (p.platform_family for p in platforms if p.platform_family)
+        types[PlatformType] = (p.platform_type for p in platforms if p.platform_type)
+        types[PlayerPerspective] = chain.from_iterable(g.player_perspectives for g in games)
 
-            for expanded_game in game.expanded_games or ():
-                relationships['IgdbGame_expanded_games'].add((game.id, expanded_game.id))
+        release_dates = tuple(chain.from_iterable(g.release_dates for g in games))
+        types[ReleaseDate] = release_dates
+        types[DateFormat] = (rd.date_format for rd in release_dates)
+        types[ReleaseDateRegion] = (rd.release_region for rd in release_dates)
+        types[ReleaseDateStatus] = (rd.status for rd in release_dates if rd.status)
+        types[Theme] = chain.from_iterable(g.themes for g in games)
+        types[Game] = games
 
-            for expansion in game.expansions or ():
-                relationships['IgdbGame_expansions'].add((game.id, expansion.id))
+        async with db.begin() as tx:
+            async def insert_many(table_name: str, objects: Iterable[BaseModel]) -> None:
+                await tx.execute(
+                    insert(metadata.tables[table_name]).prefix_with("OR IGNORE"),
+                    # Insert game records, ignoring conflicts because
+                    # the same game (or franchise, or genre, or other object)
+                    # may appear in multiple playlists
 
-            for fork in game.forks or ():
-                relationships['IgdbGame_forks'].add((game.id, fork.id))
+                    [obj.model_dump(context="row") for obj in objects]
+                    # BaseModel.model_dump serializes the model to a dict,
+                    # and IgdbObject in particular defines custom serialization behavior
+                    # that's activated by passing a context value of "row".
+                )
 
-            if game.franchise:
-                objects[Franchise].append(to_row(game.franchise))
+                # TODO: Insert relationships
 
-            for f in game.franchises or ():
-                objects[Franchise].append(to_row(f))
-                relationships['IgdbGame_franchises'].add((game.id, f.id))
+            for (obj_type, objs) in types.items():
+                await insert_many(obj_type.__tablename__, objs)
 
-            for engine in game.game_engines or ():
-                objects[GameEngine].append(to_row(engine))
-                relationships['IgdbGame_game_engines'].add((game.id, engine.id))
 
-            for loc in game.game_localizations or ():
-                relationships['IgdbGame_game_localizations'].add((game.id, loc.id))
-                objects[GameLocalization].append(to_row(loc))
-                objects[Region].append(to_row(loc.region))
+            await tx.commit()
+            # Commit the session to persist all added objects
 
-            for mode in game.game_modes or ():
-                objects[GameMode].append(to_row(mode))
-                relationships['IgdbGame_game_modes'].add((game.id, mode.id))
-
-            if game.game_status:
-                objects[GameStatus].append(to_row(game.game_status))
-            if game.game_type:
-                objects[GameType].append(to_row(game.game_type))
-
-            for genre in game.genres or ():
-                objects[Genre].append(to_row(genre))
-                relationships['IgdbGame_genres'].add((game.id, genre.id))
-
-            for c in game.involved_companies or ():
-                relationships['IgdbGame_involved_companies'].add((game.id, c.id))
-                objects[InvolvedCompany].append(to_row(c))
-                objects[Company].append(to_row(c.company))
-                if c.company.status:
-                    objects[CompanyStatus].append(to_row(c.company.status))
-
-            for keyword in game.keywords or ():
-                objects[Keyword].append(to_row(keyword))
-                relationships['IgdbGame_keywords'].add((game.id, keyword.id))
-
-            for ls in game.language_supports or ():
-                objects[Language].append(to_row(ls.language))
-                objects[LanguageSupportType].append(to_row(ls.language_support_type))
-                objects[LanguageSupport].append(to_row(ls))
-                relationships['IgdbGame_language_supports'].add((game.id, ls.id))
-
-            for mode in game.multiplayer_modes or ():
-                objects[MultiplayerMode].append(to_row(mode))
-                relationships['IgdbGame_multiplayer_modes'].add((game.id, mode.id))
-
-            for platform in game.platforms or ():
-                objects[Platform].append(to_row(platform))
-                if platform.platform_family:
-                    objects[PlatformFamily].append(to_row(platform.platform_family))
-                if platform.platform_type:
-                    objects[PlatformType].append(to_row(platform.platform_type))
-                relationships['IgdbGame_platforms'].add((game.id, platform.id))
-
-            for perspective in game.player_perspectives or ():
-                objects[PlayerPerspective].append(to_row(perspective))
-                relationships['IgdbGame_player_perspectives'].add((game.id, perspective.id))
-
-            for port in game.ports or ():
-                relationships['IgdbGame_ports'].add((game.id, port.id))
-
-            for date in game.release_dates or ():
-                relationships['IgdbGame_release_dates'].add((game.id, date.id))
-                objects[ReleaseDate].append(to_row(date))
-                objects[DateFormat].append(to_row(date.date_format))
-                objects[ReleaseDateRegion].append(to_row(date.release_region))
-                if date.status:
-                    objects[ReleaseDateStatus].append(to_row(date.status))
-            for remake in game.remakes or ():
-                relationships['IgdbGame_remakes'].add((game.id, remake.id))
-
-            for remaster in game.remasters or ():
-                relationships['IgdbGame_remasters'].add((game.id, remaster.id))
-
-            for standalone_expansion in game.standalone_expansions or ():
-                relationships['IgdbGame_standalone_expansions'].add((game.id, standalone_expansion.id))
-
-            for theme in game.themes or ():
-                objects[Theme].append(to_row(theme))
-                relationships['IgdbGame_themes'].add((game.id, theme.id))
-
-        for (objtype, objs) in objects.items():
-            assert len(objs) > 0
-
-            keys = objs[0].keys()
-            placeholders = ', '.join(f":{key}" for key in keys)
-            await db.executemany(f"INSERT OR REPLACE INTO Igdb{objtype.__name__} VALUES ({placeholders})", objs)
-
-        for (table, pairs) in relationships.items():
-            await db.executemany(f"INSERT OR REPLACE INTO {table} VALUES (?, ?)", pairs)
-
-        await db.commit()
         print(f"Inserted {len(games)} IGDB games for playlist '{title}' into database")
 
 async def handle_index(args: argparse.Namespace) -> None:
     """Handle the index subcommand."""
     verbose = bool(args.verbose)
-    igdb: Path = args.igdb
-    hasheous: Path = args.hasheous
+    igdb_path: Path = args.igdb
+    hasheous_path: Path = args.hasheous
     output: Path = args.output
 
-    if not igdb.exists():
-        raise FileNotFoundError(f"IGDB directory not found: {igdb}")
+    if not igdb_path.exists():
+        raise FileNotFoundError(f"IGDB directory not found: {igdb_path}")
 
-    if not hasheous.exists():
-        raise FileNotFoundError(f"Hasheous directory not found: {hasheous}")
+    if not hasheous_path.exists():
+        raise FileNotFoundError(f"Hasheous directory not found: {hasheous_path}")
 
     output.parent.mkdir(parents=True, exist_ok=True)
 
     # Remove existing database file if it exists
     output.unlink(missing_ok=True)
 
-    playlists = {p: pl for p, pl in get_playlists(igdb)}
+    playlists = {p: pl for p, pl in get_playlists(igdb_path)}
 
-    async with aiosqlite.connect(output, autocommit=True) as db:
-        print("Creating database schema...")
-        await configure_db(db)
+    # Create async engine with SQLite
+    db = create_async_engine(
+        f"sqlite+aiosqlite:///{output}",
+        echo=verbose,  # Log SQL statements if verbose
+        connect_args={"check_same_thread": False},
+    )
 
-        async with Pool() as pool:
-            async with TaskGroup() as group:
-                igdb_task = group.create_task(insert_igdb_games(db, pool, playlists), name="IGDB")
-                # TODO: Start loading Hasheous objects in parallel
-                # TODO: Start loading DAT games in parallel
-                # TODO: Use a TaskGroup to manage these tasks
-                # TODO: Write tasks to insert data into the database as it is loaded
+    metadata = define_tables()
+    # Configure pragmas for better performance
+    # Note: These need to be set after engine creation
+    async with db.connect() as connection:
+        # Use in-memory journaling for better performance at the expense of durability,
+        # but that's okay since the database is just used as a local cache
+        # (as opposed to persistent storage of critical data).
 
-        await db.commit()
+        await connection.execute(text("PRAGMA journal_mode = MEMORY"))
+        await connection.execute(text("PRAGMA synchronous = OFF"))
+
+        await connection.run_sync(metadata.create_all)
+
+    # Create async session factory
+    async with Pool() as pool:
+        async with TaskGroup() as group:
+            igdb_task = group.create_task(
+                insert_igdb_games(db, pool, metadata, playlists),
+                name="IGDB"
+            )
+
+            await igdb_task
+            # TODO: Start loading Hasheous objects in parallel
+            # TODO: Start loading DAT games in parallel
+            # TODO: Use a TaskGroup to manage these tasks
+            # TODO: Write tasks to insert data into the database as it is loaded
+
+    # Close the engine
+    await db.dispose()
 
 def main():
     """Main entry point for the script."""
@@ -748,6 +764,7 @@ def main():
         action="store_true",
         help="Show more logging output."
     )
+    # TODO: Add -vv support for more verbose logging
 
     # Create subparsers for commands
     subparsers = parser.add_subparsers(

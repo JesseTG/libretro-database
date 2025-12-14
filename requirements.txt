@@ -1,13 +1,12 @@
 aiofiles==24.1.*
 aioitertools==0.13.*
 aiomultiprocess==0.9.*
-aiosqlite==0.21.*
 asynciolimiter==1.2.*
 Authlib==1.6.*
 backoff==2.2.*
 httpx==0.28.*
-orjson==3.*
 pe==0.6.*
-pycountry
+pydantic==2.12.*
+pydantic-extra-types==2.10.*
 requests==2.32.*
-typelib[json]==0.2.*
+SQLAlchemy[aiosqlite]>=2.0.44
