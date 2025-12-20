@@ -2,7 +2,6 @@
 
 import argparse
 import asyncio
-import itertools
 import os.path
 import re
 import sys
@@ -10,32 +9,326 @@ import tomllib
 
 from abc import ABC
 from asyncio import Task, TaskGroup
-from collections import ChainMap
+from collections import ChainMap, defaultdict
 from collections.abc import Collection, Sequence, Iterable, Iterator, Mapping
 from concurrent.futures import Executor
 from dataclasses import dataclass
 from datetime import date, datetime
-from functools import cache
+from functools import cache, cached_property
+from itertools import chain
 from json import JSONDecodeError
 from pathlib import Path
-from typing import Annotated, Any, ClassVar, Never, NotRequired, Optional, Literal, NewType, Required, Self, TypedDict, cast, overload
+from typing import Annotated, Any, ClassVar, ForwardRef, Never, NotRequired, Optional, Literal, NewType, Required, Self, TypeGuard, TypedDict, cast, overload
 
 import aiofiles
 import aiofiles.os
 import asynciolimiter
 import backoff
 import httpx
+import sqlalchemy
 
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
 from httpx import HTTPStatusError, Response, Timeout
-from pydantic import BaseModel, BeforeValidator, ConfigDict, FieldSerializationInfo, HttpUrl, SerializerFunctionWrapHandler, TypeAdapter, JsonValue, field_serializer
+from more_itertools import batched, one, only
+from pydantic import BaseModel, BeforeValidator, FieldSerializationInfo, HttpUrl, SerializerFunctionWrapHandler, TypeAdapter, JsonValue, field_serializer
 from pydantic_core import from_json, to_json
 from pydantic_extra_types.country import CountryNumericCode
-from sqlalchemy import ForeignKey, PrimaryKeyConstraint
+from sqlalchemy import Column, ForeignKey, MetaData, Table
+from sqlalchemy.sql.base import SchemaEventTarget
+from sqlalchemy.types import TypeEngine
+from sqlalchemy.util.typing import GenericProtocol, TypeAliasType, de_optionalize_union_types, includes_none, is_pep695, is_fwd_ref, is_generic, is_literal, is_newtype, flatten_newtype, eval_expression, get_args
+
+type AnnotationScanType = type[Any] | str | ForwardRef | NewType | TypeAliasType | GenericProtocol[Any]
+type TupleOf[T] = tuple[T, ...]
+
+def unwrap_type(t: AnnotationScanType) -> type:
+    """
+    Strips away literals, optionals, newtypes, generics, and forward references.
+    """
+    if includes_none(t):
+        return unwrap_type(de_optionalize_union_types(t))
+
+    if is_pep695(t):
+        # If this is a TypeAliasType as defined by PEP 695...
+        return unwrap_type(t.__value__)
+
+    if is_literal(t):
+        args = get_args(t)
+        literal_types = set(map(type, args))
+        if len(literal_types) > 1:
+            raise NotImplementedError(f"Literal {t} with multiple different argument types ({literal_types}) is not supported")
+
+        return type(args[0])
+
+    if is_newtype(t):
+        return flatten_newtype(t)
+
+    if is_generic(t):
+        return t.__origin__
+
+    if is_fwd_ref(t, check_generic=True, check_for_plain_string=True):
+        return unwrap_type(eval_expression(t.__forward_arg__, __name__))
+
+    if isinstance(t, str):
+        return unwrap_type(eval_expression(t, __name__))
+
+    assert isinstance(t, type), f"Unexpected type annotation: {t} ({type(t)})"
+    return t
+
+
+@dataclass(kw_only=True, eq=True)
+class ColumnDef:
+    # TODO: Write about how I tried to use SQLModel but it was a pain in the ass
+    name: str | None
+    coltype: type[TypeEngine] | TypeEngine | SchemaEventTarget | None
+    primary_key: bool
+    index: bool | None
+    unique: bool | None
+    nullable: bool | None
+    kwargs: dict[str, Any]
+
+    def __init__(
+            self,
+            /,
+            name: str | None = None,
+            type: type[TypeEngine] | TypeEngine | SchemaEventTarget | None = None,
+            index: bool | None = None,
+            unique: bool | None = None,
+            nullable: bool | None = None,
+            primary_key: bool = False,
+            **kwargs: Any,
+    ):
+        self.name = name
+        self.coltype = type
+        self.primary_key = primary_key
+        self.index = index
+        self.unique = unique
+        self.nullable = nullable
+        self.kwargs = kwargs
+
+    def get_schema(self, model_type: type[BaseModel], field_name: str) -> Column:
+        fields = model_type.model_fields
+        if not (field := fields.get(field_name)):
+            raise KeyError(f"Model {model_type.__name__} has no field named {field_name!r}")
+
+        if not (annotation := field.annotation):
+            raise TypeError(f"{model_type.__name__}.{field_name!r} has no type annotation, cannot generate column definition")
+
+        nullable = self.nullable if self.nullable is not None else includes_none(annotation)
+        coltype = self.coltype or get_column_type(annotation)
+
+        info = self.kwargs.get('info', {}) | {
+            'model_type': model_type,
+            'field_info': field,
+        }
+
+        # Exclude 'info' from kwargs since we handled it above
+        kwargs = {k: v for k, v in self.kwargs.items() if k != 'info'}
+
+        return Column(
+            self.name or field_name,
+            coltype,
+            primary_key=self.primary_key,
+            index=self.index,
+            unique=self.unique,
+            nullable=nullable,
+            info=info,
+            **kwargs,
+        )
+
+@overload
+def get_column_type(annotation: None) -> Never: ...
+
+@overload
+def get_column_type(annotation: AnnotationScanType) -> type[TypeEngine] | ForeignKey: ...
+
+def get_column_type(annotation: AnnotationScanType | None) -> type[TypeEngine] | ForeignKey:
+    """
+    Maps a Pydantic type annotation to a SQLAlchemy column type.
+    """
+    if annotation is None:
+        raise TypeError("Cannot determine column type for field with no type annotation")
+
+    field_type = unwrap_type(annotation)
+
+    if field_type == bool:
+        return sqlalchemy.Boolean
+
+    if issubclass(field_type, (int, CountryNumericCode)):
+        return sqlalchemy.Integer
+
+    if issubclass(field_type, (str, HttpUrl)):
+        return sqlalchemy.String
+
+    if field_type == datetime:
+        return sqlalchemy.DateTime
+
+    if field_type == date:
+        return sqlalchemy.Date
+
+    if field_type == float:
+        return sqlalchemy.Float
+
+    if field_type == JsonValue:
+        return sqlalchemy.JSON
+
+    if issubclass(field_type, DatabaseModel):
+        # If this field refers to a specific model, create a ForeignKey to that model's table
+        colname = one(field_type.pk_columns())
+        # one() raises if its argument doesn't have exactly one item
+
+        return ForeignKey(f"{field_type.__tablename__}.{colname}")
+
+    raise NotImplementedError(f"Unsupported field type: {field_type}")
+
+def is_non_string_iterable_type(t: type[Any]) -> TypeGuard[type[Iterable[Any]]]:
+    """
+    Determines whether a type annotation represents a non-string iterable type.
+    """
+    if issubclass(t, Sequence) and not issubclass(t, (str, bytes, bytearray)):
+        return True
+
+    return False
+
+
+@dataclass(eq=True)
+class RelationshipDef:
+    foreign_key: ForeignKey
+    kwargs: dict[str, Any]
+
+    def __init__(self, foreign_key: ForeignKey | str, **kwargs) -> None:
+        self.foreign_key = foreign_key if isinstance(foreign_key, ForeignKey) else ForeignKey(foreign_key)
+        self.kwargs = kwargs
+
+    def get_table_name(self, parent_type: type["DatabaseModel"], parent_field_name: str) -> str:
+        return f"{parent_type.__tablename__}_{parent_field_name}"
+
+    def create_table(self, parent_type: type["DatabaseModel"], parent_field_name: str, metadata: MetaData) -> Table:
+        parent_tablename = parent_type.__tablename__
+        parent_pk_col_defs = parent_type.pk_columns().keys()
+
+        return Table(
+            self.get_table_name(parent_type, parent_field_name),
+            metadata,
+            *(
+                Column(
+                    f"{parent_tablename}_{colname}",
+                    ForeignKey(f"{parent_tablename}.{colname}"),
+                    primary_key=True
+                )
+                for colname in parent_pk_col_defs
+            ),
+            Column(
+                parent_field_name,
+                self.foreign_key,
+                primary_key=True
+            ),
+        )
+
+SchemaDef = ColumnDef | RelationshipDef
+
+ModelsByType = Mapping[type["DatabaseModel"], Iterable["DatabaseModel"]]
+
+class DatabaseModel(BaseModel, ABC, frozen=True):
+    __tablename__: ClassVar[str]
+
+    @cache
+    @classmethod
+    def pk_columns(cls) -> dict[str, ColumnDef]:
+        """
+        Returns a dictionary of primary key columns for the model.
+
+        :return: A dictionary mapping field names to ColumnDef instances that are primary keys.
+        """
+
+        result: dict[str, ColumnDef] = {}
+        for field_name, field in cls.model_fields.items():
+            defn = only(m for m in field.metadata if isinstance(m, ColumnDef))
+            if defn and defn.primary_key:
+                result[field_name] = defn
+
+        return result
+
+    @cache
+    @classmethod
+    def relationship_columns(cls) -> dict[str, RelationshipDef]:
+        """
+        Gets all RelationshipDef instances from this model type's fields,
+        as defined in their Annotated metadata.
+        Returns a map of field names to RelationshipDef instances,
+        empty if none are found.
+
+        :raises ValueError: if multiple RelationshipDefs are found on a single field.
+        """
+
+        result: dict[str, RelationshipDef] = {}
+        for field_name, field in cls.model_fields.items():
+            defn = only(m for m in field.metadata if isinstance(m, RelationshipDef))
+            if defn:
+                result[field_name] = defn
+
+        return result
+
+    @classmethod
+    def create_tables(cls, metadata: MetaData) -> tuple[Table, *tuple[Table, ...]]:
+        """
+        Creates a SQLAlchemy Table object for this model type,
+        and any associated relationship tables.
+
+        Returns a tuple where the first item is the main table,
+        and any subsequent items are relationship tables.
+        """
+        main_table = Table(cls.__tablename__, metadata)
+        relationship_tables: list[Table] = []
+
+        for colname, field in cls.model_fields.items():
+            annotation: type[Any] | None = field.annotation
+            if annotation is None:
+                raise TypeError(f"{cls.__name__}.{colname!r} has no type annotation, cannot generate column definition")
+
+            match only(m for m in field.metadata if isinstance(m, SchemaDef)):
+                # only() raises if its argument has more than one item
+                case ColumnDef() as coldef:
+                    # Create a Column with the specified ColumnDef
+                    main_table.append_column(coldef.get_schema(cls, colname))
+                case RelationshipDef() as reldef:
+                    # An explicit RelationshipDef was provided, so use it
+                    relationship_tables.append(reldef.create_table(cls, colname, metadata))
+                case None:
+                    # No SchemaDef was provided, create a ColumnDef with defaults
+                    main_table.append_column(ColumnDef().get_schema(cls, colname))
+                case other:
+                    raise TypeError(f"Expected zero or one SchemaDef on {cls.__name__}.{colname!r}, got {other}")
+
+
+        return (main_table, *relationship_tables)
+
+
+    @cached_property
+    def nested_models(self) -> ModelsByType:
+        """
+        Returns a dictionary mapping DatabaseModel types to lists of nested objects of that type.
+        """
+        result: dict[type[DatabaseModel], set[DatabaseModel]] = defaultdict(set)
+
+        for field_name in type(self).model_fields:
+            match getattr(self, field_name):
+                case IgdbObject() as obj:
+                    result[type(obj)].add(obj)
+                    for nested_type, nested_objs in obj.nested_models.items():
+                        result[nested_type].update(nested_objs)
+                case [*items]:
+                    objects = (i for i in items if isinstance(i, IgdbObject))
+                    for obj in objects:
+                        result[type(obj)].add(obj)
+                        for nested_type, nested_objs in obj.nested_models.items():
+                            result[nested_type].update(nested_objs)
+
+        return dict(result)
 
 IgdbId = NewType('IgdbId', int)
-IgdbPrimaryId = Annotated[IgdbId, PrimaryKeyConstraint]
+IgdbPrimaryId = Annotated[IgdbId, ColumnDef(type=sqlalchemy.Integer, primary_key=True)]
 PlaylistTitle = NewType('PlaylistTitle', str)
 IgdbGameIds = Annotated[tuple[IgdbId, ...], ForeignKey('IgdbGame.id')]
 
@@ -48,9 +341,9 @@ def country_numeric_code_validator(value: Any) -> CountryNumericCode:
     accounting for padding as necessary.
     """
     match value:
-        case int(i) if 0 <= i <= 999:
-            return CountryNumericCode(f"{i:03}")
-        case int(i):
+        case int(i) | float(i) if 0 <= i <= 999 and i.is_integer():
+            return CountryNumericCode(f"{int(i):03}")
+        case int(i) | float(i):
             raise ValueError(f"Expected an int between 0 and 999 (inclusive) for CountryNumericCode; got {i}")
         case str(s) if re.fullmatch(r'^[0-9]{1,3}$', s):
             return CountryNumericCode(s.zfill(3))
@@ -64,12 +357,13 @@ def country_numeric_code_validator(value: Any) -> CountryNumericCode:
 type CoercedCountryCode = Annotated[CountryNumericCode, BeforeValidator(country_numeric_code_validator)]
 type IgdbObjectSerializeMode = Literal['default', 'row'] | None
 
-class IgdbObject(BaseModel, ABC):
+
+class IgdbObject(DatabaseModel, ABC, frozen=True):
     __tablename__: ClassVar[str]
     id: IgdbPrimaryId
 
     @field_serializer('*', mode='wrap')
-    def serialize_model(self, value: Any, handler: SerializerFunctionWrapHandler, info: FieldSerializationInfo[IgdbObjectSerializeMode]):
+    def _serialize_field(self, value: Any, handler: SerializerFunctionWrapHandler, info: FieldSerializationInfo[IgdbObjectSerializeMode]):
         if info.context in (None, 'default'):
             # Serialize the model the way Pydantic usually does
             return handler(value)
@@ -100,143 +394,179 @@ class IgdbObject(BaseModel, ABC):
 
         raise ValueError(f"Expected a serialization mode of 'default', 'id', or None; got {info.context!r}")
 
-class AgeRatingOrganization(IgdbObject):
+    @cached_property
+    def child_relationships(self) -> Mapping[str, tuple[IgdbId, ...]]:
+        """
+        Returns a dictionary mapping field names to tuples of IgdbIds,
+        for all fields that represent one-to-many relationships.
+
+        This is used when serializing the model for database insertion,
+        to extract the IDs of related objects.
+        """
+        model_type = type(self)
+        fields = model_type.model_fields
+
+        rels: dict[str, tuple[IgdbId, ...]] = {}
+
+        for field_name, field in fields.items():
+            if not (annotation := field.annotation):
+                continue
+
+            if not is_non_string_iterable_type(annotation):
+                continue
+
+            match getattr(self, field_name):
+                case None:
+                    continue
+                case [*items]:
+                    rels[field_name] = tuple(i.id if isinstance(i, IgdbObject) else i for i in items)
+                case other:
+                    raise TypeError(f"Expected {type(self).__name__}.{field_name!r} to be a non-string iterable instance, got {type(other).__name__}")
+
+        return rels
+
+class AgeRatingOrganization(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbAgeRatingOrganization"
     id: IgdbPrimaryId
     name: str
 
-class AgeRatingCategory(IgdbObject):
+class AgeRatingCategory(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbAgeRatingCategory"
     id: IgdbPrimaryId
+    organization: Annotated[IgdbId, ColumnDef(type=ForeignKey('IgdbAgeRatingOrganization.id'))]
     rating: str
 
-class AgeRatingContentDescriptionType(IgdbObject):
+class AgeRatingContentDescriptionType(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbAgeRatingContentDescriptionType"
     id: IgdbPrimaryId
     name: str
 
-class AgeRatingContentDescriptionV2(IgdbObject):
+class AgeRatingContentDescriptionV2(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbAgeRatingContentDescriptionV2"
     id: IgdbPrimaryId
     description: str
     description_type: AgeRatingContentDescriptionType
+    organization: Annotated[IgdbId, ColumnDef(type=ForeignKey('IgdbAgeRatingOrganization.id'))]
 
-class AgeRating(IgdbObject):
+class AgeRating(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbAgeRating"
     id: IgdbPrimaryId
     organization: AgeRatingOrganization
     rating_category: AgeRatingCategory
-    rating_content_descriptions: tuple[AgeRatingContentDescriptionV2, ...] = ()
+    rating_content_descriptions: Annotated[TupleOf[AgeRatingContentDescriptionV2], RelationshipDef("IgdbAgeRatingContentDescriptionV2.id")] = ()
 
-class AlternativeName(IgdbObject):
+class AlternativeName(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbAlternativeName"
     id: IgdbPrimaryId
     name: str
     comment: str | None = None
+    game: Annotated[IgdbId, ColumnDef(type=ForeignKey('IgdbGame.id'))]
 
-class Franchise(IgdbObject):
+class Franchise(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbFranchise"
     id: IgdbPrimaryId
     name: str
 
-class GameEngine(IgdbObject):
+class GameEngine(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbGameEngine"
     id: IgdbPrimaryId
     name: str
 
-class GameLocalization(IgdbObject):
+class GameLocalization(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbGameLocalization"
     id: IgdbPrimaryId
     name: str | None = None
+    game: Annotated[IgdbId, ColumnDef(type=ForeignKey('IgdbGame.id'))]
     region: 'Region'
 
-class GameMode(IgdbObject):
+class GameMode(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbGameMode"
     id: IgdbPrimaryId
     name: str
 
-class GameStatus(IgdbObject):
+class GameStatus(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbGameStatus"
     id: IgdbPrimaryId
     status: str
 
-class GameType(IgdbObject):
+class GameType(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbGameType"
     id: IgdbPrimaryId
     type: str
 
-class Genre(IgdbObject):
+class Genre(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbGenre"
     id: IgdbPrimaryId
     name: str
 
-class CompanyStatus(IgdbObject):
+class CompanyStatus(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbCompanyStatus"
     id: IgdbPrimaryId
     name: str
 
-class Company(IgdbObject):
-    model_config = ConfigDict(coerce_numbers_to_str=True)
+class Company(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbCompany"
     id: IgdbPrimaryId
     country: CoercedCountryCode | None = None
     name: str
     status: CompanyStatus | None = None
 
-class InvolvedCompany(IgdbObject):
+class InvolvedCompany(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbInvolvedCompany"
     id: IgdbPrimaryId
     company: Company
+    game: Annotated[IgdbId, ColumnDef(type=ForeignKey('IgdbGame.id'))]
     developer: bool
     porting: bool
     publisher: bool
     supporting: bool
 
-class Region(IgdbObject):
+class Region(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbRegion"
     id: IgdbPrimaryId
     identifier: str
     name: str
     category: Literal['locale', 'continent']
 
-class Keyword(IgdbObject):
+class Keyword(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbKeyword"
     id: IgdbPrimaryId
     name: str
 
-class Language(IgdbObject):
+class Language(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbLanguage"
     id: IgdbPrimaryId
     locale: str # TODO: Represent as a tuple[LanguageAlpha2, CountryAlpha2]?
     name: str
 
-class LanguageSupportType(IgdbObject):
+class LanguageSupportType(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbLanguageSupportType"
     id: IgdbPrimaryId
     name: str
 
-class LanguageSupport(IgdbObject):
+class LanguageSupport(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbLanguageSupport"
     id: IgdbPrimaryId
+    game: Annotated[IgdbId, ColumnDef(type=ForeignKey('IgdbGame.id'))]
     language: Language
     language_support_type: LanguageSupportType
 
-class PlatformFamily(IgdbObject):
+class PlatformFamily(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbPlatformFamily"
     id: IgdbPrimaryId
     name: str
 
-class PlatformType(IgdbObject):
+class PlatformType(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbPlatformType"
     id: IgdbPrimaryId
     name: str
 
-class PlatformVersion(IgdbObject):
+class PlatformVersion(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbPlatformVersion"
     id: IgdbPrimaryId
     name: str
 
-class Platform(IgdbObject):
+class Platform(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbPlatform"
     id: IgdbPrimaryId
     alternative_name: str | None = None
@@ -245,11 +575,12 @@ class Platform(IgdbObject):
     platform_family: PlatformFamily | None = None
     platform_type: PlatformType | None = None
 
-class MultiplayerMode(IgdbObject):
+class MultiplayerMode(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbMultiplayerMode"
     id: IgdbPrimaryId
     campaigncoop: bool
     dropin: bool
+    game: Annotated[IgdbId, ColumnDef(type=ForeignKey('IgdbGame.id'))]
     lancoop: bool
     offlinecoop: bool
     offlinecoopmax: int | None = None
@@ -257,7 +588,7 @@ class MultiplayerMode(IgdbObject):
     onlinecoop: bool
     onlinecoopmax: int | None = None
     onlinemax: int | None = None
-    platform: IgdbId | None = None
+    platform: Annotated[IgdbId | None, ColumnDef(type=ForeignKey('IgdbPlatform.id'))] = None
     splitscreen: bool
     splitscreenonline: bool | None = None
 
@@ -265,95 +596,99 @@ class MultiplayerMode(IgdbObject):
     def coop(self) -> bool:
         return self.campaigncoop or self.lancoop or self.offlinecoop or self.onlinecoop
 
-class PlayerPerspective(IgdbObject):
+class PlayerPerspective(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbPlayerPerspective"
     id: IgdbPrimaryId
     name: str
 
-class DateFormat(IgdbObject):
+class DateFormat(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbDateFormat"
     id: IgdbPrimaryId
     format: str
 
-class ReleaseDateRegion(IgdbObject):
+class ReleaseDateRegion(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbReleaseDateRegion"
     id: IgdbPrimaryId
     region: str
 
-class ReleaseDateStatus(IgdbObject):
+class ReleaseDateStatus(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbReleaseDateStatus"
     id: IgdbPrimaryId
     description: str
     name: str
 
-class ReleaseDate(IgdbObject):
+class ReleaseDate(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbReleaseDate"
     id: IgdbPrimaryId
     date: datetime | None = None
     date_format: DateFormat
+    game: Annotated[IgdbId, ColumnDef(type=ForeignKey('IgdbGame.id'))]
     human: str
     m: Literal[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]  | None = None  # Month (1-12)
-    platform: Annotated[IgdbId, ForeignKey('IgdbPlatform.id')]
+    platform: Annotated[IgdbId, ColumnDef(type=ForeignKey('IgdbPlatform.id'))]
     release_region: ReleaseDateRegion
     status: ReleaseDateStatus | None = None
     y: int | None = None  # Year
 
-class Theme(IgdbObject):
+class Theme(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbTheme"
     id: IgdbPrimaryId
     name: str
 
-class Game(IgdbObject):
+class Game(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbGame"
     id: IgdbPrimaryId
-    age_ratings: tuple[AgeRating, ...] = ()
+    age_ratings: Annotated[TupleOf[AgeRating], RelationshipDef("IgdbAgeRating.id")] = ()
     aggregated_rating: float | None = None
     aggregated_rating_count: int | None = None
-    alternative_names: tuple[AlternativeName, ...] = ()
-    bundles: Annotated[tuple[IgdbId, ...], ForeignKey('IgdbGame.id')] = ()
-    collections: Annotated[tuple[IgdbId, ...], ForeignKey('IgdbGame.id')] = ()
-    dlcs: Annotated[tuple[IgdbId, ...], ForeignKey('IgdbGame.id')] = ()
-    expanded_games: Annotated[tuple[IgdbId, ...], ForeignKey('IgdbGame.id')] = ()
-    expansions: Annotated[tuple[IgdbId, ...], ForeignKey('IgdbGame.id')] = ()
+    alternative_names: Annotated[TupleOf[AlternativeName], RelationshipDef("IgdbAlternativeName.id")] = ()
+    bundles: Annotated[TupleOf[IgdbId], RelationshipDef('IgdbGame.id')] = ()
+    collections: Annotated[TupleOf[IgdbId], RelationshipDef('IgdbGame.id')] = ()
+    dlcs: Annotated[TupleOf[IgdbId], RelationshipDef('IgdbGame.id')] = ()
+    expanded_games: Annotated[TupleOf[IgdbId], RelationshipDef('IgdbGame.id')] = ()
+    expansions: Annotated[TupleOf[IgdbId], RelationshipDef('IgdbGame.id')] = ()
     first_release_date: date | None = None
-    forks: Annotated[tuple[IgdbId, ...], ForeignKey('IgdbGame.id')] = ()
+    forks: Annotated[TupleOf[IgdbId], RelationshipDef('IgdbGame.id')] = ()
     franchise: Franchise | None = None
-    franchises: tuple[Franchise, ...] = ()
-    game_engines: tuple[GameEngine, ...] = ()
-    game_localizations: tuple[GameLocalization, ...] = ()
-    game_modes: tuple[GameMode, ...] = ()
+    franchises: Annotated[TupleOf[Franchise], RelationshipDef("IgdbFranchise.id")] = ()
+    game_engines: Annotated[TupleOf[GameEngine], RelationshipDef("IgdbGameEngine.id")] = ()
+    game_localizations: Annotated[TupleOf[GameLocalization], RelationshipDef("IgdbGameLocalization.id")] = ()
+    game_modes: Annotated[TupleOf[GameMode], RelationshipDef("IgdbGameMode.id")] = ()
     game_status: GameStatus | None = None
     game_type: GameType | None = None
-    genres: tuple[Genre, ...] = ()
-    involved_companies: tuple[InvolvedCompany, ...] = ()
-    keywords: tuple[Keyword, ...] = ()
-    language_supports: tuple[LanguageSupport, ...] = ()
-    multiplayer_modes: tuple[MultiplayerMode, ...] = ()
+    genres: Annotated[TupleOf[Genre], RelationshipDef("IgdbGenre.id")] = ()
+    involved_companies: Annotated[TupleOf[InvolvedCompany], RelationshipDef("IgdbInvolvedCompany.id")] = ()
+    keywords: Annotated[TupleOf[Keyword], RelationshipDef("IgdbKeyword.id")] = ()
+    language_supports: Annotated[TupleOf[LanguageSupport], RelationshipDef("IgdbLanguageSupport.id")] = ()
+    multiplayer_modes: Annotated[TupleOf[MultiplayerMode], RelationshipDef("IgdbMultiplayerMode.id")] = ()
     name: str
-    parent_game: Annotated[IgdbId | None, ForeignKey('IgdbGame.id')] = None
-    platforms: tuple[Platform, ...] = ()
-    player_perspectives: tuple[PlayerPerspective, ...] = ()
-    ports: Annotated[tuple[IgdbId, ...], ForeignKey('IgdbGame.id')] = ()
-    release_dates: tuple[ReleaseDate, ...] = ()
-    remakes: Annotated[tuple[IgdbId, ...], ForeignKey('IgdbGame.id')] = ()
-    remasters: Annotated[tuple[IgdbId, ...], ForeignKey('IgdbGame.id')] = ()
-    standalone_expansions: Annotated[tuple[IgdbId, ...], ForeignKey('IgdbGame.id')] = ()
-    themes: tuple[Theme, ...] = ()
+    parent_game: Annotated[IgdbId | None, ColumnDef(type=ForeignKey('IgdbGame.id'))] = None
+    platforms: Annotated[TupleOf[Platform], RelationshipDef("IgdbPlatform.id")] = ()
+    player_perspectives: Annotated[TupleOf[PlayerPerspective], RelationshipDef("IgdbPlayerPerspective.id")] = ()
+    ports: Annotated[TupleOf[IgdbId], RelationshipDef('IgdbGame.id')] = ()
+    release_dates: Annotated[TupleOf[ReleaseDate], RelationshipDef("IgdbReleaseDate.id")] = ()
+    remakes: Annotated[TupleOf[IgdbId], RelationshipDef('IgdbGame.id')] = ()
+    remasters: Annotated[TupleOf[IgdbId], RelationshipDef('IgdbGame.id')] = ()
+    standalone_expansions: Annotated[TupleOf[IgdbId], RelationshipDef('IgdbGame.id')] = ()
+    themes: Annotated[TupleOf[Theme], RelationshipDef("IgdbTheme.id")] = ()
     total_rating: float | None = None
     total_rating_count: int | None = None
     url: HttpUrl | None = None
-    version_parent: Annotated[IgdbId | None, ForeignKey('IgdbGame.id')] = None
+    version_parent: Annotated[IgdbId | None, ColumnDef(type=ForeignKey('IgdbGame.id'))] = None
     version_title: str | None = None
 
 
 DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
     "age_ratings.organization.name",
     "age_ratings.rating_category.rating",
+    "age_ratings.rating_category.organization",
     "age_ratings.rating_content_descriptions.description_type.name",
     "age_ratings.rating_content_descriptions.description",
+    "age_ratings.rating_content_descriptions.organization",
     "aggregated_rating_count",
     "aggregated_rating",
     "alternative_names.comment",
+    "alternative_names.game",
     "alternative_names.name",
     "bundles",
     "dlcs",
@@ -364,6 +699,7 @@ DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
     "franchise.name",
     "franchises.name",
     "game_engines.name",
+    "game_localizations.game",
     "game_localizations.name",
     "game_localizations.region.category",
     "game_localizations.region.identifier",
@@ -376,15 +712,18 @@ DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
     "involved_companies.company.name",
     "involved_companies.company.status.name",
     "involved_companies.developer",
+    "involved_companies.game",
     "involved_companies.porting",
     "involved_companies.publisher",
     "involved_companies.supporting",
     "keywords.name",
     "language_supports.language_support_type.name",
+    "language_supports.game",
     "language_supports.language.locale",
     "language_supports.language.name",
     "multiplayer_modes.campaigncoop",
     "multiplayer_modes.dropin",
+    "multiplayer_modes.game",
     "multiplayer_modes.lancoop",
     "multiplayer_modes.offlinecoop",
     "multiplayer_modes.offlinecoopmax",
@@ -406,6 +745,7 @@ DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
     "ports",
     "release_dates.date_format.format",
     "release_dates.date",
+    "release_dates.game",
     "release_dates.human",
     "release_dates.m",
     "release_dates.platform",
@@ -1048,7 +1388,7 @@ class IgdbIndex:
         self.by_playlist = playlists
         self.by_id: dict[IgdbId, Game] = {}
 
-        for game in itertools.chain.from_iterable(playlists.values()):
+        for game in chain.from_iterable(playlists.values()):
             self.by_id[game.id] = game
 
     @property
@@ -1111,7 +1451,7 @@ async def handle_query(args: argparse.Namespace) -> None:
                 query = Query(body)
                 async with asyncio.TaskGroup() as group:
                     tasks: list[Task[JsonValue]] = []
-                    for q in itertools.batched(query.query_pages(count), MULTIQUERY_MAX):
+                    for q in batched(query.query_pages(count), MULTIQUERY_MAX):
                         if verbose:
                             print(f"Fetching records {q[0].offset} to {q[-1].offset + q[-1].limit - 1}", file=sys.stderr)
 
@@ -1122,7 +1462,7 @@ async def handle_query(args: argparse.Namespace) -> None:
                     responses = await asyncio.gather(*tasks)
 
                 multiquery_responses = MultiqueryResponseListAdapter.validate_python(responses, extra='allow')
-                results = tuple(itertools.chain.from_iterable(multiquery_responses))
+                results = tuple(chain.from_iterable(multiquery_responses))
                 json = to_json(results, indent=2)
                 await aiofiles.stdout_bytes.write(json)
         except JSONDecodeError as e:
@@ -1153,7 +1493,7 @@ async def handle_fetch(args: argparse.Namespace) -> None:
         count = await client.count("games", playlist.query)
 
         multiqueries: list[Multiquery] = []
-        for batch in itertools.batched(playlist.query_pages(count), MULTIQUERY_MAX):
+        for batch in batched(playlist.query_pages(count), MULTIQUERY_MAX):
             multiqueries.append(Multiquery({f"{playlist.title} ({q.offset}-{q.offset + q.limit - 1})": ('games', q) for q in batch}))
 
         playlist_tasks = tuple(group.create_task(client.query("multiquery", m)) for m in multiqueries)
@@ -1163,7 +1503,7 @@ async def handle_fetch(args: argparse.Namespace) -> None:
         multiquery_responses = MultiqueryResponseListAdapter.validate_python(responses, extra='allow')
 
         games: list[GameResponse] = []
-        for r in itertools.chain.from_iterable(multiquery_responses):
+        for r in chain.from_iterable(multiquery_responses):
             if 'result' in r:
                 games.extend(r['result']) # type: ignore (because we're checking for the result key)
                 # We're not processing the returned games except to sort them,
@@ -1285,6 +1625,7 @@ __all__ = (
     "AgeRatingOrganization",
     "AlternativeName",
     "ANALOG_KEYWORD_IDS",
+    "ColumnDef",
     "Company",
     "CompanyStatus",
     "DateFormat",
@@ -1329,11 +1670,13 @@ __all__ = (
     "Query",
     "QueryClient",
     "Region",
+    "RelationshipDef",
     "ReleaseDate",
     "ReleaseDateRegion",
     "ReleaseDateStatus",
     "RUMBLE_KEYWORD_IDS",
     "SortDirection",
+    "SchemaDef",
     "Theme",
 )
 
