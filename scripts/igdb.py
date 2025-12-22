@@ -233,8 +233,8 @@ ModelsByType = Mapping[type["DatabaseModel"], Iterable["DatabaseModel"]]
 class DatabaseModel(BaseModel, ABC, frozen=True):
     __tablename__: ClassVar[str]
 
-    @cache
     @classmethod
+    @cache
     def pk_columns(cls) -> dict[str, ColumnDef]:
         """
         Returns a dictionary of primary key columns for the model.
@@ -250,8 +250,8 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
 
         return result
 
-    @cache
     @classmethod
+    @cache
     def relationship_columns(cls) -> dict[str, RelationshipDef]:
         """
         Gets all RelationshipDef instances from this model type's fields,
