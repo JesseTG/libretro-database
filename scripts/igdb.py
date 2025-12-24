@@ -306,26 +306,24 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
 
 
     @cached_property
-    def nested_models(self) -> ModelsByType:
+    def nested_models(self) -> frozenset["DatabaseModel"]:
         """
-        Returns a dictionary mapping DatabaseModel types to lists of nested objects of that type.
+        Returns a set of all nested DatabaseModel instances referenced by this model's fields,
+        excluding itself.
         """
-        result: dict[type[DatabaseModel], set[DatabaseModel]] = defaultdict(set)
-
+        models: set[DatabaseModel] = set()
         for field_name in type(self).model_fields:
             match getattr(self, field_name):
-                case IgdbObject() as obj:
-                    result[type(obj)].add(obj)
-                    for nested_type, nested_objs in obj.nested_models.items():
-                        result[nested_type].update(nested_objs)
+                case DatabaseModel() as obj:
+                    models.add(obj)
+                    models.update(obj.nested_models)
                 case [*items]:
-                    objects = (i for i in items if isinstance(i, IgdbObject))
+                    objects = (i for i in items if isinstance(i, DatabaseModel))
                     for obj in objects:
-                        result[type(obj)].add(obj)
-                        for nested_type, nested_objs in obj.nested_models.items():
-                            result[nested_type].update(nested_objs)
+                        models.add(obj)
+                        models.update(obj.nested_models)
 
-        return dict(result)
+        return frozenset(models)
 
 IgdbId = NewType('IgdbId', int)
 IgdbPrimaryId = Annotated[IgdbId, ColumnDef(type=sqlalchemy.Integer, primary_key=True)]

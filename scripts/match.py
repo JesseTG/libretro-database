@@ -619,67 +619,24 @@ async def insert_igdb_games(db: AsyncEngine, pool: Pool, metadata: MetaData, pla
     async for (title, games) in playlist_iterator:
         # Collect all unique objects to insert
 
-        types: dict[type[IgdbObject], Iterable[IgdbObject]] = {}
-
-        # TODO: Collect relationship tables
-        relationships: dict[tuple[type[IgdbObject], type[IgdbObject]], set[tuple[IgdbId, IgdbId]]] = {}
-
-        age_ratings = tuple(chain.from_iterable(g.age_ratings for g in games))
-        age_rating_content_descriptions = tuple(chain.from_iterable(
-            r.rating_content_descriptions for r in age_ratings
-        ))
-        types[AgeRating] = age_ratings
-        types[AgeRatingOrganization] = (r.organization for r in age_ratings)
-        types[AgeRatingCategory] = (r.rating_category for r in age_ratings)
-        types[AgeRatingContentDescriptionV2] = age_rating_content_descriptions
-        types[AgeRatingContentDescriptionType] = (d.description_type for d in age_rating_content_descriptions)
-        types[AlternativeName] = chain.from_iterable(g.alternative_names for g in games)
-        types[Franchise] = chain(
-            (g.franchise for g in games if g.franchise), # The game's primary franchise
-            chain.from_iterable(g.franchises for g in games) # Additional franchises
+        # Aggregate all nested models from all games in the playlist
+        nested_models = map_reduce(
+            chain(games, chain.from_iterable(g.nested_models for g in games)),
+            lambda model: type(model),
+            None,
+            frozenset
         )
-        types[GameEngine] = chain.from_iterable(g.game_engines for g in games)
-        types[GameLocalization] = chain.from_iterable(g.game_localizations for g in games)
-        types[GameMode] = chain.from_iterable(g.game_modes for g in games)
-        types[GameStatus] = (g.game_status for g in games if g.game_status)
-        types[GameType] = (g.game_type for g in games if g.game_type)
-        types[Genre] = chain.from_iterable(g.genres for g in games)
-
-        involved_companies = tuple(chain.from_iterable(g.involved_companies for g in games))
-        types[InvolvedCompany] = involved_companies
-        types[Company] = (c.company for c in involved_companies)
-        types[CompanyStatus] = (c.company.status for c in involved_companies if c.company.status)
-        types[Keyword] = chain.from_iterable(g.keywords for g in games)
-
-        language_supports = tuple(chain.from_iterable(g.language_supports for g in games))
-        types[LanguageSupport] = language_supports
-        types[Language] = (ls.language for ls in language_supports)
-        types[LanguageSupportType] = (ls.language_support_type for ls in language_supports)
-        types[MultiplayerMode] = chain.from_iterable(g.multiplayer_modes for g in games)
-
-        platforms = tuple(chain.from_iterable(g.platforms for g in games))
-        types[Platform] = platforms
-        types[PlatformFamily] = (p.platform_family for p in platforms if p.platform_family)
-        types[PlatformType] = (p.platform_type for p in platforms if p.platform_type)
-        types[PlayerPerspective] = chain.from_iterable(g.player_perspectives for g in games)
-
-        release_dates = tuple(chain.from_iterable(g.release_dates for g in games))
-        types[ReleaseDate] = release_dates
-        types[DateFormat] = (rd.date_format for rd in release_dates)
-        types[ReleaseDateRegion] = (rd.release_region for rd in release_dates)
-        types[ReleaseDateStatus] = (rd.status for rd in release_dates if rd.status)
-        types[Theme] = chain.from_iterable(g.themes for g in games)
-        types[Game] = games
-
         async with db.begin() as tx:
-            async def insert_many(table_name: str, objects: Iterable[BaseModel]) -> None:
+            for (model_type, models) in nested_models.items():
+                assert model_type.__tablename__ in metadata.tables, f"Model type '{model_type.__name__}' has no corresponding table in metadata"
+
                 await tx.execute(
-                    insert(metadata.tables[table_name]).prefix_with("OR IGNORE"),
+                    insert(metadata.tables[model_type.__tablename__]).prefix_with("OR IGNORE"),
                     # Insert game records, ignoring conflicts because
                     # the same game (or franchise, or genre, or other object)
                     # may appear in multiple playlists
 
-                    [obj.model_dump(context="row") for obj in objects]
+                    [m.model_dump(context="row") for m in models]
                     # BaseModel.model_dump serializes the model to a dict,
                     # and IgdbObject in particular defines custom serialization behavior
                     # that's activated by passing a context value of "row".
