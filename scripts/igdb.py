@@ -18,6 +18,7 @@ from functools import cache, cached_property
 from itertools import chain
 from json import JSONDecodeError
 from pathlib import Path
+from types import MappingProxyType
 from typing import Annotated, Any, ClassVar, ForwardRef, Never, NotRequired, Optional, Literal, NewType, Required, Self, TypeGuard, TypedDict, cast, overload
 
 import aiofiles
@@ -31,7 +32,7 @@ from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
 from httpx import HTTPStatusError, Response, Timeout
 from more_itertools import batched, one, only
-from pydantic import BaseModel, BeforeValidator, FieldSerializationInfo, HttpUrl, SerializerFunctionWrapHandler, TypeAdapter, JsonValue, field_serializer
+from pydantic import BaseModel, BeforeValidator, FieldSerializationInfo, HttpUrl, PlainSerializer, SerializerFunctionWrapHandler, TypeAdapter, JsonValue, field_serializer
 from pydantic_core import from_json, to_json
 from pydantic_extra_types.country import CountryNumericCode
 from sqlalchemy import Column, ForeignKey, MetaData, Table
@@ -118,14 +119,6 @@ class ColumnDef:
         nullable = self.nullable if self.nullable is not None else includes_none(annotation)
         coltype = self.coltype or get_column_type(annotation)
 
-        info = self.kwargs.get('info', {}) | {
-            'model_type': model_type,
-            'field_info': field,
-        }
-
-        # Exclude 'info' from kwargs since we handled it above
-        kwargs = {k: v for k, v in self.kwargs.items() if k != 'info'}
-
         return Column(
             self.name or field_name,
             coltype,
@@ -133,8 +126,7 @@ class ColumnDef:
             index=self.index,
             unique=self.unique,
             nullable=nullable,
-            info=info,
-            **kwargs,
+            **self.kwargs,
         )
 
 @overload
@@ -191,44 +183,71 @@ def is_non_string_iterable_type(t: type[Any]) -> TypeGuard[type[Iterable[Any]]]:
 
     return False
 
-
 @dataclass(eq=True)
 class RelationshipDef:
+    """
+    Composite foreign keys are not yet supported.
+    """
+
     foreign_key: ForeignKey
-    kwargs: dict[str, Any]
+    foreign_colname: str
 
-    def __init__(self, foreign_key: ForeignKey | str, **kwargs) -> None:
-        self.foreign_key = foreign_key if isinstance(foreign_key, ForeignKey) else ForeignKey(foreign_key)
-        self.kwargs = kwargs
+    def __init__(self,
+        spec: ForeignKey | str | type["DatabaseModel"] | ForwardRef,
+        foreign_colname: str | None = None,
+        **kwargs
+    ) -> None:
+        match spec:
+            case ForeignKey():
+                self.foreign_key = spec
+                self.foreign_colname = foreign_colname or "foreign_pk"
+            case str() as s:
+                self.foreign_key = ForeignKey(s, **kwargs)
+                self.foreign_colname = foreign_colname or "foreign_pk"
+            case ForwardRef():
+                foreign_type = eval_expression(spec.__forward_arg__, __name__)
+                if not issubclass(foreign_type, DatabaseModel):
+                    raise TypeError(f"{spec} does not refer to a DatabaseModel subclass")
 
-    def get_table_name(self, parent_type: type["DatabaseModel"], parent_field_name: str) -> str:
-        return f"{parent_type.__tablename__}_{parent_field_name}"
+                # one() raises if its argument doesn't have exactly one item
+                foreign_pk_colname = one(foreign_type.pk_columns())
+                self.foreign_key = ForeignKey(f"{foreign_type.__tablename__}.{foreign_pk_colname}", **kwargs)
+                self.foreign_colname = foreign_colname or f"{foreign_type.__tablename__}_{foreign_pk_colname}"
+            case type() as foreign_type if issubclass(foreign_type, DatabaseModel):
+                foreign_pk_colname = one(foreign_type.pk_columns())
+                self.foreign_key = ForeignKey(f"{foreign_type.__tablename__}.{foreign_pk_colname}", **kwargs)
+                self.foreign_colname = foreign_colname or f"{foreign_type.__tablename__}_{foreign_pk_colname}"
+            case _:
+                raise TypeError(f"Expected a ForeignKey, str, ForwardRef, or type[DatabaseModel]: got {type(spec)} ({spec})")
 
-    def create_table(self, parent_type: type["DatabaseModel"], parent_field_name: str, metadata: MetaData) -> Table:
-        parent_tablename = parent_type.__tablename__
-        parent_pk_col_defs = parent_type.pk_columns().keys()
+    def create_table(self, metadata: MetaData, parent_type: type["DatabaseModel"], parent_field_name: str) -> Table:
+        """
+        Creates a relationship table according to the following conventions:
+
+        - Composite foreign key relationships aren't supported, an exception will be raised if attempted
+        - The table is named `<parent tablename>_<field name>`
+        - The parent's primary key is referenced as a foreign key column named `<parent tablename>_<parent pk column name>`
+        - The child's primary key column is referenced as a foreign key column named `<child_tablename>_<field name>`
+          (unless `foreign_colname` was specified in __init__(), in which case that name is used instead)
+        """
+        parent_pk_colname = one(parent_type.pk_columns())
 
         return Table(
-            self.get_table_name(parent_type, parent_field_name),
+            f"{parent_type.__tablename__}_{parent_field_name}",
             metadata,
-            *(
-                Column(
-                    f"{parent_tablename}_{colname}",
-                    ForeignKey(f"{parent_tablename}.{colname}"),
-                    primary_key=True
-                )
-                for colname in parent_pk_col_defs
+            Column(
+                f"{parent_type.__tablename__}_{parent_pk_colname}",
+                ForeignKey(f"{parent_type.__tablename__}.{parent_pk_colname}"),
+                primary_key=True
             ),
             Column(
-                parent_field_name,
+                self.foreign_colname,
                 self.foreign_key,
                 primary_key=True
             ),
         )
 
 SchemaDef = ColumnDef | RelationshipDef
-
-ModelsByType = Mapping[type["DatabaseModel"], Iterable["DatabaseModel"]]
 
 class DatabaseModel(BaseModel, ABC, frozen=True):
     __tablename__: ClassVar[str]
@@ -252,7 +271,7 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
 
     @classmethod
     @cache
-    def relationship_columns(cls) -> dict[str, RelationshipDef]:
+    def relationship_defs(cls) -> dict[str, RelationshipDef]:
         """
         Gets all RelationshipDef instances from this model type's fields,
         as defined in their Annotated metadata.
@@ -282,24 +301,31 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
         main_table = Table(cls.__tablename__, metadata)
         relationship_tables: list[Table] = []
 
-        for colname, field in cls.model_fields.items():
+        for field_name, field in cls.model_fields.items():
             annotation: type[Any] | None = field.annotation
             if annotation is None:
-                raise TypeError(f"{cls.__name__}.{colname!r} has no type annotation, cannot generate column definition")
+                raise TypeError(f"{cls.__name__}.{field_name!r} has no type annotation, cannot generate column definition")
 
+            unwrapped_type = unwrap_type(annotation)
             match only(m for m in field.metadata if isinstance(m, SchemaDef)):
                 # only() raises if its argument has more than one item
                 case ColumnDef() as coldef:
                     # Create a Column with the specified ColumnDef
-                    main_table.append_column(coldef.get_schema(cls, colname))
+                    main_table.append_column(coldef.get_schema(cls, field_name))
                 case RelationshipDef() as reldef:
                     # An explicit RelationshipDef was provided, so use it
-                    relationship_tables.append(reldef.create_table(cls, colname, metadata))
+                    relationship_tables.append(reldef.create_table(metadata, cls, field_name))
+                case None if is_non_string_iterable_type(unwrapped_type):
+                    # This field is a collection of related DatabaseModel instances
+                    arg_type = get_args(unwrapped_type)[0]
+                    unwrapped_arg_type = unwrap_type(arg_type)
+                    reldef = RelationshipDef(unwrapped_arg_type)
+                    relationship_tables.append(reldef.create_table(metadata, cls, field_name))
                 case None:
                     # No SchemaDef was provided, create a ColumnDef with defaults
-                    main_table.append_column(ColumnDef().get_schema(cls, colname))
+                    main_table.append_column(ColumnDef().get_schema(cls, field_name))
                 case other:
-                    raise TypeError(f"Expected zero or one SchemaDef on {cls.__name__}.{colname!r}, got {other}")
+                    raise TypeError(f"Expected zero or one SchemaDef on {cls.__name__}.{field_name!r}, got {other}")
 
 
         return (main_table, *relationship_tables)
@@ -324,6 +350,57 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
                         models.update(obj.nested_models)
 
         return frozenset(models)
+
+    @cached_property
+    def relationships(self) -> Mapping[str, list[dict[str, Any]]]:
+        """
+        Returns a dictionary whose keys are field names representing relationships,
+        and whose values are sets of dicts suitable for relationship tables.
+        These dicts include the foreign key mappings for this object and the related objects.
+
+        This property is not recursive, i.e. it does not include relationships from nested models.
+        """
+        results: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        cls = type(self)
+        pk_coldefs = cls.pk_columns()
+        reldefs = cls.relationship_defs()
+
+        for field_name, field_info in cls.model_fields.items():
+            if field_name not in reldefs:
+                continue
+
+            reldef = reldefs[field_name]
+            foreign_colname = reldef.foreign_colname
+
+            match getattr(self, field_name):
+                case DatabaseModel() as related_obj:
+                    mapping: dict[str, Any] = {}
+                    for pk_field_name, pk_coldef in pk_coldefs.items():
+                        mapping[f"{cls.__tablename__}_{pk_coldef.name or pk_field_name}"] = getattr(self, pk_field_name)
+
+                    related_pk_coldefs = type(related_obj).pk_columns()
+                    for related_pk_field_name, related_pk_coldef in related_pk_coldefs.items():
+                        mapping[foreign_colname] = getattr(related_obj, related_pk_field_name)
+
+                    results[field_name].append(mapping)
+                case [*related_objs]:
+                    for related_obj in related_objs:
+                        if not isinstance(related_obj, DatabaseModel):
+                            continue
+
+                        mapping = {}
+                        for pk_field_name, pk_coldef in pk_coldefs.items():
+                            mapping[f"{cls.__tablename__}_{pk_coldef.name or pk_field_name}"] = getattr(self, pk_field_name)
+
+                        related_pk_coldefs = type(related_obj).pk_columns()
+                        for related_pk_field_name, related_pk_coldef in related_pk_coldefs.items():
+                            mapping[foreign_colname] = getattr(related_obj, related_pk_field_name)
+
+                        results[field_name].append(mapping)
+                case _:
+                    continue
+
+        return MappingProxyType(results)
 
 IgdbId = NewType('IgdbId', int)
 IgdbPrimaryId = Annotated[IgdbId, ColumnDef(type=sqlalchemy.Integer, primary_key=True)]
@@ -352,8 +429,13 @@ def country_numeric_code_validator(value: Any) -> CountryNumericCode:
         case _:
             raise ValueError(f"Expected an int, str, or CountryNumericCode; got {type(value).__name__}")
 
+class RelationshipSpecifier(TypedDict):
+    self_colname: str
+    related_colname: str
+
 type CoercedCountryCode = Annotated[CountryNumericCode, BeforeValidator(country_numeric_code_validator)]
-type IgdbObjectSerializeMode = Literal['default', 'row'] | None
+type CoercedHttpUrl = Annotated[HttpUrl, PlainSerializer(str, str)]
+type IgdbObjectSerializeMode = Literal['row'] | None
 
 
 class IgdbObject(DatabaseModel, ABC, frozen=True):
@@ -362,66 +444,26 @@ class IgdbObject(DatabaseModel, ABC, frozen=True):
 
     @field_serializer('*', mode='wrap')
     def _serialize_field(self, value: Any, handler: SerializerFunctionWrapHandler, info: FieldSerializationInfo[IgdbObjectSerializeMode]):
-        if info.context in (None, 'default'):
-            # Serialize the model the way Pydantic usually does
-            return handler(value)
-
-        if info.context == 'row':
-            # If serializing for a database row, convert nested models to their IDs
-            match value:
-                case IgdbObject():
-                    # If this is a nested IgdbObject, serialize it as its ID
-                    return value.id
-
-                case HttpUrl():
-                    # If this is an HttpUrl, serialize it as a str
-                    return str(value)
-
-                case []:
-                    # If this is an empty sequence, return it as-is (common-case optimization)
-                    assert len(value) == 0
-                    return value
-
-                case [*rest] if all(isinstance(item, IgdbObject) for item in rest):
-                    # If this is a tuple of IgdbObjects, serialize it as a tuple of their IDs
-                    return tuple(item.id for item in rest)
-
-                case _:
-                    # Otherwise, run the default serializer to handle other types
-                    return handler(value)
-
-        raise ValueError(f"Expected a serialization mode of 'default', 'id', or None; got {info.context!r}")
-
-    @cached_property
-    def child_relationships(self) -> Mapping[str, tuple[IgdbId, ...]]:
-        """
-        Returns a dictionary mapping field names to tuples of IgdbIds,
-        for all fields that represent one-to-many relationships.
-
-        This is used when serializing the model for database insertion,
-        to extract the IDs of related objects.
-        """
-        model_type = type(self)
-        fields = model_type.model_fields
-
-        rels: dict[str, tuple[IgdbId, ...]] = {}
-
-        for field_name, field in fields.items():
-            if not (annotation := field.annotation):
-                continue
-
-            if not is_non_string_iterable_type(annotation):
-                continue
-
-            match getattr(self, field_name):
-                case None:
-                    continue
-                case [*items]:
-                    rels[field_name] = tuple(i.id if isinstance(i, IgdbObject) else i for i in items)
-                case other:
-                    raise TypeError(f"Expected {type(self).__name__}.{field_name!r} to be a non-string iterable instance, got {type(other).__name__}")
-
-        return rels
+        match (info.context, value):
+            case (None | 'default', _):
+                # If no context is given, serialize the field as usual
+                return handler(value)
+            case ('row', IgdbObject()):
+                # If serializing for a database row, serialize nested IgdbObjects as their IDs
+                return value.id
+            case ('row', []):
+                # If serializing for a database row, return empty sequences as-is
+                # (common-case optimization)
+                assert len(value) == 0
+                return value
+            case ('row', [*rest]) if all(isinstance(item, IgdbObject) for item in rest):
+                # If serializing for a database row, serialize tuples of IgdbObjects as tuples of their IDs
+                return tuple(item.id for item in rest)
+            case ('row', _):
+                # Otherwise, run the default serializer to handle other types
+                return handler(value)
+            case (_, _):
+                raise ValueError(f"Expected a serialization context value of 'default', 'row', or None; got {info.context!r}")
 
 class AgeRatingOrganization(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbAgeRatingOrganization"
@@ -671,7 +713,7 @@ class Game(IgdbObject, frozen=True):
     themes: Annotated[TupleOf[Theme], RelationshipDef("IgdbTheme.id")] = ()
     total_rating: float | None = None
     total_rating_count: int | None = None
-    url: HttpUrl | None = None
+    url: CoercedHttpUrl | None = None
     version_parent: Annotated[IgdbId | None, ColumnDef(type=ForeignKey('IgdbGame.id'))] = None
     version_title: str | None = None
 

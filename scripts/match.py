@@ -12,27 +12,19 @@ import sys
 from asyncio import TaskGroup
 from collections.abc import Callable, Collection, Iterable, Iterator, Mapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
-from datetime import date, datetime
 from io import StringIO
 from itertools import chain
 from pathlib import Path
 from pprint import pprint
-from types import EllipsisType
-from typing import Any, ForwardRef, NamedTuple, NewType, Optional, get_args
+from typing import NamedTuple, Optional
 
 import aiofiles
-import sqlalchemy
 
 from aioitertools.asyncio import as_completed
 from aiomultiprocess import Pool
-from pydantic import BaseModel, HttpUrl
-from pydantic_extra_types.country import CountryNumericCode
-from sqlalchemy import Column, ForeignKey, Index, MetaData, PrimaryKeyConstraint, Table, UniqueConstraint, text
-from sqlalchemy.dialects.sqlite import insert
+from more_itertools import map_reduce
+from sqlalchemy import MetaData, insert, text
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
-from sqlalchemy.types import TypeEngine
-from sqlalchemy.util.typing import GenericProtocol, de_optionalize_union_types, eval_expression, flatten_newtype, includes_none, is_fwd_ref, is_generic, is_literal, is_newtype, TypeAliasType, is_pep695, pep695_values
-
 
 from dats import Game as DatGame, load_dats, get_existing_dat_files, ClrMamePro, GameDataListCodec
 from igdb import Game as IgdbGame, load_game_file
@@ -350,140 +342,6 @@ def get_target_dat_paths(outpath: Path, playlist_titles: Iterable[str]) -> Itera
     for title in playlist_titles:
         yield outpath / f"{title}.dat"
 
-type AnnotationScanType = type[Any] | str | ForwardRef | NewType | TypeAliasType | GenericProtocol[Any]
-
-def flatten_type(t: AnnotationScanType) -> type:
-    if includes_none(t):
-        return flatten_type(de_optionalize_union_types(t))
-
-    if is_pep695(t):
-        # If this is a TypeAliasType as defined by PEP 695...
-        values = pep695_values(t)
-        if len(values) != 1:
-            raise NotImplementedError(f"PEP 695 TypeAliasType {t} with multiple different argument types ({values}) is not supported")
-
-        return flatten_type(values.pop())
-
-    if is_literal(t):
-        args = get_args(t)
-        literal_types = set(map(type, args))
-        if len(literal_types) > 1:
-            raise NotImplementedError(f"Literal {t} with multiple different argument types ({literal_types}) is not supported")
-
-        return type(args[0])
-
-    if is_newtype(t):
-        return flatten_newtype(t)
-
-    if is_generic(t):
-        return t.__origin__
-
-    if is_fwd_ref(t, check_generic=True, check_for_plain_string=True):
-        return flatten_type(eval_expression(t.__forward_arg__, __name__))
-
-    if isinstance(t, str):
-        return flatten_type(eval_expression(t, __name__))
-
-    assert isinstance(t, type), f"Unexpected type annotation: {t} ({type(t)})"
-    return t
-
-
-def define_tables() -> MetaData:
-    model_types = (
-        *IGDB_OBJECT_TYPES,
-    )
-
-    metadata = MetaData()
-    def get_column_type(annotation: AnnotationScanType) -> type[TypeEngine] | ForeignKey | tuple[type, EllipsisType]:
-        field_type = flatten_type(annotation)
-
-        if field_type == bool:
-            return sqlalchemy.Boolean
-
-        if issubclass(field_type, (int, CountryNumericCode)):
-            return sqlalchemy.Integer
-
-        if issubclass(field_type, (str, HttpUrl)):
-            return sqlalchemy.String
-
-        if field_type == datetime:
-            return sqlalchemy.DateTime
-
-        if field_type == date:
-            return sqlalchemy.Date
-
-        if field_type == float:
-            return sqlalchemy.Float
-
-        if issubclass(field_type, BaseModel):
-            # If this field refers to a specific model, create a ForeignKey to that model's table
-            tablename = getattr(field_type, '__tablename__', field_type.__name__)
-            foreign_fields = field_type.model_fields
-            pk_fields = tuple(fname for (fname, f) in foreign_fields.items() if PrimaryKeyConstraint in f.metadata)
-            if len(pk_fields) != 1:
-                # TODO: Add more useful information
-                raise TypeError(f"Can't define composite foreign keys on a single field, add constraints manually")
-
-            return ForeignKey(f"{tablename}.{pk_fields[0]}")
-
-        if issubclass(field_type, tuple):
-            # If the field type annotation is a parameterized tuple (e.g. Tuple[SomeModel, ...])
-            args = get_args(annotation)
-            if not (len(args) == 2 and args[1] is ...):
-                raise NotImplementedError(f"To generate a relationship table, tuple types must have one type and Ellipsis, got: {annotation}")
-
-            # TODO: Return a special marker indicating this is a relationship table
-            return args
-
-        # TODO: Add guidance on adding support for more types
-        raise NotImplementedError(f"Unsupported field type: {field_type}")
-
-    for t in model_types:
-        tablename = getattr(t, '__tablename__', t.__name__)
-        table = Table(tablename, metadata)
-
-        for (colname, field) in t.model_fields.items():
-            annotation: type[Any] | None = field.annotation
-            if not annotation:
-                raise TypeError(f"Field '{colname}' in model '{t.__name__}' must have a Pydantic-recognized type annotation to generate a column for it")
-
-            column_type = get_column_type(annotation)
-            if isinstance(column_type, tuple):
-                # If this field represents a collection (i.e. a one-to-many relationship)...
-                foreign_keys = {m for m in field.metadata if isinstance(m, ForeignKey)}
-                tuple_args = get_args(annotation)
-                num_foreign_keys = len(foreign_keys)
-                if num_foreign_keys == 1:
-                    # If there's an explicit ForeignKey constraint, use that
-                    child_id_constraint = foreign_keys.pop()
-                else:
-                    child_type = column_type[0]
-                    child_tablename = getattr(child_type, '__tablename__', child_type.__name__)
-                    child_id_constraint = ForeignKey(f"{child_tablename}.id") # TODO: Don't assume the pk name, find it
-
-                relationship = Table(
-                    f"{tablename}_{colname}",
-                    metadata,
-                    Column(f"{tablename}_id", ForeignKey(f"{tablename}.id"), primary_key=True),
-                    Column(f"{tablename}_{colname}", child_id_constraint, primary_key=True)
-                )
-            else:
-                table.append_column(
-                    Column(
-                        colname,
-                        column_type,
-                        primary_key=(PrimaryKeyConstraint in field.metadata),
-                        nullable=includes_none(annotation),
-                        unique=(UniqueConstraint in field.metadata),
-                        index=(Index in field.metadata),
-                    )
-                )
-            # TODO: Add support for custom table-level constraints
-            #   with a __constraints__ attribute on the model
-            #   (or something more Pydantic-idiomatic)
-
-    return metadata
-
 async def handle_generate(args: argparse.Namespace) -> None:
     """Handle the generate subcommand."""
 
@@ -626,6 +484,12 @@ async def insert_igdb_games(db: AsyncEngine, pool: Pool, metadata: MetaData, pla
             None,
             frozenset
         )
+        relationships = map_reduce(
+            chain.from_iterable(g.relationships.items() for g in games),
+            lambda rels: rels[0], # key is the field name
+            lambda rels: rels[1], # value is the set of relationships
+            lambda entries: tuple(chain.from_iterable(entries)) # group by field name, aggregate unique relationships
+        )
         async with db.begin() as tx:
             for (model_type, models) in nested_models.items():
                 assert model_type.__tablename__ in metadata.tables, f"Model type '{model_type.__name__}' has no corresponding table in metadata"
@@ -642,16 +506,24 @@ async def insert_igdb_games(db: AsyncEngine, pool: Pool, metadata: MetaData, pla
                     # that's activated by passing a context value of "row".
                 )
 
-                # TODO: Insert relationships
+            for (field_name, rels) in relationships.items():
+                tablename = f"{IgdbGame.__tablename__}_{field_name}"
+                assert tablename in metadata.tables, f"Relationship field '{field_name}' has no corresponding table in metadata"
 
-            for (obj_type, objs) in types.items():
-                await insert_many(obj_type.__tablename__, objs)
+                await tx.execute(
+                    insert(metadata.tables[tablename]).prefix_with("OR IGNORE"),
+                    rels
+                )
 
 
             await tx.commit()
             # Commit the session to persist all added objects
 
         print(f"Inserted {len(games)} IGDB games for playlist '{title}' into database")
+
+MODEL_TYPES = (
+    *IGDB_OBJECT_TYPES,
+)
 
 async def handle_index(args: argparse.Namespace) -> None:
     """Handle the index subcommand."""
@@ -680,7 +552,10 @@ async def handle_index(args: argparse.Namespace) -> None:
         connect_args={"check_same_thread": False},
     )
 
-    metadata = define_tables()
+    metadata = MetaData()
+    for model_type in MODEL_TYPES:
+        model_type.create_tables(metadata)
+
     # Configure pragmas for better performance
     # Note: These need to be set after engine creation
     async with db.connect() as connection:
