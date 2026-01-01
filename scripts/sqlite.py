@@ -13,13 +13,14 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from functools import cache, cached_property
 from types import MappingProxyType
-from typing import Any, ClassVar, ForwardRef, Never, NewType, TypeGuard, overload
+from typing import Annotated, Any, ClassVar, ForwardRef, Never, NewType, TypeGuard, overload
 
 import sqlalchemy
 
 from frozendict import frozendict
 from more_itertools import one, only
-from pydantic import BaseModel, HttpUrl, JsonValue, PlainSerializer, ValidatorFunctionWrapHandler, WrapSerializer, WrapValidator
+from pydantic import BaseModel, HttpUrl, JsonValue, PlainSerializer, ValidatorFunctionWrapHandler, WrapValidator
+from pydantic.fields import ComputedFieldInfo, FieldInfo
 from pydantic_extra_types.country import CountryNumericCode
 from sqlalchemy import Column, ForeignKey, MetaData, Table
 from sqlalchemy.sql.base import SchemaEventTarget
@@ -28,18 +29,18 @@ from sqlalchemy.util.typing import (GenericProtocol, TypeAliasType,
                                     de_optionalize_union_types,
                                     eval_expression, flatten_newtype, get_args,
                                     includes_none, is_fwd_ref, is_generic,
-                                    is_literal, is_newtype, is_pep695)
+                                    is_literal, is_newtype, is_pep593, is_pep695, make_union_type)
 
 type AnnotationScanType = type[Any] | str | ForwardRef | NewType | TypeAliasType | GenericProtocol[Any]
 type TupleOf[T] = tuple[T, ...]
 
 @overload
-def get_column_type(annotation: None, module_name: str | None = ..., globalns: dict[str, Any] | None = ...) -> Never: ...
+def get_default_column_type(annotation: None, module_name: str | None = ..., globalns: dict[str, Any] | None = ...) -> Never: ...
 
 @overload
-def get_column_type(annotation: AnnotationScanType, module_name: str | None = ..., globalns: dict[str, Any] | None = ...) -> type[TypeEngine] | ForeignKey: ...
+def get_default_column_type(annotation: AnnotationScanType, module_name: str | None = ..., globalns: dict[str, Any] | None = ...) -> type[TypeEngine] | ForeignKey: ...
 
-def get_column_type(annotation: AnnotationScanType | None, module_name: str | None = None, globalns: dict[str, Any] | None = None) -> type[TypeEngine] | ForeignKey:
+def get_default_column_type(annotation: AnnotationScanType | None, module_name: str | None = None, globalns: dict[str, Any] | None = None) -> type[TypeEngine] | ForeignKey:
     """
     Maps a Pydantic type annotation to a SQLAlchemy column type.
     """
@@ -71,7 +72,11 @@ def get_column_type(annotation: AnnotationScanType | None, module_name: str | No
 
     if issubclass(field_type, DatabaseModel):
         # If this field refers to a specific model, create a ForeignKey to that model's table
-        colname = one(field_type.pk_columns())
+        colname = one(
+            field_type.pk_columns(),
+            too_short=ValueError(f"Cannot create a default ForeignKey for {field_type.__name__} because it has no primary key columns (try defining one explicitly)"),
+            too_long=ValueError(f"Cannot create a default ForeignKey for {field_type.__name__} because it has multiple primary key columns (composite foreign keys are not supported yet)"),
+        )
         # one() raises if its argument doesn't have exactly one item
 
         return ForeignKey(f"{field_type.__tablename__}.{colname}")
@@ -87,8 +92,12 @@ def is_non_string_iterable_type(t: type[Any]) -> TypeGuard[type[Iterable[Any]]]:
 
     return False
 
-
-def unwrap_type(t: AnnotationScanType, name: str | None = None, globalns: dict[str, Any] | None = None) -> type:
+# TODO: I need to simplify this
+def unwrap_type(
+    t: AnnotationScanType,
+    name: str | None = None,
+    globalns: dict[str, Any] | None = None,
+) -> type:
     """
     Strips away literals, optionals, newtypes, generics, and forward references.
 
@@ -99,35 +108,43 @@ def unwrap_type(t: AnnotationScanType, name: str | None = None, globalns: dict[s
     if globalns is None:
         globalns = sys.modules[name or __name__].__dict__
 
-    if includes_none(t):
-        return unwrap_type(de_optionalize_union_types(t), name, globalns)
+    match t:
+        case type() as concrete_type:
+            return concrete_type
+        case optional if includes_none(t):
+            # If this type can have a value of None...
+            # (For most purposes you can think of it as Optional[], but
+            # Python has several ways to express that.)
+            return unwrap_type(de_optionalize_union_types(t), name, globalns)
+        case alias if is_pep695(alias) and (args := get_args(alias)):
+            # If this is a type alias with parameters...
+            return unwrap_type(args[0], name, globalns)
+        case alias if is_pep695(alias):
+            # If this is a plain type alias...
+            return unwrap_type(alias.__value__, name, globalns)
+        case literal if is_literal(literal):
+            # If this is a Literal[...], unwrap to get the argument types
+            args = get_args(literal)
+            literal_types = set(map(type, args))
 
-    if is_pep695(t):
-        # If this is a TypeAliasType as defined by PEP 695...
-        return unwrap_type(t.__value__, name, globalns)
+            return type(args[0]) if len(literal_types) == 1 else make_union_type(*literal_types)
+        case annotation if is_pep593(annotation):
+            # If this is Annotated[T, ...], unwrap to get T
+            args = get_args(annotation)
+            return unwrap_type(args[0], name, globalns)
+        case newtype if is_newtype(newtype):
+            # If this is a newtype, unwrap to get the underlying type
+            return unwrap_type(flatten_newtype(newtype))
+        case generic if is_generic(generic):
+            # If this is a generic type (likely a collection), unwrap to get the first argument
+            return unwrap_type(get_args(generic)[0], name, globalns)
+        case ref if is_fwd_ref(ref, check_generic=True, check_for_plain_string=True):
+            return unwrap_type(eval_expression(ref.__forward_arg__, name or __name__, locals_=globalns), name, globalns)
+        case str() as type_expression:
+            return unwrap_type(eval_expression(type_expression, name or __name__, locals_=globalns), name, globalns)
 
-    if is_literal(t):
-        args = get_args(t)
-        literal_types = set(map(type, args))
-        if len(literal_types) > 1:
-            raise NotImplementedError(f"Literal {t} with multiple different argument types ({literal_types}) is not supported")
-
-        return type(args[0])
-
-    if is_newtype(t):
-        return flatten_newtype(t)
-
-    if is_generic(t):
-        return t.__origin__
-
-    if is_fwd_ref(t, check_generic=True, check_for_plain_string=True):
-        return unwrap_type(eval_expression(t.__forward_arg__, name or __name__, locals_=globalns), name, globalns)
-
-    if isinstance(t, str):
-        return unwrap_type(eval_expression(t, name or __name__, locals_=globalns), name, globalns)
-
-    assert isinstance(t, type), f"Unexpected type annotation: {t} ({type(t)})"
-    return t
+        case _:
+            raise TypeError(f"Unexpected type annotation: {t} ({type(t)})")
 
 
 @dataclass(kw_only=True, eq=True)
@@ -140,10 +157,11 @@ class ColumnDef:
     unique: bool | None
     nullable: bool | None
     kwargs: dict[str, Any]
+    args: tuple[Any, ...]
 
     def __init__(
             self,
-            /,
+            *args,
             name: str | None = None,
             type: type[TypeEngine] | TypeEngine | SchemaEventTarget | None = None,
             index: bool | None = None,
@@ -158,31 +176,10 @@ class ColumnDef:
         self.index = index
         self.unique = unique
         self.nullable = nullable
+        self.args = args
         self.kwargs = kwargs
 
-    def get_schema(self, model_type: type[BaseModel], field_name: str) -> Column:
-        fields = model_type.model_fields
-        if not (field := fields.get(field_name)):
-            raise KeyError(f"Model {model_type.__name__} has no field named {field_name!r}")
 
-        if not (annotation := field.annotation):
-            raise TypeError(f"{model_type.__name__}.{field_name!r} has no type annotation, cannot generate column definition")
-
-        nullable = self.nullable if self.nullable is not None else includes_none(annotation)
-        coltype = self.coltype or get_column_type(annotation, model_type.__module__, sys.modules[model_type.__module__].__dict__)
-
-        return Column(
-            self.name or field_name,
-            coltype,
-            primary_key=self.primary_key,
-            index=self.index,
-            unique=self.unique,
-            nullable=nullable,
-            **self.kwargs,
-        )
-
-
-@dataclass(eq=True)
 class RelationshipDef:
     """
     Composite foreign keys are not yet supported.
@@ -289,6 +286,57 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
         return result
 
     @classmethod
+    def create_column(cls, field_name: str, coldef: ColumnDef | None = None) -> Column:
+        """
+        Creates a SQLAlchemy Column object from a ColumnDef for this model type.
+
+        :param coldef: The ColumnDef to create the Column from.
+        :param field_name: The name of the field in the model corresponding to this column.
+        :return: A SQLAlchemy Column object.
+        """
+        field = cls.model_fields.get(field_name) or cls.model_computed_fields.get(field_name)
+        match field:
+            case FieldInfo(annotation=None):
+                raise TypeError(f"{cls.__name__}.{field_name!r} has no type annotation, cannot generate column definition")
+            case FieldInfo(annotation=annotation):
+                if not coldef:
+                    coldef = only((m for m in field.metadata if isinstance(m, ColumnDef)), default=ColumnDef())
+                nullable = coldef.nullable if coldef.nullable is not None else includes_none(annotation)
+                coltype = coldef.coltype or get_default_column_type(annotation, cls.__module__, sys.modules[cls.__module__].__dict__)
+            case ComputedFieldInfo(return_type=None):
+                raise TypeError(f"{cls.__name__}.{field_name!r} has no return type annotation, cannot generate column definition")
+            case ComputedFieldInfo(return_type=annotation) if is_pep593(annotation):
+                # Create a column for a computed field whose return type is an Annotated
+                args = get_args(annotation)
+                if not coldef:
+                    coldef = only((m for m in args if isinstance(m, ColumnDef)), default=ColumnDef())
+                return_type = args[0]
+                nullable = coldef.nullable if coldef.nullable is not None else includes_none(return_type)
+                coltype = coldef.coltype or get_default_column_type(return_type, cls.__module__, sys.modules[cls.__module__].__dict__)
+            case ComputedFieldInfo(return_type=return_type):
+                # Create a column for a computed field whose return type is not an Annotated
+                if not coldef:
+                    coldef = ColumnDef()
+
+                nullable = coldef.nullable if coldef.nullable is not None else includes_none(return_type)
+                coltype = coldef.coltype or get_default_column_type(return_type, cls.__module__, sys.modules[cls.__module__].__dict__)
+            case None:
+                raise KeyError(f"Model {cls.__name__} has no real or computed field named {field_name!r}")
+            case _:
+                raise TypeError(f"Expected FieldInfo or ComputedFieldInfo for {cls.__name__}.{field_name!r}, got {type(field)}")
+
+        return Column(
+            coldef.name or field_name,
+            coltype,
+            *coldef.args,
+            primary_key=coldef.primary_key,
+            index=coldef.index,
+            unique=coldef.unique,
+            nullable=nullable,
+            **coldef.kwargs,
+        )
+
+    @classmethod
     def create_tables(cls, metadata: MetaData) -> tuple[Table, *tuple[Table, ...]]:
         """
         Creates a SQLAlchemy Table object for this model type,
@@ -300,32 +348,50 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
         main_table = Table(cls.__tablename__, metadata)
         relationship_tables: list[Table] = []
 
-        for field_name, field in cls.model_fields.items():
-            annotation: type[Any] | None = field.annotation
-            if annotation is None:
-                raise TypeError(f"{cls.__name__}.{field_name!r} has no type annotation, cannot generate column definition")
-
+        def handle_schemadef(name: str, annotation: AnnotationScanType, defn: SchemaDef | None):
             unwrapped_type = unwrap_type(annotation, cls.__module__, sys.modules[cls.__module__].__dict__)
-            match only(m for m in field.metadata if isinstance(m, SchemaDef)):
+            match defn:
                 # only() raises if its argument has more than one item
                 case ColumnDef() as coldef:
                     # Create a Column with the specified ColumnDef
-                    main_table.append_column(coldef.get_schema(cls, field_name))
+                    main_table.append_column(cls.create_column(name, coldef))
                 case RelationshipDef() as reldef:
                     # An explicit RelationshipDef was provided, so use it
-                    relationship_tables.append(reldef.create_table(metadata, cls, field_name))
+                    relationship_tables.append(reldef.create_table(metadata, cls, name))
                 case None if is_non_string_iterable_type(unwrapped_type):
                     # This field is a collection of related DatabaseModel instances
-                    arg_type = get_args(unwrapped_type)[0]
+                    arg_type = get_args(annotation)[0]
                     unwrapped_arg_type = unwrap_type(arg_type, cls.__module__, sys.modules[cls.__module__].__dict__)
                     reldef = RelationshipDef(unwrapped_arg_type)
-                    relationship_tables.append(reldef.create_table(metadata, cls, field_name))
+                    relationship_tables.append(reldef.create_table(metadata, cls, name))
                 case None:
                     # No SchemaDef was provided, create a ColumnDef with defaults
-                    main_table.append_column(ColumnDef().get_schema(cls, field_name))
+                    main_table.append_column(cls.create_column(name))
                 case other:
-                    raise TypeError(f"Expected zero or one SchemaDef on {cls.__name__}.{field_name!r}, got {other}")
+                    raise TypeError(f"Expected zero or one SchemaDef on {cls.__name__}.{name!r}, got {other}")
 
+        for field_name, field in cls.model_fields.items():
+            if field.exclude:
+                # Excluded fields won't have columns
+                continue
+
+            annotation: AnnotationScanType | None = field.annotation
+            if annotation is None:
+                raise TypeError(f"{cls.__name__}.{field_name!r} has no type annotation, cannot generate column definition")
+
+            schemadef = only(m for m in field.metadata if isinstance(m, SchemaDef))
+            handle_schemadef(field_name, annotation, schemadef)
+
+        for computed_field_name, computed_field in cls.model_computed_fields.items():
+            return_type = computed_field.return_type
+            if return_type is None:
+                raise TypeError(f"{cls.__name__}.{computed_field_name!r} has no return type annotation, cannot generate column definition")
+
+            # Get the explicitly-defined SchemaDef if the return type is an Annotated,
+            # otherwise use the default behavior.
+            args = get_args(return_type) if is_pep593(return_type) else ()
+            schemadef = only(m for m in args if isinstance(m, SchemaDef))
+            handle_schemadef(computed_field_name, args[0] if args else return_type, schemadef)
 
         return (main_table, *relationship_tables)
 
@@ -420,7 +486,7 @@ __all__ = (
     "ColumnDef",
     "DatabaseModel",
     "RelationshipDef",
-    "get_column_type",
+    "get_default_column_type",
     "is_non_string_iterable_type",
     "unwrap_type",
     "TupleOf",
