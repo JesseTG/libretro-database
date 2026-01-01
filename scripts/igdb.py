@@ -31,12 +31,12 @@ from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
 from httpx import HTTPStatusError, Response, Timeout
 from more_itertools import batched
-from pydantic import BeforeValidator, FieldSerializationInfo, HttpUrl, PlainSerializer, SerializerFunctionWrapHandler, TypeAdapter, JsonValue, field_serializer
+from pydantic import BeforeValidator, FieldSerializationInfo, SerializerFunctionWrapHandler, TypeAdapter, JsonValue, field_serializer
 from pydantic_core import from_json, to_json
 from pydantic_extra_types.country import CountryNumericCode
 from sqlalchemy import ForeignKey
 
-from sqlite import ColumnDef, DatabaseModel, RelationshipDef, TupleOf
+from sqlite import CoercedHttpUrl, ColumnDef, DatabaseModel, RelationshipDef, TupleOf
 
 IgdbId = NewType('IgdbId', int)
 IgdbPrimaryId = Annotated[IgdbId, ColumnDef(type=sqlalchemy.Integer, primary_key=True)]
@@ -69,7 +69,6 @@ class RelationshipSpecifier(TypedDict):
     related_colname: str
 
 type CoercedCountryCode = Annotated[CountryNumericCode, BeforeValidator(country_numeric_code_validator)]
-type CoercedHttpUrl = Annotated[HttpUrl, PlainSerializer(str, str)]
 type IgdbObjectSerializeMode = Literal['row'] | None
 
 

@@ -18,7 +18,7 @@ from typing import Any, ClassVar, ForwardRef, Never, NewType, TypeGuard, overloa
 import sqlalchemy
 
 from more_itertools import one, only
-from pydantic import BaseModel, HttpUrl, JsonValue
+from pydantic import BaseModel, HttpUrl, JsonValue, PlainSerializer, ValidatorFunctionWrapHandler, WrapSerializer, WrapValidator
 from pydantic_extra_types.country import CountryNumericCode
 from sqlalchemy import Column, ForeignKey, MetaData, Table
 from sqlalchemy.sql.base import SchemaEventTarget
@@ -400,6 +400,8 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
 
         return MappingProxyType(results)
 
+type CoercedHttpUrl = Annotated[HttpUrl, WrapValidator(lambda v, h: h(v) if v else None), PlainSerializer(str, str)]
+
 __all__ = (
     "ColumnDef",
     "DatabaseModel",
@@ -408,4 +410,5 @@ __all__ = (
     "is_non_string_iterable_type",
     "unwrap_type",
     "TupleOf",
+    "CoercedHttpUrl",
 )
