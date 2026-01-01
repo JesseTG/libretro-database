@@ -44,7 +44,7 @@ from pydantic import ByteSize, Field, FieldSerializationInfo, HttpUrl, PlainSeri
 from sqlalchemy.util import is_non_string_iterable
 
 from igdb import PLAYLISTS, IgdbId, Playlist, PlaylistTitle
-from sqlite import ColumnDef, DatabaseModel, FrozenDictValidator, InsertInRowContext, RelationshipDef, TupleOf
+from sqlite import ColumnDef, DatabaseModel, FrozenDictValidator, Hash, InsertInRowContext, RelationshipDef, TupleOf
 
 METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
 
@@ -73,7 +73,6 @@ class SignatureDataObject(HasheousObject, frozen=True):
     MetadataSource: EmptyStringToNone[str] = None
 
 MappingStatus: TypeAlias = Literal["NotMapped", "Mapped", "MappedWithErrors"]
-Hash = Annotated[str, StringConstraints(to_lower=True)]
 ImageId = Annotated[str, StringConstraints(to_upper=True)]
 
 MatchMethodType: TypeAlias = Literal[

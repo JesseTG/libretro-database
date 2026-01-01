@@ -20,7 +20,7 @@ import sqlalchemy
 
 from frozendict import frozendict
 from more_itertools import one, only
-from pydantic import BaseModel, HttpUrl, JsonValue, PlainSerializer, ValidatorFunctionWrapHandler, WrapValidator
+from pydantic import BaseModel, HttpUrl, JsonValue, PlainSerializer, StringConstraints, ValidatorFunctionWrapHandler, WrapValidator
 from pydantic.fields import ComputedFieldInfo, FieldInfo
 from pydantic_extra_types.country import CountryNumericCode
 from sqlalchemy import Column, ForeignKey, MetaData, Table
@@ -498,11 +498,13 @@ def validate_frozendict(v: Any, handler: ValidatorFunctionWrapHandler) -> frozen
 FrozenDictValidator = WrapValidator(validate_frozendict)
 
 type FrozenDict[K, V] = Annotated[frozendict[K, V], FrozenDictValidator]
+Hash = Annotated[str, StringConstraints(to_lower=True)]
 
 __all__ = (
     "ColumnDef",
     "DatabaseModel",
     "RelationshipDef",
+    "Hash",
     "get_default_column_type",
     "is_non_string_iterable_type",
     "unwrap_type",
