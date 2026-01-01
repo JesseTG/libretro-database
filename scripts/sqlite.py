@@ -180,6 +180,7 @@ class ColumnDef:
         self.kwargs = kwargs
 
 
+@dataclass(eq=True, unsafe_hash=True)
 class RelationshipDef:
     """
     Composite foreign keys are not yet supported.
