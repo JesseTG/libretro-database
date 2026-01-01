@@ -24,8 +24,7 @@ from collections import ChainMap
 from concurrent.futures import Executor, ProcessPoolExecutor
 from pathlib import Path
 from pprint import pprint
-from typing import ClassVar, Literal, NamedTuple, NewType, Optional, TypeAlias, TypedDict, Union
-from zipfile import ZipFile
+from warnings import deprecated
 
 
 import aiofiles
@@ -286,36 +285,7 @@ class DataObject:
     UpdatedDate: str
     Name: str
 
-    __table__: ClassVar[str] = """
-        CREATE TABLE IF NOT EXISTS HasheousDataObject (
-            Id INTEGER PRIMARY KEY,
-            ObjectType TEXT,
-            Name TEXT,
-            CreatedDate TEXT,
-            UpdatedDate TEXT
-        );
-        CREATE TABLE IF NOT EXISTS HasheousDataObject_SignatureDataObjects (
-            HasheousDataObject_Id INTEGER NOT NULL REFERENCES HasheousDataObject(Id),
-            HasheousSignatureDataObject_rowid INTEGER NOT NULL REFERENCES HasheousSignatureDataObject(rowid),
-
-            PRIMARY KEY (HasheousDataObject_Id, HasheousSignatureDataObject_rowid)
-        );
-        CREATE TABLE IF NOT EXISTS HasheousDataObject_Metadata (
-            HasheousDataObject_Id INTEGER NOT NULL REFERENCES HasheousDataObject(Id),
-            HasheousMetadataItem_ImmutableId TEXT NOT NULL REFERENCES HasheousMetadataItem(ImmutableId),
-
-            PRIMARY KEY (HasheousDataObject_Id, HasheousMetadataItem_ImmutableId)
-        );
-        CREATE TABLE IF NOT EXISTS HasheousDataObject_HasheousRomItem (
-            HasheousDataObject_Id INTEGER NOT NULL REFERENCES HasheousDataObject(Id),
-            HasheousRomItem_rowid INTEGER NOT NULL REFERENCES HasheousRomItem(rowid),
-
-            PRIMARY KEY (HasheousDataObject_Id, HasheousRomItem_rowid)
-        );
-    """
-
-DataObjectCodec: typelib.Codec[DataObject] = typelib.codec(DataObject)
-
+@deprecated("Use SQLite instead")
 class HasheousIndex:
     def __init__(self, games: Iterable[tuple[PlaylistTitle, Iterable[DataObject]]]) -> None:
         playlists_iterators = dict(games)

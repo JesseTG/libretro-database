@@ -17,6 +17,7 @@ from itertools import chain
 from pathlib import Path
 from pprint import pprint
 from typing import NamedTuple, Optional
+from warnings import deprecated
 
 import aiofiles
 
@@ -44,6 +45,7 @@ class GameMatch(NamedTuple):
     generated_dat: Optional[DatGame]
     record: MatchRecord
 
+@deprecated("Use more_itertools.first_true instead")
 def find[T](items: Iterable[T] | None, predicate: Callable[[T], bool]) -> T | None:
     """Find the first item in items that matches the predicate, or None if not found."""
     if items is None:
