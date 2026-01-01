@@ -30,7 +30,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from dats import Game as DatGame, load_dats, get_existing_dat_files, ClrMamePro, GameDataListCodec
 from igdb import Game as IgdbGame, load_game_file
 from igdb import *
-from hasheous import DataObject, MatchRecord, HasheousIndex, load_dataobjects
+from hasheous import HASHEOUS_OBJECT_TYPES, DataObject, MatchRecord, HasheousIndex, RomItem, load_dataobjects, load_zip
 
 class PlaylistData(NamedTuple):
     playlist: Playlist
@@ -508,6 +508,7 @@ async def insert_igdb_games(db: AsyncEngine, pool: Pool, metadata: MetaData, pla
                     # that's activated by passing a context value of "row".
                 )
 
+            # TODO: Insert the age rating-related relationships
             for (field_name, rels) in relationships.items():
                 tablename = f"{IgdbGame.__tablename__}_{field_name}"
                 assert tablename in metadata.tables, f"Relationship field '{field_name}' has no corresponding table in metadata"
@@ -523,8 +524,64 @@ async def insert_igdb_games(db: AsyncEngine, pool: Pool, metadata: MetaData, pla
 
         print(f"Inserted {len(games)} IGDB games for playlist '{title}' into database")
 
+async def insert_hasheous_games(db: AsyncEngine, pool: Pool, metadata: MetaData, dumps: Sequence[Path]):
+    dump_iterator = as_completed(pool.apply(load_zip, (d,)) for d in dumps)
+
+    # TODO: Process each playlist in a separate task
+    # (unless it doesn't offer the improved concurrency I want)
+    db.echo = False
+    async for (name, games) in dump_iterator:
+        # Collect all unique objects to insert
+
+        nested_models = map_reduce(
+            chain(games, chain.from_iterable(g.nested_models for g in games)),
+            lambda model: type(model),
+            None,
+            frozenset
+        )
+
+        relationships = map_reduce(
+            chain.from_iterable(g.relationships.items() for g in games),
+            lambda rels: rels[0], # key is the field name
+            lambda rels: rels[1], # value is the set of relationships
+            lambda entries: tuple(chain.from_iterable(entries)) # group by field name, aggregate unique relationships
+        )
+        async with db.begin() as tx:
+            for (model_type, models) in nested_models.items():
+                assert model_type.__tablename__ in metadata.tables, f"Model type '{model_type.__name__}' has no corresponding table in metadata"
+
+                await tx.execute(
+                    insert(metadata.tables[model_type.__tablename__]).prefix_with("OR IGNORE"),
+                    # Insert game records, ignoring conflicts because
+                    # the same game (or franchise, or genre, or other object)
+                    # may appear in multiple dumps
+
+                    [m.as_row for m in models]
+                    # DataObject.as_row serializes the model to a dict,
+                    # suitable for insertion into the database.
+                )
+
+            for (field_name, rels) in relationships.items():
+                tablename = f"{DataObject.__tablename__}_{field_name}"
+                assert tablename in metadata.tables, f"Relationship field '{field_name}' has no corresponding table in metadata"
+
+                await tx.execute(
+                    insert(metadata.tables[tablename]).prefix_with("OR IGNORE"),
+                    rels
+                )
+
+
+            await tx.commit()
+            # Commit the session to persist all added objects
+
+        print(f"Inserted {len(games)} Hasheous games for dump '{name}' into database")
+
+async def insert_dat_games(db: AsyncEngine, pool: Pool, metadata: MetaData, playlists: Sequence[Path]):
+    pass # TODO: Implement inserting DAT games into the database
+
 MODEL_TYPES = (
     *IGDB_OBJECT_TYPES,
+    *HASHEOUS_OBJECT_TYPES,
 )
 
 async def handle_index(args: argparse.Namespace) -> None:
@@ -546,6 +603,7 @@ async def handle_index(args: argparse.Namespace) -> None:
     output.unlink(missing_ok=True)
 
     playlists = {p: pl for p, pl in get_playlists(igdb_path)}
+    hasheous_dumps = [p for p in hasheous_path.rglob('*.zip')]
 
     # Create async engine with SQLite
     db = create_async_engine(
@@ -578,11 +636,12 @@ async def handle_index(args: argparse.Namespace) -> None:
                 name="IGDB"
             )
 
-            await igdb_task
-            # TODO: Start loading Hasheous objects in parallel
-            # TODO: Start loading DAT games in parallel
-            # TODO: Use a TaskGroup to manage these tasks
-            # TODO: Write tasks to insert data into the database as it is loaded
+            hasheous_task = group.create_task(
+                insert_hasheous_games(db, pool, metadata, hasheous_dumps),
+                name="Hasheous"
+            )
+
+            # TODO: Start inserting DAT games as well
 
     # Close the engine
     await db.dispose()
