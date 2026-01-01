@@ -17,6 +17,7 @@ from typing import Any, ClassVar, ForwardRef, Never, NewType, TypeGuard, overloa
 
 import sqlalchemy
 
+from frozendict import frozendict
 from more_itertools import one, only
 from pydantic import BaseModel, HttpUrl, JsonValue, PlainSerializer, ValidatorFunctionWrapHandler, WrapSerializer, WrapValidator
 from pydantic_extra_types.country import CountryNumericCode
@@ -402,6 +403,19 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
 
 type CoercedHttpUrl = Annotated[HttpUrl, WrapValidator(lambda v, h: h(v) if v else None), PlainSerializer(str, str)]
 
+def validate_frozendict(v: Any, handler: ValidatorFunctionWrapHandler) -> frozendict[Any, Any]:
+    if isinstance(v, frozendict):
+        return v
+
+    if isinstance(v, Mapping):
+        return frozendict(handler(v))
+
+    raise TypeError(f"Expected frozendict or Mapping, got {type(v)}")
+
+FrozenDictValidator = WrapValidator(validate_frozendict)
+
+type FrozenDict[K, V] = Annotated[frozendict[K, V], FrozenDictValidator]
+
 __all__ = (
     "ColumnDef",
     "DatabaseModel",
@@ -411,4 +425,5 @@ __all__ = (
     "unwrap_type",
     "TupleOf",
     "CoercedHttpUrl",
+    "FrozenDictValidator"
 )

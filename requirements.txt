@@ -4,6 +4,7 @@ aiomultiprocess==0.9.*
 asynciolimiter==1.2.*
 Authlib==1.6.*
 backoff==2.2.*
+frozendict==2.4.*
 httpx==0.28.*
 more_itertools==10.8.*
 pe==0.6.*
