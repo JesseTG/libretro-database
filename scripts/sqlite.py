@@ -12,6 +12,7 @@ from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import date, datetime
 from functools import cache, cached_property
+from itertools import chain
 from types import MappingProxyType
 from typing import Annotated, Any, ClassVar, ForwardRef, Never, NewType, TypeGuard, overload
 
@@ -284,6 +285,12 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
             if defn:
                 result[field_name] = defn
 
+        for field_name, computed_field in cls.model_computed_fields.items():
+            args = get_args(computed_field.return_type) if is_pep593(computed_field.return_type) else ()
+            defn = only(m for m in args if isinstance(m, RelationshipDef))
+            if defn:
+                result[field_name] = defn
+
         return result
 
     @classmethod
@@ -408,7 +415,7 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
         You can subclass this behavior if you need more complex recursion.
         """
         models: set[DatabaseModel] = set()
-        for field_name in type(self).model_fields:
+        for field_name in chain(type(self).model_fields, type(self).model_computed_fields):
             match getattr(self, field_name):
                 case DatabaseModel() as obj:
                     models.add(obj)
@@ -435,7 +442,7 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
         pk_coldefs = cls.pk_columns()
         reldefs = cls.relationship_defs()
 
-        for field_name, field_info in cls.model_fields.items():
+        for field_name in chain(cls.model_fields, cls.model_computed_fields):
             if field_name not in reldefs:
                 continue
 
