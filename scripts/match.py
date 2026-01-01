@@ -633,7 +633,7 @@ def main():
     )
     generate_parser.add_argument(
         "--playlist",
-        help="The title of the playlists to process, as named in igdb.toml. If not provided, all playlists defined in that file will be processed.",
+        help="The title of the playlists to process, as named in playlists.toml. If not provided, all playlists defined in that file will be processed.",
         type=PlaylistTitle,
         nargs="+",
         default=PLAYLIST_TITLES,

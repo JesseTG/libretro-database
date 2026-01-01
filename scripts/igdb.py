@@ -952,8 +952,8 @@ def read_playlists(path: str) -> tuple[Playlist, ...]:
 
 
 dirname = os.path.dirname(__file__)
-TOML_PATH = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'metadat', 'igdb', 'igdb.toml'))
-
+TOML_PATH = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'playlists.toml'))
+# TODO: Make this configurable on the command line
 PLAYLISTS = read_playlists(TOML_PATH)
 
 PLAYLISTS_BY_TITLE = {str(p.title): p for p in PLAYLISTS}
