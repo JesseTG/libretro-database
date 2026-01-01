@@ -14,7 +14,7 @@ from datetime import date, datetime
 from functools import cache, cached_property
 from itertools import chain
 from types import MappingProxyType
-from typing import Annotated, Any, ClassVar, ForwardRef, Never, NewType, TypeGuard, overload
+from typing import Annotated, Any, ClassVar, ForwardRef, Literal, Never, NewType, TypeGuard, overload
 
 import sqlalchemy
 
@@ -479,7 +479,13 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
 
         return MappingProxyType(results)
 
+    @property
+    def as_row(self) -> dict[str, Any]:
+        return self.model_dump(context='row')
+
+
 type CoercedHttpUrl = Annotated[HttpUrl, WrapValidator(lambda v, h: h(v) if v else None), PlainSerializer(str, str)]
+type InsertInRowContext = Literal['row'] | None
 
 def validate_frozendict(v: Any, handler: ValidatorFunctionWrapHandler) -> frozendict[Any, Any]:
     if isinstance(v, frozendict):
@@ -503,5 +509,6 @@ __all__ = (
     "unwrap_type",
     "TupleOf",
     "CoercedHttpUrl",
-    "FrozenDictValidator"
+    "FrozenDictValidator",
+    "InsertInRowContext",
 )
