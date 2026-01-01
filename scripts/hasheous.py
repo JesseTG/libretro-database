@@ -11,7 +11,6 @@ Dictionary definitions taken from the following Hasheous source files:
 import argparse
 import asyncio
 import csv
-import dataclasses
 import itertools
 import os
 import pickle
@@ -19,49 +18,56 @@ import sys
 import time
 import zipfile
 
+from abc import ABC
 from collections.abc import Collection, Iterable, Sequence, Mapping
 from collections import ChainMap
 from concurrent.futures import Executor, ProcessPoolExecutor
+from dataclasses import dataclass
+from datetime import datetime
+from functools import cached_property
 from pathlib import Path
 from pprint import pprint
+from typing import Annotated, Any, ClassVar, Literal, NamedTuple, NewType, Optional, TypeAlias, TypedDict, Union
 from warnings import deprecated
+from zipfile import ZipFile, ZipInfo
 
 
 import aiofiles
 import aiofiles.os
 import backoff
 import httpx
-import typelib
+import sqlalchemy
+
+from frozendict import frozendict, deepfreeze
+from more_itertools import first_true
+from pydantic import ByteSize, Field, HttpUrl, PlainSerializer, PlainValidator, StringConstraints, TypeAdapter, ValidationError, WrapValidator, computed_field
+from sqlalchemy.util import is_non_string_iterable
 
 from igdb import PLAYLISTS, IgdbId, Playlist, PlaylistTitle
+from sqlite import ColumnDef, DatabaseModel, FrozenDictValidator, RelationshipDef, TupleOf
 
 METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
 
 HasheousId = NewType('HasheousId', int)
 
-@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class SignatureDataObject:
-    SignatureId: Optional[str] = None
-    Name: Optional[str] = None
-    Year: Optional[str] = None
-    Platform: Optional[str] = None
-    SourceId: Optional[str] = None
-    Publisher: Optional[str] = None
-    MetadataSource: Optional[str] = None
+NonEmptyString = Annotated[str | None, PlainSerializer(lambda v: v or None, return_type=(str | None))]
 
-    __table__: ClassVar[str] = """
-        CREATE TABLE IF NOT EXISTS HasheousSignatureDataObject (
-            SignatureId TEXT
-            Name TEXT,
-            Year TEXT,
-            Platform TEXT,
-            SourceId TEXT,
-            Publisher TEXT,
-            MetadataSource TEXT
-        );
-    """
+class HasheousObject(DatabaseModel, ABC, frozen=True):
+    pass
+
+class SignatureDataObject(HasheousObject, frozen=True):
+    __tablename__: ClassVar[str] = "HasheousSignatureDataObject"
+    SignatureId: Annotated[str, StringConstraints(min_length=1), ColumnDef(type=sqlalchemy.String, primary_key=True)]
+    Name: NonEmptyString = None
+    Year: NonEmptyString = None
+    Platform: NonEmptyString = None
+    SourceId: NonEmptyString = None
+    Publisher: NonEmptyString = None
+    MetadataSource: NonEmptyString = None
 
 MappingStatus: TypeAlias = Literal["NotMapped", "Mapped", "MappedWithErrors"]
+Hash = Annotated[str, StringConstraints(to_lower=True)]
+ImageId = Annotated[str, StringConstraints(to_upper=True)]
 
 MatchMethodType: TypeAlias = Literal[
     "NoMatch",
@@ -85,37 +91,19 @@ MetadataSource: TypeAlias = Literal[
     "SteamGridDb",
 ]
 
-@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class MetadataItem:
+class MetadataItem(HasheousObject, frozen=True):
+    __tablename__: ClassVar[str] = "HasheousMetadataItem"
+    # TODO: How do I add a "WITHOUT ROWID" table option here?
     Id: str
-    ImmutableId: str
+    ImmutableId: Annotated[str, ColumnDef(type=sqlalchemy.String, primary_key=True)]
     Status: MappingStatus
     MatchMethod: MatchMethodType
     Source: MetadataSource
-    Link: str
-    LastSearch: str
-    NextSearch: str
+    Link: Annotated[HttpUrl | None, WrapValidator(lambda v, h: h(v) if v else None), PlainSerializer(str, str)] = None
+    NextSearch: datetime
     WinningVoteCount: int
     TotalVoteCount: int
     WinningVotePercent: int
-
-    # TODO: Only insert metadata objects with a status of Matched
-    # TODO: Exclude LastSearch, NextSearch, WinningVoteCount, TotalVoteCount, WinningVotePercent
-    __table__: ClassVar[str] = """
-        CREATE TABLE IF NOT EXISTS HasheousMetadataItem (
-            Id TEXT COLLATE RTRIM,
-            ImmutableId TEXT PRIMARY KEY COLLATE RTRIM,
-            Status TEXT,
-            MatchMethod TEXT,
-            Source TEXT,
-            Link TEXT,
-            LastSearch TEXT,
-            NextSearch TEXT,
-            WinningVoteCount INTEGER,
-            TotalVoteCount INTEGER,
-            WinningVotePercent INTEGER
-        ) WITHOUT ROWID;
-    """
 
 AttributeType: TypeAlias = Literal[
     "LongString",
@@ -128,20 +116,57 @@ AttributeType: TypeAlias = Literal[
     "ObjectRelationship",
     "EmbeddedList",
 ]
+"""
+Values taken from https://tinyurl.com/yc7baymp
+"""
+
+def immutable_json_type_discriminator(value: Any) -> str:
+    match value:
+        case None:
+            return "NoneType"
+        case int():
+            return "int"
+        case float():
+            return "float"
+        case bool():
+            return "bool"
+        case str():
+            return "str"
+        case Mapping():
+            return "dict"
+        case Sequence():
+            return "list"
+        case _:
+            raise TypeError(f"Value of type {type(value).__name__} is not a valid JSON value")
+
+
+type ImmutableJsonValue = Annotated[
+    Union[
+        tuple['ImmutableJsonValue', ...],
+        Mapping[str, 'ImmutableJsonValue'],
+        str,
+        bool,
+        int,
+        float,
+        None
+    ],
+    WrapValidator(lambda a, _: deepfreeze(a)),
+]
+
 
 AttributeName: TypeAlias = Literal[
-    "Description",
-    "Manufacturer",
-    "Publisher",
+    "Description", # LongString
+    "Manufacturer", # ObjectRelationship (Company)
+    "Publisher", # ObjectRelationship (Company)
     "Logo",
-    "Platform",
+    "Platform", # ObjectRelationship (Platform)
     "Year",
-    "Country",
-    "Language",
-    "ROMs",
+    "Country", # ShortString
+    "Language", # ShortString
+    "ROMs", # EmbeddedList (RomItem)
     "VIMMManualId",
     "LogoAttribution",
-    "VIMMPlatformName",
+    "VIMMPlatformName", # ShortString
     "HomePage",
     "IssueTracker",
     "Screenshot1",
@@ -151,6 +176,8 @@ AttributeName: TypeAlias = Literal[
     "Wikipedia",
     "Public",
     "DumpFile",
+    "IssueTracker",
+    "Tags",
 ]
 
 DataObjectType: TypeAlias = Literal["None", "Company", "Platform", "Game", "ROM", "App"]
@@ -160,6 +187,7 @@ SignatureSourceType: TypeAlias = Literal[
     "TOSEC",
     "MAMEArcade",
     "MAMEMess",
+    "MAMERedump",
     "NoIntro",
     "NoIntros",
     "Redump",
@@ -171,119 +199,149 @@ SignatureSourceType: TypeAlias = Literal[
     "Generic",
 ]
 
-@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class MediaType:
-    MediaType: Optional[RomTypeName] = None
-    Media: Optional[str] = None
-    Number: Optional[int] = None
-    Count: Optional[int] = None
-    Side: Optional[str] = None
+class MediaType(TypedDict, total=False):
+    MediaType: RomTypeName
+    Media: str
+    Number: int
+    Count: int
+    Side: str
 
-    __table__: ClassVar[str] = """
-        CREATE TABLE IF NOT EXISTS HasheousMediaType (
-            MediaType TEXT,
-            Media TEXT,
-            Number INTEGER,
-            Count INTEGER,
-            Side TEXT
-        );
-    """
-
-
-@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class RomItem:
+class RomItem(HasheousObject, frozen=True):
+    __tablename__: ClassVar[str] = "HasheousRomItem"
     Score: int
-    Attributes: Optional[Mapping[str, str]] = None
+    Attributes: Annotated[Mapping[str, str], ColumnDef(type=sqlalchemy.JSON), FrozenDictValidator]
     RomType: RomTypeName
-    Id: Optional[str] = None
-    Name: Optional[str] = None
-    Size: Optional[int] = None
-    Crc: Optional[str] = None
-    Md5: Optional[str] = None
-    Sha1: Optional[str] = None
-    Sha256: Optional[str] = None
-    Status: Optional[str] = None
-    Country: Optional[Mapping[str, str]] = None
-    Language: Optional[Mapping[str, str]] = None
-    DevelopmentStatus: Optional[str] = None
-    RomTypeMedia: Optional[str] = None
-    MediaDetail: Optional[MediaType] = None
-    MediaLabel: Optional[str] = None
-    SignatureSource: Optional[SignatureSourceType] = None
+    Id: Annotated[str, ColumnDef(primary_key=True)]
+    Name: NonEmptyString
+    Size: ByteSize
+    Crc: Hash | None
+    Md5: Hash | None
+    Sha1: Hash | None
+    Sha256: Hash | None
+    Status: NonEmptyString
 
-    # TODO: What should I do with Score? Ask what it represents
-    # TODO: Save empty strings as NULL
-    __table__: ClassVar[str] = """
-        CREATE TABLE IF NOT EXISTS HasheousRomItem (
-            Score INTEGER NOT NULL,
-            RomType TEXT NOT NULL,
-            Id TEXT COLLATE RTRIM,
-            Name TEXT,
-            Size INTEGER,
-            Crc TEXT COLLATE RTRIM,
-            Md5 TEXT COLLATE RTRIM,
-            Sha1 TEXT COLLATE RTRIM,
-            Sha256 TEXT COLLATE RTRIM,
-            Status TEXT,
-            DevelopmentStatus TEXT,
-            RomTypeMedia TEXT,
-            MediaDetail INTEGER REFERENCES HasheousMediaType(rowid),
-            MediaLabel TEXT,
-            SignatureSource TEXT
-        );
-        CREATE TABLE IF NOT EXISTS HasheousRomItem_Attributes (
-            HasheousRomItem_rowid INTEGER NOT NULL REFERENCES HasheousRomItem(rowid),
-            Key TEXT NOT NULL,
-            Value TEXT NOT NULL,
+    # TODO: Represent Country with computed columns
+    Country: Annotated[Mapping[str, str], ColumnDef(type=sqlalchemy.JSON), FrozenDictValidator]
 
-            UNIQUE (HasheousRomItem_rowid, Key),
-            PRIMARY KEY (HasheousRomItem_rowid, Key, Value)
-        );
-        CREATE TABLE IF NOT EXISTS HasheousRomItem_Country (
-            HasheousRomItem_rowid INTEGER NOT NULL REFERENCES HasheousRomItem(rowid),
-            Key TEXT NOT NULL,
-            Value TEXT NOT NULL,
+    # TODO: Represent Language with computed columns
+    Language: Annotated[Mapping[str, str], ColumnDef(type=sqlalchemy.JSON), FrozenDictValidator]
+    DevelopmentStatus: NonEmptyString
+    RomTypeMedia: NonEmptyString
 
-            UNIQUE (HasheousRomItem_rowid, Key),
-            PRIMARY KEY (HasheousRomItem_rowid, Key, Value)
-        );
-        CREATE TABLE IF NOT EXISTS HasheousRomItem_Language (
-            HasheousRomItem_rowid INTEGER NOT NULL REFERENCES HasheousRomItem(rowid),
-            Key TEXT NOT NULL,
-            Value TEXT NOT NULL,
+    # TODO: Represent MediaDetail with computed columns
+    MediaDetail: Annotated[MediaType, ColumnDef(type=sqlalchemy.JSON), FrozenDictValidator]
+    MediaLabel: NonEmptyString
+    SignatureSource: str | None
 
-            UNIQUE (HasheousRomItem_rowid, Key),
-            PRIMARY KEY (HasheousRomItem_rowid, Key, Value)
-        );
-    """
+RomItemTupleAdapter = TypeAdapter(tuple[RomItem, ...])
+def coerce_attribute(value: Any) -> "str | tuple[RomItem, ...] | DataObject | Mapping":
+    match value:
+        case {} if not value:
+            return frozendict({})
+        case {**mapping}:
+            return DataObject.model_validate(mapping)
+        case [*items]:
+            return RomItemTupleAdapter.validate_python(items)
+        case DataObject() as dobj:
+            return dobj
+        case str() as s:
+            return s
+        case _:
+            raise TypeError(f"Cannot coerce value of type {type(value).__name__} to valid Attribute Value type")
 
-AttributeValue: TypeAlias = Union["DataObject", Sequence[RomItem], str]
-
-@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
+@dataclass(frozen=True)
 class Attribute:
-    attributeType: AttributeType
+    # I wanted to use pydantic.dataclass,
+    # but for some reason using frozen=True
+    # causes the attributes to not be recognized by pyright
+    attributeType: str
     '''Not a typo, the API serializes it this way'''
 
-    attributeName: AttributeName
+    attributeName: str
     '''Not a typo, the API serializes it this way'''
 
-    attributeRelationType: DataObjectType
+    attributeRelationType: str
     '''Not a typo, the API serializes it this way'''
 
-    Value: AttributeValue
+    Value: Annotated["str | tuple[RomItem, ...] | DataObject | Mapping", PlainValidator(coerce_attribute)]
     Id: Optional[int] = None
 
 
-@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class DataObject:
-    Id: HasheousId
+class DataObject(DatabaseModel, frozen=True):
+    """
+    Type info for attributes taken from https://github.com/gaseous-project/hasheous/blob/main/hasheous-lib/Classes/DataObjects.cs
+    """
+    __tablename__: ClassVar[str] = "HasheousDataObject"
+
+    Id: Annotated[HasheousId, ColumnDef(type=sqlalchemy.Integer, primary_key=True)]
     ObjectType: DataObjectType
-    SignatureDataObjects: Sequence[SignatureDataObject]
-    Metadata: Sequence[MetadataItem]
-    Attributes: Sequence[Attribute]
-    CreatedDate: str
-    UpdatedDate: str
+    SignatureDataObjects: Annotated[TupleOf[SignatureDataObject], RelationshipDef("HasheousSignatureDataObject.SignatureId")]
+    Metadata: Annotated[TupleOf[MetadataItem], RelationshipDef("HasheousMetadataItem.ImmutableId")]
+    Attributes: Annotated[TupleOf[Attribute], Field(exclude=True)]
+    CreatedDate: datetime
+    UpdatedDate: datetime
     Name: str
+
+    @computed_field
+    @cached_property
+    def description(self) -> str | None:
+        attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "Description")
+        return attribute.Value if attribute and isinstance(attribute.Value, str) else None
+
+    @computed_field
+    @cached_property
+    def manufacturer(self) -> "DataObject | None":
+        attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "Manufacturer")
+        return attribute.Value if attribute and isinstance(attribute.Value, DataObject) else None
+
+    @computed_field
+    @cached_property
+    def publisher(self) -> "DataObject | None":
+        attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "Publisher")
+        return attribute.Value if attribute and isinstance(attribute.Value, DataObject) else None
+
+    @computed_field
+    @cached_property
+    def platform(self) -> "DataObject | None":
+        attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "Platform")
+        return attribute.Value if attribute and isinstance(attribute.Value, DataObject) else None
+
+    @computed_field
+    @cached_property
+    def vimm_platform_name(self) -> str | None:
+        attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "VIMMPlatformName")
+        return attribute.Value if attribute and isinstance(attribute.Value, str) else None
+
+    @computed_field
+    @cached_property
+    def logo(self) -> str | None:
+        attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "Logo")
+        return attribute.Value if attribute and isinstance(attribute.Value, str) else None
+
+    @computed_field
+    @cached_property
+    def country(self) -> str | None:
+        attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "Country")
+        return attribute.Value if attribute and isinstance(attribute.Value, str) else None
+
+    @computed_field
+    @cached_property
+    def language(self) -> str | None:
+        attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "Language")
+        return attribute.Value if attribute and isinstance(attribute.Value, str) else None
+
+    @computed_field
+    @cached_property
+    def roms(self) -> Annotated[TupleOf[RomItem] | None, RelationshipDef("HasheousRomItem.Id")]:
+        attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "ROMs")
+        return tuple(attribute.Value) if attribute and is_non_string_iterable(attribute.Value) else None
+
+HASHEOUS_OBJECT_TYPES = (
+    DataObject,
+    MetadataItem,
+    SignatureDataObject,
+    RomItem,
+)
 
 @deprecated("Use SQLite instead")
 class HasheousIndex:
@@ -429,14 +487,14 @@ class MatchRecord(NamedTuple):
 
 class HasheousZip(NamedTuple):
     name: str
-    objects: Sequence[DataObject]
+    objects: TupleOf[DataObject]
 
 def parse_zip(path: Path) -> HasheousZip:
     start = time.perf_counter_ns()
     with ZipFile(path, 'r') as zip:
         paths = zip.infolist()
         json_infos = filter(lambda p: p.filename.endswith('.json') and p.filename != 'PlatformMapping.json', paths)
-        objects = map(lambda i: DataObjectCodec.decode(zip.read(i)), json_infos)
+        objects = map(lambda i: DataObject.model_validate_json(zip.read(i)), json_infos)
 
         result = HasheousZip(path.stem, tuple(objects))
 
@@ -445,6 +503,24 @@ def parse_zip(path: Path) -> HasheousZip:
     print(f"Parsed {len(result.objects)} DataObjects from {path.name} in {duration:.2f} ms")
     return result
     # Returning the stem makes it easier to aggregate results later
+
+async def load_zip(path: Path) -> HasheousZip:
+    async with aiofiles.open(path, "rb") as zip_file:
+        with ZipFile(zip_file.raw) as zip:
+
+            def validate(info: ZipInfo):
+                byte_data = zip.read(info)
+                try:
+                    return DataObject.model_validate_json(byte_data)
+                except ValidationError as ve:
+                    raise
+
+            paths = zip.infolist()
+            json_infos = filter(lambda p: p.filename.endswith('.json') and p.filename != 'PlatformMapping.json', paths)
+            objects = map(validate, json_infos)
+
+            return HasheousZip(path.stem, tuple(objects))
+
 
 async def load_index(path: Path) -> HasheousIndex:
     """
@@ -571,8 +647,6 @@ async def handle_fetch(args: argparse.Namespace) -> None:
 
         for d in dumps:
             group.create_task(fetch_dump(d), name="fetch_dump_" + d)
-
-ExecutorTypeName: TypeAlias = Literal["none", "process", "thread", "interpreter"]
 
 async def handle_index(args: argparse.Namespace) -> None:
     input_paths: Collection[str] = args.paths
@@ -808,6 +882,8 @@ __all__ = (
     "HasheousId",
     "HasheousIndex",
     "load_dataobjects",
+    "HASHEOUS_OBJECT_TYPES",
+    "load_zip",
     "load_index",
     "MappingStatus",
     "MatchMethodType",
