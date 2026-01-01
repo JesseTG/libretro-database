@@ -27,7 +27,7 @@ from datetime import datetime
 from functools import cached_property
 from pathlib import Path
 from pprint import pprint
-from typing import Annotated, Any, ClassVar, Literal, NamedTuple, NewType, Optional, TypeAlias, TypedDict, Union
+from typing import Annotated, Any, ClassVar, Literal, NamedTuple, NewType, Optional, TypeAlias, TypedDict
 from warnings import deprecated
 from zipfile import ZipFile, ZipInfo
 
@@ -38,32 +38,39 @@ import backoff
 import httpx
 import sqlalchemy
 
-from frozendict import frozendict, deepfreeze
+from frozendict import frozendict
 from more_itertools import first_true
-from pydantic import ByteSize, Field, HttpUrl, PlainSerializer, PlainValidator, StringConstraints, TypeAdapter, ValidationError, WrapValidator, computed_field
+from pydantic import ByteSize, Field, FieldSerializationInfo, HttpUrl, PlainSerializer, PlainValidator, SerializerFunctionWrapHandler, StringConstraints, TypeAdapter, ValidationError, WrapValidator, computed_field, field_serializer
 from sqlalchemy.util import is_non_string_iterable
 
 from igdb import PLAYLISTS, IgdbId, Playlist, PlaylistTitle
-from sqlite import ColumnDef, DatabaseModel, FrozenDictValidator, RelationshipDef, TupleOf
+from sqlite import ColumnDef, DatabaseModel, FrozenDictValidator, InsertInRowContext, RelationshipDef, TupleOf
 
 METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
 
 HasheousId = NewType('HasheousId', int)
 
-NonEmptyString = Annotated[str | None, PlainSerializer(lambda v: v or None, return_type=(str | None))]
+type EmptyStringToNone[T] = Annotated[
+    T | None,
+    WrapValidator(lambda v, h: h(v) if v != "" else None),
+    PlainSerializer(lambda v: v if v != "" else None, return_type=(T | None))
+]
+"""
+A type that serializes and validates empty strings as None.
+"""
 
 class HasheousObject(DatabaseModel, ABC, frozen=True):
     pass
 
 class SignatureDataObject(HasheousObject, frozen=True):
     __tablename__: ClassVar[str] = "HasheousSignatureDataObject"
-    SignatureId: Annotated[str, StringConstraints(min_length=1), ColumnDef(type=sqlalchemy.String, primary_key=True)]
-    Name: NonEmptyString = None
-    Year: NonEmptyString = None
-    Platform: NonEmptyString = None
-    SourceId: NonEmptyString = None
-    Publisher: NonEmptyString = None
-    MetadataSource: NonEmptyString = None
+    SignatureId: Annotated[int, ColumnDef(primary_key=True)]
+    Name: EmptyStringToNone[str] = None
+    Year: EmptyStringToNone[str] = None
+    Platform: EmptyStringToNone[str] = None
+    SourceId: Annotated[int | None, ColumnDef(index=True), WrapValidator(lambda v, h: h(v) if v != "" else None)] = None
+    Publisher: EmptyStringToNone[str] = None
+    MetadataSource: EmptyStringToNone[str] = None
 
 MappingStatus: TypeAlias = Literal["NotMapped", "Mapped", "MappedWithErrors"]
 Hash = Annotated[str, StringConstraints(to_lower=True)]
@@ -91,15 +98,14 @@ MetadataSource: TypeAlias = Literal[
     "SteamGridDb",
 ]
 
-class MetadataItem(HasheousObject, frozen=True):
-    __tablename__: ClassVar[str] = "HasheousMetadataItem"
-    # TODO: How do I add a "WITHOUT ROWID" table option here?
-    Id: str
-    ImmutableId: Annotated[str, ColumnDef(type=sqlalchemy.String, primary_key=True)]
+@dataclass(frozen=True)
+class MetadataItem:
+    Id: EmptyStringToNone[str]
+    ImmutableId: EmptyStringToNone[str]
     Status: MappingStatus
     MatchMethod: MatchMethodType
     Source: MetadataSource
-    Link: Annotated[HttpUrl | None, WrapValidator(lambda v, h: h(v) if v else None), PlainSerializer(str, str)] = None
+    Link: Annotated[HttpUrl | None, WrapValidator(lambda v, h: h(v) if v else None), PlainSerializer(lambda v: v or None, str | None)]
     NextSearch: datetime
     WinningVoteCount: int
     TotalVoteCount: int
@@ -119,39 +125,6 @@ AttributeType: TypeAlias = Literal[
 """
 Values taken from https://tinyurl.com/yc7baymp
 """
-
-def immutable_json_type_discriminator(value: Any) -> str:
-    match value:
-        case None:
-            return "NoneType"
-        case int():
-            return "int"
-        case float():
-            return "float"
-        case bool():
-            return "bool"
-        case str():
-            return "str"
-        case Mapping():
-            return "dict"
-        case Sequence():
-            return "list"
-        case _:
-            raise TypeError(f"Value of type {type(value).__name__} is not a valid JSON value")
-
-
-type ImmutableJsonValue = Annotated[
-    Union[
-        tuple['ImmutableJsonValue', ...],
-        Mapping[str, 'ImmutableJsonValue'],
-        str,
-        bool,
-        int,
-        float,
-        None
-    ],
-    WrapValidator(lambda a, _: deepfreeze(a)),
-]
 
 
 AttributeName: TypeAlias = Literal[
@@ -207,31 +180,34 @@ class MediaType(TypedDict, total=False):
     Side: str
 
 class RomItem(HasheousObject, frozen=True):
+    """
+    Structure taken from https://github.com/gaseous-project/hasheous/blob/main/hasheous-lib/Schema/hasheous-1000.sql
+    (specifically the Signatures_Roms table)
+    """
     __tablename__: ClassVar[str] = "HasheousRomItem"
-    Score: int
+    Id: Annotated[int, ColumnDef(primary_key=True)]
+    Name: EmptyStringToNone[str]
     Attributes: Annotated[Mapping[str, str], ColumnDef(type=sqlalchemy.JSON), FrozenDictValidator]
-    RomType: RomTypeName
-    Id: Annotated[str, ColumnDef(primary_key=True)]
-    Name: NonEmptyString
+    RomType: Annotated[str, ColumnDef(index=True)]
     Size: ByteSize
-    Crc: Hash | None
-    Md5: Hash | None
-    Sha1: Hash | None
-    Sha256: Hash | None
-    Status: NonEmptyString
+    Crc: Annotated[EmptyStringToNone[Hash], ColumnDef(index=True)]
+    Md5: Annotated[EmptyStringToNone[Hash], ColumnDef(index=True)]
+    Sha1: Annotated[EmptyStringToNone[Hash], ColumnDef(index=True)]
+    Sha256: Annotated[EmptyStringToNone[Hash], ColumnDef(index=True)]
+    Status: EmptyStringToNone[str]
 
     # TODO: Represent Country with computed columns
     Country: Annotated[Mapping[str, str], ColumnDef(type=sqlalchemy.JSON), FrozenDictValidator]
 
     # TODO: Represent Language with computed columns
     Language: Annotated[Mapping[str, str], ColumnDef(type=sqlalchemy.JSON), FrozenDictValidator]
-    DevelopmentStatus: NonEmptyString
-    RomTypeMedia: NonEmptyString
+    DevelopmentStatus: EmptyStringToNone[str]
+    RomTypeMedia: EmptyStringToNone[str]
 
     # TODO: Represent MediaDetail with computed columns
     MediaDetail: Annotated[MediaType, ColumnDef(type=sqlalchemy.JSON), FrozenDictValidator]
-    MediaLabel: NonEmptyString
-    SignatureSource: str | None
+    MediaLabel: EmptyStringToNone[str]
+    SignatureSource: EmptyStringToNone[str]
 
 RomItemTupleAdapter = TypeAdapter(tuple[RomItem, ...])
 def coerce_attribute(value: Any) -> "str | tuple[RomItem, ...] | DataObject | Mapping":
@@ -274,19 +250,13 @@ class DataObject(DatabaseModel, frozen=True):
     __tablename__: ClassVar[str] = "HasheousDataObject"
 
     Id: Annotated[HasheousId, ColumnDef(type=sqlalchemy.Integer, primary_key=True)]
+    Name: str
     ObjectType: DataObjectType
     SignatureDataObjects: Annotated[TupleOf[SignatureDataObject], RelationshipDef("HasheousSignatureDataObject.SignatureId")]
-    Metadata: Annotated[TupleOf[MetadataItem], RelationshipDef("HasheousMetadataItem.ImmutableId")]
+    Metadata: Annotated[TupleOf[MetadataItem], Field(exclude=True)]
     Attributes: Annotated[TupleOf[Attribute], Field(exclude=True)]
     CreatedDate: datetime
     UpdatedDate: datetime
-    Name: str
-
-    @computed_field
-    @cached_property
-    def description(self) -> str | None:
-        attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "Description")
-        return attribute.Value if attribute and isinstance(attribute.Value, str) else None
 
     @computed_field
     @cached_property
@@ -308,25 +278,17 @@ class DataObject(DatabaseModel, frozen=True):
 
     @computed_field
     @cached_property
-    def vimm_platform_name(self) -> str | None:
-        attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "VIMMPlatformName")
-        return attribute.Value if attribute and isinstance(attribute.Value, str) else None
-
-    @computed_field
-    @cached_property
-    def logo(self) -> str | None:
-        attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "Logo")
-        return attribute.Value if attribute and isinstance(attribute.Value, str) else None
-
-    @computed_field
-    @cached_property
-    def country(self) -> str | None:
+    def country(self) -> Annotated[str | None, ColumnDef(index=True)]:
+        # TODO: country is really a comma-separated list of countries,
+        # so we should probably normalize that into a separate table
         attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "Country")
         return attribute.Value if attribute and isinstance(attribute.Value, str) else None
 
     @computed_field
     @cached_property
-    def language(self) -> str | None:
+    def language(self) -> Annotated[str | None, ColumnDef(index=True)]:
+        # TODO: language is really a comma-separated string of multiple languages,
+        # so we should probably normalize that into a separate table
         attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "Language")
         return attribute.Value if attribute and isinstance(attribute.Value, str) else None
 
@@ -336,9 +298,36 @@ class DataObject(DatabaseModel, frozen=True):
         attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "ROMs")
         return tuple(attribute.Value) if attribute and is_non_string_iterable(attribute.Value) else None
 
+    @computed_field
+    @cached_property
+    def igdb_id(self) -> IgdbId | None: #Annotated[IgdbId | None, ColumnDef(type=sqlalchemy.ForeignKey('IgdbGame.id'))]:
+        """Returns the IGDB ID mapped to this DataObject, or None if there's no IGDB mapping."""
+        igdb_metadata = first_true(self.Metadata, pred=lambda m: m.Source == "IGDB" and m.Status == "Mapped")
+        if not igdb_metadata:
+            return None
+        if not igdb_metadata.ImmutableId:
+            return None
+
+        try:
+            return IgdbId(int(igdb_metadata.ImmutableId))
+        except ValueError:
+            return None
+
+    @field_serializer('platform', 'manufacturer', 'publisher', mode='wrap')
+    def _serialize_field(self, value: Any, handler: SerializerFunctionWrapHandler, info: FieldSerializationInfo[InsertInRowContext]):
+        match (info.context, value):
+            case (None, _):
+                # If no context is given, serialize the field as usual
+                return handler(value)
+            case ('row', DataObject()):
+                # If serializing for a database row, serialize nested DataObjects as their IDs
+                return value.Id
+            case (_, _):
+                # Otherwise, run the default serializer to handle other types or contexts
+                return handler(value)
+
 HASHEOUS_OBJECT_TYPES = (
     DataObject,
-    MetadataItem,
     SignatureDataObject,
     RomItem,
 )
