@@ -468,7 +468,7 @@ where = 'platforms = (19, 58) & (keywords = (29241) | summary ~ *"sufami turbo"*
 
 [[igdb.playlists]]
 title = "Nintendo - Super Nintendo Entertainment System"
-hasheous = ["Super Nintendo Entertainment System"]
+hasheous = ["Nintendo Super Nintendo Entertainment System"]
 alts = ["SNES hacks"]
 # SNES or Super Famicom, and does not have the "sufami turbo" keyword
 where = 'platforms = (19, 58) & keywords != (29241)'
