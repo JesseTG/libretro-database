@@ -93,11 +93,9 @@ class IgdbObject(DatabaseModel, ABC, frozen=True):
             case ('row', [*rest]) if all(isinstance(item, IgdbObject) for item in rest):
                 # If serializing for a database row, serialize tuples of IgdbObjects as tuples of their IDs
                 return tuple(item.id for item in rest)
-            case ('row', _):
-                # Otherwise, run the default serializer to handle other types
-                return handler(value)
             case (_, _):
-                raise ValueError(f"Expected a serialization context value of 'default', 'row', or None; got {info.context!r}")
+                # Otherwise, run the default serializer to handle other types or contexts
+                return handler(value)
 
 class AgeRatingOrganization(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbAgeRatingOrganization"
