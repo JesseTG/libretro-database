@@ -112,11 +112,6 @@ def unwrap_type(
     match t:
         case type() as concrete_type:
             return concrete_type
-        case optional if includes_none(t):
-            # If this type can have a value of None...
-            # (For most purposes you can think of it as Optional[], but
-            # Python has several ways to express that.)
-            return unwrap_type(de_optionalize_union_types(t), name, globalns)
         case alias if is_pep695(alias) and (args := get_args(alias)):
             # If this is a type alias with parameters...
             return unwrap_type(args[0], name, globalns)
@@ -143,7 +138,11 @@ def unwrap_type(
             return unwrap_type(eval_expression(ref.__forward_arg__, name or __name__, locals_=globalns), name, globalns)
         case str() as type_expression:
             return unwrap_type(eval_expression(type_expression, name or __name__, locals_=globalns), name, globalns)
-
+        case optional if includes_none(t):
+            # If this type can have a value of None...
+            # (For most purposes you can think of it as Optional[], but
+            # Python has several ways to express that.)
+            return unwrap_type(de_optionalize_union_types(t), name, globalns)
         case _:
             raise TypeError(f"Unexpected type annotation: {t} ({type(t)})")
 
