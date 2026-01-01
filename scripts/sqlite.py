@@ -401,6 +401,10 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
         """
         Returns a set of all nested DatabaseModel instances referenced by this model's fields,
         excluding itself.
+
+        Checks immediate attributes,
+        but only recurses into attributes that are also DatabaseModel instances or lists of them.
+        You can subclass this behavior if you need more complex recursion.
         """
         models: set[DatabaseModel] = set()
         for field_name in type(self).model_fields:
