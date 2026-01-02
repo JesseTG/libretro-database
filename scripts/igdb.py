@@ -31,7 +31,7 @@ from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
 from httpx import HTTPStatusError, Response, Timeout
 from more_itertools import batched
-from pydantic import BeforeValidator, FieldSerializationInfo, SerializerFunctionWrapHandler, TypeAdapter, JsonValue, field_serializer
+from pydantic import BaseModel, BeforeValidator, Field, FieldSerializationInfo, SerializerFunctionWrapHandler, TypeAdapter, JsonValue, WrapValidator, field_serializer
 from pydantic_core import from_json, to_json
 from pydantic_extra_types.country import CountryNumericCode
 from sqlalchemy import ForeignKey
@@ -625,88 +625,80 @@ class Query:
 
         return ''.join(clauses)
 
-@dataclass
+def validate_igdb_query(value: Any, handler: SerializerFunctionWrapHandler) -> Query:
+    match value:
+        case str(s):
+            return Query(query=s)
+        case Query():
+            return value
+        case {"where": str(where), **rest}:
+            kwargs = rest
+            kwargs["where"] = where
+            kwargs["fields"] = rest.get("fields", DEFAULT_GAME_FIELD_TUPLE)
+            kwargs["exclude"] = rest.get('exclude', None)
+            kwargs["limit"] = rest.get('limit', 500)
+            kwargs["offset"] = rest.get('offset', 0)
+            kwargs["sort"] = rest.get('sort', DEFAULT_SORT)
+            kwargs["search"] = rest.get('search', None)
+            return handler(kwargs)
+        case _:
+            return handler(value)
+
+@dataclass(frozen=True)
 class Playlist:
+    """
+    A playlist defines criteria for a set of games
+    that will be aggregated into a single `.rdb` file.
+
+    Conceptually similar to playlists in RetroArch,
+    but this object doesn't list specific games;
+    just criteria for aggregating their data.
+    """
+
     title: PlaylistTitle
     '''
-    The title of the playlist,
-    which is used as the filename for the playlist file.
-    Usually follows the format "Manufacturer - Platform Name".
+    The canonical title of the playlist, usually (but not necessarily)
+    the name of a hardware manufacturer and platform.
+    Used as the name of a generated `.dat` file and `.rdb` database.
     '''
 
-    alts: Sequence[str]
-    '''
-    Other names that the playlist might be known by.
-    '''
-
-    query: Query
+    igdb_query: Annotated[
+        Query,
+        WrapValidator(validate_igdb_query),
+        Field(validation_alias='igdb')
+    ]
     '''
     The IGDB query to use to fetch games for this playlist.
     '''
 
-    hasheous_dirs: Sequence[str]
+    alts: tuple[str, ...] = ()
+    '''
+    Other names that may be used to address this playlist.
+
+    Primarily used to identify `.dat` files from this repo
+    that don't share the same name as the playlist title.
+    '''
+
+    hasheous_dirs: Annotated[tuple[str, ...], Field(validation_alias='hasheous')] = ()
+
     '''
     The names of zero or more Hasheous dump files, excluding the zip suffix.
     '''
 
-    def __init__(
-            self,
-            title: PlaylistTitle,
-            hasheous: Optional[str | Iterable[str]] = None,
-            alts: Optional[str | Iterable[str]] = None,
-            *, # Force keyword arguments for clarity
-            fields: Optional[Iterable[str] | str] = DEFAULT_GAME_FIELD_TUPLE,
-            exclude: Optional[Iterable[str] | str] = None,
-            where: Optional[str] = None,
-            limit: int = 500,
-            offset: int = 0,
-            sort: Optional[tuple[str, SortDirection]] = DEFAULT_SORT,
-            search: Optional[str] = None,
-    ):
-        self.title = title
-
-        self.query = Query(
-            fields=fields,
-            exclude=exclude,
-            where=where,
-            limit=limit,
-            offset=offset,
-            sort=sort,
-            search=search,
-        )
-
-        match hasheous:
-            case str():
-                self.hasheous_dirs = (hasheous,)
-            case Iterable():
-                self.hasheous_dirs = tuple(hasheous)
-            case None:
-                self.hasheous_dirs = ()
-            case _:
-                raise TypeError(f"Expected hasheous to be str, Iterable[str], or None; got {type(hasheous).__name__}")
-
-        match alts:
-            case str():
-                self.alts = (alts,)
-            case Iterable():
-                self.alts = tuple(alts)
-            case None:
-                self.alts = ()
-            case _:
-                raise TypeError(f"Expected alts to be str, Iterable[str], or None; got {type(alts).__name__}")
-
-
     def query_pages(self, count: int, limit: int = 500) -> Iterator[Query]:
         for i in range(0, count, limit):
             yield Query(
-                fields=self.query.fields,
-                exclude=self.query.exclude,
-                where=self.query.where,
+                fields=self.igdb_query.fields,
+                exclude=self.igdb_query.exclude,
+                where=self.igdb_query.where,
                 limit=limit,
                 offset=i,
-                sort=self.query.sort,
-                search=self.query.search,
+                sort=self.igdb_query.sort,
+                search=self.igdb_query.search,
             )
+
+class PlaylistConfig(BaseModel, frozen=True):
+    playlists: tuple[Playlist, ...]
 
 MULTIQUERY_MAX = 10
 MULTIQUERY_LIMIT = MULTIQUERY_MAX
@@ -918,43 +910,16 @@ class QueryClient:
 
         return int(count)
 
-def read_playlists(path: str) -> tuple[Playlist, ...]:
-    class TomlPlaylistEntry(TypedDict):
-        title: PlaylistTitle
-        hasheous: Sequence[str]
-        alts: Sequence[str]
-        where: str
-
+def read_playlists(path: str) -> PlaylistConfig:
     with open(path, "rb") as playlist_file:
         toml = tomllib.load(playlist_file)
 
-        if not (igdb := toml.get('igdb')):
-            raise KeyError(f"Missing 'igdb' section in TOML file at {path}")
-
-        if not (playlists := igdb.get('playlists')):
-            raise KeyError(f"Missing 'playlists' array in 'igdb' table of TOML file at {path}")
-
-        if not isinstance(playlists, list):
-            raise TypeError(f"Expected 'playlists' to be a list; got {type(playlists).__name__}")
-
-        playlist_objects = cast(Sequence[TomlPlaylistEntry], playlists)
-
-        def load_playlist(entry: TomlPlaylistEntry) -> Playlist:
-            # We use a separate function so that the Playlist is hashable
-            # (as tomllib loads into mutable dicts and lists)
-            return Playlist(
-                title=entry['title'],
-                hasheous=tuple(entry.get('hasheous', ())),
-                alts=tuple(entry.get('alts', ())),
-                where=entry['where'],
-            )
-        return tuple(load_playlist(p) for p in playlist_objects)
-
+        return PlaylistConfig.model_validate(toml)
 
 dirname = os.path.dirname(__file__)
 TOML_PATH = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'playlists.toml'))
 # TODO: Make this configurable on the command line
-PLAYLISTS = read_playlists(TOML_PATH)
+PLAYLISTS = read_playlists(TOML_PATH).playlists
 
 PLAYLISTS_BY_TITLE = {str(p.title): p for p in PLAYLISTS}
 PLAYLISTS_BY_TITLE_LOWER = {p.title.lower(): p for p in PLAYLISTS}
@@ -1162,7 +1127,7 @@ async def handle_fetch(args: argparse.Namespace) -> None:
 
     async def fetch_playlist(client: QueryClient, playlist: Playlist, group: TaskGroup) -> Sequence[GameResponse]:
         print(f"{playlist.title}: Fetching game count in query...")
-        count = await client.count("games", playlist.query)
+        count = await client.count("games", playlist.igdb_query)
 
         multiqueries: list[Multiquery] = []
         for batch in batched(playlist.query_pages(count), MULTIQUERY_MAX):
