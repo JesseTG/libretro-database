@@ -680,9 +680,9 @@ class Playlist:
     '''
 
     hasheous_dirs: Annotated[tuple[str, ...], Field(validation_alias='hasheous')] = ()
-
     '''
     The names of zero or more Hasheous dump files, excluding the zip suffix.
+    Passed to "https://hasheous.org/api/v1/Dumps/platforms/{name}".
     '''
 
     def query_pages(self, count: int, limit: int = 500) -> Iterator[Query]:
