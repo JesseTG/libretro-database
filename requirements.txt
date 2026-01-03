@@ -9,6 +9,7 @@ httpx==0.28.*
 more_itertools==10.8.*
 pe==0.6.*
 pydantic==2.12.*
-pydantic-extra-types==2.10.*
+pydantic-extra-types==2.11.*
+pydantic-settings==2.12.*
 requests==2.32.*
 SQLAlchemy[aiosqlite]>=2.0.44
