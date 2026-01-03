@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import argparse
 import asyncio
+import dataclasses
 import os.path
 import re
 import sys
@@ -9,31 +9,31 @@ import tomllib
 
 from abc import ABC
 from asyncio import Task, TaskGroup
-from collections import ChainMap
-from collections.abc import Collection, Sequence, Iterable, Iterator, Mapping
-from concurrent.futures import Executor
+from collections.abc import Collection, Iterable, Iterator, Mapping
 from dataclasses import dataclass
 from datetime import date, datetime
-from functools import cache
+from functools import cached_property
 from itertools import chain
-from json import JSONDecodeError
 from pathlib import Path
-from typing import Annotated, Any, ClassVar, Never, NotRequired, Optional, Literal, NewType, Required, Self, TypedDict, cast, overload
+from typing import Annotated, Any, ClassVar, Never, NotRequired, Literal, NewType, Required, Self, TypedDict, cast, overload
 
 import aiofiles
 import aiofiles.os
 import asynciolimiter
 import backoff
+import frozendict
 import httpx
 import sqlalchemy
 
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
+from frozendict import frozendict
 from httpx import HTTPStatusError, Response, Timeout
-from more_itertools import batched
-from pydantic import BaseModel, BeforeValidator, Field, FieldSerializationInfo, SerializerFunctionWrapHandler, TypeAdapter, JsonValue, WrapValidator, field_serializer
+from more_itertools import batched, spy
+from pydantic import AliasChoices, BaseModel, BeforeValidator, Field, FieldSerializationInfo, FilePath, SerializerFunctionWrapHandler, TypeAdapter, JsonValue, WrapValidator, computed_field, field_serializer
 from pydantic_core import from_json, to_json
 from pydantic_extra_types.country import CountryNumericCode
+from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
 from sqlalchemy import ForeignKey
 
 from sqlite import CoercedHttpUrl, ColumnDef, DatabaseModel, RelationshipDef, TupleOf
@@ -480,38 +480,38 @@ class GameResponse(TypedDict, total=False):
 class MultiqueryResult(TypedDict):
     name: str
     count: NotRequired[int]
-    result: NotRequired[GameResponse]
-
-type MultiqueryResponse = list[MultiqueryResult]
+    result: NotRequired[list[GameResponse]]
 
 GameResponseAdapter = TypeAdapter(GameResponse)
-MultiqueryResponseAdapter = TypeAdapter(MultiqueryResponse)
-MultiqueryResponseListAdapter = TypeAdapter(list[list[dict[str, JsonValue]]])
+MultiqueryResponse = list[MultiqueryResult]
+MultiqueryResponseListAdapter = TypeAdapter(list[MultiqueryResponse])
 
 class CountResponse(TypedDict):
     count: int
 
+CountResponseAdapter = TypeAdapter(CountResponse)
+
 @dataclass(kw_only=True, eq=True)
 class Query:
-    fields: Optional[tuple[str, ...]]
-    exclude: Optional[tuple[str, ...]]
-    where: Optional[str]
+    fields: tuple[str, ...] | None
+    exclude: tuple[str, ...] | None
+    where: str | None
     limit: int
     offset: int
-    sort: Optional[tuple[str, SortDirection]]
-    search: Optional[str]
+    sort: tuple[str, SortDirection] | None
+    search: str | None
 
     def __init__(
             self,
-            query: Optional[str] = None,
+            query: str | None = None,
             *, # Force keyword arguments for clarity
-            fields: Optional[Iterable[str] | str] = "*",
-            exclude: Optional[Iterable[str] | str] = None,
-            where: Optional[str] = None,
+            fields: Iterable[str] | str | None = "*",
+            exclude: Iterable[str] | str | None = None,
+            where: str | None = None,
             limit: int = 10, # IGDB's default
             offset: int = 0, # IGDB's default
-            sort: Optional[tuple[str, SortDirection]] = None,
-            search: Optional[str] = None,
+            sort: tuple[str, SortDirection] | None = None,
+            search: str | None = None,
     ) -> None:
         if query is not None:
             # If given a query string, use it to override all other parameters.
@@ -588,7 +588,7 @@ class Query:
         self.search = search
         self.sort = sort
 
-    def query_pages(self, count: int, limit: int = 500) -> Iterator['Query']:
+    def expand_to_all(self, count: int, limit: int = 500) -> Iterator['Query']:
         for i in range(0, count, limit):
             yield Query(
                 fields=self.fields,
@@ -599,6 +599,10 @@ class Query:
                 sort=self.sort,
                 search=self.search,
             )
+
+    @property
+    def last(self) -> int:
+        return self.offset + self.limit - 1
 
     def __str__(self) -> str:
         clauses: list[str] = []
@@ -625,6 +629,16 @@ class Query:
 
         return ''.join(clauses)
 
+@dataclass()
+class MultiqueryQuery(Query):
+    name: str
+    endpoint: str
+
+    def __init__(self, name: str, endpoint: str, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        object.__setattr__(self, 'name', name)
+        object.__setattr__(self, 'endpoint', endpoint)
+
 def validate_igdb_query(value: Any, handler: SerializerFunctionWrapHandler) -> Query:
     match value:
         case str(s):
@@ -643,6 +657,8 @@ def validate_igdb_query(value: Any, handler: SerializerFunctionWrapHandler) -> Q
             return handler(kwargs)
         case _:
             return handler(value)
+
+MAX_OBJECTS_PER_QUERY = 500
 
 @dataclass(frozen=True)
 class Playlist:
@@ -685,23 +701,22 @@ class Playlist:
     Passed to "https://hasheous.org/api/v1/Dumps/platforms/{name}".
     '''
 
-    def query_pages(self, count: int, limit: int = 500) -> Iterator[Query]:
-        for i in range(0, count, limit):
-            yield Query(
-                fields=self.igdb_query.fields,
-                exclude=self.igdb_query.exclude,
-                where=self.igdb_query.where,
-                limit=limit,
-                offset=i,
-                sort=self.igdb_query.sort,
-                search=self.igdb_query.search,
-            )
+    def expand_to_all(self, count: int, limit: int = MAX_OBJECTS_PER_QUERY) -> Iterator[MultiqueryQuery]:
+        return map(lambda q: MultiqueryQuery(
+            name=f"{self.title} ({q.offset}-{q.last})",
+            endpoint="games",
+            **dataclasses.asdict(q),
+        ), self.igdb_query.expand_to_all(count, MAX_QUERIES_IN_MULTIQUERY))
 
 class PlaylistConfig(BaseModel, frozen=True):
     playlists: tuple[Playlist, ...]
 
-MULTIQUERY_MAX = 10
-MULTIQUERY_LIMIT = MULTIQUERY_MAX
+    @computed_field
+    @cached_property
+    def by_title(self) -> Mapping[PlaylistTitle, Playlist]:
+        return frozendict({pl.title: pl for pl in self.playlists})
+
+MAX_QUERIES_IN_MULTIQUERY = 10
 '''
 The maximum number of queries that IGDB allows in a single multiquery.
 '''
@@ -711,20 +726,19 @@ MAX_ACTIVE_QUERIES = 8
 MAX_QUERY_RATE = 4
 MAX_QUERY_PERIOD = 1.0 / MAX_QUERY_RATE
 
-
+@dataclass
 class Multiquery:
-    def __init__(self, queries: Mapping[str, tuple[str, Query]]):
-        if len(queries) > MULTIQUERY_LIMIT:
-            raise ValueError(f"Multiquery can only contain up to {MULTIQUERY_LIMIT} queries; got {len(queries)}")
+    queries: tuple[MultiqueryQuery, ...]
 
-        self.queries = dict(queries)
+    def __init__(self, queries: Iterable[MultiqueryQuery]) -> None:
+        head, _rest = spy(queries, MAX_QUERIES_IN_MULTIQUERY + 1)
+        if len(head) > MAX_QUERIES_IN_MULTIQUERY:
+            raise ValueError(f"Multiquery can only contain up to {MAX_QUERIES_IN_MULTIQUERY} queries; got more than {MAX_QUERIES_IN_MULTIQUERY}")
+
+        setattr(self, 'queries', tuple(head))
 
     def __str__(self) -> str:
-        queries: list[str] = []
-        for name, (endpoint, query) in self.queries.items():
-            queries.append(f"query {endpoint} \"{name}\" {{ {query} }};")
-
-        return '\n'.join(queries)
+        return '\n'.join(f"query {q.endpoint} \"{q.name}\" {{ { q } }};" for q in self.queries)
 
 RETRY_CODES = (
     httpx.codes.REQUEST_TIMEOUT,
@@ -871,10 +885,10 @@ class QueryClient:
         tasks: list[Task[JsonValue]] = []
 
         async with asyncio.TaskGroup() as group:
-            for name, (query_endpoint, query_obj) in multiquery.queries.items():
+            for query in multiquery.queries:
                 tasks.append(group.create_task(
-                    self.query(query_endpoint, query_obj),
-                    name=name
+                    self.query(query.endpoint, query),
+                    name=query.name
                 ))
 
             # Wait for all individual queries to complete
@@ -910,25 +924,6 @@ class QueryClient:
 
         return int(count)
 
-def read_playlists(path: str) -> PlaylistConfig:
-    with open(path, "rb") as playlist_file:
-        toml = tomllib.load(playlist_file)
-
-        return PlaylistConfig.model_validate(toml)
-
-dirname = os.path.dirname(__file__)
-TOML_PATH = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'playlists.toml'))
-# TODO: Make this configurable on the command line
-PLAYLISTS = read_playlists(TOML_PATH).playlists
-
-PLAYLISTS_BY_TITLE = {str(p.title): p for p in PLAYLISTS}
-PLAYLISTS_BY_TITLE_LOWER = {p.title.lower(): p for p in PLAYLISTS}
-PLAYLISTS_BY_ANY: Mapping[str, Playlist] = ChainMap(
-    PLAYLISTS_BY_TITLE,
-    PLAYLISTS_BY_TITLE_LOWER,
-)
-PLAYLIST_TITLES = tuple(p.title for p in PLAYLISTS)
-
 ANALOG_KEYWORD_IDS = (
     4965, # circle pad pro support
     10740, # gamecube
@@ -963,90 +958,6 @@ RUMBLE_KEYWORD_IDS = (
     38907, # rumble support
 )
 
-@cache
-def get_playlist(identifier: str | Path) -> Optional[Playlist]:
-    """
-    Look up a playlist in `PLAYLISTS` by its title, path, or alternative name.
-    """
-
-    if isinstance(identifier, Path):
-        playlist_id = identifier.stem.lower()
-    else:
-        playlist_id = identifier.strip().lower()
-
-    for playlist in PLAYLISTS:
-        if playlist_id == playlist.title.lower():
-            return playlist
-
-        if any(playlist_id == alt.lower() for alt in playlist.alts):
-            return playlist
-
-        if any(playlist_id == h.lower() for h in playlist.hasheous_dirs):
-            return playlist
-
-    return None
-
-
-def get_by_title(title: str) -> Optional[Playlist]:
-    """
-    Get a playlist by its title.
-
-    :param title: The title of the playlist to search for.
-    :return: The Playlist object if found, otherwise None.
-    """
-
-    for playlist in PLAYLISTS:
-        if playlist.title.lower() == title.lower():
-            return playlist
-
-    return None
-
-def get_client_credentials(args: argparse.Namespace) -> tuple[str, str]:
-    """Get client ID and secret from args or environment variables."""
-    client_id = args.client_id or os.getenv('TWITCH_CLIENT_ID')
-    client_secret = args.client_secret or os.getenv('TWITCH_CLIENT_SECRET')
-
-    if not client_id or not client_secret:
-        raise ValueError("Client ID and Client Secret are required for authentication")
-
-    return client_id, client_secret
-
-
-def load_file(path: Path, playlist: Playlist) -> tuple[PlaylistTitle, Collection[Game]]:
-    with open(path, mode='rb') as infile:
-        json_bytes = infile.read()
-        games = GameTupleAdapter.validate_json(json_bytes, extra='allow')
-        return playlist.title, games
-
-class IgdbIndex:
-    def __init__(self, games: Iterable[tuple[PlaylistTitle, Iterable[Game]]]):
-        playlists_iterators = dict(games)
-        playlists = {title: tuple(obj_iter) for title, obj_iter in playlists_iterators.items()}
-        self.by_playlist = playlists
-        self.by_id: dict[IgdbId, Game] = {}
-
-        for game in chain.from_iterable(playlists.values()):
-            self.by_id[game.id] = game
-
-    @property
-    def by_igdb_id(self):
-        return self.by_id
-
-async def load_games(playlists: Mapping[Path, Playlist], executor: Executor) -> IgdbIndex:
-    """
-    :param playlists: An iterable of tuples,
-    where each tuple contains the path to a playlist file
-    and the corresponding Playlist object.
-
-    :return: A mapping of playlist titles to collections of the Games they represent.
-    """
-
-    loop = asyncio.get_running_loop()
-    futures = (loop.run_in_executor(executor, load_file, k, v) for (k, v) in playlists.items())
-
-    return IgdbIndex(await asyncio.gather(*futures))
-
-
 GameTupleAdapter = TypeAdapter(tuple[Game, ...])
 
 async def load_game_file(path: Path, playlist: Playlist) -> tuple[PlaylistTitle, Collection[Game]]:
@@ -1055,204 +966,225 @@ async def load_game_file(path: Path, playlist: Playlist) -> tuple[PlaylistTitle,
         games = GameTupleAdapter.validate_json(json_bytes, extra='allow')
         return playlist.title, games
 
-async def handle_query(args: argparse.Namespace) -> None:
-    """Handle the query subcommand."""
+class CommonArgs(BaseModel):
+    client_id: str = Field(
+        title="Twitch Client ID",
+        description="""
+            Your client ID for IGDB API access.
+            See the IGDB API docs for more.
+        """,
+        validation_alias=AliasChoices('client-id', 'i'),
+        min_length=1,
+    )
+    client_secret: str = Field(
+        description="""
+            Your client secret for IGDB API access.
+            See the IGDB API docs for more.
+        """,
+        validation_alias=AliasChoices('client-secret', 's'),
+        min_length=1,
+    )
+    verbose: bool = Field(
+        default=False,
+        description="Enable verbose output.",
+        validation_alias=AliasChoices('v', 'verbose'),
+    )
 
-    all_records = bool(args.all)
-    verbose = bool(args.verbose)
+class QueryCommand(CommonArgs):
+    """
+    Execute an arbitrary Apicalypse query against the IGDB API
+    and print the results as JSON to stdout.
+    See https://api-docs.igdb.com for details.
+    """
 
-    if args.endpoint == "multiquery":
-        # Read multiquery definitions from file or stdin
-        if args.query == '-':
-            body = sys.stdin.read()
-        else:
-            with open(args.query, 'r') as f:
-                body = f.read()
-    else:
-        body = args.query
+    all: bool = Field(
+        default=False,
+        description="""
+            Ignore offset and limit clauses in the query,
+            and fetch all matching records by issuing multiple requests.
+            """
+    )
+    batch_size: int = Field(
+        default=MAX_OBJECTS_PER_QUERY,
+        description=f"""
+            Fetch all objects matching the query in batches of this size.
+            IGDB allows up to {MAX_OBJECTS_PER_QUERY} per request.
+            """,
+        ge=1,
+        le=MAX_OBJECTS_PER_QUERY,
+    )
+    endpoint: CliPositionalArg[str] = Field(
+        description="""
+            The IGDB API endpoint to query.
+            Baseurl is 'https://api.igdb.com/v4/'
+            """,
+        min_length=1,
+    )
+    query: CliPositionalArg[str | None] = Field(
+        description="""
+            The Apicalypse query to submit to IGDB.
+            If 'endpoint' is 'multiquery',
+            this may be a path to a query file
+            or omitted to read from stdin.
+            """
+    )
 
-    client_id, client_secret = get_client_credentials(args)
-    async with QueryClient(client_id, client_secret) as client:
-        try:
-            if not all_records:
-                # If the user didn't pass the --all flag...
-                response = await client.query(args.endpoint, body)
+    async def cli_cmd(self):
+        """Handle the query subcommand."""
+
+        match (self.endpoint, self.query):
+            case (_, "" | None):
+                # If an endpoint is given but no query, read from stdin
+                body = await aiofiles.stdin.read()
+            case ("multiquery", str(query_path)):
+                # Read multiquery definitions from file
+                async with aiofiles.open(query_path, 'r') as f:
+                    body = await f.read()
+            case (_, query):
+                # Otherwise, send it to IGDB as-is
+                body = query
+
+        async with QueryClient(self.client_id, self.client_secret) as client:
+            if not self.all:
+                # If the user didn't pass the --all flag,
+                # submit the query as-is and print the response.
+                response = await client.query(self.endpoint, body)
                 json = to_json(response, indent=2)
                 await aiofiles.stdout_bytes.write(json)
             else:
-                count_response = cast(CountResponse, await client.query(f"{args.endpoint}/count", body))
-                count = count_response["count"]
-                if verbose:
+                # If the user passed the --all flag,
+                # ignore any offset and limit clauses in the query,
+                # and fetch all matching records in batches.
+
+                # First get the number of records this query would return
+                count_response = CountResponseAdapter.validate_python(await client.query(f"{self.endpoint}/count", body), extra='allow')
+                count = count_response['count']
+                if self.verbose:
                     print(f"Query will return {count} total records", file=sys.stderr)
 
-                query = Query(body)
                 async with asyncio.TaskGroup() as group:
-                    tasks: list[Task[JsonValue]] = []
-                    for q in batched(query.query_pages(count), MULTIQUERY_MAX):
-                        if verbose:
-                            print(f"Fetching records {q[0].offset} to {q[-1].offset + q[-1].limit - 1}", file=sys.stderr)
+                    # Expand our base query into multiple paged queries,
+                    # and batch them further into multiqueries.
 
-                        multiquery = Multiquery({f"{args.endpoint} ({p.offset}-{p.offset + p.limit - 1})": (args.endpoint, p) for p in q})
-                        task = group.create_task(client.query("multiquery", multiquery))
-                        tasks.append(task)
-
+                    queries = map(lambda q: MultiqueryQuery(
+                        name=f"{self.endpoint} ({q.offset}-{q.last})",
+                        endpoint=self.endpoint,
+                        **dataclasses.asdict(q),
+                    ), Query(body).expand_to_all(count, self.batch_size))
+                    batches = batched(queries, MAX_QUERIES_IN_MULTIQUERY)
+                    multiqueries = (Multiquery(batch) for batch in batches)
+                    tasks = (group.create_task(client.query("multiquery", m)) for m in multiqueries)
                     responses = await asyncio.gather(*tasks)
 
+                # Validate the responses, concatenate all results, and print as JSON
                 multiquery_responses = MultiqueryResponseListAdapter.validate_python(responses, extra='allow')
                 results = tuple(chain.from_iterable(multiquery_responses))
                 json = to_json(results, indent=2)
                 await aiofiles.stdout_bytes.write(json)
-        except JSONDecodeError as e:
-            print(e.doc, file=sys.stderr)
-            print(e, file=sys.stderr)
-            raise e
 
+class FetchCommand(CommonArgs):
+    """
+    Fetch game data from IGDB for one or more playlists
+    and save the results as JSON files.
 
-async def handle_fetch(args: argparse.Namespace) -> None:
-    """Handle the fetch subcommand."""
+    Each JSON file will be named after the playlist title,
+    and will contain all retrieved game objects sorted by game title.
+    """
 
-    playlist_args: Iterable[str] | None = args.playlist
-    if not playlist_args:
-        # If no playlists specified, use all known playlists
-        playlist_args = (p.title for p in PLAYLISTS)
-
-    # Get all playlists to scrape (filter out the Nones)
-    playlists = tuple(filter(None, (get_playlist(p) for p in playlist_args)))
-    if not playlists:
-        raise ValueError("All listed playlists are unknown.")
-
-    outdir: str = args.outdir
-
-    await aiofiles.os.makedirs(outdir, exist_ok=True)
-
-    async def fetch_playlist(client: QueryClient, playlist: Playlist, group: TaskGroup) -> Sequence[GameResponse]:
-        print(f"{playlist.title}: Fetching game count in query...")
-        count = await client.count("games", playlist.igdb_query)
-
-        multiqueries: list[Multiquery] = []
-        for batch in batched(playlist.query_pages(count), MULTIQUERY_MAX):
-            multiqueries.append(Multiquery({f"{playlist.title} ({q.offset}-{q.offset + q.limit - 1})": ('games', q) for q in batch}))
-
-        playlist_tasks = tuple(group.create_task(client.query("multiquery", m)) for m in multiqueries)
-        print(f"{playlist.title}: Scheduled to fetch {count} games...")
-
-        responses = await asyncio.gather(*playlist_tasks)
-        multiquery_responses = MultiqueryResponseListAdapter.validate_python(responses, extra='allow')
-
-        games: list[GameResponse] = []
-        for r in chain.from_iterable(multiquery_responses):
-            if 'result' in r:
-                games.extend(r['result']) # type: ignore (because we're checking for the result key)
-                # We're not processing the returned games except to sort them,
-                # so we don't need to convert them to IgdbGame objects here.
-
-        print(f"{playlist.title}: Fetched {len(games)} games.")
-        games.sort(key=lambda g: g['name'])
-        # Now that we have all the games, sort them by name
-
-        # Create the output directory if it doesn't exist
-        await aiofiles.os.makedirs(outdir, exist_ok=True)
-        outpath = os.path.join(outdir, f"{playlist.title}.json")
-        async with aiofiles.open(outpath, 'wb') as outfile:
-            json = to_json(games, indent=2)
-            await outfile.write(json)
-            print(f"{playlist.title}: Saved {len(games)} games to {outpath}")
-
-        return games
-
-    client_id, client_secret = get_client_credentials(args)
-    async with QueryClient(client_id, client_secret) as client:
-        async with asyncio.TaskGroup() as group:
-            tasks = tuple(group.create_task(fetch_playlist(client, p, group), name=p.title) for p in playlists)
-
-def main():
-    """Main entry point for the script."""
-
-    parser = argparse.ArgumentParser(
-        description="Utilities for fetching and processing data from IGDB.",
-        epilog="See https://api-docs.igdb.com for more information about the IGDB API and its query syntax."
+    config: FilePath = Field(
+        default=Path(__file__).parent.parent / 'playlists.toml',
+        title="Playlist Config File",
+        description="Path to the config file that defines available playlists.",
+        validation_alias=AliasChoices('c', 'config'),
+        validate_default=True,
     )
 
-    parser.add_argument(
-        "--verbose",
-        action="store_true",
-        help="show more logging output"
+    playlists: tuple[str, ...] = Field(
+        default=(),
+        description="""
+            Query IGDB with the filters defined in playlist_config.
+            Pass as -p '<playlist_title>' multiple times or once as -p '<playlist1>,<playlist2>,...'
+            to fetch multiple playlists.
+            If omitted, all playlists in the config that define an 'igdb.query' field will be fetched.
+            Unrecognized playlist titles will be ignored.
+        """,
+        validation_alias=AliasChoices('p', 'playlists'),
+        examples=[("Coleco - ColecoVision", "Dinothawr")]
     )
 
-    subparsers = parser.add_subparsers(
-        dest="command",
-        help="Available commands",
-        required=True
+    outdir: CliPositionalArg[Path] = Field(
+        default=Path(__file__).parent.parent / 'tmp' / 'igdb',
+        description="""
+            The output directory for the fetched JSON files.
+            Will be created if it doesn't exist.
+        """
     )
 
-    # Query subcommand
-    query_parser = subparsers.add_parser(
-        "query",
-        help="Make a request to an IGDB API endpoint and print the response to stdout."
-    )
-    query_parser.add_argument(
-        "--client-id",
-        type=str,
-        help="Your IGDB API client ID. Overrides the TWITCH_CLIENT_ID environment variable if provided.",
-        default=None,
-    )
-    query_parser.add_argument(
-        "--client-secret",
-        type=str,
-        help="Your IGDB API client secret. Overrides the TWITCH_CLIENT_SECRET environment variable if provided."
-    )
-    query_parser.add_argument(
-        "--all",
-        action="store_true",
-        help="Use this query, but ignore the 'offset'/'limit' clauses and fetch all results."
-    )
-    query_parser.add_argument(
-        "endpoint",
-        type=str,
-        help="The IGDB API endpoint to query."
-    )
-    query_parser.add_argument(
-        "query",
-        type=str,
-        help="The Apicalypse query to query data from. If 'endpoint' is 'multiquery', this should be a path to a query file or '-' to read from stdin."
-    )
-    query_parser.set_defaults(func=handle_query)
+    async def cli_cmd(self):
+        """Handle the fetch subcommand."""
+        await aiofiles.os.makedirs(self.outdir, exist_ok=True)
+        async with aiofiles.open(self.config, 'rb') as f:
+            config = PlaylistConfig.model_validate(tomllib.load(f.raw))
 
-    # fetch subcommand
-    fetch_parser = subparsers.add_parser(
-        "fetch",
-        help="Fetch data from IGDB and save it to the specified directory"
-    )
-    fetch_parser.add_argument(
-        "--client-id",
-        type=str,
-        help="The IGDB API client ID. Overrides the TWITCH_CLIENT_ID environment variable if provided."
-    )
-    fetch_parser.add_argument(
-        "--client-secret",
-        type=str,
-        help="The IGDB API client secret. Overrides the TWITCH_CLIENT_SECRET environment variable if provided."
-    )
-    fetch_parser.add_argument(
-        "--playlist",
-        type=str,
-        help="The titles of the playlists to scrape. If not provided, all known playlists will be scraped.",
-        action="extend",
-        nargs="*",
-        default=PLAYLISTS_BY_TITLE.keys()  # Default to all known playlists
-    )
-    fetch_parser.add_argument(
-        "outdir",
-        type=str,
-        help="The output directory for the scraped JSON files",
-        default="tmp/igdb",
-    )
-    fetch_parser.set_defaults(func=handle_fetch)
+        if self.playlists:
+            # If specific playlists were requested, filter to those
+            playlists = tuple(filter(None, (config.by_title.get(PlaylistTitle(p)) for p in self.playlists)))
 
-    # Parse arguments and call appropriate handler
+            if not playlists:
+                raise ValueError(f"None of the requested playlists are defined in {self.config}: {', '.join(self.playlists)}")
+        else:
+            # Otherwise, fetch all playlists that define an IGDB query
+            playlists = tuple(p for p in config.by_title.values() if p.igdb_query)
 
-    args = parser.parse_args()
-    asyncio.run(args.func(args))
+            if not playlists:
+                raise ValueError(f"No playlists in {self.config} define an IGDB query.")
+
+        async def fetch_playlist(client: QueryClient, playlist: Playlist, group: TaskGroup):
+            print(f"{playlist.title}: Fetching game count in query...")
+            count = await client.count("games", playlist.igdb_query)
+            print(f"{playlist.title}: Found {count} games matching query.")
+            queries = playlist.expand_to_all(count, MAX_OBJECTS_PER_QUERY)
+            multiqueries = (Multiquery(batch) for batch in batched(queries, MAX_QUERIES_IN_MULTIQUERY))
+            fetch_tasks = (group.create_task(client.query("multiquery", m)) for m in multiqueries)
+            responses = await asyncio.gather(*fetch_tasks)
+            multiquery_responses = MultiqueryResponseListAdapter.validate_python(responses, extra='allow')
+            results = chain.from_iterable(multiquery_responses)
+
+            # We're not processing the returned games except to sort them,
+            # so we don't need to convert them to IgdbGame objects here.
+            games = chain.from_iterable(filter(None, (r.get('result') for r in results)))
+            games_sorted = sorted(games, key=lambda g: g['name'])
+
+            print(f"{playlist.title}: Fetched {len(games_sorted)} games.")
+
+            # Create the output directory if it doesn't exist
+            await aiofiles.os.makedirs(self.outdir, exist_ok=True)
+            outpath = os.path.join(self.outdir, f"{playlist.title}.json")
+            async with aiofiles.open(outpath, 'wb') as outfile:
+                await outfile.write(to_json(games_sorted, indent=2))
+                print(f"{playlist.title}: Saved {len(games_sorted)} games to {outpath}")
+
+        async with QueryClient(self.client_id, self.client_secret) as client:
+            async with asyncio.TaskGroup() as group:
+                for p in playlists:
+                    group.create_task(fetch_playlist(client, p, group), name=p.title)
+            # The task group will wait for all fetch tasks to complete
+
+class IgdbCommand(BaseSettings):
+    fetch: CliSubCommand[FetchCommand]
+    query: CliSubCommand[QueryCommand]
+    model_config = SettingsConfigDict(
+        case_sensitive=False,
+        cli_avoid_json=True,
+        cli_implicit_flags=True,
+        cli_kebab_case=True,
+        cli_parse_args=True,
+        extra="ignore",
+    )
+
+    def cli_cmd(self):
+        CliApp.run_subcommand(self)
+
 
 __all__ = (
     "AgeRating",
@@ -1275,9 +1207,6 @@ __all__ = (
     "GameStatus",
     "GameType",
     "Genre",
-    "get_by_title",
-    "get_playlist",
-    "IgdbIndex",
     "IgdbId",
     "IgdbObject",
     "IGDB_OBJECT_TYPES",
@@ -1286,22 +1215,17 @@ __all__ = (
     "Language",
     "LanguageSupport",
     "LanguageSupportType",
-    "load_games",
     "MAX_ACTIVE_QUERIES",
     "MAX_QUERY_PERIOD",
     "MAX_QUERY_RATE",
     "MultiplayerMode",
-    "MULTIQUERY_MAX",
     "Multiquery",
     "Platform",
     "PlatformFamily",
     "PlatformType",
     "PlatformVersion",
     "PlayerPerspective",
-    "PLAYLIST_TITLES",
     "Playlist",
-    "PLAYLISTS_BY_TITLE",
-    "PLAYLISTS",
     "PlaylistTitle",
     "Query",
     "QueryClient",
@@ -1316,4 +1240,4 @@ __all__ = (
 )
 
 if __name__ == "__main__":
-    main()
+    CliApp.run(IgdbCommand)
