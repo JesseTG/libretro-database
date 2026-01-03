@@ -8,29 +8,20 @@ Dictionary definitions taken from the following Hasheous source files:
 - https://github.com/gaseous-project/gaseous-signature-parser/blob/main/gaseous-signature-parser/models/RomSignatureObject.cs
 """
 
-import argparse
 import asyncio
 import csv
-import itertools
-import os
-import pickle
 import sys
-import time
-import zipfile
+import tomllib
 
 from abc import ABC
-from collections.abc import Collection, Iterable, Sequence, Mapping
-from collections import ChainMap
-from concurrent.futures import Executor, ProcessPoolExecutor
+from collections.abc import Sequence, Mapping
 from dataclasses import dataclass
 from datetime import datetime
 from functools import cached_property
+from itertools import chain
 from pathlib import Path
-from pprint import pprint
 from typing import Annotated, Any, ClassVar, Literal, NamedTuple, NewType, Optional, TypeAlias, TypedDict
-from warnings import deprecated
 from zipfile import ZipFile, ZipInfo
-
 
 import aiofiles
 import aiofiles.os
@@ -40,10 +31,11 @@ import sqlalchemy
 
 from frozendict import frozendict
 from more_itertools import first_true
-from pydantic import ByteSize, Field, FieldSerializationInfo, HttpUrl, PlainSerializer, PlainValidator, SerializerFunctionWrapHandler, StringConstraints, TypeAdapter, ValidationError, WrapValidator, computed_field, field_serializer
+from pydantic import AliasChoices, BaseModel, ByteSize, Field, FieldSerializationInfo, FilePath, HttpUrl, PlainSerializer, PlainValidator, SerializerFunctionWrapHandler, StringConstraints, TypeAdapter, ValidationError, WrapValidator, computed_field, field_serializer
+from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
 from sqlalchemy.util import is_non_string_iterable
 
-from igdb import PLAYLISTS, IgdbId, Playlist, PlaylistTitle
+from igdb import IgdbId, PlaylistConfig
 from sqlite import ColumnDef, DatabaseModel, FrozenDictValidator, Hash, InsertInRowContext, RelationshipDef, TupleOf
 
 METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
@@ -84,26 +76,13 @@ MatchMethodType: TypeAlias = Literal[
     "Voted",
 ]
 
-MetadataSource: TypeAlias = Literal[
-    "None",
-    "IGDB",
-    "TheGamesDb",
-    "RetroAchievements",
-    "GiantBomb",
-    "Steam",
-    "GOG",
-    "EpicGameStore",
-    "Wikipedia",
-    "SteamGridDb",
-]
-
 @dataclass(frozen=True)
 class MetadataItem:
     Id: EmptyStringToNone[str]
     ImmutableId: EmptyStringToNone[str]
     Status: MappingStatus
     MatchMethod: MatchMethodType
-    Source: MetadataSource
+    Source: str
     Link: Annotated[HttpUrl | None, WrapValidator(lambda v, h: h(v) if v else None), PlainSerializer(lambda v: v or None, str | None)]
     NextSearch: datetime
     WinningVoteCount: int
@@ -125,54 +104,10 @@ AttributeType: TypeAlias = Literal[
 Values taken from https://tinyurl.com/yc7baymp
 """
 
-
-AttributeName: TypeAlias = Literal[
-    "Description", # LongString
-    "Manufacturer", # ObjectRelationship (Company)
-    "Publisher", # ObjectRelationship (Company)
-    "Logo",
-    "Platform", # ObjectRelationship (Platform)
-    "Year",
-    "Country", # ShortString
-    "Language", # ShortString
-    "ROMs", # EmbeddedList (RomItem)
-    "VIMMManualId",
-    "LogoAttribution",
-    "VIMMPlatformName", # ShortString
-    "HomePage",
-    "IssueTracker",
-    "Screenshot1",
-    "Screenshot2",
-    "Screenshot3",
-    "Screenshot4",
-    "Wikipedia",
-    "Public",
-    "DumpFile",
-    "IssueTracker",
-    "Tags",
-]
-
 DataObjectType: TypeAlias = Literal["None", "Company", "Platform", "Game", "ROM", "App"]
-RomTypeName: TypeAlias = Literal["Unknown", "Disc", "Disk", "File", "Part", "Tape", "Side"]
-SignatureSourceType: TypeAlias = Literal[
-    "None",
-    "TOSEC",
-    "MAMEArcade",
-    "MAMEMess",
-    "MAMERedump",
-    "NoIntro",
-    "NoIntros",
-    "Redump",
-    "WHDLoad",
-    "RetroAchievements",
-    "FBNeo",
-    "PureDOSDAT",
-    "Pleasuredome",
-    "Generic",
-]
 
 class MediaType(TypedDict, total=False):
-    MediaType: RomTypeName
+    MediaType: str
     Media: str
     Number: int
     Count: int
@@ -331,76 +266,6 @@ HASHEOUS_OBJECT_TYPES = (
     RomItem,
 )
 
-@deprecated("Use SQLite instead")
-class HasheousIndex:
-    def __init__(self, games: Iterable[tuple[PlaylistTitle, Iterable[DataObject]]]) -> None:
-        playlists_iterators = dict(games)
-        playlists = {title: tuple(obj_iter) for title, obj_iter in playlists_iterators.items()}
-        self.by_playlist = playlists
-        self.by_id: dict[int, DataObject] = {}
-        self.by_igdb_id: dict[IgdbId, DataObject] = {}
-        self.hasheous_to_igdb: dict[HasheousId, IgdbId] = {}
-        self.supports_achievements: set[HasheousId] = set()
-
-        self.by_crc: dict[str, DataObject] = {}
-        """
-        Mapping of ROM CRC32 hashes to DataObjects.
-        CRCs must be all uppercase.
-        """
-
-        self.by_md5: dict[str, DataObject] = {}
-        self.by_sha1: dict[str, DataObject] = {}
-        self.by_serial: dict[str, DataObject] = {}
-
-        self.by_game_id = ChainMap(self.by_crc, self.by_md5, self.by_sha1, self.by_serial)
-
-        for obj in itertools.chain.from_iterable(playlists.values()):
-            if obj.ObjectType != 'Game':
-                continue
-
-            self.by_id[obj.Id] = obj
-
-            for m in filter(lambda mi: mi.Status == 'Mapped', obj.Metadata):
-                self._handle_metadata(obj, m)
-
-            for a in obj.Attributes:
-                self._handle_attribute(obj, a)
-
-    def _handle_metadata(self, obj: DataObject, m: MetadataItem) -> None:
-        match m.Source:
-            case 'IGDB':
-                igdb_id = IgdbId(int(m.ImmutableId))
-                if igdb_id not in self.by_igdb_id:
-                    self.by_igdb_id[igdb_id] = obj
-                    self.hasheous_to_igdb[obj.Id] = igdb_id
-            case 'RetroAchievements':
-                self.supports_achievements.add(obj.Id)
-
-    def _handle_attribute(self, obj: DataObject, a: Attribute) -> None:
-        match (a.attributeType, a.attributeName, a.Value):
-            case ('EmbeddedList', 'ROMs', roms) if isinstance(roms, Sequence) and not isinstance(roms, str):
-                for r in roms:
-                    if r.Crc:
-                        crc = r.Crc.upper()
-                        if crc not in self.by_crc:
-                            self.by_crc[crc] = obj
-
-                    if r.Md5:
-                        md5 = r.Md5.upper()
-                        if md5 not in self.by_md5:
-                            self.by_md5[md5] = obj
-
-                    if r.Sha1:
-                        sha1 = r.Sha1.upper()
-                        if sha1 not in self.by_sha1:
-                            self.by_sha1[sha1] = obj
-
-                    if r.Attributes and (serial := r.Attributes.get('serial', None)):
-                        serial_upper = serial.upper()
-                        if serial_upper not in self.by_serial:
-                            self.by_serial[serial_upper] = obj
-
-
 class MatchRecord(NamedTuple):
     """
     A record of an attempt to match a game listed in one of this repo's DAT files
@@ -477,21 +342,6 @@ class HasheousZip(NamedTuple):
     name: str
     objects: TupleOf[DataObject]
 
-def parse_zip(path: Path) -> HasheousZip:
-    start = time.perf_counter_ns()
-    with ZipFile(path, 'r') as zip:
-        paths = zip.infolist()
-        json_infos = filter(lambda p: p.filename.endswith('.json') and p.filename != 'PlatformMapping.json', paths)
-        objects = map(lambda i: DataObject.model_validate_json(zip.read(i)), json_infos)
-
-        result = HasheousZip(path.stem, tuple(objects))
-
-    end = time.perf_counter_ns()
-    duration = (end - start) / 1_000_000
-    print(f"Parsed {len(result.objects)} DataObjects from {path.name} in {duration:.2f} ms")
-    return result
-    # Returning the stem makes it easier to aggregate results later
-
 async def load_zip(path: Path) -> HasheousZip:
     async with aiofiles.open(path, "rb") as zip_file:
         with ZipFile(zip_file.raw) as zip:
@@ -508,65 +358,6 @@ async def load_zip(path: Path) -> HasheousZip:
             objects = map(validate, json_infos)
 
             return HasheousZip(path.stem, tuple(objects))
-
-
-async def load_index(path: Path) -> HasheousIndex:
-    """
-    Load a HasheousIndex from the given pickle file.
-
-    :param path: Path to the pickle file containing the HasheousIndex.
-
-    :return: The loaded HasheousIndex.
-    """
-
-    async with aiofiles.open(path, "rb") as index_file:
-        index = pickle.load(index_file.raw)
-
-        if not isinstance(index, HasheousIndex):
-            raise TypeError(f"Expected HasheousIndex in pickle file at {path}; got {type(index).__name__}")
-
-    return index
-
-DEFAULT_CHUNKSIZE = 16
-
-async def load_dataobjects(zip_paths: Iterable[Path] | Path, playlists: Iterable[Playlist], executor: Executor) -> HasheousIndex:
-    """
-    Create a HasheousIndex from the given metadata directory for the specified playlists.
-
-    :param metadata_dir: Path to the directory containing Hasheous metadata ZIP files.
-    :param playlists: An iterable of Playlist objects to load DataObjects for.
-
-    :return: An index of all loaded DataObjects.
-    """
-
-    if isinstance(zip_paths, Iterable):
-        resolved_zip_paths = {p.resolve() for p in zip_paths if zipfile.is_zipfile(p)}
-    else:
-        resolved_zip_paths = {p.resolve() for p in zip_paths.rglob('*.zip') if zipfile.is_zipfile(p)}
-
-    zips: dict[str, Sequence[DataObject]] = {}
-    # A map of dump filenames (minus .zip) to parsed DataObjects.
-    # A Hasheous dump can be referenced by multiple IGDB playlists,
-    # so we load the ZIP files and merge the results accordingly.
-
-    loop = asyncio.get_running_loop()
-    futures = (loop.run_in_executor(executor, parse_zip, p) for p in resolved_zip_paths)
-    zips = dict(await asyncio.gather(*futures))
-
-    playlist_map: dict[PlaylistTitle, Iterable[DataObject]] = {}
-    for playlist in playlists:
-        dirs = tuple(playlist.hasheous_dirs) + ("Unknown Platform",)
-        # Add "Unknown Platform" to the list of dump files to search,
-        # since its entries still have CRCs.
-
-        objects = itertools.chain.from_iterable(zips[d] for d in dirs if d in zips)
-        playlist_map[playlist.title] = objects
-
-    return HasheousIndex(playlist_map.items())
-
-
-dirname = os.path.dirname(__file__)
-TOML_PATH = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'metadat', 'igdb', 'igdb.toml'))
 
 def _on_backoff(details):
     print("Retrying after backoff:", details['target'].__name__, "with args:", details['args'], "and kwargs:", details['kwargs'], file=sys.stderr)
@@ -595,89 +386,80 @@ def _giveup(e: Exception):
 
     return e.response.is_error
 
-async def handle_fetch(args: argparse.Namespace) -> None:
-    outdir: Path = args.outdir
-    dumps = set(args.dumps or itertools.chain.from_iterable(p.hasheous_dirs for p in PLAYLISTS))
-    verbose = bool(args.verbose)
+class CommonArgs(BaseModel):
+    verbose: bool = Field(
+        default=False,
+        description="Enable verbose output.",
+        validation_alias=AliasChoices('v', 'verbose'),
+    )
 
-    dumps.add("Unknown Platform")
-    # "Unknown Platform" entries don't identify a specific platform,
-    # but a lot of them do have CRCs that can be useful.
+class FetchCommand(CommonArgs):
+    config: FilePath = Field(
+        default=Path(__file__).parent.parent / 'playlists.toml',
+        title="Playlist Config File",
+        description="Path to the config file that defines available playlists.",
+        validation_alias=AliasChoices('c', 'config'),
+        validate_default=True,
+    )
 
-    if verbose:
-        print(f"Output directory: {outdir}")
-        pprint(dumps)
+    dumps: tuple[str, ...] = Field(
+        default=(),
+        validation_alias=AliasChoices('d', 'dumps'),
+        description="""
+            The names of the Hasheous dumps to fetch.
+            If not specified, all 'hasheous' entries in 'config' plus 'Unknown Platform' will be fetched.
+        """
+    )
 
-    await aiofiles.os.makedirs(outdir, exist_ok=True)
+    outdir: CliPositionalArg[Path] = Field(
+        default=Path(__file__).parent.parent / 'tmp' / 'hasheous',
+        description="""
+            The output directory for the fetched Hasheous dumps.
+            Will be created if it doesn't exist.
+        """
+    )
 
-    async with asyncio.TaskGroup() as group:
-        @backoff.on_exception(backoff.expo, httpx.HTTPStatusError, max_tries=5, giveup=_giveup, on_backoff=_on_backoff)
-        async def fetch_dump(name: str):
-            dump_url = f"{HASHEOUS_BASE_URL}{name}.zip"
-            if verbose:
+    async def cli_cmd(self):
+        await aiofiles.os.makedirs(self.outdir, exist_ok=True)
+
+        if self.dumps:
+            # If specific dumps were requested, use those plus "Unknown Platform"
+            dumps = set(self.dumps)
+        else:
+            # Otherwise, fetch all playlists that specify a Hasheous dump (but include "Unknown Platform" too)
+            async with aiofiles.open(self.config, 'rb') as f:
+                config = PlaylistConfig.model_validate(tomllib.load(f.raw))
+
+            dumps = set(chain.from_iterable(p.hasheous_dirs for p in config.playlists))
+
+        dumps.add("Unknown Platform")
+        # "Unknown Platform" entries don't identify a specific platform,
+        # but a lot of them do have CRCs that can be useful.
+
+        async with asyncio.TaskGroup() as group:
+            @backoff.on_exception(backoff.expo, httpx.HTTPStatusError, max_tries=5, giveup=_giveup, on_backoff=_on_backoff)
+            async def fetch_dump(name: str):
+                dump_url = f"{HASHEOUS_BASE_URL}{name}.zip"
                 print(f"Fetching {dump_url}")
 
-            async with httpx.AsyncClient() as client:
-                async with client.stream("GET", dump_url, timeout=httpx.Timeout(None)) as response:
-                    response.raise_for_status()
-                    content_type = response.headers.get('content-type')
+                async with httpx.AsyncClient() as client:
+                    async with client.stream("GET", dump_url, timeout=httpx.Timeout(None)) as response:
+                        response.raise_for_status()
+                        content_type = response.headers.get('content-type')
 
-                    if not content_type or 'application/zip' not in content_type.lower():
-                        raise ValueError(f"Expected content type 'application/zip', got {content_type} for dump {name}")
+                        if not content_type or 'application/zip' not in content_type.lower():
+                            raise ValueError(f"Expected content type 'application/zip', got {content_type} for dump {name}")
 
-                    outpath = outdir / f"{name}.zip"
-                    async with aiofiles.open(outpath, "wb") as out_file:
-                        async for chunk in response.aiter_bytes():
-                            await out_file.write(chunk)
+                        outpath = self.outdir / f"{name}.zip"
+                        async with aiofiles.open(outpath, "wb") as out_file:
+                            async for chunk in response.aiter_bytes():
+                                await out_file.write(chunk)
 
-            if verbose:
                 print(f"Saved dump to {outpath}")
 
-        for d in dumps:
-            group.create_task(fetch_dump(d), name="fetch_dump_" + d)
-
-async def handle_index(args: argparse.Namespace) -> None:
-    input_paths: Collection[str] = args.paths
-    verbose = bool(args.verbose)
-    output: Path = args.output
-
-    if verbose:
-        print("Input paths:", input_paths)
-        print("Output path:", output)
-
-    zip_paths: set[Path] = set()
-    for path in map(Path, input_paths):
-        if zipfile.is_zipfile(path):
-            zip_paths.add(path.resolve())
-        elif path.is_dir():
-            glob_paths = path.rglob('*.zip')
-            glob_zips = filter(zipfile.is_zipfile, glob_paths)
-            zip_paths.update(p.resolve() for p in glob_zips)
-
-    if not zip_paths:
-        print("No ZIP files found in the specified input paths.", file=sys.stderr)
-        return
-
-    if verbose:
-        print(f"Found {len(zip_paths)} ZIP files to index.")
-        pprint(zip_paths)
-
-    output.parent.mkdir(parents=True, exist_ok=True)
-
-    print(f"Indexing all DataObjects...")
-    index_start = time.perf_counter_ns()
-    with ProcessPoolExecutor() as executor:
-        index = await load_dataobjects(zip_paths, PLAYLISTS, executor)
-    index_finish = time.perf_counter_ns()
-    print(f"Indexed all DataObjects in {(index_finish - index_start) / 1_000_000:.2f} ms")
-
-    dump_start = time.perf_counter_ns()
-    print(f"Saving index to {output}...")
-    with open(output, "wb") as out_file:
-        pickle.dump(index, out_file, protocol=5)
-    dump_finish = time.perf_counter_ns()
-    print(f"Saved index to {output} in {(dump_finish - dump_start) / 1_000_000:.2f} ms")
-
+            for d in dumps:
+                group.create_task(fetch_dump(d), name=d)
+            # The task group will wait for all fetches to complete
 
 class MetadataMatch(TypedDict):
     source: Literal["IGDB"] # Only IGDB is supported for now
@@ -742,149 +524,74 @@ async def submit_matches(tsv_path: Path, api_key: str, dry_run: bool = False, ve
         reader = csv.DictReader(lines, fieldnames=MatchRecord._fields, dialect='excel-tab')
         matches = (read_match(m) for m in reader)
         valid_matches = filter(can_submit, matches)
+        raise NotImplementedError("Submission functionality is not yet implemented.")
 
-
-
-
-
-
-async def handle_submit(args: argparse.Namespace) -> None:
-    matchfiles: Collection[Path] = args.matchfiles
-    api_key: Optional[str] = args.api_key or os.getenv("HASHEOUS_API_KEY", None)
-    dry_run: bool = bool(args.dry_run)
-    verbose: bool = bool(args.verbose)
-
-    if api_key is None:
-        print("Error: No Hasheous API key provided. Use --api-key or set the HASHEOUS_API_KEY environment variable.", file=sys.stderr)
-        return
-
-    if verbose:
-        print("Match files to submit:", matchfiles)
-        print("Dry run:", dry_run)
-
-    async with asyncio.TaskGroup() as group:
-        for matchfile in matchfiles:
-            group.create_task(
-                submit_matches(
-                    matchfile,
-                    api_key,
-                    dry_run=dry_run,
-                    verbose=verbose
-                ),
-                name="submit_matches_" + matchfile.stem
-            )
-
-def main():
-    """Main entry point for the script."""
-
-    parser = argparse.ArgumentParser(
-        description="Utilities for fetching and processing data from Hasheous.",
+class SubmitCommand(CommonArgs):
+    api_key: str  = Field(
+        description="The Hasheous API key to use for submission. Overrides the HASHEOUS_API_KEY environment variable if provided.",
+        validation_alias=AliasChoices('a', 'api-key'),
     )
 
-    parser.add_argument(
-        "--verbose",
-        action="store_true",
-        help="Show more logging output"
+    dry_run: bool = Field(
+        default=False,
+        description="Don't actually submit anything; just show what would be submitted.",
+        validation_alias=AliasChoices('n', 'dry-run'),
     )
 
-    subparsers = parser.add_subparsers(
-        dest="command",
-        help="Available commands",
-        required=True
+    matchfiles: CliPositionalArg[tuple[FilePath, ...]] = Field(
+        description="One or more TSV files containing match data to submit, as generated by match.py's `generate` subcommand. Only rows that include an IGDB ID, a Hasheous ID, a CRC, and an MD5 or SHA1 will be included.",
     )
 
-    # fetch subcommand
-    fetch_parser = subparsers.add_parser(
-        "fetch",
-        help="Fetch data from Hasheous and save it to the specified directory"
-    )
-    fetch_parser.add_argument(
-        "--dumps",
-        type=str,
-        help="The names of the Hasheous dumps to fetch. Defaults to all 'hasheous' entries in metadat/igdb/igdb.toml plus 'Unknown Platform'.",
-        action="extend",
-        nargs="*",
-        default=None
-    )
-    fetch_parser.add_argument(
-        "outdir",
-        type=Path,
-        nargs="?",
-        help="The output directory for the scraped JSON files",
-        default="tmp/hasheous",
-    )
-    fetch_parser.set_defaults(func=handle_fetch)
+    async def cli_cmd(self):
+        if self.verbose:
+            print("Match files to submit:", self.matchfiles)
+            print("Dry run:", self.dry_run)
 
-    # index subcommand
-    index_parser = subparsers.add_parser(
-        "index",
-        help="Create an index of DataObjects from the specified ZIP files."
-    )
-    index_parser.add_argument(
-        "paths",
-        help="A ZIP file or a directory containing Hasheous ZIP files",
-        default=["tmp/hasheous"],
-        action="extend",
-        nargs="*",
-    )
-    index_parser.add_argument(
-        "--output",
-        type=Path,
-        help="The output file to save the index to.",
-        default="tmp/index/hasheous.pkl",
-    )
-    index_parser.set_defaults(func=handle_index)
+        async with asyncio.TaskGroup() as group:
+            for matchfile in self.matchfiles:
+                group.create_task(
+                    submit_matches(
+                        matchfile,
+                        self.api_key,
+                        dry_run=self.dry_run,
+                        verbose=self.verbose
+                    ),
+                    name=matchfile.stem
+                )
 
-    # `submit` subcommand
-    submit_parser = subparsers.add_parser(
-        "submit",
-        help="Submit match data to Hasheous."
+class HasheousCommand(BaseSettings):
+    fetch: CliSubCommand[FetchCommand]
+    submit: CliSubCommand[SubmitCommand]
+    model_config = SettingsConfigDict(
+        case_sensitive=False,
+        cli_avoid_json=True,
+        cli_implicit_flags=True,
+        cli_kebab_case=True,
+        cli_parse_args=True,
+        extra="ignore",
     )
-    submit_parser.add_argument(
-        "--api-key",
-        type=str,
-        help="The Hasheous API key to use for submission. Overrides the HASHEOUS_API_KEY environment variable if provided.",
-    )
-    submit_parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Don't actually submit anything; just show what would be submitted."
-    )
-    submit_parser.add_argument(
-        "matchfiles",
-        type=Path,
-        nargs="+",
-        help="One or more TSV files containing match data to submit, as generated by match.py's `generate` subcommand. Only rows that include an IGDB ID, a Hasheous ID, a CRC, and an MD5 or SHA1 will be included.",
-    )
-    submit_parser.set_defaults(func=handle_submit)
 
-    args = parser.parse_args()
-    asyncio.run(args.func(args))
+    def cli_cmd(self) -> None:
+        CliApp.run_subcommand(self)
+
 
 __all__ = (
     "Attribute",
-    "AttributeName",
     "AttributeType",
     "DataObject",
     "DataObjectType",
     "HasheousId",
-    "HasheousIndex",
-    "load_dataobjects",
     "HASHEOUS_OBJECT_TYPES",
     "load_zip",
-    "load_index",
     "MappingStatus",
     "MatchMethodType",
     "MatchRecord",
     "MediaType",
     "METADATA_MAP_URL",
     "MetadataItem",
-    "MetadataSource",
     "RomItem",
-    "RomTypeName",
     "SignatureDataObject",
-    "SignatureSourceType",
 )
 
 if __name__ == "__main__":
-    main()
+    CliApp.run(HasheousCommand)
