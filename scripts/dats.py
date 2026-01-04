@@ -24,85 +24,45 @@ import pe  # type: ignore
 from pe import ParseError
 from pe.actions import Call, Pack
 from pe.operators import Class, Star
-import typelib
-import typelib.ctx
-import typelib.serdes
+from pydantic import AliasChoices, BaseModel, ByteSize, DirectoryPath, Field, FilePath, validate_call
+from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
 
-from typelib.serdes import MarshalledValueT
+from igdb import ColumnDef, Playlist, PlaylistTitle
+from sqlite import DatabaseModel, Hash
 
-from igdb import PlaylistTitle
+class DatModel(DatabaseModel, frozen=True):
+    pass
 
-@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class ClrMamePro:
+class ClrMamePro(DatModel, frozen=True):
+    __tablename__ = "DatClrMamePro"
+
     name: str
-    description: Optional[str] = None
-    category: Optional[str] = None
-    date: Optional[str] = None
-    author: Optional[str] = None
-    email: Optional[str] = None
-    url: Optional[str] = None
-    version: Optional[str] = None
-    comment: Optional[str] = None
-    homepage: Optional[str] = None
+    description: str | None = None
+    category: str | None = None
+    date: str | None = None
+    author: str | None = None
+    email: str | None = None
+    url: str | None = None
+    version: str | None = None
+    comment: str | None = None
+    homepage: str | None = None
 
-    __table__: ClassVar[str] = """
-        CREATE TABLE IF NOT EXISTS ClrMamePro (
-            name TEXT NOT NULL,
-            description TEXT,
-            category TEXT,
-            date TEXT,
-            author TEXT,
-            email TEXT,
-            url TEXT,
-            version TEXT,
-            comment TEXT,
-            homepage TEXT
-        );
-    """
 
-@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class Rom:
-    crc: Optional[str] = None
-    serial: Optional[str] = None
-    image: Optional[str] = None
-    name: Optional[str] = None
-    size: Optional[int] = None
-    md5: Optional[str] = None
-    sha1: Optional[str] = None
-    sha1sum: InitVar[Optional[str]] = None
-    """
-    Alias for sha1, for compatibility with some DAT files.
-    """
+class Rom(DatModel, frozen=True):
+    # TODO: Add a table-level CHECK constraint that at least one of `crc` or `serial` is non-NULL
+    __tablename__ = "DatRom"
 
-    genre: Optional[str] = None
-    users: Optional[str] = None
+    crc: Annotated[Hash, ColumnDef(unique=True, index=True)] | None = None
+    serial: Annotated[str, ColumnDef(unique=True, index=True)] | None = None
+    image: str | None = None
+    name: str | None = None
+    size: ByteSize | None = None
+    md5: Annotated[Hash, ColumnDef(unique=True, index=True)] | None = None
+    sha1: Annotated[Hash, ColumnDef(unique=True, index=True)] | None = None
+    genre: str | None = None
+    users: str | None = None
 
-    __table__: ClassVar[str] = """
-        CREATE TABLE IF NOT EXISTS DatRom (
-            crc TEXT COLLATE RTRIM UNIQUE,
-            serial TEXT COLLATE RTRIM UNIQUE,
-            image TEXT COLLATE RTRIM,
-            name TEXT,
-            size INTEGER,
-            md5 TEXT COLLATE RTRIM UNIQUE,
-            sha1 TEXT COLLATE RTRIM UNIQUE,
-            genre TEXT,
-            users TEXT,
-
-            CHECK ((crc NOT NULL) OR (serial NOT NULL))
-        );
-    """
-
-    def __post_init__(self, sha1sum: Optional[str]):
-        # Called by dataclasses after __init__, but before the instance is returned
-        if not self.crc and not self.serial:
-            raise ValueError("Rom record must have at least a 'crc' or 'serial' field.")
-
-        if not self.sha1 and sha1sum:
-            object.__setattr__(self, "sha1", sha1sum)
-        elif self.sha1 and sha1sum and self.sha1.lower() != sha1sum.lower():
-            raise ValueError(f"Rom record has conflicting 'sha1' and 'sha1sum' fields ({self.sha1} != {sha1sum}).")
-
+    # TODO: Figure out how to ensure that at least one of `crc` or `serial` is non-NULL at the model level
     def same_as(self, other: 'Rom') -> bool:
         if self.crc and other.crc and self.crc.lower() == other.crc.lower():
             return True
@@ -139,8 +99,7 @@ class Rom:
         raise TypeError("Rom record has neither 'crc' nor 'serial' field.")
 
 
-@dataclasses.dataclass(frozen=True, kw_only=True, slots=True)
-class Game:
+class Game(DatModel, frozen=True):
     """
     A parsed and unmarshalled game record from a DAT file.
 
@@ -149,166 +108,81 @@ class Game:
 
     At least one of `name`, `description`, `comment`, or `id` should be present.
     """
-    name: Optional[str] = None
-    comment: Optional[str] = None
-    description: Optional[str] = None
-    id: Optional[str] = None
+    name: str | None = None
+    comment: str | None = None
+    description: str | None = None
+    id: str | None = None
 
-    achievements: Optional[int] = None
-    analog: Optional[bool] = None
-    artstyle: Optional[str] = None
-    """May include multiple art styles separated by commas, slashes, or pipes."""
+    achievements: int | None = None
+    analog: bool | None = None
 
-    bbfc_rating: Optional[str] = None
-    category: Optional[str] = None
+    bbfc_rating: str | None = None
+    category: str | None = None
     """May include multiple categories separated by commas, slashes, or pipes."""
 
-    cero_rating: Optional[str] = None
-    code: Optional[str] = None
-    console_exclusive: Optional[bool] = None
-    controls: Optional[str] = None
-    coop: Optional[bool] = None
-    date: Optional[str] = None
-    developer: Optional[str] = None
+    cero_rating: str | None = None
+    code: str | None = None
+    console_exclusive: bool | None = None
+    controls: str | None = None
+    coop: bool | None = None
+    date: str | None = None
+    developer: str | None = None
     """May include multiple developers separated by commas, slashes, or pipes"""
 
-    download: Optional[str] = None
-    edge_issue: Optional[int] = None
-    edge_rating: Optional[int] = None
-    elspa_rating: Optional[str] = None
-    enhancement_hardware: Optional[str] = None
-    enhancement_hw: Optional[str] = None
-    esrb_rating: Optional[str] = None
-    famitsu_rating: Optional[int] = None
-    franchise: Optional[str] = None
-    gameplay: Optional[str] = None
-    """May include multiple gameplay types separated by commas, slashes, or pipes."""
+    download: str | None = None
+    edge_issue: int | None = None
+    edge_rating: int | None = None
+    elspa_rating: str | None = None
+    enhancement_hardware: str | None = None
+    enhancement_hw: str | None = None
+    esrb_rating: str | None = None
+    famitsu_rating: int | None = None
+    franchise: str | None = None
 
-    genre: Optional[str] = None
+    genre: str | None = None
     """May include multiple genres separated by commas, slashes, or pipes."""
 
-    homepage: Optional[str] = None
-    igdb_id: Optional[int] = None
-    igdb_url: Optional[str] = None
+    homepage: str | None = None
+    igdb_id: int | None = None
+    igdb_url: str | None = None
     """URL of the IGDB page for this game."""
 
-    igdb_platform_id: Optional[int] = None
-    igdb_release_date_id: Optional[int] = None
-    language: Optional[str] = None
+    igdb_platform_id: int | None = None
+    igdb_release_date_id: int | None = None
+    language: str | None = None
     """May include multiple languages separated by commas, slashes, or pipes."""
 
-    license: Optional[str] = None
-    manufacturer: Optional[str] = None
-    media: Optional[str] = None
+    license: str | None = None
+    manufacturer: str | None = None
+    media: str | None = None
     """May include multiple media types separated by commas, slashes, or pipes."""
-
-    narrative: Optional[str] = None
-    """May include multiple narrative types separated by commas, slashes, or pipes."""
-
-    origin: Optional[str] = None
-
-    pacing: Optional[str] = None
-    """May include multiple pacing types separated by commas, slashes, or pipes."""
-
-    patch: Optional[str] = None
-    pegi_rating: Optional[str] = None
-    perspective: Optional[str] = None
-    platform_exclusive: Optional[bool] = None
-    publisher: Optional[str] = None
+    origin: str | None = None
+    patch: str | None = None
+    pegi_rating: str | None = None
+    perspective: str | None = None
+    platform_exclusive: bool | None = None
+    publisher: str | None = None
     """May include multiple publishers separated by commas, slashes, or pipes."""
 
-    region: Optional[str] = None
-    releaseday: Optional[int] = None
-    releasemonth: Optional[int] = None
-    releaseyear: Optional[int] = None
-    rumble: Optional[bool] = None
-    score: Optional[str] = None
-    serial: Optional[str] = None
-    setting: Optional[str] = None
-    tags: Optional[str] = None
-    users: Optional[int] = None
-    vehicular: Optional[str] = None
-    """May include multiple vehicule types separated by commas, slashes, or pipes."""
-
-    version: Optional[str] = None
-    visual: Optional[str] = None
-    """May include multiple visual types separated by commas, slashes, or pipes."""
+    region: str | None = None
+    releaseday: int | None = None
+    releasemonth: int | None = None
+    releaseyear: int | None = None
+    rumble: bool | None = None
+    score: str | None = None
+    serial: str | None = None
+    setting: str | None = None
+    tags: str | None = None
+    users: int | None = None
+    version: str | None = None
+    visual: str | None = None
 
     # May be a string because of entries like "???" for unknown years,
     # or "198?" for an unknown year in the 1980s
-    year: Optional[int | str] = None
+    year: int | str | None = None
 
     # Declared last so that it appears last in the generated DATs
-    rom: Optional[Sequence[Rom]] = None
-
-    __table__: ClassVar[str] = """
-        CREATE TABLE IF NOT EXISTS DatGame (
-            name TEXT,
-            comment TEXT,
-            description TEXT,
-            id TEXT,
-            achievements INTEGER,
-            analog INTEGER,
-            artstyle TEXT,
-            bbfc_rating TEXT,
-            category TEXT,
-            cero_rating TEXT,
-            code TEXT,
-            console_exclusive INTEGER,
-            controls TEXT,
-            coop INTEGER,
-            date TEXT,
-            developer TEXT,
-            download TEXT,
-            edge_issue INTEGER,
-            edge_rating INTEGER,
-            elspa_rating TEXT,
-            enhancement_hardware TEXT,
-            enhancement_hw TEXT,
-            esrb_rating TEXT,
-            famitsu_rating INTEGER,
-            franchise TEXT,
-            gameplay TEXT,
-            genre TEXT,
-            homepage TEXT,
-            igdb_id INTEGER,
-            igdb_url TEXT,
-            igdb_platform_id INTEGER,
-            igdb_release_date_id INTEGER,
-            language TEXT,
-            license TEXT,
-            manufacturer TEXT,
-            media TEXT,
-            narrative TEXT,
-            origin TEXT,
-            pacing TEXT,
-            patch TEXT,
-            pegi_rating TEXT,
-            perspective TEXT,
-            platform_exclusive INTEGER,
-            publisher TEXT,
-            region TEXT,
-            releaseday INTEGER,
-            releasemonth INTEGER,
-            releaseyear INTEGER,
-            rumble INTEGER,
-            score TEXT,
-            serial TEXT,
-            setting TEXT,
-            tags TEXT,
-            users INTEGER,
-            vehicular TEXT,
-            version TEXT,
-            visual TEXT,
-            year TEXT
-        );
-        CREATE TABLE IF NOT EXISTS DatGame_rom (
-            DatGame_rowid INTEGER REFERENCES DatGame(rowid),
-            DatRom_rowid INTEGER REFERENCES DatRom(rowid),
-
-            PRIMARY KEY (DatGame_rowid, DatRom_rowid)
-        );
-    """
+    rom: tuple[Rom, ...] | None = None
 
     @property
     def name_key(self) -> str:
