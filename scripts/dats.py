@@ -205,9 +205,9 @@ class Game(DatModel, frozen=True):
 
         return rom.id
 
-type DatValue = str | DatRecord
 type DatPair = tuple[str, DatValue]
 type DatRecord = tuple[DatPair, ...]
+type DatValue = str | DatRecord
 type DatTopLevelRecord = tuple[str, DatRecord]
 type DatFile = tuple[DatTopLevelRecord, ...]
 
