@@ -1,30 +1,26 @@
 #!/usr/bin/env python3
 
-import argparse
 import asyncio
 import dataclasses
 import functools
 import itertools
-import json
-import os
-import os.path
 import sys
-import time
 
-from collections.abc import Iterable, Sequence, Iterator, Mapping, Collection
-from concurrent.futures import Executor, ProcessPoolExecutor
-from dataclasses import InitVar
-from io import BytesIO
-from itertools import groupby
+from collections.abc import Iterable, Sequence, Collection
+from io import StringIO
+from itertools import chain
 from pathlib import Path
-from typing import Any, ClassVar, NamedTuple, Optional, TypeAlias, TypedDict, Union
+from typing import IO, Annotated, Any, BinaryIO, NamedTuple, TextIO
 
+import aiofiles
 # pe lacks type stubs, so let's silence MyPy's complaints
 import pe  # type: ignore
-from pe import ParseError
+
+from aiomultiprocess import Pool
 from pe.actions import Call, Pack
 from pe.operators import Class, Star
-from pydantic import AliasChoices, BaseModel, ByteSize, DirectoryPath, Field, FilePath, validate_call
+from pydantic import AliasChoices, BaseModel, ByteSize, DirectoryPath, Field, FilePath
+from pydantic_core import from_json
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
 
 from igdb import ColumnDef, Playlist, PlaylistTitle
@@ -209,27 +205,29 @@ class Game(DatModel, frozen=True):
 
         return rom.id
 
-DatValue: TypeAlias = Union[str, Sequence["DatRecord"], "DatRecord"]
-DatRecord: TypeAlias = Mapping[str, DatValue]
+type DatValue = str | DatRecord
+type DatPair = tuple[str, DatValue]
+type DatRecord = tuple[DatPair, ...]
+type DatTopLevelRecord = tuple[str, DatRecord]
+type DatFile = tuple[DatTopLevelRecord, ...]
 
-ParsedGameDatList: TypeAlias = tuple[ClrMamePro, *tuple[Game, ...]]
+ParsedGameDatList = tuple[ClrMamePro, *tuple[Game, ...]]
 ''' A parsed DAT file is a tuple where the first element is a ClrMamePro record,
 and the remaining elements are Game records. '''
 
 # PEG grammar for DAT file format
 DAT_GRAMMAR = r'''
 # Main entry points
-DatFile < (Record)* EndOfFile
+DatFile < (DatTopLevelRecord)* EndOfFile
 
 # Record structure
-Record < type:(~RecordType) Open RecordContent Close
-RecordType <- [a-zA-Z_][-a-zA-Z0-9_]*
-RecordContent <- (KeyValue)*
-KeyValue < key:(~Key) value:Value
+DatTopLevelRecord < type:(~DatKey) Open DatRecord Close
+DatRecord <- (DatPair)*
+DatPair < key:(~DatKey) value:DatValue
 
 # Keys and Values
-Key <- [a-zA-Z_][-a-zA-Z0-9_]*
-Value <- (Open RecordContent Close) / QuotedString / UnquotedString
+DatKey <- [a-zA-Z_][-a-zA-Z0-9_]*
+DatValue <- (Open DatRecord Close) / QuotedString / UnquotedString
 
 # Characters
 QuotedString <- ["] ~(Char*) ["]
@@ -250,190 +248,101 @@ so I wrote this PEG based on my observations
 of the DAT files in this repo.
 It should handle all of them.
 
-These are the rules I came up with:
+These are the semantics I came up with:
 
-- A Record is a parentheses-wrapped sequence of key-value pairs.
-- The key is a string that's a valid C identifier (plus hyphens).
-- The value is either a string or another record.
+- A DatKey is a string that's a valid C identifier (plus hyphens).
+- A DatValue is either a string or a DatRecord.
+- A DatPair is a DatKey followed by a DatValue.
+- A DatRecord is an ordered sequence of zero or more DatPairs.
+- A DatRecord may have multiple pairs with the same key.
+  The application may interpret this as a list of values for that key.
+- A DatFile is a DatRecord where all DatValues are DatRecords.
+
+This is the syntax I came up with:
+
 - Strings may be quoted or unquoted.
-- Unquoted strings may not contain spaces or parentheses.
-- Quoted strings may contain escaped quotes and backslashes.
-- Whitespace and newlines outside of strings is ignored.
+- Unquoted strings may not contain spaces, parentheses, backslashes, or double quotes.
+- Quoted strings may contain backslash-escaped quotes and backslashes.
+- Whitespace (including newlines) outside of quoted strings is ignored.
 - Any key may appear multiple times in a record.
-- A DAT file is a top-level record with implicit parentheses,
-  and all values are records.
+- DatFiles are not wrapped in parentheses.
+- DatRecords are wrapped in parentheses.
 
 We don't try to interpret the meaning of any keys or values while parsing;
 this means we just treat everything as a string,
 and let the unmarshalling step figure out what to do with it.
 """
 
-def _build_record(*args, **kwargs):
-    """Build a record dictionary from parsed data."""
-    return args[0]
+def build_top_level_record(pairs: tuple[DatPair, ...], type: str) -> DatTopLevelRecord:
+    return (type, pairs)
 
-class KeyValueDict(TypedDict):
-    key: str
-    value: DatValue
-
-class KeyValueTuple(NamedTuple):
-    key: str
-    value: DatValue
-
-def _build_record_content(args: tuple[KeyValueTuple, ...], **_):
-    """Build record content from key-value pairs."""
-
-    # group items with duplicate keys together, and put them in a tuple
-    def dedupe_keys(value: Iterator[KeyValueTuple]):
-        result = tuple(v for (_, v) in value)
-        match result:
-            case (str(),) as result_str:
-                return result_str[0]
-            case (dict(), *_) as records:
-                return records
-            case _:
-                return result
-
-    # itertools.groupby requires the input to be sorted by the grouping key
-    sorted_by_key = sorted(args, key=lambda x: x.key)
-    grouped_by_key = itertools.groupby(sorted_by_key, lambda x: x.key)
-    result = {k:dedupe_keys(v) for k, v in grouped_by_key}
-    return result
-
-def _build_datfile(*args, **kwargs):
-    """Build the top-level DAT file structure."""
-    return list(args)
+def build_pair(key: str, value: DatValue) -> DatPair:
+    return (key, value)
 
 # Actions for semantic processing
 ACTIONS = {
-    'Record': _build_record,
-    'RecordContent': Pack(_build_record_content),
-    'KeyValue': Call(KeyValueTuple),
-    'DatFile': _build_datfile,
+    'DatTopLevelRecord': build_top_level_record,
+    'DatRecord': Pack(tuple), # Wrap all DatPairs into a tuple
+    'DatPair': build_pair, # Wrap the parsed values (bound to "key" and "value") into a DatPair
+    'DatFile': Pack(tuple), # Wrap all DatTopLevelRecords into a tuple
 }
 
-# Compile the parser
-dat_parser = pe.compile(DAT_GRAMMAR, actions=ACTIONS, ignore=Star(Class(" \t\n\r\v\f")), flags=pe.OPTIMIZE | pe.MEMOIZE)
+dat_parser = pe.compile(DAT_GRAMMAR, actions=ACTIONS, ignore=Star(Class(" \t\n\r\v\f")), flags=pe.OPTIMIZE | pe.MEMOIZE | pe.STRICT)
 
-class ParsedGameDatListMarshaller(typelib.AbstractMarshaller[ParsedGameDatList]):
-    def __call__(self, value: ParsedGameDatList) -> typelib.serdes.MarshalledValueT:
-        return [dataclasses.asdict(g) for g in value] # type: ignore
+def encode_dat(dat: DatFile, output: IO | None = None):
+    if not output:
+        output = StringIO()
 
-class ParsedGameDatListUnmarshaller(typelib.AbstractUnmarshaller[ParsedGameDatList]):
-    def __call__(self, value: typelib.serdes.MarshalledValueT) -> ParsedGameDatList:
-        if isinstance(value, str):
-            raise TypeError("Expected a sequence for unmarshalling ParsedGameDatList, got str")
-
-        if not isinstance(value, Sequence):
-            raise TypeError(f"Expected a sequence for unmarshalling ParsedGameDatList, got {type(value)}")
-
-        if not value:
-            raise ValueError("Cannot unmarshal empty sequence to ParsedGameDatList")
-
-        clrmamepro_dict = value[0]
-        if not isinstance(clrmamepro_dict, dict):
-            raise TypeError(f"Expected first element of sequence to be a dict for ClrMamePro, got {type(value[0])}")
-
-        try:
-            clrmamepro = typelib.unmarshal(ClrMamePro, clrmamepro_dict)
-        except (LookupError, ValueError) as e:
-            raise ValueError(f"Failed to unmarshal clrmamepro record") from e
-
-        # Need to unmarshal each record separately,
-        # as the default unmarshaller doesn't handle `ParsedGameDatList` correctly.
-        game_dicts = value[1:]
-        games = tuple(typelib.unmarshal(Game, g) for g in game_dicts)
-
-        # Return a tuple with the ClrMamePro as the first element,
-        # and the rest as Game records.
-        return clrmamepro, *games
-
-
-def encode_dat(value: typelib.serdes.MarshalledValueT) -> bytes:
-    # value is a list of dicts, one per DAT record
-    if isinstance(value, str):
-        raise TypeError("Expected a sequence for encoding ParsedGameDatList, got str")
-
-    if not isinstance(value, Sequence):
-        raise TypeError(f"Expected a sequence for encoding ParsedGameDatList, got {type(value)}")
-
-    output = BytesIO()
-
-    def write_record(val: 'tuple[MarshalledValueT, MarshalledValueT]', indent = 0):
-        match val:
-            case (str(), None):
-                return # An absent field, skip it
-            case (str(key), bool(b)):
-                output.write(b'  ' * indent)
-                output.write(key.encode('utf-8'))
-                output.write(b' ')
-                output.write(b'1\n' if b else b'0\n')
-            case (str(key), int() | float() as number):
-                output.write(b'  ' * indent)
-                output.write(key.encode('utf-8'))
-                output.write(b' ')
-                output.write(str(number).encode('utf-8'))
-                output.write(b'\n')
-            case (str(key), str(text)):
-                output.write(b'  ' * indent)
-                output.write(key.encode('utf-8'))
-                output.write(b' ')
+    def write_pair(pair: DatPair, indent: int = 0) -> None:
+        match pair:
+            case (key, str(value)):
+                output.write('\t' * indent)
+                output.write(key)
+                output.write(' ')
                 # Escape backslashes and double quotes in the string
-                escaped = text.replace('\\', '\\\\').replace('"', '\\"')
-                output.write(b'"')
-                output.write(escaped.encode('utf-8'))
-                output.write(b'"\n')
-            case (str(key), list() as sequence):
-                for item in sequence:
-                    # Don't add extra indentation to list items,
-                    # as they're encoded as a sequence of records
-                    # with the same key
-                    # (i.e. there's no real list syntax)
-                    write_record((key, item), indent)
-                    output.write(b'\n')
-            case (str(key), dict() as record):
-                output.write(b'  ' * indent)
-                output.write(key.encode('utf-8'))
-                output.write(b' (\n')
-                for pair in record.items():
-                    write_record(pair, indent + 1)
-                output.write(b'  ' * indent)
-                output.write(b')')
+                escaped = value.replace('\\', '\\\\').replace('"', '\\"')
+                output.write('"')
+                output.write(escaped)
+                output.write('"\n')
+            case (key, [*pairs]):
+                output.write('\t' * indent)
+                output.write(key)
+                output.write(' (\n')
+                for p in pairs:
+                    write_pair(p, indent + 1)
+                output.write('\t' * indent)
+                output.write(')\n')
             case _:
                 raise TypeError(f"Cannot encode {val} of type {type(val)}")
 
-    clrmamepro_dict = value[0]
-    if not isinstance(clrmamepro_dict, dict):
-        raise TypeError(f"Expected first element of sequence to be a dict for ClrMamePro, got {type(value[0])}")
-
-    write_record(('clrmamepro', clrmamepro_dict))
-    output.write(b'\n\n')
-
-    def game_name(game: MarshalledValueT) -> str:
-        if not isinstance(game, dict):
-            raise TypeError(f"Expected game record to be a dict for encoding a Game, got {type(game)}")
-
-        for key in ('name', 'description', 'comment', 'id'):
-            if name := game.get(key):
-                return str(name)
-
-        return ''
-
-    for game in sorted(value[1:], key=game_name):
-        if not isinstance(game, dict):
-            raise TypeError(f"Expected each record to be a dict for encoding a Game, got {game}")
-
-        write_record(('game', game))
-        output.write(b'\n\n')
-
-    result = output.getvalue()
-    return result
+    for pair in dat:
+        write_pair(pair)
+        output.write('\n')
 
 
-def decode_dat(value: bytes) -> typelib.serdes.MarshalledValueT:
-    dat = value.decode('utf-8')
+def to_dat(value: DatFile) -> str:
+    output = StringIO()
+    encode_dat(value, output)
+    return output.getvalue()
 
-    match_result = dat_parser.match(dat, flags=pe.MEMOIZE)
+
+def load_dat(dat: str | bytes | Path | TextIO | BinaryIO) -> DatRecord:
+    match dat:
+        case str():
+            dat_content = dat
+        case bytes():
+            dat_content = dat.decode('utf-8')
+        case Path() as p:
+            with p.open('r', encoding='utf-8') as dat_file:
+                dat_content = dat_file.read()
+        case TextIO() as f:
+            dat_content = f.read()
+        case BinaryIO() as f:
+            dat_content = f.read().decode('utf-8')
+        case _:
+            raise TypeError(f"Expect a str, bytes, Path, TextIO, or BinaryIO, got {type(dat)}")
+
+    match_result = dat_parser.match(dat_content, flags=pe.MEMOIZE | pe.OPTIMIZE | pe.STRICT | pe.INLINE)
     if match_result is None:
         raise ValueError("Failed to parse DAT string")
 
@@ -441,56 +350,14 @@ def decode_dat(value: bytes) -> typelib.serdes.MarshalledValueT:
     assert result is not None
     return result
 
-ctx = typelib.ctx.TypeContext()
-GameDataListCodec: typelib.Codec[ParsedGameDatList] = typelib.codec(
-    ParsedGameDatList,
-    marshaller=ParsedGameDatListMarshaller(ParsedGameDatList, ctx),
-    unmarshaller=ParsedGameDatListUnmarshaller(ParsedGameDatList, ctx),
-    encoder=encode_dat,
-    decoder=decode_dat
-)
-
-async def handle_tojson(args: argparse.Namespace):
-    with open(args.infile, 'rb') as infile:
-        dat = GameDataListCodec.decode(infile.read())
-        json.dump(dat, sys.stdout, indent=2, ensure_ascii=False, default=dataclasses.asdict)
-        print('')  # Ensure a newline at the end of the output
-
 class LoadedDat(NamedTuple):
     playlist: PlaylistTitle
     path: Path
     clrmamepro: ClrMamePro
     games: Sequence[Game]
 
-def load_dat(dat_path: tuple[PlaylistTitle, Path]) -> LoadedDat | None:
-    """
-    Load a DAT file from the given path.
-    :param dat_path: A tuple of (playlist name, path to the DAT file).
-    :return: The loaded DatFile, or None if there was an error.
-
-    :note: Including the playlist title in the argument
-    simplifies parallel processing with ProcessPoolExecutor.
-    """
-    start = time.perf_counter_ns()
-    try:
-        with open(dat_path[1], 'rb') as infile:
-            dat = GameDataListCodec.decode(infile.read())
-    except ParseError as e:
-        # Don't want to let one bad record crash the whole process
-        return None
-    except Exception as e:
-        raise Exception(f"Failed to load DAT file {dat_path}: {e}") from e
-
-    finish = time.perf_counter_ns()
-    print(f"Loaded {len(dat)} records from \"{str(dat_path[1])}\" in {(finish - start) / 1_000_000:.2f} ms")
-
-    return LoadedDat(
-        *dat_path,
-        clrmamepro=dat[0],
-        games=dat[1:]
-    )
-
-async def load_dats(dat_playlists: Mapping[PlaylistTitle, Sequence[Path]], executor: Executor | None) -> Mapping[PlaylistTitle, Collection[Game]]:
+async def load_dats(playlist: Playlist, dat_dirs: Iterable[Path]) -> tuple[PlaylistTitle, tuple[Game, ...]]:
+    dat_files: list[LoadedDat] = []
     """
     Load game data from DAT files for each playlist.
 
@@ -572,75 +439,106 @@ async def load_dats(dat_playlists: Mapping[PlaylistTitle, Sequence[Path]], execu
     print(f"Loaded {len(result)} playlists from {len(dat_files)} DAT files")
     return result
 
-def get_existing_dat_files(datdir: str | Path) -> Iterator[str]:
-    for (dirpath, dirnames, filenames) in os.walk(datdir):
-        for file in filter(lambda f: f.endswith('.dat'), filenames):
-            if not ('xml' in file or 'XML' in file):  # Exclude XML files
-                yield os.path.join(dirpath, file)
-
-def get_target_dat_paths(outpath: Path, playlist_titles: Iterable[str]) -> Iterator[Path]:
-    """Get the paths to the DAT files that will be generated from the given playlists, rooted at the given directory."""
-    for title in playlist_titles:
-        yield outpath / f"{title}.dat"
-
-async def handle_bench(args: argparse.Namespace):
-    from igdb import get_playlist
-
-    # TODO: Don't hardcode these paths
-    existing_dat_paths = {Path(p) for p in itertools.chain(get_existing_dat_files("dat"), get_existing_dat_files("metadat"))}
-    playlists = ((get_playlist(p), p) for p in existing_dat_paths)
-    playlists_to_dats = ((p.title, d) for (p, d) in playlists if p)
-    sorted_by_title = sorted(playlists_to_dats, key=lambda x: x[0])
-    datgroups = {k: tuple(vv[1] for vv in v) for k, v in groupby(sorted_by_title, key=lambda x: x[0])}
-
-    start = time.perf_counter_ns()
-    with ProcessPoolExecutor() as executor:
-        dats = await load_dats(datgroups, executor)
-    now = time.perf_counter_ns()
-    print(f"Loaded {len(existing_dat_paths)} DAT files in {(now - start) / 1_000_000:.2f} ms")
-
-def main():
-    parser = argparse.ArgumentParser(
-        description="Utilities for processing DAT files.",
-        prog="dat"
+class CheckCommand(BaseModel):
+    dat_paths: tuple[FilePath | DirectoryPath, ...] = Field(
+        default=(Path(__file__).parent.parent / 'dat', Path(__file__).parent.parent / 'metadat'),
+        description="Paths to directories containing DAT files to check.",
+        validation_alias=AliasChoices('p', 'dat-paths'),
+        validate_default=True,
     )
 
-    # Create subparsers for commands
-    subparsers = parser.add_subparsers(
-        dest="command",
-        help="Available commands",
-        required=True
+    @staticmethod
+    async def load_dat_async(dat_path: Path) -> bool:
+        try:
+            async with aiofiles.open(dat_path, 'r', encoding='utf-8') as dat_file:
+                dat_content = await dat_file.read()
+
+            match_result = dat_parser.match(dat_content, flags=pe.MEMOIZE | pe.OPTIMIZE | pe.STRICT | pe.INLINE)
+            if not match_result:
+                print(f"Invalid DAT file: {dat_path}", file=sys.stderr)
+                return False
+
+            return bool(match_result.value())
+            # Returning a bool to indicate success
+            # so we don't have to pickle a whole DAT file
+            # when we're just checking for validity
+        except Exception as e:
+            print(f"Failed to load DAT file {dat_path}: {e}", file=sys.stderr)
+            return False
+
+    async def cli_cmd(self) -> None:
+        dat_files = tuple(chain.from_iterable(p.rglob('*.dat') for p in self.dat_paths if p.is_dir()))
+        async with Pool() as pool:
+            await pool.map(CheckCommand.load_dat_async, dat_files)
+
+class ToJsonCommand(BaseModel):
+    """
+    Convert a DAT file to equivalent JSON.
+    """
+
+    infile: CliPositionalArg[Path | None] = Field(
+        default=None,
+        description="Path to the input DAT file, or stdin if not provided."
     )
 
-    tojson_parser = subparsers.add_parser(
-        "tojson",
-        help="Convert a DAT file to JSON format and print it to stdout."
+    async def cli_cmd(self) -> None:
+        import json
+
+        if self.infile:
+            async with aiofiles.open(self.infile, 'rb') as infile:
+                dat_contents = await infile.read()
+        else:
+            dat_contents = await aiofiles.stdin_bytes.read()
+
+        dat = load_dat(dat_contents)
+        json.dump(dat, sys.stdout, indent=2, ensure_ascii=False)
+
+class FromJsonCommand(BaseModel):
+    infile: CliPositionalArg[Path | None] = Field(
+        default=None,
+        description="Path to the input JSON file, or stdin if not provided."
     )
-    tojson_parser.add_argument(
-        "infile",
-        type=str,
-        help="Path to the input DAT"
+
+    encoding: str = Field(
+        default='utf-8',
+        description="Encoding of the input JSON file."
     )
-    tojson_parser.set_defaults(func=handle_tojson)
 
-    bench_parser = subparsers.add_parser(
-        "bench",
-        help="Benchmark loading all DAT files in the 'dat' and 'metadat' directories."
+    async def cli_cmd(self) -> None:
+        import json
+
+        if self.infile:
+            async with aiofiles.open(self.infile, 'r', encoding=self.encoding) as infile:
+                json_contents = await infile.read()
+        else:
+            json_contents = await aiofiles.stdin.read()
+
+        dat = from_json(json_contents)
+        encode_dat(dat, sys.stdout)
+
+class DatCommand(BaseSettings):
+    tojson: CliSubCommand[ToJsonCommand]
+    fromjson: CliSubCommand[FromJsonCommand]
+    check: CliSubCommand[CheckCommand]
+    model_config = SettingsConfigDict(
+        case_sensitive=False,
+        cli_avoid_json=True,
+        cli_implicit_flags=True,
+        cli_kebab_case=True,
+        cli_parse_args=True,
+        extra="ignore",
     )
-    bench_parser.set_defaults(func=handle_bench)
 
-    args = parser.parse_args()
-    asyncio.run(args.func(args))
+    def cli_cmd(self):
+        CliApp.run_subcommand(self)
 
-if __name__ == "__main__":
-    main()
 
-__all__ = [
+__all__ = (
     "ClrMamePro",
     "Game",
-    "GameDataListCodec",
-    "get_existing_dat_files",
     "load_dat",
-    "load_dats",
     "Rom",
-]
+)
+
+if __name__ == "__main__":
+    CliApp.run(DatCommand)
