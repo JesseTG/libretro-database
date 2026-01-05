@@ -17,7 +17,7 @@ import aiofiles
 import pe  # type: ignore
 
 from aiomultiprocess import Pool
-from pe.actions import Call, Pack
+from pe.actions import Pack
 from pe.operators import Class, Star
 from pydantic import AliasChoices, BaseModel, ByteSize, DirectoryPath, Field, FilePath
 from pydantic_core import from_json
