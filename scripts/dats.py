@@ -301,6 +301,7 @@ def encode_dat(dat: DatFile, output: IO | None = None):
     def write_pair(pair: DatPair, indent: int = 0) -> None:
         match pair:
             case (key, str(value)):
+                # leaf-level DAT pair (like a ROM name)
                 output.write('\t' * indent)
                 output.write(key)
                 output.write(' ')
@@ -310,6 +311,7 @@ def encode_dat(dat: DatFile, output: IO | None = None):
                 output.write(escaped)
                 output.write('"\n')
             case (key, [*pairs]):
+                # nested DAT record (usually a game, clrmamepro, or rom)
                 output.write('\t' * indent)
                 output.write(key)
                 output.write(' (\n')
