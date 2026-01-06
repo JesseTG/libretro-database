@@ -27,10 +27,11 @@ from igdb import ColumnDef, Playlist, PlaylistTitle
 from sqlite import DatabaseModel, Hash
 
 class DatModel(DatabaseModel, frozen=True):
-    pass
+    __dattype__: ClassVar[LiteralString]
 
 class ClrMamePro(DatModel, frozen=True):
     __tablename__ = "DatClrMamePro"
+    __dattype__ = "clrmamepro"
 
     name: str
     description: str | None = None
@@ -47,6 +48,7 @@ class ClrMamePro(DatModel, frozen=True):
 class Rom(DatModel, frozen=True):
     # TODO: Add a table-level CHECK constraint that at least one of `crc` or `serial` is non-NULL
     __tablename__ = "DatRom"
+    __dattype__ = "rom"
 
     crc: Annotated[Hash, ColumnDef(unique=True, index=True)] | None = None
     serial: Annotated[str, ColumnDef(unique=True, index=True)] | None = None
@@ -104,6 +106,9 @@ class Game(DatModel, frozen=True):
 
     At least one of `name`, `description`, `comment`, or `id` should be present.
     """
+    __tablename__ = "DatGame"
+    __dattype__ = "game"
+
     name: str | None = None
     comment: str | None = None
     description: str | None = None
