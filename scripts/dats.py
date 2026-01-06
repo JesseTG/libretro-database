@@ -316,7 +316,8 @@ def encode_dat(dat: DatFile, output: IO | None = None):
                 output.write(key)
                 output.write(' (\n')
                 for p in pairs:
-                    write_pair(p, indent + 1)
+                    write_pair(p, indent + 1) # type: ignore
+                    # p is definitely a DatPair but the type checker says otherwise
                 output.write('\t' * indent)
                 output.write(')\n')
             case _:
