@@ -332,6 +332,10 @@ def to_dat(value: DatFile) -> str:
     encode_dat(value, output)
     return output.getvalue()
 
+DAT_OBJECT_TYPES = (
+    Game,
+    Rom,
+)
 
 def load_dat(dat: str | bytes | Path | TextIO | BinaryIO) -> DatRecord:
     match dat:
@@ -545,6 +549,7 @@ __all__ = (
     "Game",
     "load_dat",
     "Rom",
+    "DAT_OBJECT_TYPES",
 )
 
 if __name__ == "__main__":
