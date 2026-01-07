@@ -19,8 +19,8 @@ from typing import Annotated, Any, ClassVar, ForwardRef, Literal, Never, NewType
 import sqlalchemy
 
 from frozendict import frozendict
-from more_itertools import one, only
-from pydantic import BaseModel, HttpUrl, JsonValue, PlainSerializer, StringConstraints, ValidatorFunctionWrapHandler, WrapValidator
+from more_itertools import always_iterable, one, only
+from pydantic import BaseModel, BeforeValidator, HttpUrl, JsonValue, PlainSerializer, StringConstraints, ValidatorFunctionWrapHandler, WrapSerializer, WrapValidator
 from pydantic.fields import ComputedFieldInfo, FieldInfo
 from pydantic_extra_types.country import CountryNumericCode
 from sqlalchemy import Column, ForeignKey, MetaData, Table
@@ -499,6 +499,16 @@ FrozenDictValidator = WrapValidator(validate_frozendict)
 
 type FrozenDict[K, V] = Annotated[frozendict[K, V], FrozenDictValidator]
 Hash = Annotated[str, StringConstraints(to_lower=True)]
+type WrapInTuple[T] = Annotated[tuple[T, ...], BeforeValidator(lambda v: always_iterable(v))]
+
+type EmptyStringToNone[T] = Annotated[
+    T | None,
+    BeforeValidator(lambda v: v if v != "" else None),
+    WrapSerializer(lambda v, h: h(v) if v != "" else None, return_type=(T | None))
+]
+"""
+A type that serializes and validates empty strings as None.
+"""
 
 __all__ = (
     "ColumnDef",
@@ -512,4 +522,6 @@ __all__ = (
     "CoercedHttpUrl",
     "FrozenDictValidator",
     "InsertInRowContext",
+    "WrapInTuple",
+    "FrozenDict",
 )

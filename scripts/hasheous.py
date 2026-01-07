@@ -31,25 +31,16 @@ import sqlalchemy
 
 from frozendict import frozendict
 from more_itertools import first_true
-from pydantic import AliasChoices, BaseModel, ByteSize, Field, FieldSerializationInfo, FilePath, HttpUrl, PlainSerializer, PlainValidator, SerializerFunctionWrapHandler, StringConstraints, TypeAdapter, ValidationError, WrapValidator, computed_field, field_serializer
+from pydantic import AliasChoices, BaseModel, BeforeValidator, ByteSize, Field, FieldSerializationInfo, FilePath, HttpUrl, PlainSerializer, PlainValidator, SerializerFunctionWrapHandler, StringConstraints, TypeAdapter, ValidationError, WrapSerializer, WrapValidator, computed_field, field_serializer
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
 from sqlalchemy.util import is_non_string_iterable
 
 from igdb import IgdbId, PlaylistConfig
-from sqlite import ColumnDef, DatabaseModel, FrozenDictValidator, Hash, InsertInRowContext, RelationshipDef, TupleOf
+from sqlite import ColumnDef, DatabaseModel, FrozenDictValidator, Hash, InsertInRowContext, RelationshipDef, TupleOf, EmptyStringToNone
 
 METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
 
 HasheousId = NewType('HasheousId', int)
-
-type EmptyStringToNone[T] = Annotated[
-    T | None,
-    WrapValidator(lambda v, h: h(v) if v != "" else None),
-    PlainSerializer(lambda v: v if v != "" else None, return_type=(T | None))
-]
-"""
-A type that serializes and validates empty strings as None.
-"""
 
 class HasheousObject(DatabaseModel, ABC, frozen=True):
     pass
@@ -60,7 +51,7 @@ class SignatureDataObject(HasheousObject, frozen=True):
     Name: EmptyStringToNone[str] = None
     Year: EmptyStringToNone[str] = None
     Platform: EmptyStringToNone[str] = None
-    SourceId: Annotated[int | None, ColumnDef(index=True), WrapValidator(lambda v, h: h(v) if v != "" else None)] = None
+    SourceId: Annotated[EmptyStringToNone[int], ColumnDef(index=True)] = None
     Publisher: EmptyStringToNone[str] = None
     MetadataSource: EmptyStringToNone[str] = None
 

@@ -8,26 +8,80 @@ import sys
 
 from collections.abc import Iterable, Sequence, Collection
 from io import StringIO
-from itertools import chain
+from itertools import chain, repeat
 from pathlib import Path
-from typing import IO, Annotated, Any, BinaryIO, NamedTuple, TextIO
+from typing import IO, Annotated, Any, BinaryIO, ClassVar, Literal, LiteralString, NamedTuple, Self, TextIO
 
 import aiofiles
 # pe lacks type stubs, so let's silence MyPy's complaints
+from more_itertools import map_reduce, partition
 import pe  # type: ignore
 
 from aiomultiprocess import Pool
 from pe.actions import Pack
 from pe.operators import Class, Star
-from pydantic import AliasChoices, BaseModel, ByteSize, DirectoryPath, Field, FilePath
+from pydantic import AliasChoices, BaseModel, ByteSize, DirectoryPath, Field, FilePath, ModelWrapValidatorHandler, SerializationInfo, SerializerFunctionWrapHandler, TypeAdapter, ValidationError, ValidationInfo, model_serializer, model_validator
 from pydantic_core import from_json
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
 
 from igdb import ColumnDef, Playlist, PlaylistTitle
-from sqlite import DatabaseModel, Hash
+from sqlite import DatabaseModel, EmptyStringToNone, Hash, WrapInTuple
+
+type DatValidationMode = Literal['dat'] | None
+type DatPair = tuple[str, DatValue]
+type DatRecord = tuple[DatPair, ...]
+type DatValue = str | DatRecord
+type DatTopLevelRecord = tuple[str, DatRecord]
+type DatFile = tuple[DatTopLevelRecord, ...]
+
 
 class DatModel(DatabaseModel, frozen=True):
     __dattype__: ClassVar[LiteralString]
+
+    @classmethod
+    def from_dat(cls, value: DatRecord | DatTopLevelRecord) -> Self:
+        return cls.model_validate(value, context="dat")
+
+    @model_serializer(mode="wrap")
+    def _serialize(self, handler: SerializerFunctionWrapHandler, info: SerializationInfo):
+        match info.context:
+            case 'dat':
+                pass
+            case 'row':
+                pass
+            case _:
+                return handler(self)
+
+    @model_validator(mode="wrap")
+    @classmethod
+    def _validate(cls, data: Any, handler: ModelWrapValidatorHandler[Self], info: ValidationInfo) -> Self:
+        """
+        If the validation context is 'dat', construct the object from a DAT record.
+        """
+        if info.context != 'dat':
+            return handler(data)
+
+        match data:
+            case str(type) | (str(type), [*_]) if type != cls.__dattype__:
+                # A DAT key or keyed DatRecord with an unexpected type
+                raise ValidationError(f"Expected a DAT type of {cls.__dattype__}, got {type}")
+            case str(), str():
+                # A DatPair with a string value
+                return handler(data)
+            case (str(), [*pairs]) | [*pairs]:
+                # A DatRecord with multiple DatPairs, possibly as a top-level record
+                datdict: dict[str, tuple[DatValue, ...]] = map_reduce(
+                    (p for p in pairs if isinstance(p, tuple) and len(p) == 2),
+                    lambda pair: str(pair[0]), # the DAT pair type
+                    lambda pair: pair[1], # the DAT pair value
+                    lambda vals: vals[0] if len(vals) == 1 and not isinstance(vals[0], tuple) else tuple(v for v in vals),
+                )
+                result = handler(datdict)
+                return result
+            case _:
+                # Handle other cases normally
+                result = handler(data)
+                return result
 
 class ClrMamePro(DatModel, frozen=True):
     __tablename__ = "DatClrMamePro"
@@ -110,7 +164,7 @@ class Game(DatModel, frozen=True):
     __dattype__ = "game"
 
     name: str | None = None
-    comment: str | None = None
+    comment: WrapInTuple[str] | None = None
     description: str | None = None
     id: str | None = None
 
@@ -158,7 +212,7 @@ class Game(DatModel, frozen=True):
     media: str | None = None
     """May include multiple media types separated by commas, slashes, or pipes."""
     origin: str | None = None
-    patch: str | None = None
+    patch: WrapInTuple[str] | None = None
     pegi_rating: str | None = None
     perspective: str | None = None
     platform_exclusive: bool | None = None
@@ -168,7 +222,7 @@ class Game(DatModel, frozen=True):
     region: str | None = None
     releaseday: int | None = None
     releasemonth: int | None = None
-    releaseyear: int | None = None
+    releaseyear: EmptyStringToNone[str] = None
     rumble: bool | None = None
     score: str | None = None
     serial: str | None = None
@@ -210,16 +264,6 @@ class Game(DatModel, frozen=True):
 
         return rom.id
 
-type DatPair = tuple[str, DatValue]
-type DatRecord = tuple[DatPair, ...]
-type DatValue = str | DatRecord
-type DatTopLevelRecord = tuple[str, DatRecord]
-type DatFile = tuple[DatTopLevelRecord, ...]
-
-ParsedGameDatList = tuple[ClrMamePro, *tuple[Game, ...]]
-''' A parsed DAT file is a tuple where the first element is a ClrMamePro record,
-and the remaining elements are Game records. '''
-
 # PEG grammar for DAT file format
 DAT_GRAMMAR = r'''
 # Main entry points
@@ -251,7 +295,8 @@ EndOfFile <- !.
 I don't know of a formal spec for DAT files,
 so I wrote this PEG based on my observations
 of the DAT files in this repo.
-It should handle all of them.
+It should handle all of them correctly,
+but you can test this by running `python scripts/dats.py check`.
 
 These are the semantics I came up with:
 
@@ -451,16 +496,36 @@ async def load_dats(playlist: Playlist, dat_dirs: Iterable[Path]) -> tuple[Playl
     print(f"Loaded {len(result)} playlists from {len(dat_files)} DAT files")
     return result
 
+# I wanted to have a tuple[ClrMamePro, *tuple[Game, ...]],
+# but Pydantic doesn't read the Game correctly in that case.
+GameTupleAdapter = TypeAdapter(tuple[Game, ...])
+
 class CheckCommand(BaseModel):
-    dat_paths: tuple[FilePath | DirectoryPath, ...] = Field(
+    """Check DAT files for valid syntax."""
+
+    dat_paths: CliPositionalArg[list[FilePath | DirectoryPath]] = Field(
         default=(Path(__file__).parent.parent / 'dat', Path(__file__).parent.parent / 'metadat'),
         description="Paths to directories containing DAT files to check.",
-        validation_alias=AliasChoices('p', 'dat-paths'),
         validate_default=True,
     )
 
+    check_models: bool = Field(
+        default=False,
+        description="If set, check that all DATs can be validated as Pydantic models. Otherwise just check syntax.",
+        validation_alias=AliasChoices('m', 'models'),
+    )
+
+    verbose: bool = Field(
+        default=False,
+        description="Enable verbose output.",
+        validation_alias=AliasChoices('v', 'verbose'),
+    )
+
     @staticmethod
-    async def load_dat_async(dat_path: Path) -> bool:
+    async def load_dat_async(dat_path: Path, check_models: bool, verbose: bool) -> bool:
+        # Returning a bool to indicate success
+        # so we don't have to pickle a whole DAT file
+        # when we're just checking for validity
         try:
             async with aiofiles.open(dat_path, 'r', encoding='utf-8') as dat_file:
                 dat_content = await dat_file.read()
@@ -470,18 +535,37 @@ class CheckCommand(BaseModel):
                 print(f"Invalid DAT file: {dat_path}", file=sys.stderr)
                 return False
 
-            return bool(match_result.value())
-            # Returning a bool to indicate success
-            # so we don't have to pickle a whole DAT file
-            # when we're just checking for validity
+            parsed_value = match_result.value()
+            if not check_models:
+                if verbose and parsed_value is not None:
+                    print(f"Valid DAT file: {dat_path}")
+                return parsed_value is not None
+
+            if not isinstance(parsed_value, Sequence) or len(parsed_value) == 0:
+                print(f"Invalid DAT file structure: {dat_path}", file=sys.stderr)
+                return False
+
+            clrmamepro = ClrMamePro.model_validate(parsed_value[0], context="dat")
+            games = GameTupleAdapter.validate_python(parsed_value[1:], context="dat")
+
+            # Validate as Pydantic models
+            if verbose:
+                print(f"Valid DAT file with models: {dat_path} ({len(games)} games)")
+
+            return True
+
         except Exception as e:
             print(f"Failed to load DAT file {dat_path}: {e}", file=sys.stderr)
             return False
 
     async def cli_cmd(self) -> None:
-        dat_files = tuple(chain.from_iterable(p.rglob('*.dat') for p in self.dat_paths if p.is_dir()))
+        files, dirs = partition(Path.is_dir, self.dat_paths)
+        child_files = filter(Path.is_file, chain.from_iterable(p.rglob('*.dat') for p in dirs))
+        paths = {p for p in chain(files, child_files) if 'xml' not in p.name.lower()}
         async with Pool() as pool:
-            await pool.map(CheckCommand.load_dat_async, dat_files)
+            jobs = zip(paths, repeat(self.check_models), repeat(self.verbose))
+            await pool.starmap(CheckCommand.load_dat_async, tuple(jobs))
+            # TODO: Return non-zero exit code if any files failed
 
 class ToJsonCommand(BaseModel):
     """
@@ -517,8 +601,6 @@ class FromJsonCommand(BaseModel):
     )
 
     async def cli_cmd(self) -> None:
-        import json
-
         if self.infile:
             async with aiofiles.open(self.infile, 'r', encoding=self.encoding) as infile:
                 json_contents = await infile.read()
@@ -532,6 +614,7 @@ class DatCommand(BaseSettings):
     tojson: CliSubCommand[ToJsonCommand]
     fromjson: CliSubCommand[FromJsonCommand]
     check: CliSubCommand[CheckCommand]
+
     model_config = SettingsConfigDict(
         case_sensitive=False,
         cli_avoid_json=True,
