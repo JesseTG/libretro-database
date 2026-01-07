@@ -25,7 +25,7 @@ from pydantic_core import from_json
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
 
 from igdb import ColumnDef, Playlist, PlaylistTitle
-from sqlite import DatabaseModel, EmptyStringToNone, Hash, WrapInTuple
+from utils import DatabaseModel, EmptyStringToNone, Hash, WrapInTuple
 
 type DatValidationMode = Literal['dat'] | None
 type DatPair = tuple[str, DatValue]

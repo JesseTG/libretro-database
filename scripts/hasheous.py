@@ -36,7 +36,7 @@ from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubComm
 from sqlalchemy.util import is_non_string_iterable
 
 from igdb import IgdbId, PlaylistConfig
-from sqlite import ColumnDef, DatabaseModel, FrozenDictValidator, Hash, InsertInRowContext, RelationshipDef, TupleOf, EmptyStringToNone
+from utils import ColumnDef, DatabaseModel, FrozenDictValidator, Hash, InsertInRowContext, RelationshipDef, TupleOf, EmptyStringToNone
 
 METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
 

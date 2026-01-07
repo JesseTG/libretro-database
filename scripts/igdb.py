@@ -36,7 +36,7 @@ from pydantic_extra_types.country import CountryNumericCode
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
 from sqlalchemy import ForeignKey
 
-from sqlite import CoercedHttpUrl, ColumnDef, DatabaseModel, RelationshipDef, TupleOf
+from utils import CoercedHttpUrl, ColumnDef, DatabaseModel, RelationshipDef, TupleOf
 
 IgdbId = NewType('IgdbId', int)
 IgdbPrimaryId = Annotated[IgdbId, ColumnDef(type=sqlalchemy.Integer, primary_key=True)]
