@@ -384,7 +384,7 @@ class CommonArgs(BaseModel):
         validation_alias=AliasChoices('v', 'verbose'),
     )
 
-class FetchCommand(CommonArgs):
+class FetchSubCommand(CommonArgs):
     config: FilePath = Field(
         default=Path(__file__).parent.parent / 'playlists.toml',
         title="Playlist Config File",
@@ -517,7 +517,7 @@ async def submit_matches(tsv_path: Path, api_key: str, dry_run: bool = False, ve
         valid_matches = filter(can_submit, matches)
         raise NotImplementedError("Submission functionality is not yet implemented.")
 
-class SubmitCommand(CommonArgs):
+class SubmitSubCommand(CommonArgs):
     api_key: str  = Field(
         description="The Hasheous API key to use for submission. Overrides the HASHEOUS_API_KEY environment variable if provided.",
         validation_alias=AliasChoices('a', 'api-key'),
@@ -551,8 +551,8 @@ class SubmitCommand(CommonArgs):
                 )
 
 class HasheousCommand(BaseSettings):
-    fetch: CliSubCommand[FetchCommand]
-    submit: CliSubCommand[SubmitCommand]
+    fetch: CliSubCommand[FetchSubCommand]
+    submit: CliSubCommand[SubmitSubCommand]
     model_config = SettingsConfigDict(
         case_sensitive=False,
         cli_avoid_json=True,

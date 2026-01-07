@@ -500,7 +500,7 @@ async def load_dats(playlist: Playlist, dat_dirs: Iterable[Path]) -> tuple[Playl
 # but Pydantic doesn't read the Game correctly in that case.
 GameTupleAdapter = TypeAdapter(tuple[Game, ...])
 
-class CheckCommand(BaseModel):
+class CheckSubCommand(BaseModel):
     """Check DAT files for valid syntax."""
 
     dat_paths: CliPositionalArg[list[FilePath | DirectoryPath]] = Field(
@@ -564,10 +564,10 @@ class CheckCommand(BaseModel):
         paths = {p for p in chain(files, child_files) if 'xml' not in p.name.lower()}
         async with Pool() as pool:
             jobs = zip(paths, repeat(self.check_models), repeat(self.verbose))
-            await pool.starmap(CheckCommand.load_dat_async, tuple(jobs))
+            await pool.starmap(CheckSubCommand.load_dat_async, tuple(jobs))
             # TODO: Return non-zero exit code if any files failed
 
-class ToJsonCommand(BaseModel):
+class ToJsonSubCommand(BaseModel):
     """
     Convert a DAT file to equivalent JSON.
     """
@@ -589,7 +589,7 @@ class ToJsonCommand(BaseModel):
         dat = load_dat(dat_contents)
         json.dump(dat, sys.stdout, indent=2, ensure_ascii=False)
 
-class FromJsonCommand(BaseModel):
+class FromJsonSubCommand(BaseModel):
     infile: CliPositionalArg[Path | None] = Field(
         default=None,
         description="Path to the input JSON file, or stdin if not provided."
@@ -611,9 +611,9 @@ class FromJsonCommand(BaseModel):
         encode_dat(dat, sys.stdout)
 
 class DatCommand(BaseSettings):
-    tojson: CliSubCommand[ToJsonCommand]
-    fromjson: CliSubCommand[FromJsonCommand]
-    check: CliSubCommand[CheckCommand]
+    tojson: CliSubCommand[ToJsonSubCommand]
+    fromjson: CliSubCommand[FromJsonSubCommand]
+    check: CliSubCommand[CheckSubCommand]
 
     model_config = SettingsConfigDict(
         case_sensitive=False,

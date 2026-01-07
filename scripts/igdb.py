@@ -990,7 +990,7 @@ class CommonArgs(BaseModel):
         validation_alias=AliasChoices('v', 'verbose'),
     )
 
-class QueryCommand(CommonArgs):
+class QuerySubCommand(CommonArgs):
     """
     Execute an arbitrary Apicalypse query against the IGDB API
     and print the results as JSON to stdout.
@@ -1082,7 +1082,7 @@ class QueryCommand(CommonArgs):
                 json = to_json(results, indent=2)
                 await aiofiles.stdout_bytes.write(json)
 
-class FetchCommand(CommonArgs):
+class FetchSubCommand(CommonArgs):
     """
     Fetch game data from IGDB for one or more playlists
     and save the results as JSON files.
@@ -1171,8 +1171,8 @@ class FetchCommand(CommonArgs):
             # The task group will wait for all fetch tasks to complete
 
 class IgdbCommand(BaseSettings):
-    fetch: CliSubCommand[FetchCommand]
-    query: CliSubCommand[QueryCommand]
+    fetch: CliSubCommand[FetchSubCommand]
+    query: CliSubCommand[QuerySubCommand]
     model_config = SettingsConfigDict(
         case_sensitive=False,
         cli_avoid_json=True,
