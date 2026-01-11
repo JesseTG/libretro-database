@@ -217,33 +217,6 @@ class RelationshipDef:
             case _:
                 raise TypeError(f"Expected a ForeignKey, str, ForwardRef, or type[DatabaseModel]: got {type(spec)} ({spec})")
 
-    def create_table(self, metadata: MetaData, parent_type: type["DatabaseModel"], parent_field_name: str) -> Table:
-        """
-        Creates a relationship table according to the following conventions:
-
-        - Composite foreign key relationships aren't supported, an exception will be raised if attempted
-        - The table is named `<parent tablename>_<field name>`
-        - The parent's primary key is referenced as a foreign key column named `<parent tablename>_<parent pk column name>`
-        - The child's primary key column is referenced as a foreign key column named `<child_tablename>_<field name>`
-          (unless `foreign_colname` was specified in __init__(), in which case that name is used instead)
-        """
-        parent_pk_colname = one(parent_type.pk_columns())
-
-        return Table(
-            f"{parent_type.__tablename__}_{parent_field_name}",
-            metadata,
-            Column(
-                f"{parent_type.__tablename__}_{parent_pk_colname}",
-                ForeignKey(f"{parent_type.__tablename__}.{parent_pk_colname}"),
-                primary_key=True
-            ),
-            Column(
-                self.foreign_colname,
-                self.foreign_key,
-                primary_key=True
-            ),
-        )
-
 SchemaDef = ColumnDef | RelationshipDef
 
 class DatabaseModel(BaseModel, ABC, frozen=True):
@@ -344,6 +317,39 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
         )
 
     @classmethod
+    def create_relationship_table(
+        cls,
+        metadata: MetaData,
+        field_name: str,
+        reldef: RelationshipDef
+    ) -> Table:
+        """
+        Creates a relationship table according to the following conventions:
+
+        - Composite foreign key relationships aren't supported, an exception will be raised if attempted
+        - The table is named `<parent tablename>_<field name>`
+        - The parent's primary key is referenced as a foreign key column named `<parent tablename>_<parent pk column name>`
+        - The child's primary key column is referenced as a foreign key column named `<child_tablename>_<field name>`
+          (unless `foreign_colname` was specified in __init__(), in which case that name is used instead)
+        """
+        parent_pk_colname = one(cls.pk_columns())
+
+        return Table(
+            f"{cls.__tablename__}_{field_name}",
+            metadata,
+            Column(
+                f"{cls.__tablename__}_{parent_pk_colname}",
+                ForeignKey(f"{cls.__tablename__}.{parent_pk_colname}"),
+                primary_key=True
+            ),
+            Column(
+                reldef.foreign_colname,
+                reldef.foreign_key,
+                primary_key=True
+            ),
+        )
+
+    @classmethod
     def create_tables(cls, metadata: MetaData) -> tuple[Table, *tuple[Table, ...]]:
         """
         Creates a SQLAlchemy Table object for this model type,
@@ -364,13 +370,13 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
                     main_table.append_column(cls.create_column(name, coldef))
                 case RelationshipDef() as reldef:
                     # An explicit RelationshipDef was provided, so use it
-                    relationship_tables.append(reldef.create_table(metadata, cls, name))
+                    relationship_tables.append(cls.create_relationship_table(metadata, name, reldef))
                 case None if is_non_string_iterable_type(unwrapped_type):
                     # This field is a collection of related DatabaseModel instances
                     arg_type = get_args(annotation)[0]
                     unwrapped_arg_type = unwrap_type(arg_type, cls.__module__, sys.modules[cls.__module__].__dict__)
                     reldef = RelationshipDef(unwrapped_arg_type)
-                    relationship_tables.append(reldef.create_table(metadata, cls, name))
+                    relationship_tables.append(cls.create_relationship_table(metadata, name, reldef))
                 case None:
                     # No SchemaDef was provided, create a ColumnDef with defaults
                     main_table.append_column(cls.create_column(name))
