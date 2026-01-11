@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 
-import asyncio
 import dataclasses
-import functools
-import itertools
 import sys
 
-from collections.abc import Iterable, Sequence, Collection
+from collections.abc import Sequence
 from io import StringIO
 from itertools import chain, repeat
+from os import PathLike
 from pathlib import Path
-from typing import IO, Annotated, Any, BinaryIO, ClassVar, Literal, LiteralString, NamedTuple, Self, TextIO
+from typing import IO, Annotated, Any, BinaryIO, ClassVar, Literal, LiteralString, NamedTuple, Self, TextIO, overload
 
 import aiofiles
 # pe lacks type stubs, so let's silence MyPy's complaints
@@ -20,12 +18,12 @@ import pe  # type: ignore
 from aiomultiprocess import Pool
 from pe.actions import Pack
 from pe.operators import Class, Star
-from pydantic import AliasChoices, BaseModel, ByteSize, DirectoryPath, Field, FilePath, ModelWrapValidatorHandler, SerializationInfo, SerializerFunctionWrapHandler, TypeAdapter, ValidationError, ValidationInfo, model_serializer, model_validator
-from pydantic_core import from_json
+from pydantic import AliasChoices, BaseModel, ByteSize, DirectoryPath, Field, FilePath, ModelWrapValidatorHandler, RootModel, SerializationInfo, SerializerFunctionWrapHandler, TypeAdapter, ValidationError, ValidationInfo, model_serializer, model_validator
+from pydantic_core import CoreSchema, from_json, core_schema
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
 
-from igdb import ColumnDef, Playlist, PlaylistTitle
-from utils import DatabaseModel, EmptyStringToNone, Hash, WrapInTuple
+from igdb import ColumnDef, PlaylistTitle
+from utils import DatabaseModel, EmptyStringToNone, Hash, RelationshipDef, TupleOf, WrapInTuple
 
 type DatValidationMode = Literal['dat'] | None
 type DatPair = tuple[str, DatValue]
@@ -237,32 +235,7 @@ class Game(DatModel, frozen=True):
     year: int | str | None = None
 
     # Declared last so that it appears last in the generated DATs
-    rom: tuple[Rom, ...] | None = None
-
-    @property
-    def name_key(self) -> str:
-        if self.name:
-            return self.name
-
-        if self.description:
-            return self.description
-
-        if self.comment:
-            return self.comment
-
-        return ''
-
-    @property
-    def crc_key(self) -> str:
-        if not self.rom:
-            return ''
-
-        rom = self.rom if isinstance(self.rom, Rom) else self.rom[0]
-
-        if not rom:
-            return ''
-
-        return rom.id
+    rom: Annotated[TupleOf[Rom], RelationshipDef("")] = ()
 
 # PEG grammar for DAT file format
 DAT_GRAMMAR = r'''
@@ -378,26 +351,87 @@ def to_dat(value: DatFile) -> str:
     encode_dat(value, output)
     return output.getvalue()
 
+ErrorHandling = Literal["raise", "suppress", "return"]
+class ParsedDatFile(RootModel, frozen=True):
+    """
+    A RootModel representing a parsed DAT file
+    as a tuple starting with a ClrMamePro record followed by zero or more Game records.
+    """
+    root: tuple[ClrMamePro, *tuple[Game, ...]]
+    __pydantic_core_schema__: ClassVar[CoreSchema] = core_schema.tuple_schema(
+        [
+            ClrMamePro.__pydantic_core_schema__,
+            Game.__pydantic_core_schema__,
+        ],
+        variadic_item_index=1,
+    )
+    """
+    Pydantic doesn't seem to generate schemae for unpacked tuples,
+    so we have to define it ourselves.
+    """
+
+    @overload
+    @classmethod
+    async def from_dat_file_async(cls, dat: PathLike, errors: Literal["raise"]) -> Self: ...
+
+    @overload
+    @classmethod
+    async def from_dat_file_async(cls, dat: PathLike, errors: Literal["suppress"]) -> Self | None: ...
+
+    @overload
+    @classmethod
+    async def from_dat_file_async(cls, dat: PathLike, errors: Literal["return"]) -> Self | Exception: ...
+
+    @classmethod
+    async def from_dat_file_async(cls, dat: PathLike, errors: ErrorHandling = "raise") -> Self | Exception | None:
+        """
+        Load and parse a DAT file asynchronously from the given path.
+        Raises or returns errors based on the `errors` parameter.
+        """
+        try:
+            async with aiofiles.open(dat, 'r', encoding='utf-8') as dat_file:
+                dat_content = await dat_file.read()
+            raw_dat = load_dat(dat_content)
+            return cls.model_validate(raw_dat)
+        except Exception as e:
+            match errors:
+                case "raise":
+                    raise
+                case "suppress":
+                    return None
+                case "return":
+                    return e
+                case _:
+                    raise
+
+
+    @classmethod
+    async def from_dat_file_ignore_errors(cls, dat: PathLike) -> Self | None:
+        return await cls.from_dat_file_async(dat, errors="suppress")
+
 DAT_OBJECT_TYPES = (
     Game,
     Rom,
 )
 
-def load_dat(dat: str | bytes | Path | TextIO | BinaryIO) -> DatRecord:
+def load_dat(dat: str | bytes | PathLike | TextIO | BinaryIO) -> DatRecord:
+    """
+    Loads a DAT file from disk, memory, or a file-like object and parses it into a DatRecord.
+    """
     match dat:
         case str():
             dat_content = dat
         case bytes():
             dat_content = dat.decode('utf-8')
-        case Path() as p:
-            with p.open('r', encoding='utf-8') as dat_file:
+        case PathLike() as p:
+            with open(p, 'r', encoding='utf-8') as dat_file:
                 dat_content = dat_file.read()
         case TextIO() as f:
             dat_content = f.read()
         case BinaryIO() as f:
             dat_content = f.read().decode('utf-8')
         case _:
-            raise TypeError(f"Expect a str, bytes, Path, TextIO, or BinaryIO, got {type(dat)}")
+            raise TypeError(f"Expect a str, bytes, PathLike, TextIO, or BinaryIO, got {type(dat)}")
 
     match_result = dat_parser.match(dat_content, flags=pe.MEMOIZE | pe.OPTIMIZE | pe.STRICT | pe.INLINE)
     if match_result is None:
@@ -412,89 +446,6 @@ class LoadedDat(NamedTuple):
     path: Path
     clrmamepro: ClrMamePro
     games: Sequence[Game]
-
-async def load_dats(playlist: Playlist, dat_dirs: Iterable[Path]) -> tuple[PlaylistTitle, tuple[Game, ...]]:
-    dat_files: list[LoadedDat] = []
-    """
-    Load game data from DAT files for each playlist.
-
-    :param paths: A mapping of playlist names to the paths of the DAT files
-    that contain the game data for those playlists.
-
-    :return: A mapping of playlist names to the games in those playlists.
-      Each game will be combined from all DAT files for that playlist,
-      with precedence given to earlier DAT files in the list.
-    """
-    paths = itertools.chain.from_iterable(
-        ((name, p) for p in dats) for (name, dats) in dat_playlists.items()
-    )
-    # Break the mapping of playlist names to lists of paths
-    # into a flat iterable of (playlist name, path) tuples
-
-    if executor:
-        loop = asyncio.get_running_loop()
-        futures = (loop.run_in_executor(executor, load_dat, p) for p in paths)
-        dat_files = [d for d in await asyncio.gather(*futures) if d]
-    else:
-        dat_files = [d for d in map(load_dat, paths) if d]
-
-    game_fields = dataclasses.fields(Game)
-    def reduce_game(merged: dict[str, bool | str | int | Sequence[Rom]], game: Game) -> dict[str, Any]:
-        # Merge the fields of `game` into `merged`, without overwriting existing values
-        for field in game_fields:
-            name = field.name
-            old = merged.get(name)
-            new = getattr(game, name)
-
-            match (name, old, new):
-                case _, None, None:
-                    # Both old and new are None, nothing to do
-                    pass
-                case _, None, value:
-                    # Apply any new field value if we don't already have one
-                    merged[name] = value
-                case 'year', str(unknown), int(year) if '?' in unknown:
-                    # If we have a string year like "198?" or "???"
-                    # but we found a specific year in another DAT,
-                    # use the integer year
-                    merged[name] = year
-                case 'rom', None, list(roms) if roms:
-                    # Add any ROMs if we haven't found any yet,
-                    # but only if the list is non-empty
-                    merged[name] = list(roms)
-                case 'rom', list(known_roms), list(new_roms) if new_roms:
-                    roms = []
-                    for k in known_roms:
-                        updated_rom = k
-                        for n in new_roms:
-                            if k.same_as(n):
-                                updated_rom = k | n
-
-                        roms.append(updated_rom)
-
-                    merged[name] = roms
-
-        return merged
-
-    def reduce_games(games: Iterable[Game]) -> Game:
-        game_dict = functools.reduce(reduce_game, games, {})
-        return Game(**game_dict)
-
-    def reduce_dats(dats: Iterable[LoadedDat]) -> Collection[Game]:
-        games_iterable = itertools.chain.from_iterable(d.games for d in dats)
-        games = sorted(games_iterable, key=lambda g: g.crc_key)
-        games_by_crc = itertools.groupby(games, key=lambda g: g.crc_key)
-        reduced_games = tuple(reduce_games(dats) for (crc, dats) in games_by_crc)
-        return reduced_games
-
-    # Group the loaded DAT files by playlist name
-    dat_files.sort(key=lambda p: p.playlist)
-    dat_groups = itertools.groupby(dat_files, key=lambda p: p.playlist)
-    game_groups = ((p, reduce_dats(g)) for (p, g) in dat_groups)
-
-    result = dict(game_groups)
-    print(f"Loaded {len(result)} playlists from {len(dat_files)} DAT files")
-    return result
 
 # I wanted to have a tuple[ClrMamePro, *tuple[Game, ...]],
 # but Pydantic doesn't read the Game correctly in that case.
@@ -634,6 +585,7 @@ __all__ = (
     "load_dat",
     "Rom",
     "DAT_OBJECT_TYPES",
+    "ParsedDatFile",
 )
 
 if __name__ == "__main__":
