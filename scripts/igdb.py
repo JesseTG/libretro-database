@@ -960,11 +960,11 @@ RUMBLE_KEYWORD_IDS = (
 
 GameTupleAdapter = TypeAdapter(tuple[Game, ...])
 
-async def load_game_file(path: Path, playlist: Playlist) -> tuple[PlaylistTitle, Collection[Game]]:
+async def load_game_file(path: Path) -> tuple[Game, ...]:
     async with aiofiles.open(path, mode='rb') as infile:
         json_bytes = await infile.read()
         games = GameTupleAdapter.validate_json(json_bytes, extra='allow')
-        return playlist.title, games
+        return games
 
 class CommonArgs(BaseModel):
     client_id: str = Field(
