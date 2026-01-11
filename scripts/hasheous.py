@@ -31,7 +31,7 @@ import sqlalchemy
 
 from frozendict import frozendict
 from more_itertools import first_true
-from pydantic import AliasChoices, BaseModel, BeforeValidator, ByteSize, Field, FieldSerializationInfo, FilePath, HttpUrl, PlainSerializer, PlainValidator, SerializerFunctionWrapHandler, StringConstraints, TypeAdapter, ValidationError, WrapSerializer, WrapValidator, computed_field, field_serializer
+from pydantic import AliasChoices, BaseModel, ByteSize, Field, FieldSerializationInfo, FilePath, HttpUrl, PlainSerializer, PlainValidator, SerializerFunctionWrapHandler, StringConstraints, TypeAdapter, ValidationError, WrapSerializer, WrapValidator, computed_field, field_serializer
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
 from sqlalchemy.util import is_non_string_iterable
 
@@ -329,11 +329,7 @@ class MatchRecord(NamedTuple):
             (self.crc is not None or self.serial is not None)
 
 
-class HasheousZip(NamedTuple):
-    name: str
-    objects: TupleOf[DataObject]
-
-async def load_zip(path: Path) -> HasheousZip:
+async def load_zip(path: Path) -> TupleOf[DataObject]:
     async with aiofiles.open(path, "rb") as zip_file:
         with ZipFile(zip_file.raw) as zip:
 
@@ -348,7 +344,7 @@ async def load_zip(path: Path) -> HasheousZip:
             json_infos = filter(lambda p: p.filename.endswith('.json') and p.filename != 'PlatformMapping.json', paths)
             objects = map(validate, json_infos)
 
-            return HasheousZip(path.stem, tuple(objects))
+            return tuple(objects)
 
 def _on_backoff(details):
     print("Retrying after backoff:", details['target'].__name__, "with args:", details['args'], "and kwargs:", details['kwargs'], file=sys.stderr)
