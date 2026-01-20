@@ -9,7 +9,7 @@ import tomllib
 
 from abc import ABC
 from asyncio import Task, TaskGroup
-from collections.abc import Collection, Iterable, Iterator, Mapping
+from collections.abc import Iterable, Iterator, Mapping
 from dataclasses import dataclass
 from datetime import date, datetime
 from functools import cached_property
@@ -21,25 +21,27 @@ import aiofiles
 import aiofiles.os
 import asynciolimiter
 import backoff
-import frozendict
 import httpx
-import sqlalchemy
 
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
-from frozendict import frozendict
 from httpx import HTTPStatusError, Response, Timeout
 from more_itertools import batched, spy
 from pydantic import AliasChoices, BaseModel, BeforeValidator, Field, FieldSerializationInfo, FilePath, SerializerFunctionWrapHandler, TypeAdapter, JsonValue, WrapValidator, computed_field, field_serializer
 from pydantic_core import from_json, to_json
 from pydantic_extra_types.country import CountryNumericCode
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
-from sqlalchemy import ForeignKey
+from sqlalchemy import Column, ForeignKey
+from sqlalchemy.dialects.sqlite import INTEGER
+from sqlalchemy.util import immutabledict
 
-from utils import CoercedHttpUrl, ColumnDef, DatabaseModel, RelationshipDef, TupleOf
+from utils import CoercedHttpUrl, DatabaseModel, RelationshipTableDef
 
 IgdbId = NewType('IgdbId', int)
-IgdbPrimaryId = Annotated[IgdbId, ColumnDef(type=sqlalchemy.Integer, primary_key=True)]
+IgdbPrimaryId = Annotated[
+    IgdbId,
+    Column(INTEGER, primary_key=True, autoincrement=False, )
+]
 PlaylistTitle = NewType('PlaylistTitle', str)
 
 def country_numeric_code_validator(value: Any) -> CountryNumericCode:
@@ -97,6 +99,7 @@ class IgdbObject(DatabaseModel, ABC, frozen=True):
                 # Otherwise, run the default serializer to handle other types or contexts
                 return handler(value)
 
+GameReference = Annotated[IgdbId, Column(ForeignKey('IgdbGame.id'))]
 class AgeRatingOrganization(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbAgeRatingOrganization"
     id: IgdbPrimaryId
@@ -104,8 +107,9 @@ class AgeRatingOrganization(IgdbObject, frozen=True):
 
 class AgeRatingCategory(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbAgeRatingCategory"
+
     id: IgdbPrimaryId
-    organization: Annotated[IgdbId, ColumnDef(type=ForeignKey('IgdbAgeRatingOrganization.id'))]
+    organization: Annotated[IgdbId, Column(ForeignKey('IgdbAgeRatingOrganization.id'))]
     rating: str
 
 class AgeRatingContentDescriptionType(IgdbObject, frozen=True):
@@ -118,21 +122,21 @@ class AgeRatingContentDescriptionV2(IgdbObject, frozen=True):
     id: IgdbPrimaryId
     description: str
     description_type: AgeRatingContentDescriptionType
-    organization: Annotated[IgdbId, ColumnDef(type=ForeignKey('IgdbAgeRatingOrganization.id'))]
+    organization: Annotated[IgdbId, Column(ForeignKey('IgdbAgeRatingOrganization.id'))]
 
 class AgeRating(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbAgeRating"
     id: IgdbPrimaryId
     organization: AgeRatingOrganization
     rating_category: AgeRatingCategory
-    rating_content_descriptions: Annotated[TupleOf[AgeRatingContentDescriptionV2], RelationshipDef("IgdbAgeRatingContentDescriptionV2.id")] = ()
+    rating_content_descriptions: tuple[AgeRatingContentDescriptionV2, ...] = ()
 
 class AlternativeName(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbAlternativeName"
     id: IgdbPrimaryId
     name: str
     comment: str | None = None
-    game: Annotated[IgdbId, ColumnDef(type=ForeignKey('IgdbGame.id'))]
+    game: GameReference
 
 class Franchise(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbFranchise"
@@ -148,7 +152,7 @@ class GameLocalization(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbGameLocalization"
     id: IgdbPrimaryId
     name: str | None = None
-    game: Annotated[IgdbId, ColumnDef(type=ForeignKey('IgdbGame.id'))]
+    game: GameReference
     region: 'Region'
 
 class GameMode(IgdbObject, frozen=True):
@@ -187,7 +191,7 @@ class InvolvedCompany(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbInvolvedCompany"
     id: IgdbPrimaryId
     company: Company
-    game: Annotated[IgdbId, ColumnDef(type=ForeignKey('IgdbGame.id'))]
+    game: GameReference
     developer: bool
     porting: bool
     publisher: bool
@@ -219,7 +223,7 @@ class LanguageSupportType(IgdbObject, frozen=True):
 class LanguageSupport(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbLanguageSupport"
     id: IgdbPrimaryId
-    game: Annotated[IgdbId, ColumnDef(type=ForeignKey('IgdbGame.id'))]
+    game: GameReference
     language: Language
     language_support_type: LanguageSupportType
 
@@ -252,7 +256,7 @@ class MultiplayerMode(IgdbObject, frozen=True):
     id: IgdbPrimaryId
     campaigncoop: bool
     dropin: bool
-    game: Annotated[IgdbId, ColumnDef(type=ForeignKey('IgdbGame.id'))]
+    game: GameReference
     lancoop: bool
     offlinecoop: bool
     offlinecoopmax: int | None = None
@@ -260,7 +264,7 @@ class MultiplayerMode(IgdbObject, frozen=True):
     onlinecoop: bool
     onlinecoopmax: int | None = None
     onlinemax: int | None = None
-    platform: Annotated[IgdbId | None, ColumnDef(type=ForeignKey('IgdbPlatform.id'))] = None
+    platform: Annotated[IgdbId | None, Column(ForeignKey('IgdbPlatform.id'))] = None
     splitscreen: bool
     splitscreenonline: bool | None = None
 
@@ -294,10 +298,10 @@ class ReleaseDate(IgdbObject, frozen=True):
     id: IgdbPrimaryId
     date: datetime | None = None
     date_format: DateFormat
-    game: Annotated[IgdbId, ColumnDef(type=ForeignKey('IgdbGame.id'))]
+    game: GameReference
     human: str
-    m: Literal[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]  | None = None  # Month (1-12)
-    platform: Annotated[IgdbId, ColumnDef(type=ForeignKey('IgdbPlatform.id'))]
+    m: Literal[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] | None = None  # Month (1-12)
+    platform: Annotated[IgdbId, Column(ForeignKey('IgdbPlatform.id'))]
     release_region: ReleaseDateRegion
     status: ReleaseDateStatus | None = None
     y: int | None = None  # Year
@@ -307,46 +311,59 @@ class Theme(IgdbObject, frozen=True):
     id: IgdbPrimaryId
     name: str
 
+GameReferenceTuple = Annotated[
+    tuple[IgdbId, ...],
+    RelationshipTableDef(
+        related_columns=(
+            Column(
+                "related_game",
+                ForeignKey('IgdbGame.id'),
+                primary_key=True
+            ),
+        )
+    )
+]
+
 class Game(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbGame"
     id: IgdbPrimaryId
-    age_ratings: Annotated[TupleOf[AgeRating], RelationshipDef("IgdbAgeRating.id")] = ()
+    age_ratings: tuple[AgeRating, ...] = ()
     aggregated_rating: float | None = None
     aggregated_rating_count: int | None = None
-    alternative_names: Annotated[TupleOf[AlternativeName], RelationshipDef("IgdbAlternativeName.id")] = ()
-    bundles: Annotated[TupleOf[IgdbId], RelationshipDef('IgdbGame.id')] = ()
-    collections: Annotated[TupleOf[IgdbId], RelationshipDef('IgdbGame.id')] = ()
-    dlcs: Annotated[TupleOf[IgdbId], RelationshipDef('IgdbGame.id')] = ()
-    expanded_games: Annotated[TupleOf[IgdbId], RelationshipDef('IgdbGame.id')] = ()
-    expansions: Annotated[TupleOf[IgdbId], RelationshipDef('IgdbGame.id')] = ()
+    alternative_names: tuple[AlternativeName, ...] = ()
+    bundles: GameReferenceTuple = ()
+    collections: GameReferenceTuple = ()
+    dlcs: GameReferenceTuple = ()
+    expanded_games: GameReferenceTuple = ()
+    expansions: GameReferenceTuple = ()
     first_release_date: date | None = None
-    forks: Annotated[TupleOf[IgdbId], RelationshipDef('IgdbGame.id')] = ()
+    forks: GameReferenceTuple = ()
     franchise: Franchise | None = None
-    franchises: Annotated[TupleOf[Franchise], RelationshipDef("IgdbFranchise.id")] = ()
-    game_engines: Annotated[TupleOf[GameEngine], RelationshipDef("IgdbGameEngine.id")] = ()
-    game_localizations: Annotated[TupleOf[GameLocalization], RelationshipDef("IgdbGameLocalization.id")] = ()
-    game_modes: Annotated[TupleOf[GameMode], RelationshipDef("IgdbGameMode.id")] = ()
+    franchises: tuple[Franchise, ...] = ()
+    game_engines: tuple[GameEngine, ...] = ()
+    game_localizations: tuple[GameLocalization, ...] = ()
+    game_modes: tuple[GameMode, ...] = ()
     game_status: GameStatus | None = None
     game_type: GameType | None = None
-    genres: Annotated[TupleOf[Genre], RelationshipDef("IgdbGenre.id")] = ()
-    involved_companies: Annotated[TupleOf[InvolvedCompany], RelationshipDef("IgdbInvolvedCompany.id")] = ()
-    keywords: Annotated[TupleOf[Keyword], RelationshipDef("IgdbKeyword.id")] = ()
-    language_supports: Annotated[TupleOf[LanguageSupport], RelationshipDef("IgdbLanguageSupport.id")] = ()
-    multiplayer_modes: Annotated[TupleOf[MultiplayerMode], RelationshipDef("IgdbMultiplayerMode.id")] = ()
+    genres: tuple[Genre, ...] = ()
+    involved_companies: tuple[InvolvedCompany, ...] = ()
+    keywords: tuple[Keyword, ...] = ()
+    language_supports: tuple[LanguageSupport, ...] = ()
+    multiplayer_modes: tuple[MultiplayerMode, ...] = ()
     name: str
-    parent_game: Annotated[IgdbId | None, ColumnDef(type=ForeignKey('IgdbGame.id'))] = None
-    platforms: Annotated[TupleOf[Platform], RelationshipDef("IgdbPlatform.id")] = ()
-    player_perspectives: Annotated[TupleOf[PlayerPerspective], RelationshipDef("IgdbPlayerPerspective.id")] = ()
-    ports: Annotated[TupleOf[IgdbId], RelationshipDef('IgdbGame.id')] = ()
-    release_dates: Annotated[TupleOf[ReleaseDate], RelationshipDef("IgdbReleaseDate.id")] = ()
-    remakes: Annotated[TupleOf[IgdbId], RelationshipDef('IgdbGame.id')] = ()
-    remasters: Annotated[TupleOf[IgdbId], RelationshipDef('IgdbGame.id')] = ()
-    standalone_expansions: Annotated[TupleOf[IgdbId], RelationshipDef('IgdbGame.id')] = ()
-    themes: Annotated[TupleOf[Theme], RelationshipDef("IgdbTheme.id")] = ()
+    parent_game: Annotated[IgdbId | None, Column(ForeignKey('IgdbGame.id'))] = None
+    platforms: tuple[Platform, ...] = ()
+    player_perspectives: tuple[PlayerPerspective, ...] = ()
+    ports: GameReferenceTuple = ()
+    release_dates: tuple[ReleaseDate, ...] = ()
+    remakes: GameReferenceTuple = ()
+    remasters: GameReferenceTuple = ()
+    standalone_expansions: GameReferenceTuple = ()
+    themes: tuple[Theme, ...] = ()
     total_rating: float | None = None
     total_rating_count: int | None = None
     url: CoercedHttpUrl | None = None
-    version_parent: Annotated[IgdbId | None, ColumnDef(type=ForeignKey('IgdbGame.id'))] = None
+    version_parent: Annotated[IgdbId | None, Column(ForeignKey('IgdbGame.id'),)] = None
     version_title: str | None = None
 
 
@@ -714,7 +731,7 @@ class PlaylistConfig(BaseModel, frozen=True):
     @computed_field
     @cached_property
     def by_title(self) -> Mapping[PlaylistTitle, Playlist]:
-        return frozendict({pl.title: pl for pl in self.playlists})
+        return immutabledict({pl.title: pl for pl in self.playlists})
 
 MAX_QUERIES_IN_MULTIQUERY = 10
 '''
@@ -1230,7 +1247,6 @@ __all__ = (
     "Query",
     "QueryClient",
     "Region",
-    "RelationshipDef",
     "ReleaseDate",
     "ReleaseDateRegion",
     "ReleaseDateStatus",

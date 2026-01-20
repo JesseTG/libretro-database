@@ -8,7 +8,7 @@ from io import StringIO
 from itertools import chain, repeat
 from os import PathLike
 from pathlib import Path
-from typing import IO, Annotated, Any, BinaryIO, ClassVar, Literal, LiteralString, NamedTuple, Self, TextIO, overload
+from typing import IO, Annotated, Any, BinaryIO, ClassVar, Literal, LiteralString, NamedTuple, NewType, Self, TextIO, overload
 
 import aiofiles
 # pe lacks type stubs, so let's silence MyPy's complaints
@@ -18,12 +18,13 @@ import pe  # type: ignore
 from aiomultiprocess import Pool
 from pe.actions import Pack
 from pe.operators import Class, Star
-from pydantic import AliasChoices, BaseModel, ByteSize, DirectoryPath, Field, FilePath, ModelWrapValidatorHandler, RootModel, SerializationInfo, SerializerFunctionWrapHandler, TypeAdapter, ValidationError, ValidationInfo, model_serializer, model_validator
+from pydantic import AliasChoices, BaseModel, ByteSize, DirectoryPath, Field, FilePath, ModelWrapValidatorHandler, RootModel, SerializationInfo, SerializerFunctionWrapHandler, TypeAdapter, ValidationError, ValidationInfo, computed_field, model_serializer, model_validator
 from pydantic_core import CoreSchema, from_json, core_schema
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
+from sqlalchemy import Column, ForeignKey
 
-from igdb import ColumnDef, PlaylistTitle
-from utils import DatabaseModel, EmptyStringToNone, Hash, RelationshipDef, TupleOf, WrapInTuple
+from igdb import PlaylistTitle
+from utils import DatabaseModel, EmptyStringToNone, Hash, RelationshipTableDef, WrapInTuple
 
 type DatValidationMode = Literal['dat'] | None
 type DatPair = tuple[str, DatValue]
@@ -32,7 +33,6 @@ type DatValue = str | DatRecord
 type DatTopLevelRecord = tuple[str, DatRecord]
 type DatFile = tuple[DatTopLevelRecord, ...]
 
-
 class DatModel(DatabaseModel, frozen=True):
     __dattype__: ClassVar[LiteralString]
 
@@ -40,19 +40,9 @@ class DatModel(DatabaseModel, frozen=True):
     def from_dat(cls, value: DatRecord | DatTopLevelRecord) -> Self:
         return cls.model_validate(value, context="dat")
 
-    @model_serializer(mode="wrap")
-    def _serialize(self, handler: SerializerFunctionWrapHandler, info: SerializationInfo):
-        match info.context:
-            case 'dat':
-                pass
-            case 'row':
-                pass
-            case _:
-                return handler(self)
-
     @model_validator(mode="wrap")
     @classmethod
-    def _validate(cls, data: Any, handler: ModelWrapValidatorHandler[Self], info: ValidationInfo) -> Self:
+    def validate_dat(cls, data: Any, handler: ModelWrapValidatorHandler[Self], info: ValidationInfo) -> Self:
         """
         If the validation context is 'dat', construct the object from a DAT record.
         """
@@ -74,12 +64,11 @@ class DatModel(DatabaseModel, frozen=True):
                     lambda pair: pair[1], # the DAT pair value
                     lambda vals: vals[0] if len(vals) == 1 and not isinstance(vals[0], tuple) else tuple(v for v in vals),
                 )
-                result = handler(datdict)
-                return result
+                return handler(datdict)
             case _:
                 # Handle other cases normally
-                result = handler(data)
-                return result
+                return handler(data)
+
 
 class ClrMamePro(DatModel, frozen=True):
     __tablename__ = "DatClrMamePro"
@@ -101,14 +90,17 @@ class Rom(DatModel, frozen=True):
     # TODO: Add a table-level CHECK constraint that at least one of `crc` or `serial` is non-NULL
     __tablename__ = "DatRom"
     __dattype__ = "rom"
+    __tablekwargs__ = {
+        "sqlite_with_rowid": False,
+    }
 
-    crc: Annotated[Hash, ColumnDef(unique=True, index=True)] | None = None
-    serial: Annotated[str, ColumnDef(unique=True, index=True)] | None = None
+    crc: Annotated[Hash, Column(unique=True, index=True)] | None = None
+    serial: Annotated[str, Column(unique=True, index=True)] | None = None
     image: str | None = None
     name: str | None = None
     size: ByteSize | None = None
-    md5: Annotated[Hash, ColumnDef(unique=True, index=True)] | None = None
-    sha1: Annotated[Hash, ColumnDef(unique=True, index=True)] | None = None
+    md5: Annotated[Hash, Column(unique=True, index=True)] | None = None
+    sha1: Annotated[Hash, Column(unique=True, index=True)] | None = None
     genre: str | None = None
     users: str | None = None
 
@@ -138,16 +130,8 @@ class Rom(DatModel, frozen=True):
 
         return Rom(**(that | this))
 
-    @property
-    def id(self) -> str:
-        if self.crc:
-            return self.crc.lower()
 
-        if self.serial:
-            return self.serial.lower()
-
-        raise TypeError("Rom record has neither 'crc' nor 'serial' field.")
-
+GamePrimaryKey = NewType('GamePrimaryKey', str)
 
 class Game(DatModel, frozen=True):
     """
@@ -160,11 +144,9 @@ class Game(DatModel, frozen=True):
     """
     __tablename__ = "DatGame"
     __dattype__ = "game"
-
-    name: str | None = None
-    comment: WrapInTuple[str] | None = None
-    description: str | None = None
-    id: str | None = None
+    __tablekwargs__ = {
+        "sqlite_with_rowid": False,
+    }
 
     achievements: int | None = None
     analog: bool | None = None
@@ -175,10 +157,12 @@ class Game(DatModel, frozen=True):
 
     cero_rating: str | None = None
     code: str | None = None
+    comment: WrapInTuple[str] | None = None
     console_exclusive: bool | None = None
     controls: str | None = None
     coop: bool | None = None
     date: str | None = None
+    description: str | None = None
     developer: str | None = None
     """May include multiple developers separated by commas, slashes, or pipes"""
 
@@ -196,6 +180,7 @@ class Game(DatModel, frozen=True):
     """May include multiple genres separated by commas, slashes, or pipes."""
 
     homepage: str | None = None
+    id: str | None = None
     igdb_id: int | None = None
     igdb_url: str | None = None
     """URL of the IGDB page for this game."""
@@ -209,6 +194,7 @@ class Game(DatModel, frozen=True):
     manufacturer: str | None = None
     media: str | None = None
     """May include multiple media types separated by commas, slashes, or pipes."""
+    name: str | None = None
     origin: str | None = None
     patch: WrapInTuple[str] | None = None
     pegi_rating: str | None = None
@@ -232,10 +218,82 @@ class Game(DatModel, frozen=True):
 
     # May be a string because of entries like "???" for unknown years,
     # or "198?" for an unknown year in the 1980s
-    year: int | str | None = None
+    year: EmptyStringToNone[str] = None
 
-    # Declared last so that it appears last in the generated DATs
-    rom: Annotated[TupleOf[Rom], RelationshipDef("")] = ()
+    # Declared last so that it appears last in the generated DATs;
+    # not semantically important, but easier to read.
+    rom: Annotated[tuple[Rom, ...], RelationshipTableDef(
+        self_columns=(
+            Column(
+                "pk",
+                ForeignKey("DatGame.pk"),
+                primary_key=True,
+                nullable=False,
+            ),
+        ),
+        related_columns=(
+            Column(
+                "crc",
+                ForeignKey("DatRom.crc"),
+                primary_key=True,
+                nullable=True,
+            ),
+            Column(
+                "serial",
+                ForeignKey("DatRom.serial"),
+                primary_key=True,
+                nullable=True,
+            ),
+            Column(
+                "md5",
+                ForeignKey("DatRom.md5"),
+                primary_key=True,
+                nullable=True,
+            ),
+            Column(
+                "sha1",
+                ForeignKey("DatRom.sha1"),
+                primary_key=True,
+                nullable=True,
+            ),
+        )
+    )] = ()
+
+    @computed_field
+    @property
+    def pk(self) -> Annotated[GamePrimaryKey, Column(primary_key=True)]:
+        """
+        A unique identifier for this game.
+
+        Checks several possible fields in order of preference,
+        since DATs use different fields as the "name" of a game.
+        """
+        if self.id:
+            return GamePrimaryKey(self.id)
+
+        if self.name:
+            return GamePrimaryKey(self.name)
+
+        if self.comment:
+            return GamePrimaryKey(self.comment[0])
+
+        if self.description:
+            return GamePrimaryKey(self.description)
+
+        raise ValidationError("Game record has neither 'id', 'name', 'comment', nor 'description' field.")
+
+
+class DatPlaylists(DatabaseModel, frozen=True):
+    """
+    A mapping of playlist titles to DAT file paths.
+    Derived from the loaded playlist config,
+    but doesn't directly represent a specific file.
+    """
+    __tablename__ = "DatPlaylists"
+
+    playlist: Annotated[PlaylistTitle, Column(primary_key=True)]
+    games: tuple[GamePrimaryKey, ...] = ()
+
 
 # PEG grammar for DAT file format
 DAT_GRAMMAR = r'''
@@ -473,7 +531,7 @@ class CheckSubCommand(BaseModel):
     )
 
     @staticmethod
-    async def load_dat_async(dat_path: Path, check_models: bool, verbose: bool) -> bool:
+    async def check_dat_async(dat_path: Path, check_models: bool, verbose: bool) -> Exception | None:
         # Returning a bool to indicate success
         # so we don't have to pickle a whole DAT file
         # when we're just checking for validity
@@ -483,18 +541,19 @@ class CheckSubCommand(BaseModel):
 
             match_result = dat_parser.match(dat_content, flags=pe.MEMOIZE | pe.OPTIMIZE | pe.STRICT | pe.INLINE)
             if not match_result:
-                print(f"Invalid DAT file: {dat_path}", file=sys.stderr)
-                return False
+                raise ValueError("Failed to parse DAT file")
 
             parsed_value = match_result.value()
             if not check_models:
                 if verbose and parsed_value is not None:
                     print(f"Valid DAT file: {dat_path}")
-                return parsed_value is not None
+                return None
 
-            if not isinstance(parsed_value, Sequence) or len(parsed_value) == 0:
-                print(f"Invalid DAT file structure: {dat_path}", file=sys.stderr)
-                return False
+            if not isinstance(parsed_value, Sequence):
+                raise TypeError(f"Unexpected parsed DAT value: {type(parsed_value)}")
+
+            if len(parsed_value) == 0:
+                raise ValueError("DAT file is empty")
 
             clrmamepro = ClrMamePro.model_validate(parsed_value[0], context="dat")
             games = GameTupleAdapter.validate_python(parsed_value[1:], context="dat")
@@ -502,12 +561,9 @@ class CheckSubCommand(BaseModel):
             # Validate as Pydantic models
             if verbose:
                 print(f"Valid DAT file with models: {dat_path} ({len(games)} games)")
-
-            return True
-
         except Exception as e:
             print(f"Failed to load DAT file {dat_path}: {e}", file=sys.stderr)
-            return False
+            return e
 
     async def cli_cmd(self) -> None:
         files, dirs = partition(Path.is_dir, self.dat_paths)
@@ -515,8 +571,9 @@ class CheckSubCommand(BaseModel):
         paths = {p for p in chain(files, child_files) if 'xml' not in p.name.lower()}
         async with Pool() as pool:
             jobs = zip(paths, repeat(self.check_models), repeat(self.verbose))
-            await pool.starmap(CheckSubCommand.load_dat_async, tuple(jobs))
-            # TODO: Return non-zero exit code if any files failed
+            result = await pool.starmap(CheckSubCommand.check_dat_async, tuple(jobs))
+            if errors := tuple(e for e in result if e is not None):
+                raise ExceptionGroup(f"{len(errors)} DAT files failed to load or validate.", errors)
 
 class ToJsonSubCommand(BaseModel):
     """
@@ -582,6 +639,7 @@ class DatCommand(BaseSettings):
 __all__ = (
     "ClrMamePro",
     "Game",
+    "GamePrimaryKey",
     "load_dat",
     "Rom",
     "DAT_OBJECT_TYPES",

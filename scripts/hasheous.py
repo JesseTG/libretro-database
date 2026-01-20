@@ -27,16 +27,16 @@ import aiofiles
 import aiofiles.os
 import backoff
 import httpx
-import sqlalchemy
 
-from frozendict import frozendict
 from more_itertools import first_true
 from pydantic import AliasChoices, BaseModel, ByteSize, Field, FieldSerializationInfo, FilePath, HttpUrl, PlainSerializer, PlainValidator, SerializerFunctionWrapHandler, StringConstraints, TypeAdapter, ValidationError, WrapSerializer, WrapValidator, computed_field, field_serializer
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
-from sqlalchemy.util import is_non_string_iterable
+from sqlalchemy import Column, ForeignKey
+from sqlalchemy.dialects.sqlite import INTEGER, JSON
+from sqlalchemy.util import EMPTY_DICT, is_non_string_iterable
 
 from igdb import IgdbId, PlaylistConfig
-from utils import ColumnDef, DatabaseModel, FrozenDictValidator, Hash, InsertInRowContext, RelationshipDef, TupleOf, EmptyStringToNone
+from utils import DatabaseModel, FrozenDictValidator, Hash, InsertInRowContext, EmptyStringToNone
 
 METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
 
@@ -47,11 +47,11 @@ class HasheousObject(DatabaseModel, ABC, frozen=True):
 
 class SignatureDataObject(HasheousObject, frozen=True):
     __tablename__: ClassVar[str] = "HasheousSignatureDataObject"
-    SignatureId: Annotated[int, ColumnDef(primary_key=True)]
+    SignatureId: Annotated[int, Column(primary_key=True)]
     Name: EmptyStringToNone[str] = None
     Year: EmptyStringToNone[str] = None
     Platform: EmptyStringToNone[str] = None
-    SourceId: Annotated[EmptyStringToNone[int], ColumnDef(index=True)] = None
+    SourceId: Annotated[EmptyStringToNone[int], Column(index=True)] = None
     Publisher: EmptyStringToNone[str] = None
     MetadataSource: EmptyStringToNone[str] = None
 
@@ -110,27 +110,27 @@ class RomItem(HasheousObject, frozen=True):
     (specifically the Signatures_Roms table)
     """
     __tablename__: ClassVar[str] = "HasheousRomItem"
-    Id: Annotated[int, ColumnDef(primary_key=True)]
+    Id: Annotated[int, Column(primary_key=True)]
     Name: EmptyStringToNone[str]
-    Attributes: Annotated[Mapping[str, str], ColumnDef(type=sqlalchemy.JSON), FrozenDictValidator]
-    RomType: Annotated[str, ColumnDef(index=True)]
+    Attributes: Annotated[Mapping[str, str], Column(JSON), FrozenDictValidator]
+    RomType: Annotated[str, Column(index=True)]
     Size: ByteSize
-    Crc: Annotated[EmptyStringToNone[Hash], ColumnDef(index=True)]
-    Md5: Annotated[EmptyStringToNone[Hash], ColumnDef(index=True)]
-    Sha1: Annotated[EmptyStringToNone[Hash], ColumnDef(index=True)]
-    Sha256: Annotated[EmptyStringToNone[Hash], ColumnDef(index=True)]
+    Crc: Annotated[EmptyStringToNone[Hash], Column(index=True)]
+    Md5: Annotated[EmptyStringToNone[Hash], Column(index=True)]
+    Sha1: Annotated[EmptyStringToNone[Hash], Column(index=True)]
+    Sha256: Annotated[EmptyStringToNone[Hash], Column(index=True)]
     Status: EmptyStringToNone[str]
 
     # TODO: Represent Country with computed columns
-    Country: Annotated[Mapping[str, str], ColumnDef(type=sqlalchemy.JSON), FrozenDictValidator]
+    Country: Annotated[Mapping[str, str], Column(JSON), FrozenDictValidator]
 
     # TODO: Represent Language with computed columns
-    Language: Annotated[Mapping[str, str], ColumnDef(type=sqlalchemy.JSON), FrozenDictValidator]
+    Language: Annotated[Mapping[str, str], Column(JSON), FrozenDictValidator]
     DevelopmentStatus: EmptyStringToNone[str]
     RomTypeMedia: EmptyStringToNone[str]
 
     # TODO: Represent MediaDetail with computed columns
-    MediaDetail: Annotated[MediaType, ColumnDef(type=sqlalchemy.JSON), FrozenDictValidator]
+    MediaDetail: Annotated[MediaType, Column(JSON), FrozenDictValidator]
     MediaLabel: EmptyStringToNone[str]
     SignatureSource: EmptyStringToNone[str]
 
@@ -138,7 +138,7 @@ RomItemTupleAdapter = TypeAdapter(tuple[RomItem, ...])
 def coerce_attribute(value: Any) -> "str | tuple[RomItem, ...] | DataObject | Mapping":
     match value:
         case {} if not value:
-            return frozendict({})
+            return EMPTY_DICT
         case {**mapping}:
             return DataObject.model_validate(mapping)
         case [*items]:
@@ -167,6 +167,10 @@ class Attribute:
     Value: Annotated["str | tuple[RomItem, ...] | DataObject | Mapping", PlainValidator(coerce_attribute)]
     Id: Optional[int] = None
 
+DataObjectAttributeColumn = Annotated[
+    "DataObject | None",
+    Column(ForeignKey('HasheousDataObject.Id'), index=True)
+]
 
 class DataObject(DatabaseModel, frozen=True):
     """
@@ -174,36 +178,36 @@ class DataObject(DatabaseModel, frozen=True):
     """
     __tablename__: ClassVar[str] = "HasheousDataObject"
 
-    Id: Annotated[HasheousId, ColumnDef(type=sqlalchemy.Integer, primary_key=True)]
+    Id: Annotated[HasheousId, Column(INTEGER, primary_key=True)]
+    ObjectType: Annotated[DataObjectType, Column(primary_key=True)]
     Name: str
-    ObjectType: DataObjectType
-    SignatureDataObjects: Annotated[TupleOf[SignatureDataObject], RelationshipDef("HasheousSignatureDataObject.SignatureId")]
-    Metadata: Annotated[TupleOf[MetadataItem], Field(exclude=True)]
-    Attributes: Annotated[TupleOf[Attribute], Field(exclude=True)]
+    SignatureDataObjects: tuple[SignatureDataObject, ...]
+    Metadata: Annotated[tuple[MetadataItem, ...], Field(exclude=True)]
+    Attributes: Annotated[tuple[Attribute, ...], Field(exclude=True)]
     CreatedDate: datetime
     UpdatedDate: datetime
 
     @computed_field
     @cached_property
-    def manufacturer(self) -> "DataObject | None":
+    def manufacturer(self) -> DataObjectAttributeColumn:
         attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "Manufacturer")
         return attribute.Value if attribute and isinstance(attribute.Value, DataObject) else None
 
     @computed_field
     @cached_property
-    def publisher(self) -> "DataObject | None":
+    def publisher(self) -> DataObjectAttributeColumn:
         attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "Publisher")
         return attribute.Value if attribute and isinstance(attribute.Value, DataObject) else None
 
     @computed_field
     @cached_property
-    def platform(self) -> "DataObject | None":
+    def platform(self) -> DataObjectAttributeColumn:
         attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "Platform")
         return attribute.Value if attribute and isinstance(attribute.Value, DataObject) else None
 
     @computed_field
     @cached_property
-    def country(self) -> Annotated[str | None, ColumnDef(index=True)]:
+    def country(self) -> Annotated[str | None, Column(index=True)]:
         # TODO: country is really a comma-separated list of countries,
         # so we should probably normalize that into a separate table
         attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "Country")
@@ -211,7 +215,7 @@ class DataObject(DatabaseModel, frozen=True):
 
     @computed_field
     @cached_property
-    def language(self) -> Annotated[str | None, ColumnDef(index=True)]:
+    def language(self) -> Annotated[str | None, Column(index=True)]:
         # TODO: language is really a comma-separated string of multiple languages,
         # so we should probably normalize that into a separate table
         attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "Language")
@@ -219,13 +223,13 @@ class DataObject(DatabaseModel, frozen=True):
 
     @computed_field
     @cached_property
-    def roms(self) -> Annotated[TupleOf[RomItem] | None, RelationshipDef("HasheousRomItem.Id")]:
+    def roms(self) -> tuple[RomItem, ...]:
         attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "ROMs")
-        return tuple(attribute.Value) if attribute and is_non_string_iterable(attribute.Value) else None
+        return tuple(attribute.Value) if attribute and is_non_string_iterable(attribute.Value) else ()
 
     @computed_field
     @cached_property
-    def igdb_id(self) -> IgdbId | None: #Annotated[IgdbId | None, ColumnDef(type=sqlalchemy.ForeignKey('IgdbGame.id'))]:
+    def igdb_id(self) -> Annotated[IgdbId | None, Column(ForeignKey('IgdbGame.id'))]:
         """Returns the IGDB ID mapped to this DataObject, or None if there's no IGDB mapping."""
         igdb_metadata = first_true(self.Metadata, pred=lambda m: m.Source == "IGDB" and m.Status == "Mapped")
         if not igdb_metadata:
@@ -237,6 +241,10 @@ class DataObject(DatabaseModel, frozen=True):
             return IgdbId(int(igdb_metadata.ImmutableId))
         except ValueError:
             return None
+
+    @property
+    def pk(self) -> tuple[HasheousId, DataObjectType]:
+        return (self.Id, self.ObjectType)
 
     @field_serializer('platform', 'manufacturer', 'publisher', mode='wrap')
     def _serialize_field(self, value: Any, handler: SerializerFunctionWrapHandler, info: FieldSerializationInfo[InsertInRowContext]):
@@ -329,7 +337,7 @@ class MatchRecord(NamedTuple):
             (self.crc is not None or self.serial is not None)
 
 
-async def load_zip(path: Path) -> TupleOf[DataObject]:
+async def load_zip(path: Path) -> tuple[DataObject, ...]:
     async with aiofiles.open(path, "rb") as zip_file:
         with ZipFile(zip_file.raw) as zip:
 
