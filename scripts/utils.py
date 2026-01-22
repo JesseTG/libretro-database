@@ -7,26 +7,24 @@ Provides base classes and utilities for defining database models using Pydantic 
 import sys
 
 from abc import ABC
-from collections import defaultdict
-from collections.abc import Mapping, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from functools import cache, cached_property
 from itertools import chain
-from types import MappingProxyType
 from typing import Annotated, Any, ClassVar, ForwardRef, Literal, NewType, Self, TypeGuard, get_origin
 
 import sqlalchemy
 
-from more_itertools import always_iterable, one, only
+from frozendict import frozendict
+from more_itertools import always_iterable, only
 from pydantic import BaseModel, BeforeValidator, HttpUrl, JsonValue, PlainSerializer, StringConstraints, ValidatorFunctionWrapHandler, WrapSerializer, WrapValidator
 from pydantic.fields import ComputedFieldInfo, FieldInfo
 from pydantic_extra_types.country import CountryNumericCode
 from sqlalchemy import Column, ForeignKey, MetaData, Table
 from sqlalchemy.schema import SchemaConst, SchemaItem
 from sqlalchemy.types import NullType, TypeEngine
-from sqlalchemy.util import EMPTY_DICT, immutabledict
 from sqlalchemy.util.typing import (GenericProtocol, TypeAliasType,
                                     de_optionalize_union_types,
                                     eval_expression, flatten_newtype, get_args,
@@ -53,24 +51,30 @@ class CopyableSchemaItem(SchemaItem, ABC):
     def _copy(self, **kwargs) -> Self:
         ...
 
-@dataclass(eq=True, unsafe_hash=True)
-class RelationshipTableDef:
+type RelationshipTableArg = Mapping[str, Column] | Iterable[Column] | Column | ForeignKey
 
-    tablename: str | None = None
+EMPTY_DICT = frozendict()
+
+@dataclass(eq=True, unsafe_hash=True)
+class Relationship:
+
+    tablename: str | None
     """
     The name of the relationship table that will be created
     to represent this relationship.
 
     If None, a default name will be generated based on the parent model's table name
-    and the Pydantic field name that this RelationshipTableDef is associated with.
+    and the Pydantic field name that this Relationship is associated with.
     """
 
-    self_columns: tuple[Column, ...] = ()
+    self_columns: frozendict[str, Column]
     """
     One or more `Column`s that identify the "parent" object.
+    Each key is a field name on the parent object's model,
+    and each value is a corresponding column in the generated relationship table.
     """
 
-    related_columns: tuple[Column, ...] = ()
+    related_columns: frozendict[str, Column]
     """
     One or more `Column`s that define the related object.
 
@@ -78,28 +82,70 @@ class RelationshipTableDef:
     or primitive values.
     """
 
-    tableargs: tuple[CopyableSchemaItem, ...] = ()
+    tableargs: tuple[CopyableSchemaItem, ...]
     """
     Positional arguments to pass as-is to the Table constructor
     after the table name, metadata, and explicit constraints.
     Useful for table-level constraints.
     """
 
-    tablekwargs: immutabledict[str, Any] = field(default_factory=lambda: EMPTY_DICT)
+    tablekwargs: frozendict[str, Any]
     """
     Keyword arguments to pass as-is to the Table constructor.
     """
 
-    def __deepcopy__(self, memo: dict[int, Any]) -> "RelationshipTableDef":
-        return RelationshipTableDef(
+    def __init__(
+        self,
+        tablename: str | None = None,
+        self_columns: RelationshipTableArg = EMPTY_DICT,
+        related_columns: RelationshipTableArg = EMPTY_DICT,
+        tableargs: tuple[CopyableSchemaItem, ...] = (),
+        tablekwargs: frozendict[str, Any] | None = None
+    ):
+        self.tablename = tablename
+
+        match self_columns:
+            case Column() as column:
+                self.self_columns = frozendict({column.name: column})
+            case ForeignKey() as fk:
+                name = fk.target_fullname.split(".")[-1]
+                column_name = fk.target_fullname.replace(".", "_")
+                self.self_columns = frozendict({name: Column(column_name, fk._copy(), nullable=False)})
+            case { **items }:
+                self.self_columns = frozendict(items)
+            case [*columns]:
+                self.self_columns = frozendict({c.name: c for c in columns})
+            case _:
+                raise TypeError(f"Unsupported self_columns type: {type(self_columns)}")
+
+        match related_columns:
+            case Column() as column:
+                self.related_columns = frozendict({column.name: column})
+            case ForeignKey() as fk:
+                name = fk.target_fullname.split(".")[-1]
+                column_name = fk.target_fullname.replace(".", "_")
+                self.related_columns = frozendict({name: Column(column_name, fk._copy(), nullable=False)})
+            case { **items }:
+                self.related_columns = frozendict(items)
+            case [*columns]:
+                self.related_columns = frozendict({c.name: c for c in columns})
+            case _:
+                raise TypeError(f"Unsupported related_columns type: {type(related_columns)}")
+
+        self.tableargs = tableargs
+        self.tablekwargs = tablekwargs or EMPTY_DICT
+
+
+    def __deepcopy__(self, memo: dict[int, Any]) -> "Relationship":
+        return Relationship(
             tablename=self.tablename,
-            self_columns=tuple(c._copy() for c in self.self_columns),
-            related_columns=tuple(c._copy() for c in self.related_columns),
+            self_columns=frozendict({k: v._copy() for k, v in self.self_columns.items()}),
+            related_columns=frozendict({k: c._copy() for k, c in self.related_columns.items()}),
             tableargs=tuple(i._copy() for i in self.tableargs),
-            tablekwargs=immutabledict(self.tablekwargs),
+            tablekwargs=frozendict(self.tablekwargs),
         )
 
-SchemaDef = Column | RelationshipTableDef
+SchemaDef = Column | Relationship
 
 class DatabaseModel(BaseModel, ABC, frozen=True):
     __tablename__: ClassVar[str]
@@ -296,9 +342,10 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
                 raise TypeError(f"Expected FieldInfo, ComputedFieldInfo, or str; got {type(field)}")
 
     @classmethod
-    def get_relationship_table_def(cls, field: FieldInfo | ComputedFieldInfo | str) -> RelationshipTableDef | None:
+    def get_relationship_table_def(cls, field: FieldInfo | ComputedFieldInfo | str) -> Relationship | None:
         """
         Retrieves a copy of the `RelationshipTableDef` explicitly defined on a model field's `Annotated` metadata, if any.
+
         :param field: A `FieldInfo`, `ComputedFieldInfo`, or field name.
         :return: The `RelationshipTableDef` defined on the field, or `None` if there isn't one.
         :raises KeyError: if the field name does not exist on this model.
@@ -311,12 +358,12 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
                     raise KeyError(f"Model {cls.__name__} has no real or computed field named {field_name!r}")
                 return cls.get_relationship_table_def(info)
             case FieldInfo(metadata=metadata):
-                return only((m for m in metadata if isinstance(m, RelationshipTableDef)), default=None)
+                return only((m for m in metadata if isinstance(m, Relationship)), default=None)
             case ComputedFieldInfo(return_type=None):
                 return None
             case ComputedFieldInfo(return_type=annotation) if is_pep593(annotation):
                 args = get_args(annotation)
-                return only((m for m in args if isinstance(m, RelationshipTableDef)), default=None)
+                return only((m for m in args if isinstance(m, Relationship)), default=None)
             case ComputedFieldInfo(return_type=annotation):
                 return None
             case _:
@@ -324,18 +371,18 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
 
     @classmethod
     @cache
-    def pk_columns(cls) -> immutabledict[str, Column]:
+    def pk_columns(cls) -> frozendict[str, Column]:
         """
         Returns a dictionary of primary key columns for the model.
 
         :return: A dictionary mapping field names to Column instances that are primary keys.
         """
 
-        return immutabledict({k:v for k, v in cls.columns().items() if v.primary_key})
+        return frozendict({k:v for k, v in cls.columns().items() if v.primary_key})
 
     @classmethod
     @cache
-    def columns(cls) -> immutabledict[str, Column]:
+    def columns(cls) -> frozendict[str, Column]:
         """
         Gets all Column instances from this model type's fields
         as defined in their Annotated metadata.
@@ -385,6 +432,8 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
                 column.name = field_name
 
             if column._user_defined_nullable == SchemaConst.NULL_UNSPECIFIED:
+                # TODO: Raise a warning if _user_defined_nullable doesn't exist,
+                # as it means SQLAlchemy's internals have changed
                 # If nullability isn't specified, infer it from the field annotation
                 column.nullable = includes_none(field_annotation)
 
@@ -406,23 +455,24 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
 
             result[field_name] = column
 
-        return immutabledict(result)
+        return frozendict(result)
 
     @classmethod
     @cache
-    def relationship_table_defs(cls) -> immutabledict[str, RelationshipTableDef]:
+    def relationship_table_defs(cls) -> frozendict[str, Relationship]:
         """
         Gets all RelationshipTableDef instances from this model type's fields,
         as defined in their Annotated metadata.
         Absent values will be filled in with defaults.
 
-        Returns a map of field names to RelationshipTableDef instances,
-        empty if none are found.
+        :returns: A dict of field names to RelationshipTableDef instances.
+        The key will always be a field in this class,
+        regardless of what the table or its columns are named.
 
         :raises ValueError: if multiple RelationshipTableDefs are found on a single field.
         """
 
-        result: dict[str, RelationshipTableDef] = {}
+        result: dict[str, Relationship] = {}
         all_fields = chain(cls.model_fields.items(), cls.model_computed_fields.items())
         for field_name, field in all_fields:
             if isinstance(field, FieldInfo) and field.exclude:
@@ -443,7 +493,7 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
                 else:
                     raise TypeError(f"Cannot create relationship table for non-collection field {cls.__name__}.{field_name} of type {field_type}")
 
-            defn = deepcopy(defn) if defn else RelationshipTableDef()
+            defn = deepcopy(defn) if defn else Relationship()
             # If no RelationshipTableDef is defined, create a default one;
             # otherwise create a deep copy of the existing one to avoid mutating it
             # (since SQLAlchemy Table/Column/etc. instances have internal state)
@@ -459,19 +509,23 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
                 pk_cols = cls.pk_columns()
                 if not pk_cols:
                     raise ValueError(
-                        f"Cannot create default relationship table for {cls.__name__}.{field_name!r} "
-                        f"because this model has no primary key columns; "
-                        "try defining one explicitly"
+                        f"Cannot create default relationship table for {cls.__name__}.{field_name} "
+                        f"because {cls.__name__}'s generated table has no primary key columns; "
+                        "try defining one explicitly by passing a Column to one of its Annotated fields "
+                        "and setting primary_key=True"
                     )
 
-                defn.self_columns = tuple(
-                    Column(
+
+                # By default, generate a column for each component of this class's primary key
+                # and make it part of the relationship table row's composite primary key.
+                # (Whew! What a mouthful.)
+                defn.self_columns = frozendict({
+                    pkcol_name: Column(
                         f"{defn.tablename}_{pkcol.name}",
                         ForeignKey(f"{cls.__tablename__}.{pkcol.name}"),
                         primary_key=True
-                    )
-                    for pkcol in pk_cols.values()
-                )
+                    ) for pkcol_name, pkcol in pk_cols.items()
+                })
 
             if not defn.related_columns:
                 # If the RelationshipTableDef doesn't specify columns that reference the related object,
@@ -481,36 +535,37 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
                 # TODO: Is this the right way to get the related type?
 
                 if issubclass(related_type, DatabaseModel):
+                    # If this field is a collection of other database models...
                     related_pk_cols = related_type.pk_columns()
                     if not related_pk_cols:
                         raise ValueError(
-                            f"Cannot create default relationship table for {cls.__name__}.{field_name!r} "
+                            f"Cannot create default relationship table for {cls.__name__}.{field_name} "
                             f"because related model {related_type.__name__} has no primary key columns; "
                             "try defining one explicitly"
                         )
 
-                    defn.related_columns = tuple(
-                        Column(
+                    # ...add a column for each part of the related type's primary key
+                    defn.related_columns = frozendict({
+                        pkcol_name: Column(
                             f"{related_type.__tablename__}_{pkcol.name}",
                             ForeignKey(f"{related_type.__tablename__}.{pkcol.name}"),
                             primary_key=True
                         )
-                        for pkcol in related_pk_cols.values()
-                    )
+                        for pkcol_name, pkcol in related_pk_cols.items()
+                    })
                 else:
-                    # Primitive type
-                    defn.related_columns = (
-                        Column(
-                            f"{related_type.__tablename__}_{field_name}",
+                    # This field is a collection of primitive values
+                    defn.related_columns = frozendict({
+                        field_name: Column(
+                            f"{cls.__tablename__}_{field_name}",
                             cls.get_default_column_type(related_type),
                             primary_key=True
                         ),
-                    )
-
+                    })
 
             result[field_name] = defn
 
-        return immutabledict(result)
+        return frozendict(result)
 
     @classmethod
     def create_tables(cls, metadata: MetaData) -> tuple[Table, *tuple[Table, ...]]:
@@ -522,7 +577,12 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
         :return: A tuple of `Table`s, where the first item is the main table
                     and any subsequent items are relationship tables.
         """
-        main_table = Table(cls.__tablename__, metadata)
+        main_table = Table(
+            cls.__tablename__,
+            metadata,
+            *cls.__tableconstraints__,
+            **cls.__tablekwargs__,
+        )
         relationship_tables: list[Table] = []
 
         columns = cls.columns()
@@ -540,17 +600,17 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
                 case (FieldInfo() | ComputedFieldInfo()) if field_name in relationship_table_defs:
                     reldef = relationship_table_defs[field_name]
                     if __debug__:
-                        for col in reldef.self_columns:
-                            assert col.table is None, f"{col} unexpectedly linked to {col.table}, did something mutate it?"
+                        for colname, col in reldef.self_columns.items():
+                            assert col.table is None, f"{col} representing {colname} unexpectedly linked to {col.table}, did something mutate it?"
 
-                        for col in reldef.related_columns:
-                            assert col.table is None, f"{col} unexpectedly linked to {col.table}, did something mutate it?"
+                        for colname, col in reldef.related_columns.items():
+                            assert col.table is None, f"{col} representing {colname} unexpectedly linked to {col.table}, did something mutate it?"
 
                     reltable = Table(
                         reldef.tablename or f"{cls.__tablename__}_{field_name}",
                         metadata,
-                        *(c._copy() for c in reldef.self_columns),
-                        *(c._copy() for c in reldef.related_columns),
+                        *(c._copy() for c in reldef.self_columns.values()),
+                        *(c._copy() for c in reldef.related_columns.values()),
                         *(i._copy() for i in reldef.tableargs),
                         **reldef.tablekwargs,
                     )
@@ -582,8 +642,38 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
 
         return frozenset(models)
 
+    def get_relationship(self, field_name: str) -> tuple[frozendict[str, Any], ...]:
+        cls = type(self)
+        reldefs = cls.relationship_table_defs()
+        reldef = reldefs.get(field_name)
+
+        if not reldef:
+            return ()
+
+        field = cls.model_fields.get(field_name) or cls.model_computed_fields.get(field_name)
+        if not field:
+            return ()
+
+        field_annotation = cls.get_field_annotation(field)
+        field_origin = get_origin(field_annotation)
+        if is_non_string_sequence_type(field_origin):
+            # If the field is a non-string sequence type, we don't handle it here
+            return ()
+
+        rows: list[frozendict[str, Any]] = []
+        field_value = getattr(self, field_name)
+        for v in field_value:
+            row: dict[str, Any] = {}
+            for colname, col in reldef.self_columns.items():
+                row[colname] = getattr(self, colname)
+            for colname, col in reldef.related_columns.items():
+                row[colname] = getattr(v, colname)
+            rows.append(frozendict(row))
+
+        return tuple(rows)
+
     @cached_property
-    def relationships(self) -> Mapping[str, list[dict[str, Any]]]:
+    def relationships(self) -> frozendict[str, tuple[frozendict[str, Any], ...]]:
         """
         Returns a dictionary whose keys are field names representing relationships,
         and whose values are sets of dicts suitable for relationship tables.
@@ -591,47 +681,15 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
 
         This property is not recursive, i.e. it does not include relationships from nested models.
         """
-        results: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        results: dict[str, tuple[frozendict[str, Any], ...]] = {}
         cls = type(self)
-        pk_coldefs = cls.pk_columns()
-        reldefs = cls.relationship_table_defs()
 
         for field_name in chain(cls.model_fields, cls.model_computed_fields):
-            if field_name not in reldefs:
-                continue
+            rows = self.get_relationship(field_name)
+            if rows:
+                results[field_name] = tuple(rows)
 
-            reldef = reldefs[field_name]
-            foreign_colname = reldef.foreign_colname
-
-            match getattr(self, field_name):
-                case DatabaseModel() as related_obj:
-                    mapping: dict[str, Any] = {}
-                    for pk_field_name, pk_coldef in pk_coldefs.items():
-                        mapping[f"{cls.__tablename__}_{pk_coldef.name or pk_field_name}"] = getattr(self, pk_field_name)
-
-                    related_pk_coldefs = type(related_obj).pk_columns()
-                    for related_pk_field_name, related_pk_coldef in related_pk_coldefs.items():
-                        mapping[foreign_colname] = getattr(related_obj, related_pk_field_name)
-
-                    results[field_name].append(mapping)
-                case [*related_objs]:
-                    for related_obj in related_objs:
-                        if not isinstance(related_obj, DatabaseModel):
-                            continue
-
-                        mapping = {}
-                        for pk_field_name, pk_coldef in pk_coldefs.items():
-                            mapping[f"{cls.__tablename__}_{pk_coldef.name or pk_field_name}"] = getattr(self, pk_field_name)
-
-                        related_pk_coldefs = type(related_obj).pk_columns()
-                        for related_pk_field_name, related_pk_coldef in related_pk_coldefs.items():
-                            mapping[foreign_colname] = getattr(related_obj, related_pk_field_name)
-
-                        results[field_name].append(mapping)
-                case _:
-                    continue
-
-        return MappingProxyType(results)
+        return frozendict(results)
 
     @property
     def as_row(self) -> dict[str, Any]:
@@ -641,18 +699,18 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
 type CoercedHttpUrl = Annotated[HttpUrl, WrapValidator(lambda v, h: h(v) if v else None), PlainSerializer(str, str)]
 type InsertInRowContext = Literal['row'] | None
 
-def validate_frozendict(v: Any, handler: ValidatorFunctionWrapHandler) -> immutabledict[Any, Any]:
-    if isinstance(v, immutabledict):
+def validate_frozendict(v: Any, handler: ValidatorFunctionWrapHandler) -> frozendict[Any, Any]:
+    if isinstance(v, frozendict):
         return v
 
     if isinstance(v, Mapping):
-        return immutabledict(handler(v))
+        return frozendict(handler(v))
 
-    raise TypeError(f"Expected immutabledict or Mapping, got {type(v)}")
+    raise TypeError(f"Expected frozendict or Mapping, got {type(v)}")
 
 FrozenDictValidator = WrapValidator(validate_frozendict)
 
-type FrozenDict[K, V] = Annotated[immutabledict[K, V], FrozenDictValidator]
+type FrozenDict[K, V] = Annotated[frozendict[K, V], FrozenDictValidator]
 Hash = Annotated[str, StringConstraints(to_lower=True)]
 type WrapInTuple[T] = Annotated[tuple[T, ...], BeforeValidator(lambda v: always_iterable(v))]
 
@@ -667,7 +725,7 @@ A type that serializes and validates empty strings as None.
 
 __all__ = (
     "DatabaseModel",
-    "RelationshipTableDef",
+    "Relationship",
     "Hash",
     "is_non_string_sequence_type",
     "CoercedHttpUrl",

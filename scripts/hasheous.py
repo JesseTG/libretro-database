@@ -33,10 +33,10 @@ from pydantic import AliasChoices, BaseModel, ByteSize, Field, FieldSerializatio
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy.dialects.sqlite import INTEGER, JSON
-from sqlalchemy.util import EMPTY_DICT, is_non_string_iterable
+from sqlalchemy.util import is_non_string_iterable
 
 from igdb import IgdbId, PlaylistConfig
-from utils import DatabaseModel, FrozenDictValidator, Hash, InsertInRowContext, EmptyStringToNone
+from utils import DatabaseModel, FrozenDictValidator, Hash, InsertInRowContext, EmptyStringToNone, EMPTY_DICT
 
 METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
 

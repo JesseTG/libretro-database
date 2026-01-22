@@ -25,6 +25,7 @@ import httpx
 
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
+from frozendict import frozendict
 from httpx import HTTPStatusError, Response, Timeout
 from more_itertools import batched, spy
 from pydantic import AliasChoices, BaseModel, BeforeValidator, Field, FieldSerializationInfo, FilePath, SerializerFunctionWrapHandler, TypeAdapter, JsonValue, WrapValidator, computed_field, field_serializer
@@ -33,9 +34,8 @@ from pydantic_extra_types.country import CountryNumericCode
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy.dialects.sqlite import INTEGER
-from sqlalchemy.util import immutabledict
 
-from utils import CoercedHttpUrl, DatabaseModel, RelationshipTableDef
+from utils import CoercedHttpUrl, DatabaseModel, Relationship
 
 IgdbId = NewType('IgdbId', int)
 IgdbPrimaryId = Annotated[
@@ -311,18 +311,11 @@ class Theme(IgdbObject, frozen=True):
     id: IgdbPrimaryId
     name: str
 
-GameReferenceTuple = Annotated[
-    tuple[IgdbId, ...],
-    RelationshipTableDef(
-        related_columns=(
-            Column(
-                "related_game",
-                ForeignKey('IgdbGame.id'),
-                primary_key=True
-            ),
-        )
+def GameToGameRelationship(related_name: str) -> Relationship:
+    return Relationship(
+        self_columns=Column("game", ForeignKey("IgdbGame.id"), primary_key=True, nullable=False),
+        related_columns=Column(related_name, ForeignKey(f"IgdbGame.id"), primary_key=True, nullable=False),
     )
-]
 
 class Game(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbGame"
@@ -331,13 +324,13 @@ class Game(IgdbObject, frozen=True):
     aggregated_rating: float | None = None
     aggregated_rating_count: int | None = None
     alternative_names: tuple[AlternativeName, ...] = ()
-    bundles: GameReferenceTuple = ()
-    collections: GameReferenceTuple = ()
-    dlcs: GameReferenceTuple = ()
-    expanded_games: GameReferenceTuple = ()
-    expansions: GameReferenceTuple = ()
+    bundles: Annotated[tuple[IgdbId, ...], GameToGameRelationship("bundle")] = ()
+    collections: Annotated[tuple[IgdbId, ...], GameToGameRelationship("collection")] = ()
+    dlcs: Annotated[tuple[IgdbId, ...], GameToGameRelationship("dlc")] = ()
+    expanded_games: Annotated[tuple[IgdbId, ...], GameToGameRelationship("expanded_game")] = ()
+    expansions: Annotated[tuple[IgdbId, ...], GameToGameRelationship("expansion")] = ()
     first_release_date: date | None = None
-    forks: GameReferenceTuple = ()
+    forks: Annotated[tuple[IgdbId, ...], GameToGameRelationship("fork")] = ()
     franchise: Franchise | None = None
     franchises: tuple[Franchise, ...] = ()
     game_engines: tuple[GameEngine, ...] = ()
@@ -354,11 +347,11 @@ class Game(IgdbObject, frozen=True):
     parent_game: Annotated[IgdbId | None, Column(ForeignKey('IgdbGame.id'))] = None
     platforms: tuple[Platform, ...] = ()
     player_perspectives: tuple[PlayerPerspective, ...] = ()
-    ports: GameReferenceTuple = ()
+    ports: Annotated[tuple[IgdbId, ...], GameToGameRelationship("port")] = ()
     release_dates: tuple[ReleaseDate, ...] = ()
-    remakes: GameReferenceTuple = ()
-    remasters: GameReferenceTuple = ()
-    standalone_expansions: GameReferenceTuple = ()
+    remakes: Annotated[tuple[IgdbId, ...], GameToGameRelationship("remake")] = ()
+    remasters: Annotated[tuple[IgdbId, ...], GameToGameRelationship("remaster")] = ()
+    standalone_expansions: Annotated[tuple[IgdbId, ...], GameToGameRelationship("standalone_expansion")] = ()
     themes: tuple[Theme, ...] = ()
     total_rating: float | None = None
     total_rating_count: int | None = None
@@ -731,7 +724,7 @@ class PlaylistConfig(BaseModel, frozen=True):
     @computed_field
     @cached_property
     def by_title(self) -> Mapping[PlaylistTitle, Playlist]:
-        return immutabledict({pl.title: pl for pl in self.playlists})
+        return frozendict({pl.title: pl for pl in self.playlists})
 
 MAX_QUERIES_IN_MULTIQUERY = 10
 '''

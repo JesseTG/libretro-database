@@ -24,7 +24,7 @@ from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubComm
 from sqlalchemy import Column, ForeignKey
 
 from igdb import PlaylistTitle
-from utils import DatabaseModel, EmptyStringToNone, Hash, RelationshipTableDef, WrapInTuple
+from utils import DatabaseModel, EmptyStringToNone, Hash, Relationship, WrapInTuple
 
 type DatValidationMode = Literal['dat'] | None
 type DatPair = tuple[str, DatValue]
@@ -103,6 +103,16 @@ class Rom(DatModel, frozen=True):
     sha1: Annotated[Hash, Column(unique=True, index=True)] | None = None
     genre: str | None = None
     users: str | None = None
+
+    @computed_field
+    @property
+    def pk(self) -> Annotated[str, Column(primary_key=True)]:
+        if self.crc:
+            return self.crc
+        if self.serial:
+            return self.serial
+
+        raise ValidationError("Rom model must have at least one of `crc` or `serial`")
 
     # TODO: Figure out how to ensure that at least one of `crc` or `serial` is non-NULL at the model level
     def same_as(self, other: 'Rom') -> bool:
@@ -222,15 +232,8 @@ class Game(DatModel, frozen=True):
 
     # Declared last so that it appears last in the generated DATs;
     # not semantically important, but easier to read.
-    rom: Annotated[tuple[Rom, ...], RelationshipTableDef(
-        self_columns=(
-            Column(
-                "pk",
-                ForeignKey("DatGame.pk"),
-                primary_key=True,
-                nullable=False,
-            ),
-        ),
+    rom: Annotated[tuple[Rom, ...], Relationship(
+        self_columns=Column("pk",  ForeignKey("DatGame.pk"), primary_key=True, nullable=False),
         related_columns=(
             Column(
                 "crc",
