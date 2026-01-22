@@ -183,8 +183,8 @@ class CompanyStatus(IgdbObject, frozen=True):
 class Company(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbCompany"
     id: IgdbPrimaryId
-    country: CoercedCountryCode | None = None
     name: str
+    country: CoercedCountryCode | None = None
     status: CompanyStatus | None = None
 
 class InvolvedCompany(IgdbObject, frozen=True):
@@ -245,9 +245,9 @@ class PlatformVersion(IgdbObject, frozen=True):
 class Platform(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbPlatform"
     id: IgdbPrimaryId
+    name: str
     alternative_name: str | None = None
     generation: int | None = None
-    name: str
     platform_family: PlatformFamily | None = None
     platform_type: PlatformType | None = None
 
@@ -320,6 +320,7 @@ def GameToGameRelationship(related_name: str) -> Relationship:
 class Game(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbGame"
     id: IgdbPrimaryId
+    name: str
     age_ratings: tuple[AgeRating, ...] = ()
     aggregated_rating: float | None = None
     aggregated_rating_count: int | None = None
@@ -343,7 +344,6 @@ class Game(IgdbObject, frozen=True):
     keywords: tuple[Keyword, ...] = ()
     language_supports: tuple[LanguageSupport, ...] = ()
     multiplayer_modes: tuple[MultiplayerMode, ...] = ()
-    name: str
     parent_game: Annotated[IgdbId | None, Column(ForeignKey('IgdbGame.id'))] = None
     platforms: tuple[Platform, ...] = ()
     player_perspectives: tuple[PlayerPerspective, ...] = ()
