@@ -313,8 +313,8 @@ class Theme(IgdbObject, frozen=True):
 
 def GameToGameRelationship(related_name: str) -> Relationship:
     return Relationship(
-        self_columns=Column("game", ForeignKey("IgdbGame.id"), primary_key=True, nullable=False),
-        related_columns=Column(related_name, ForeignKey(f"IgdbGame.id"), primary_key=True, nullable=False),
+        self_columns={"id": Column("game", ForeignKey("IgdbGame.id"), primary_key=True, nullable=False)},
+        related_columns={"id": Column(related_name, ForeignKey(f"IgdbGame.id"), primary_key=True, nullable=False)},
     )
 
 class Game(IgdbObject, frozen=True):
