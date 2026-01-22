@@ -656,18 +656,23 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
 
         field_annotation = cls.get_field_annotation(field)
         field_origin = get_origin(field_annotation)
-        if is_non_string_sequence_type(field_origin):
-            # If the field is a non-string sequence type, we don't handle it here
+        if not is_non_string_sequence_type(field_origin):
+            # If the field isn't a non-string sequence type, we don't handle it here
             return ()
 
         rows: list[frozendict[str, Any]] = []
         field_value = getattr(self, field_name)
         for v in field_value:
+            # For each item in this collection...
             row: dict[str, Any] = {}
-            for colname, col in reldef.self_columns.items():
-                row[colname] = getattr(self, colname)
-            for colname, col in reldef.related_columns.items():
-                row[colname] = getattr(v, colname)
+            for col_fieldname, col in reldef.self_columns.items():
+                # For each column that's used to identify this object...
+                row[col.name] = getattr(self, col_fieldname)
+            for col_fieldname, col in reldef.related_columns.items():
+                # For each column that's used to identify the related object...
+                row[col.name] = getattr(v, col_fieldname) if isinstance(v, DatabaseModel) else v
+                # ...set it to the field value if it's another DatabaseModel,
+                # otherwise just use the value directly
             rows.append(frozendict(row))
 
         return tuple(rows)
