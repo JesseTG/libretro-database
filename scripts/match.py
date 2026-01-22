@@ -598,18 +598,18 @@ class IndexSubCommand(CommonArgs):
 
         async with Pool() as pool:
             async with TaskGroup() as group:
-                # igdb_task = group.create_task(
-                #     self.insert_igdb_games(db, pool, metadata, config, playlists),
-                #     name="IGDB"
-                # )
+                igdb_task = group.create_task(
+                    self._insert_igdb_games(db, pool, metadata, config, playlists),
+                    name="IGDB"
+                )
 
-                # hasheous_task = group.create_task(
-                #     self.insert_hasheous_games(db, pool, metadata, config, playlists),
-                #     name="Hasheous"
-                # )
+                hasheous_task = group.create_task(
+                    self._insert_hasheous_games(db, pool, metadata, config, playlists),
+                    name="Hasheous"
+                )
 
                 dat_task = group.create_task(
-                    self.insert_dat_games(db, pool, metadata, config, playlists),
+                    self._insert_dat_games(db, pool, metadata, config, playlists),
                     name="DAT"
                 )
 
@@ -619,7 +619,7 @@ class IndexSubCommand(CommonArgs):
         end = time.perf_counter()
         print(f"Elapsed time: {end - start:.2f} seconds")
 
-    async def insert_igdb_games(self, db: AsyncEngine, pool: Pool, metadata: MetaData, config: PlaylistConfig, playlists: Collection[Playlist]):
+    async def _insert_igdb_games(self, db: AsyncEngine, pool: Pool, metadata: MetaData, config: PlaylistConfig, playlists: Collection[Playlist]):
         # Load all playlists concurrently, yielding them as they're loaded.
         if self.verbose:
             print(f"Inserting data from {len(playlists)} IGDB playlists:")
@@ -683,7 +683,7 @@ class IndexSubCommand(CommonArgs):
 
             print(f"Inserted {len(games)} IGDB games for playlist '{playlist.title}' into database")
 
-    async def insert_hasheous_games(self, db: AsyncEngine, pool: Pool, metadata: MetaData, config: PlaylistConfig, playlists: Iterable[Playlist]):
+    async def _insert_hasheous_games(self, db: AsyncEngine, pool: Pool, metadata: MetaData, config: PlaylistConfig, playlists: Iterable[Playlist]):
         requested_dumps = set(chain.from_iterable(p.hasheous_dirs for p in playlists))
         requested_dumps.add("Unknown Platform")
         requested_dump_paths = tuple(self.hasheous_path / f"{d}.zip" for d in requested_dumps)
@@ -742,7 +742,7 @@ class IndexSubCommand(CommonArgs):
 
             print(f"Inserted {len(games)} Hasheous games into database")
 
-    async def insert_dat_games(self, db: AsyncEngine, pool: Pool, metadata: MetaData, config: PlaylistConfig, playlists: Collection[Playlist]):
+    async def _insert_dat_games(self, db: AsyncEngine, pool: Pool, metadata: MetaData, config: PlaylistConfig, playlists: Collection[Playlist]):
         if self.verbose:
             print(f"Inserting data from {len(playlists)} DAT playlists:")
             pprint([p.title for p in playlists], width=120)
