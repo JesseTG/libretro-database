@@ -3,6 +3,7 @@
 import dataclasses
 import sys
 
+from abc import ABC
 from collections.abc import Sequence
 from io import StringIO
 from itertools import chain, repeat
@@ -33,7 +34,7 @@ type DatValue = str | DatRecord
 type DatTopLevelRecord = tuple[str, DatRecord]
 type DatFile = tuple[DatTopLevelRecord, ...]
 
-class DatModel(DatabaseModel, frozen=True):
+class DatModel(DatabaseModel, ABC, frozen=True):
     __dattype__: ClassVar[LiteralString]
 
     @classmethod
