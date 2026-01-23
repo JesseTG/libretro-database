@@ -248,7 +248,7 @@ class GenerateSubCommand(CommonArgs):
             # TODO: How to handle games with multiple ROMs (e.g. bin/cue games)?
 
             def get_achievements():
-                if hasheous.Id in hasheous_index.supports_achievements:
+                if hasheous.id in hasheous_index.supports_achievements:
                     return True
 
                 return None
@@ -489,7 +489,7 @@ class GenerateSubCommand(CommonArgs):
             if serial and not hasheous_entry:
                 hasheous_entry = hasheous_index.by_serial.get(serial.upper(), None)
 
-            igdb_id = hasheous_index.hasheous_to_igdb.get(hasheous_entry.Id, None) if hasheous_entry else None
+            igdb_id = hasheous_index.hasheous_to_igdb.get(hasheous_entry.id, None) if hasheous_entry else None
             igdb_entry = igdb_index.by_id.get(igdb_id, None) if igdb_id else None
 
             game = generate_game(dat, igdb_entry, hasheous_entry) if (igdb_entry and hasheous_entry) else None
@@ -503,7 +503,7 @@ class GenerateSubCommand(CommonArgs):
                 igdb_url=str(igdb_entry.url) if igdb_entry else None,
                 igdb_release_id=game.igdb_release_date_id if game else None,
                 igdb_platform_id=game.igdb_platform_id if game else None,
-                hasheous_id=hasheous_entry.Id if hasheous_entry else None,
+                hasheous_id=hasheous_entry.id if hasheous_entry else None,
                 hasheous_url=None # TODO: Populate this field
             )
             yield GameMatch(

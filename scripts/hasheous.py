@@ -29,7 +29,8 @@ import backoff
 import httpx
 
 from more_itertools import first_true
-from pydantic import AliasChoices, BaseModel, ByteSize, Field, FieldSerializationInfo, FilePath, HttpUrl, PlainSerializer, PlainValidator, SerializerFunctionWrapHandler, StringConstraints, TypeAdapter, ValidationError, WrapSerializer, WrapValidator, computed_field, field_serializer
+from pydantic import AliasChoices, BaseModel, ByteSize, ConfigDict, Field, FieldSerializationInfo, FilePath, HttpUrl, PlainSerializer, PlainValidator, SerializerFunctionWrapHandler, StringConstraints, TypeAdapter, ValidationError, WrapSerializer, WrapValidator, computed_field, field_serializer
+from pydantic.alias_generators import to_pascal
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy.dialects.sqlite import INTEGER, JSON
@@ -45,15 +46,15 @@ HasheousId = NewType('HasheousId', int)
 class HasheousObject(DatabaseModel, ABC, frozen=True):
     pass
 
-class SignatureDataObject(HasheousObject, frozen=True):
+class SignatureDataObject(HasheousObject, frozen=True, alias_generator=to_pascal):
     __tablename__: ClassVar[str] = "HasheousSignatureDataObject"
-    SignatureId: Annotated[int, Column(primary_key=True)]
-    Name: EmptyStringToNone[str] = None
-    Year: EmptyStringToNone[str] = None
-    Platform: EmptyStringToNone[str] = None
-    SourceId: Annotated[EmptyStringToNone[int], Column(index=True)] = None
-    Publisher: EmptyStringToNone[str] = None
-    MetadataSource: EmptyStringToNone[str] = None
+    signature_id: Annotated[int, Column(primary_key=True)]
+    name: EmptyStringToNone[str] = None
+    year: EmptyStringToNone[str] = None
+    platform: EmptyStringToNone[str] = None
+    source_id: Annotated[EmptyStringToNone[int], Column(index=True)] = None
+    publisher: EmptyStringToNone[str] = None
+    metadata_source: EmptyStringToNone[str] = None
 
 MappingStatus: TypeAlias = Literal["NotMapped", "Mapped", "MappedWithErrors"]
 ImageId = Annotated[str, StringConstraints(to_upper=True)]
@@ -69,16 +70,18 @@ MatchMethodType: TypeAlias = Literal[
 
 @dataclass(frozen=True)
 class MetadataItem:
-    Id: EmptyStringToNone[str]
-    ImmutableId: EmptyStringToNone[str]
-    Status: MappingStatus
-    MatchMethod: MatchMethodType
-    Source: str
-    Link: Annotated[HttpUrl | None, WrapValidator(lambda v, h: h(v) if v else None), PlainSerializer(lambda v: v or None, str | None)]
-    NextSearch: datetime
-    WinningVoteCount: int
-    TotalVoteCount: int
-    WinningVotePercent: int
+    __pydantic_config__: ClassVar[ConfigDict] = ConfigDict(alias_generator=to_pascal)
+
+    id: EmptyStringToNone[str]
+    immutable_id: EmptyStringToNone[str]
+    status: MappingStatus
+    match_method: MatchMethodType
+    source: str
+    link: Annotated[HttpUrl | None, WrapValidator(lambda v, h: h(v) if v else None), PlainSerializer(lambda v: v or None, str | None)]
+    next_search: datetime
+    winning_vote_count: int
+    total_vote_count: int
+    winning_vote_percent: int
 
 AttributeType: TypeAlias = Literal[
     "LongString",
@@ -104,35 +107,35 @@ class MediaType(TypedDict, total=False):
     Count: int
     Side: str
 
-class RomItem(HasheousObject, frozen=True):
+class RomItem(HasheousObject, frozen=True, alias_generator=to_pascal):
     """
     Structure taken from https://github.com/gaseous-project/hasheous/blob/main/hasheous-lib/Schema/hasheous-1000.sql
     (specifically the Signatures_Roms table)
     """
     __tablename__: ClassVar[str] = "HasheousRomItem"
-    Id: Annotated[int, Column(primary_key=True)]
-    Name: EmptyStringToNone[str]
-    Attributes: Annotated[Mapping[str, str], Column(JSON), FrozenDictValidator]
-    RomType: Annotated[str, Column(index=True)]
-    Size: ByteSize
-    Crc: Annotated[EmptyStringToNone[Hash], Column(index=True)]
-    Md5: Annotated[EmptyStringToNone[Hash], Column(index=True)]
-    Sha1: Annotated[EmptyStringToNone[Hash], Column(index=True)]
-    Sha256: Annotated[EmptyStringToNone[Hash], Column(index=True)]
-    Status: EmptyStringToNone[str]
+    id: Annotated[int, Column(primary_key=True)]
+    name: EmptyStringToNone[str]
+    attributes: Annotated[Mapping[str, str], Column(JSON), FrozenDictValidator]
+    rom_type: Annotated[str, Column(index=True)]
+    size: ByteSize
+    crc: Annotated[EmptyStringToNone[Hash], Column(index=True)]
+    md5: Annotated[EmptyStringToNone[Hash], Column(index=True)]
+    sha1: Annotated[EmptyStringToNone[Hash], Column(index=True)]
+    sha256: Annotated[EmptyStringToNone[Hash], Column(index=True)]
+    status: EmptyStringToNone[str]
 
     # TODO: Represent Country with computed columns
-    Country: Annotated[Mapping[str, str], Column(JSON), FrozenDictValidator]
+    country: Annotated[Mapping[str, str], Column(JSON), FrozenDictValidator]
 
     # TODO: Represent Language with computed columns
-    Language: Annotated[Mapping[str, str], Column(JSON), FrozenDictValidator]
-    DevelopmentStatus: EmptyStringToNone[str]
-    RomTypeMedia: EmptyStringToNone[str]
+    language: Annotated[Mapping[str, str], Column(JSON), FrozenDictValidator]
+    development_status: EmptyStringToNone[str]
+    rom_type_media: EmptyStringToNone[str]
 
     # TODO: Represent MediaDetail with computed columns
-    MediaDetail: Annotated[MediaType, Column(JSON), FrozenDictValidator]
-    MediaLabel: EmptyStringToNone[str]
-    SignatureSource: EmptyStringToNone[str]
+    media_detail: Annotated[MediaType, Column(JSON), FrozenDictValidator]
+    media_label: EmptyStringToNone[str]
+    signature_source: Annotated[EmptyStringToNone[str], Column(index=True)]
 
 RomItemTupleAdapter = TypeAdapter(tuple[RomItem, ...])
 def coerce_attribute(value: Any) -> "str | tuple[RomItem, ...] | DataObject | Mapping":
@@ -155,96 +158,97 @@ class Attribute:
     # I wanted to use pydantic.dataclass,
     # but for some reason using frozen=True
     # causes the attributes to not be recognized by pyright
-    attributeType: str
+    attribute_type: Annotated[str, Field(validation_alias='attributeType')]
     '''Not a typo, the API serializes it this way'''
 
-    attributeName: str
+    attribute_name: Annotated[str, Field(validation_alias='attributeName')]
     '''Not a typo, the API serializes it this way'''
 
-    attributeRelationType: str
+    attribute_relation_type: Annotated[str, Field(validation_alias='attributeRelationType')]
     '''Not a typo, the API serializes it this way'''
 
-    Value: Annotated["str | tuple[RomItem, ...] | DataObject | Mapping", PlainValidator(coerce_attribute)]
-    Id: Optional[int] = None
+    value: Annotated["str | tuple[RomItem, ...] | DataObject | Mapping", PlainValidator(coerce_attribute), Field(validation_alias='Value')]
+
+    id: Annotated[int | None, Field(validation_alias='Id')] = None
 
 DataObjectAttributeColumn = Annotated[
     "DataObject | None",
-    Column(ForeignKey('HasheousDataObject.Id'), index=True)
+    Column(ForeignKey('HasheousDataObject.id'), index=True)
 ]
 
-class DataObject(DatabaseModel, frozen=True):
+class DataObject(DatabaseModel, frozen=True, alias_generator=to_pascal):
     """
     Type info for attributes taken from https://github.com/gaseous-project/hasheous/blob/main/hasheous-lib/Classes/DataObjects.cs
     """
     __tablename__: ClassVar[str] = "HasheousDataObject"
 
-    Id: Annotated[HasheousId, Column(INTEGER, primary_key=True)]
-    ObjectType: Annotated[DataObjectType, Column(primary_key=True)]
-    Name: str
-    SignatureDataObjects: tuple[SignatureDataObject, ...]
-    Metadata: Annotated[tuple[MetadataItem, ...], Field(exclude=True)]
-    Attributes: Annotated[tuple[Attribute, ...], Field(exclude=True)]
-    CreatedDate: datetime
-    UpdatedDate: datetime
+    id: Annotated[HasheousId, Column(INTEGER, primary_key=True)]
+    object_type: Annotated[DataObjectType, Column(primary_key=True)]
+    name: str
+    signature_data_objects: tuple[SignatureDataObject, ...]
+    metadata: Annotated[tuple[MetadataItem, ...], Field(exclude=True)]
+    attributes: Annotated[tuple[Attribute, ...], Field(exclude=True)]
+    created_date: datetime
+    updated_date: datetime
 
     @computed_field
     @cached_property
     def manufacturer(self) -> DataObjectAttributeColumn:
-        attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "Manufacturer")
-        return attribute.Value if attribute and isinstance(attribute.Value, DataObject) else None
+        attribute = first_true(self.attributes, pred=lambda a: a.attribute_name == "Manufacturer")
+        return attribute.value if attribute and isinstance(attribute.value, DataObject) else None
 
     @computed_field
     @cached_property
     def publisher(self) -> DataObjectAttributeColumn:
-        attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "Publisher")
-        return attribute.Value if attribute and isinstance(attribute.Value, DataObject) else None
+        attribute = first_true(self.attributes, pred=lambda a: a.attribute_name == "Publisher")
+        return attribute.value if attribute and isinstance(attribute.value, DataObject) else None
 
     @computed_field
     @cached_property
     def platform(self) -> DataObjectAttributeColumn:
-        attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "Platform")
-        return attribute.Value if attribute and isinstance(attribute.Value, DataObject) else None
+        attribute = first_true(self.attributes, pred=lambda a: a.attribute_name == "Platform")
+        return attribute.value if attribute and isinstance(attribute.value, DataObject) else None
 
     @computed_field
     @cached_property
     def country(self) -> Annotated[str | None, Column(index=True)]:
         # TODO: country is really a comma-separated list of countries,
         # so we should probably normalize that into a separate table
-        attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "Country")
-        return attribute.Value if attribute and isinstance(attribute.Value, str) else None
+        attribute = first_true(self.attributes, pred=lambda a: a.attribute_name == "Country")
+        return attribute.value if attribute and isinstance(attribute.value, str) else None
 
     @computed_field
     @cached_property
     def language(self) -> Annotated[str | None, Column(index=True)]:
         # TODO: language is really a comma-separated string of multiple languages,
         # so we should probably normalize that into a separate table
-        attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "Language")
-        return attribute.Value if attribute and isinstance(attribute.Value, str) else None
+        attribute = first_true(self.attributes, pred=lambda a: a.attribute_name == "Language")
+        return attribute.value if attribute and isinstance(attribute.value, str) else None
 
     @computed_field
     @cached_property
     def roms(self) -> tuple[RomItem, ...]:
-        attribute = first_true(self.Attributes, pred=lambda a: a.attributeName == "ROMs")
-        return tuple(attribute.Value) if attribute and is_non_string_iterable(attribute.Value) else ()
+        attribute = first_true(self.attributes, pred=lambda a: a.attribute_name == "ROMs")
+        return tuple(attribute.value) if attribute and is_non_string_iterable(attribute.value) else ()
 
     @computed_field
     @cached_property
     def igdb_id(self) -> Annotated[IgdbId | None, Column(ForeignKey('IgdbGame.id'))]:
         """Returns the IGDB ID mapped to this DataObject, or None if there's no IGDB mapping."""
-        igdb_metadata = first_true(self.Metadata, pred=lambda m: m.Source == "IGDB" and m.Status == "Mapped")
+        igdb_metadata = first_true(self.metadata, pred=lambda m: m.source == "IGDB" and m.status == "Mapped")
         if not igdb_metadata:
             return None
-        if not igdb_metadata.ImmutableId:
+        if not igdb_metadata.immutable_id:
             return None
 
         try:
-            return IgdbId(int(igdb_metadata.ImmutableId))
+            return IgdbId(int(igdb_metadata.immutable_id))
         except ValueError:
             return None
 
     @property
     def pk(self) -> tuple[HasheousId, DataObjectType]:
-        return (self.Id, self.ObjectType)
+        return (self.id, self.object_type)
 
     @field_serializer('platform', 'manufacturer', 'publisher', mode='wrap')
     def _serialize_field(self, value: Any, handler: SerializerFunctionWrapHandler, info: FieldSerializationInfo[InsertInRowContext]):
@@ -254,7 +258,7 @@ class DataObject(DatabaseModel, frozen=True):
                 return handler(value)
             case ('row', DataObject()):
                 # If serializing for a database row, serialize nested DataObjects as their IDs
-                return value.Id
+                return value.id
             case (_, _):
                 # Otherwise, run the default serializer to handle other types or contexts
                 return handler(value)
