@@ -37,7 +37,7 @@ from sqlalchemy.dialects.sqlite import INTEGER, JSON
 from sqlalchemy.util import is_non_string_iterable
 
 from igdb import IgdbId, PlaylistConfig
-from utils import DatabaseModel, FrozenDictValidator, Hash, InsertInRowContext, EmptyStringToNone, EMPTY_DICT
+from utils import DatabaseModel, FrozenDictValidator, Hash, InsertInRowContext, EmptyStringToNone, EMPTY_DICT, Relationship
 
 METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
 
@@ -176,14 +176,22 @@ DataObjectAttributeColumn = Annotated[
     Column(ForeignKey('HasheousDataObject.id'), index=True)
 ]
 
-class DataObject(DatabaseModel, frozen=True, alias_generator=to_pascal):
+CompanyDataObjectAttributeColumn = Annotated[
+    "CompanyDataObject | None",
+    Column(ForeignKey('HasheousCompanyDataObject.id'), index=True)
+]
+
+PlatformDataObjectAttributeColumn = Annotated[
+    "PlatformDataObject | None",
+    Column(ForeignKey('HasheousPlatformDataObject.id'), index=True)
+]
+
+class DataObject(DatabaseModel, ABC, frozen=True, alias_generator=to_pascal):
     """
     Type info for attributes taken from https://github.com/gaseous-project/hasheous/blob/main/hasheous-lib/Classes/DataObjects.cs
     """
-    __tablename__: ClassVar[str] = "HasheousDataObject"
 
     id: Annotated[HasheousId, Column(INTEGER, primary_key=True)]
-    object_type: Annotated[DataObjectType, Column(primary_key=True)]
     name: str
     signature_data_objects: tuple[SignatureDataObject, ...]
     metadata: Annotated[tuple[MetadataItem, ...], Field(exclude=True)]
@@ -191,66 +199,7 @@ class DataObject(DatabaseModel, frozen=True, alias_generator=to_pascal):
     created_date: datetime
     updated_date: datetime
 
-    @computed_field
-    @cached_property
-    def manufacturer(self) -> DataObjectAttributeColumn:
-        attribute = first_true(self.attributes, pred=lambda a: a.attribute_name == "Manufacturer")
-        return attribute.value if attribute and isinstance(attribute.value, DataObject) else None
-
-    @computed_field
-    @cached_property
-    def publisher(self) -> DataObjectAttributeColumn:
-        attribute = first_true(self.attributes, pred=lambda a: a.attribute_name == "Publisher")
-        return attribute.value if attribute and isinstance(attribute.value, DataObject) else None
-
-    @computed_field
-    @cached_property
-    def platform(self) -> DataObjectAttributeColumn:
-        attribute = first_true(self.attributes, pred=lambda a: a.attribute_name == "Platform")
-        return attribute.value if attribute and isinstance(attribute.value, DataObject) else None
-
-    @computed_field
-    @cached_property
-    def country(self) -> Annotated[str | None, Column(index=True)]:
-        # TODO: country is really a comma-separated list of countries,
-        # so we should probably normalize that into a separate table
-        attribute = first_true(self.attributes, pred=lambda a: a.attribute_name == "Country")
-        return attribute.value if attribute and isinstance(attribute.value, str) else None
-
-    @computed_field
-    @cached_property
-    def language(self) -> Annotated[str | None, Column(index=True)]:
-        # TODO: language is really a comma-separated string of multiple languages,
-        # so we should probably normalize that into a separate table
-        attribute = first_true(self.attributes, pred=lambda a: a.attribute_name == "Language")
-        return attribute.value if attribute and isinstance(attribute.value, str) else None
-
-    @computed_field
-    @cached_property
-    def roms(self) -> tuple[RomItem, ...]:
-        attribute = first_true(self.attributes, pred=lambda a: a.attribute_name == "ROMs")
-        return tuple(attribute.value) if attribute and is_non_string_iterable(attribute.value) else ()
-
-    @computed_field
-    @cached_property
-    def igdb_id(self) -> Annotated[IgdbId | None, Column(ForeignKey('IgdbGame.id'))]:
-        """Returns the IGDB ID mapped to this DataObject, or None if there's no IGDB mapping."""
-        igdb_metadata = first_true(self.metadata, pred=lambda m: m.source == "IGDB" and m.status == "Mapped")
-        if not igdb_metadata:
-            return None
-        if not igdb_metadata.immutable_id:
-            return None
-
-        try:
-            return IgdbId(int(igdb_metadata.immutable_id))
-        except ValueError:
-            return None
-
-    @property
-    def pk(self) -> tuple[HasheousId, DataObjectType]:
-        return (self.id, self.object_type)
-
-    @field_serializer('platform', 'manufacturer', 'publisher', mode='wrap')
+    @field_serializer('platform', 'manufacturer', 'publisher', mode='wrap', check_fields=False)
     def _serialize_field(self, value: Any, handler: SerializerFunctionWrapHandler, info: FieldSerializationInfo[InsertInRowContext]):
         match (info.context, value):
             case (None, _):
@@ -263,8 +212,103 @@ class DataObject(DatabaseModel, frozen=True, alias_generator=to_pascal):
                 # Otherwise, run the default serializer to handle other types or contexts
                 return handler(value)
 
+    def _get_igdb_id(self) -> IgdbId | None:
+        """Returns the IGDB ID mapped to this DataObject, or None if there's no IGDB mapping."""
+        igdb_metadata = first_true(self.metadata, pred=lambda m: m.source == "IGDB" and m.status == "Mapped")
+        if not igdb_metadata:
+            return None
+        if not igdb_metadata.immutable_id:
+            return None
+
+        try:
+            return IgdbId(int(igdb_metadata.immutable_id))
+        except ValueError:
+            return None
+
+class PlatformDataObject(DataObject, frozen=True, alias_generator=to_pascal):
+    __tablename__: ClassVar[str] = "HasheousPlatformDataObject"
+    object_type: Annotated[Literal["Platform"], Field(exclude=True)]
+
+    @computed_field(return_type=Annotated[IgdbId | None, Column(ForeignKey('IgdbPlatform.id'))])
+    @cached_property
+    def igdb_id(self):
+        """Returns the IGDB ID mapped to this DataObject, or None if there's no IGDB mapping."""
+        return self._get_igdb_id()
+
+    @computed_field(return_type=CompanyDataObjectAttributeColumn)
+    @cached_property
+    def manufacturer(self):
+        attribute = first_true(self.attributes, pred=lambda a: a.attribute_name == "Manufacturer")
+        return attribute.value if attribute and isinstance(attribute.value, CompanyDataObject) else None
+
+class CompanyDataObject(DataObject, frozen=True, alias_generator=to_pascal):
+    __tablename__: ClassVar[str] = "HasheousCompanyDataObject"
+    object_type: Annotated[Literal["Company"], Field(exclude=True)]
+
+    @computed_field
+    @cached_property
+    def igdb_id(self) -> Annotated[IgdbId | None, Column(ForeignKey('IgdbCompany.id'))]:
+        """Returns the IGDB ID mapped to this DataObject, or None if there's no IGDB mapping."""
+        return self._get_igdb_id()
+
+class GameDataObject(DataObject, frozen=True, alias_generator=to_pascal):
+    __tablename__: ClassVar[str] = "HasheousGameDataObject"
+    object_type: Annotated[Literal["Game"], Field(exclude=True)]
+
+    @computed_field
+    @cached_property
+    def roms(self) -> tuple[RomItem, ...]:
+        attribute = first_true(self.attributes, pred=lambda a: a.attribute_name == "ROMs")
+        return tuple(attribute.value) if attribute and is_non_string_iterable(attribute.value) else ()
+
+    @computed_field
+    @cached_property
+    def igdb_id(self) -> Annotated[IgdbId | None, Column(ForeignKey('IgdbGame.id'))]:
+        """Returns the IGDB ID mapped to this DataObject, or None if there's no IGDB mapping."""
+        return self._get_igdb_id()
+
+    @computed_field
+    @cached_property
+    def manufacturer(self) -> CompanyDataObjectAttributeColumn:
+        attribute = first_true(self.attributes, pred=lambda a: a.attribute_name == "Manufacturer")
+        return attribute.value if attribute and isinstance(attribute.value, CompanyDataObject) else None
+
+    @computed_field
+    @cached_property
+    def publisher(self) -> CompanyDataObjectAttributeColumn:
+        attribute = first_true(self.attributes, pred=lambda a: a.attribute_name == "Publisher")
+        return attribute.value if attribute and isinstance(attribute.value, CompanyDataObject) else None
+
+    @computed_field
+    @cached_property
+    def platform(self) -> PlatformDataObjectAttributeColumn:
+        attribute = first_true(self.attributes, pred=lambda a: a.attribute_name == "Platform")
+        return attribute.value if attribute and isinstance(attribute.value, PlatformDataObject) else None
+
+    @computed_field
+    @cached_property
+    def country(self) -> tuple[str, ...]:
+        # TODO: Need to provide an index on the country values for efficient querying
+        attribute = first_true(self.attributes, pred=lambda a: a.attribute_name == "Country")
+        if not attribute or not isinstance(attribute.value, str):
+            return ()
+
+        return tuple(c.strip() for c in attribute.value.split(','))
+
+    @computed_field
+    @cached_property
+    def language(self) -> tuple[str, ...]:
+        attribute = first_true(self.attributes, pred=lambda a: a.attribute_name == "Language")
+        if not attribute or not isinstance(attribute.value, str):
+            return ()
+
+        return tuple(lang.strip() for lang in attribute.value.split(','))
+
+
 HASHEOUS_OBJECT_TYPES = (
-    DataObject,
+    GameDataObject,
+    PlatformDataObject,
+    CompanyDataObject,
     SignatureDataObject,
     RomItem,
 )
@@ -341,14 +385,14 @@ class MatchRecord(NamedTuple):
             (self.crc is not None or self.serial is not None)
 
 
-async def load_zip(path: Path) -> tuple[DataObject, ...]:
+async def load_zip(path: Path) -> tuple[GameDataObject, ...]:
     async with aiofiles.open(path, "rb") as zip_file:
         with ZipFile(zip_file.raw) as zip:
 
             def validate(info: ZipInfo):
                 byte_data = zip.read(info)
                 try:
-                    return DataObject.model_validate_json(byte_data)
+                    return GameDataObject.model_validate_json(byte_data)
                 except ValidationError as ve:
                     raise
 
