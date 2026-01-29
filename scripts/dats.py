@@ -419,17 +419,27 @@ class ParsedDatFile(RootModel, frozen=True):
     A RootModel representing a parsed DAT file
     as a tuple starting with a ClrMamePro record followed by zero or more Game records.
     """
-    root: tuple[ClrMamePro, *tuple[Game, ...]]
-    __pydantic_core_schema__: ClassVar[CoreSchema] = core_schema.tuple_schema(
-        [
-            ClrMamePro.__pydantic_core_schema__,
-            Game.__pydantic_core_schema__,
-        ],
-        variadic_item_index=1,
-    )
+    root: Annotated[
+        tuple[ClrMamePro, *tuple[Game, ...]],
+        GetPydanticSchema(
+            lambda tp, handler: core_schema.tuple_schema(
+                items_schema=[
+                    handler.generate_schema(ClrMamePro),  # first item
+                    handler.generate_schema(Game),        # repeated item
+                ],
+                variadic_item_index=1,  # repeat schema at index 1
+                min_length=1,           # must have at least the first item
+            )
+        )
+    ]
     """
     Pydantic doesn't seem to generate schemae for unpacked tuples,
     so we have to define it ourselves.
+
+    See https://github.com/pydantic/pydantic/issues/5952 for the issue,
+    and https://stackoverflow.com/a/79877584/1089957 for the workaround's details.
+
+    Once Unpack is supported properly, we can omit the GetPydanticSchema handler above.
     """
 
     @overload
