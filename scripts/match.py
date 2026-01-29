@@ -613,6 +613,12 @@ class IndexSubCommand(CommonArgs):
                     name="DAT"
                 )
 
+        async with db.connect() as connection:
+            # Run the SQLite optimizer to improve performance on all tables (0x10000),
+            # but don't take too long (0x00010)
+            await connection.execute(text("PRAGMA optimize = 0x10012"))
+
+
         # Close the engine
         await db.dispose()
 
