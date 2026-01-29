@@ -585,7 +585,7 @@ class IndexSubCommand(CommonArgs):
             #    like current-gen remakes of SNES games.
             #    We want to keep the IDs in the database so we can query exclusivity.
             # 2. Enforcing foreign key constraints would require that
-            #    related records be inserted at the same time.
+            #    related records be inserted in the same transaction.
             #
             # Foreign key constraints are still useful for visualizing or browsing
             # the raw SQLite database, even if they're not enforced at runtime.
