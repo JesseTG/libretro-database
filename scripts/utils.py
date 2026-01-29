@@ -22,7 +22,8 @@ from more_itertools import always_iterable, only
 from pydantic import BaseModel, BeforeValidator, HttpUrl, JsonValue, PlainSerializer, StringConstraints, ValidatorFunctionWrapHandler, WrapSerializer, WrapValidator
 from pydantic.fields import ComputedFieldInfo, FieldInfo
 from pydantic_extra_types.country import CountryNumericCode
-from sqlalchemy import Column, ForeignKey, MetaData, Table
+from sqlalchemy import DDL, Column, ForeignKey, MetaData, Table
+from sqlalchemy import event
 from sqlalchemy.schema import SchemaConst, SchemaItem
 from sqlalchemy.types import NullType, TypeEngine
 from sqlalchemy.util.typing import (GenericProtocol, TypeAliasType,
@@ -151,6 +152,11 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
     __tablename__: ClassVar[str]
     __tableconstraints__: ClassVar[tuple[SchemaItem, ...]] = ()
     __tablekwargs__: ClassVar[Mapping[str, Any]] = EMPTY_DICT
+    __tableddl__: ClassVar[str | None] = None
+    """
+    Extra DDL statements to execute after creating this class's table.
+    Intended for database-specific features that SQLAlchemy doesn't natively support.
+    """
 
     @classmethod
     def get_default_column_type(cls, annotation: AnnotationScanType | ComputedFieldInfo | FieldInfo) -> type[TypeEngine]:
@@ -615,6 +621,11 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
                         **reldef.tablekwargs,
                     )
                     relationship_tables.append(reltable)
+
+        if cls.__tableddl__:
+            # If we want to execute any extra data definition language statements (e.g. CREATE, ALTER, etc.),
+            # register an event listener to do so after creating the table
+            event.listen(main_table, "after_create", DDL(cls.__tableddl__))
 
         return (main_table, *relationship_tables)
 
