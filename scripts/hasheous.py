@@ -186,6 +186,9 @@ PlatformDataObjectAttributeColumn = Annotated[
     Column(ForeignKey('HasheousPlatformDataObject.id'), index=True)
 ]
 
+def IgdbIdReference(column: str):
+    return Annotated[IgdbId | None, Column(ForeignKey(column))]
+
 class DataObject(DatabaseModel, ABC, frozen=True, alias_generator=to_pascal):
     """
     Type info for attributes taken from https://github.com/gaseous-project/hasheous/blob/main/hasheous-lib/Classes/DataObjects.cs
@@ -229,7 +232,7 @@ class PlatformDataObject(DataObject, frozen=True, alias_generator=to_pascal):
     __tablename__: ClassVar[str] = "HasheousPlatformDataObject"
     object_type: Annotated[Literal["Platform"], Field(exclude=True)]
 
-    @computed_field(return_type=Annotated[IgdbId | None, Column(ForeignKey('IgdbPlatform.id'))])
+    @computed_field(return_type=IgdbIdReference('IgdbPlatform.id'))
     @cached_property
     def igdb_id(self):
         """Returns the IGDB ID mapped to this DataObject, or None if there's no IGDB mapping."""
@@ -245,9 +248,9 @@ class CompanyDataObject(DataObject, frozen=True, alias_generator=to_pascal):
     __tablename__: ClassVar[str] = "HasheousCompanyDataObject"
     object_type: Annotated[Literal["Company"], Field(exclude=True)]
 
-    @computed_field
+    @computed_field(return_type=IgdbIdReference('IgdbCompany.id'))
     @cached_property
-    def igdb_id(self) -> Annotated[IgdbId | None, Column(ForeignKey('IgdbCompany.id'))]:
+    def igdb_id(self):
         """Returns the IGDB ID mapped to this DataObject, or None if there's no IGDB mapping."""
         return self._get_igdb_id()
 
@@ -261,9 +264,9 @@ class GameDataObject(DataObject, frozen=True, alias_generator=to_pascal):
         attribute = first_true(self.attributes, pred=lambda a: a.attribute_name == "ROMs")
         return tuple(attribute.value) if attribute and is_non_string_iterable(attribute.value) else ()
 
-    @computed_field
+    @computed_field(return_type=IgdbIdReference('IgdbGame.id'))
     @cached_property
-    def igdb_id(self) -> Annotated[IgdbId | None, Column(ForeignKey('IgdbGame.id'))]:
+    def igdb_id(self):
         """Returns the IGDB ID mapped to this DataObject, or None if there's no IGDB mapping."""
         return self._get_igdb_id()
 
