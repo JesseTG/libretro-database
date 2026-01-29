@@ -159,13 +159,8 @@ class Attribute:
     # but for some reason using frozen=True
     # causes the attributes to not be recognized by pyright
     attribute_type: Annotated[str, Field(validation_alias='attributeType')]
-    '''Not a typo, the API serializes it this way'''
-
     attribute_name: Annotated[str, Field(validation_alias='attributeName')]
-    '''Not a typo, the API serializes it this way'''
-
     attribute_relation_type: Annotated[str, Field(validation_alias='attributeRelationType')]
-    '''Not a typo, the API serializes it this way'''
 
     value: Annotated["str | tuple[RomItem, ...] | DataObject | Mapping", PlainValidator(coerce_attribute), Field(validation_alias='Value')]
 
