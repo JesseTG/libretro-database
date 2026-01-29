@@ -413,7 +413,6 @@ def to_dat(value: DatFile) -> str:
     encode_dat(value, output)
     return output.getvalue()
 
-ErrorHandling = Literal["raise", "suppress", "return"]
 class ParsedDatFile(RootModel, frozen=True):
     """
     A RootModel representing a parsed DAT file
@@ -442,44 +441,25 @@ class ParsedDatFile(RootModel, frozen=True):
     Once Unpack is supported properly, we can omit the GetPydanticSchema handler above.
     """
 
-    @overload
     @classmethod
-    async def from_dat_file_async(cls, dat: PathLike, errors: Literal["raise"]) -> Self: ...
-
-    @overload
-    @classmethod
-    async def from_dat_file_async(cls, dat: PathLike, errors: Literal["suppress"]) -> Self | None: ...
-
-    @overload
-    @classmethod
-    async def from_dat_file_async(cls, dat: PathLike, errors: Literal["return"]) -> Self | Exception: ...
-
-    @classmethod
-    async def from_dat_file_async(cls, dat: PathLike, errors: ErrorHandling = "raise") -> Self | Exception | None:
+    async def from_dat_file_async(cls, dat: PathLike) -> Self:
         """
         Load and parse a DAT file asynchronously from the given path.
         Raises or returns errors based on the `errors` parameter.
         """
-        try:
-            async with aiofiles.open(dat, 'r', encoding='utf-8') as dat_file:
-                dat_content = await dat_file.read()
-            raw_dat = load_dat(dat_content)
-            return cls.model_validate(raw_dat)
-        except Exception as e:
-            match errors:
-                case "raise":
-                    raise
-                case "suppress":
-                    return None
-                case "return":
-                    return e
-                case _:
-                    raise
+        async with aiofiles.open(dat, 'r', encoding='utf-8') as dat_file:
+            dat_content = await dat_file.read()
 
+        raw_dat = load_dat(dat_content)
+
+        return cls.model_validate(raw_dat, context="dat")
 
     @classmethod
-    async def from_dat_file_ignore_errors(cls, dat: PathLike) -> Self | None:
-        return await cls.from_dat_file_async(dat, errors="suppress")
+    async def from_dat_file_async_or_error(cls, dat: PathLike) -> Self | Exception:
+        try:
+            return await cls.from_dat_file_async(dat)
+        except Exception as e:
+            return e
 
 DAT_OBJECT_TYPES = (
     Game,
@@ -546,9 +526,6 @@ class CheckSubCommand(BaseModel):
 
     @staticmethod
     async def check_dat_async(dat_path: Path, check_models: bool, verbose: bool) -> Exception | None:
-        # Returning a bool to indicate success
-        # so we don't have to pickle a whole DAT file
-        # when we're just checking for validity
         try:
             async with aiofiles.open(dat_path, 'r', encoding='utf-8') as dat_file:
                 dat_content = await dat_file.read()
@@ -569,12 +546,11 @@ class CheckSubCommand(BaseModel):
             if len(parsed_value) == 0:
                 raise ValueError("DAT file is empty")
 
-            clrmamepro = ClrMamePro.model_validate(parsed_value[0], context="dat")
-            games = GameTupleAdapter.validate_python(parsed_value[1:], context="dat")
+            parsed_datfile = await ParsedDatFile.from_dat_file_async(dat_path)
 
             # Validate as Pydantic models
             if verbose:
-                print(f"Valid DAT file with models: {dat_path} ({len(games)} games)")
+                print(f"Valid DAT file with models: {dat_path} ({len(parsed_datfile.root) - 1} games)")
         except Exception as e:
             print(f"Failed to load DAT file {dat_path}: {e}", file=sys.stderr)
             return e
