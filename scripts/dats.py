@@ -53,7 +53,7 @@ class DatModel(DatabaseModel, ABC, frozen=True):
         match data:
             case str(type) | (str(type), [*_]) if type != cls.__dattype__:
                 # A DAT key or keyed DatRecord with an unexpected type
-                raise ValidationError(f"Expected a DAT type of {cls.__dattype__}, got {type}")
+                raise ValueError(f"Expected a DAT type of {cls.__dattype__}, got {type}")
             case str(), str():
                 # A DatPair with a string value
                 return handler(data)
@@ -95,15 +95,13 @@ class Rom(DatModel, frozen=True):
         "sqlite_with_rowid": False,
     }
 
-    crc: Annotated[Hash, Column(unique=True, index=True)] | None = None
+    crc: Annotated[Crc, Column(unique=True, index=True)] | None = None
     serial: Annotated[str, Column(unique=True, index=True)] | None = None
     image: str | None = None
     name: str | None = None
     size: ByteSize | None = None
-    md5: Annotated[Hash, Column(unique=True, index=True)] | None = None
-    sha1: Annotated[Hash, Column(unique=True, index=True)] | None = None
-    genre: str | None = None
-    users: str | None = None
+    md5: Annotated[Md5, Column(unique=True, index=True)] | None = None
+    sha1: Annotated[Sha1, Column(unique=True, index=True)] | None = None
 
     @computed_field
     @property
@@ -113,34 +111,11 @@ class Rom(DatModel, frozen=True):
         if self.serial:
             return self.serial
 
-        raise ValidationError("Rom model must have at least one of `crc` or `serial`")
+        raise ValueError("Rom model must have at least one of `crc` or `serial`")
 
-    # TODO: Figure out how to ensure that at least one of `crc` or `serial` is non-NULL at the model level
-    def same_as(self, other: 'Rom') -> bool:
-        if self.crc and other.crc and self.crc.lower() == other.crc.lower():
-            return True
-
-        if self.serial and other.serial and self.serial.lower() == other.serial.lower():
-            return True
-
-        if self.md5 and other.md5 and self.md5.lower() == other.md5.lower():
-            return True
-
-        if self.sha1 and other.sha1 and self.sha1.lower() == other.sha1.lower():
-            return True
-
-        return False
-
-    def __or__(self, other: 'Rom') -> 'Rom':
-        # Merge two Rom records, preferring non-None values from self
-        if not isinstance(other, Rom):
-            return NotImplemented
-
-        this = {k: v for k, v in dataclasses.asdict(self).items() if v is not None}
-        that = {k: v for k, v in dataclasses.asdict(other).items() if v is not None}
-
-        return Rom(**(that | this))
-
+    @override
+    def model_post_init(self, _context) -> None:
+        self.pk # Force computation of pk to validate presence of identifying fields
 
 GamePrimaryKey = NewType('GamePrimaryKey', str)
 
@@ -284,7 +259,11 @@ class Game(DatModel, frozen=True):
         if self.description:
             return GamePrimaryKey(self.description)
 
-        raise ValidationError("Game record has neither 'id', 'name', 'comment', nor 'description' field.")
+        raise ValueError("Game record has neither 'id', 'name', 'comment', nor 'description' field.")
+
+    @override
+    def model_post_init(self, _context: Any) -> None:
+        self.pk # Force computation of pk to validate presence of identifying fields
 
 
 class DatPlaylists(DatabaseModel, frozen=True):
@@ -455,11 +434,11 @@ class ParsedDatFile(RootModel, frozen=True):
         return cls.model_validate(raw_dat, context="dat")
 
     @classmethod
-    async def from_dat_file_async_or_error(cls, dat: PathLike) -> Self | Exception:
+    async def from_dat_file_async_or_error(cls, dat: PathLike) -> Self | tuple[Exception, PathLike]:
         try:
             return await cls.from_dat_file_async(dat)
         except Exception as e:
-            return e
+            return e, dat
 
 DAT_OBJECT_TYPES = (
     Game,
