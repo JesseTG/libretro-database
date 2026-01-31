@@ -15,6 +15,7 @@ from collections.abc import AsyncIterable, Callable, Collection, Iterable, Mappi
 from concurrent.futures import ProcessPoolExecutor
 from io import StringIO
 from itertools import chain, product
+from os import PathLike
 from pathlib import Path
 from pprint import pprint
 from typing import NamedTuple, Optional
@@ -29,15 +30,15 @@ from aiomultiprocess import Pool
 from more_itertools import map_reduce, prepend
 from pydantic import AliasChoices, BaseModel, DirectoryPath, Field, FilePath
 from pydantic_settings import BaseSettings, CliSubCommand, SettingsConfigDict, CliApp
-from sqlalchemy import MetaData, insert, text
+from sqlalchemy import MetaData, event, text
+from sqlalchemy.dialects.sqlite import insert
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
+from sqlalchemy.sql.functions import coalesce
 
-from dats import DAT_OBJECT_TYPES, Game as DatGame, ParsedDatFile, ClrMamePro
+from dats import DAT_OBJECT_TYPES, Game as DatGame, Rom as DatRom, ParsedDatFile, ClrMamePro
 from igdb import Game as IgdbGame, PlaylistConfig, load_game_file
 from igdb import *
-from hasheous import HASHEOUS_OBJECT_TYPES, DataObject, MatchRecord, load_zip
-
-log = logging.getLogger('match')
+from hasheous import HASHEOUS_OBJECT_TYPES, DataObject, GameDataObject, MatchRecord, load_zip
 
 class PlaylistData(NamedTuple):
     playlist: Playlist
@@ -520,6 +521,11 @@ MODEL_TYPES = (
     *DAT_OBJECT_TYPES,
 )
 
+log_handler = logging.StreamHandler()
+log_handler.setFormatter(logging.Formatter('[%(asctime)s][%(name)s][%(taskName)s] %(message)s'))
+sqlalchemy_engine_log = logging.getLogger('sqlalchemy.engine.Engine')
+sqlalchemy_engine_log.addHandler(log_handler)
+
 class IndexSubCommand(CommonArgs):
     """
     Generate an SQLite database indexing data from IGDB and Hasheous.
@@ -538,10 +544,21 @@ class IndexSubCommand(CommonArgs):
         validation_alias=AliasChoices('f', 'force'),
     )
 
+    processes: int | None = Field(
+        default=None,
+        description="Number of processes to use for loading data. Defaults to the number of CPU cores.",
+    )
+
     _db_lock = asyncio.Lock()
+    _log = logging.getLogger('match.index')
 
     async def cli_cmd(self):
         start = time.perf_counter()
+
+        self._log.setLevel(logging.DEBUG if self.verbose else logging.INFO)
+        self._log.addHandler(log_handler)
+        sqlalchemy_engine_log.setLevel(logging.INFO if self.verbose else logging.WARNING)
+
         self.output.parent.mkdir(parents=True, exist_ok=True)
 
         if self.output.exists() and not self.force:
@@ -561,10 +578,9 @@ class IndexSubCommand(CommonArgs):
         # Create async engine with SQLite
         db = create_async_engine(
             f"sqlite+aiosqlite:///{self.output}",
-            echo=self.verbose,  # Log SQL statements if verbose
             connect_args={
                 "check_same_thread": False,
-                "autocommit": True,
+                "autocommit": False,
             },
         )
 
@@ -572,12 +588,14 @@ class IndexSubCommand(CommonArgs):
         for model_type in MODEL_TYPES:
             model_type.create_tables(metadata)
 
-        async with db.connect() as connection:
+        @event.listens_for(db.sync_engine, "connect")
+        def set_sqlite_pragma(dbapi_connection, connection_record):
+            #dbapi_connection.execute("PRAGMA synchronous = OFF")
+
             # Use in-memory journaling for better performance at the expense of durability,
             # but that's okay since the database is just used as a local cache
             # (as opposed to persistent storage of critical data).
-            await connection.execute(text("PRAGMA synchronous = OFF"))
-            await connection.execute(text("PRAGMA journal_mode = MEMORY"))
+            dbapi_connection.execute("PRAGMA journal_mode = MEMORY")
 
             # Explicitly disable foreign key constraints for two reasons:
             # 1. Some data sources may refer to newer games
@@ -592,11 +610,16 @@ class IndexSubCommand(CommonArgs):
             #
             # SQLite doesn't enforce foreign key constraints by default,
             # but the docs say that could change in the future.
-            await connection.execute(text("PRAGMA foreign_keys = OFF"))
+            dbapi_connection.execute("PRAGMA foreign_keys = OFF")
+            dbapi_connection.commit()
 
+        async with db.connect() as connection:
             await connection.run_sync(metadata.create_all)
+            await connection.commit()
 
-        async with Pool() as pool:
+            await connection.execute(text("PRAGMA optimize"))
+
+        async with Pool(processes=self.processes) as pool:
             async with TaskGroup() as group:
                 igdb_task = group.create_task(
                     self._insert_igdb_games(db, pool, metadata, config, playlists),
@@ -613,6 +636,8 @@ class IndexSubCommand(CommonArgs):
                     name="DAT"
                 )
 
+                self._log.info("Started data insertion tasks, waiting for completion...")
+
         async with db.connect() as connection:
             # Run the SQLite optimizer to improve performance on all tables (0x10000),
             # but don't take too long (0x00010)
@@ -623,16 +648,15 @@ class IndexSubCommand(CommonArgs):
         await db.dispose()
 
         end = time.perf_counter()
-        print(f"Elapsed time: {end - start:.2f} seconds")
+        self._log.info(f"Elapsed time: {end - start:.2f} seconds")
 
     async def _insert_igdb_games(self, db: AsyncEngine, pool: Pool, metadata: MetaData, config: PlaylistConfig, playlists: Collection[Playlist]):
         # Load all playlists concurrently, yielding them as they're loaded.
-        if self.verbose:
-            print(f"Inserting data from {len(playlists)} IGDB playlists:")
-            pprint([p.title for p in playlists], width=120)
+        self._log.info("Inserting games from %d playlists", len(playlists))
 
         async def job(playlist: Playlist):
             path = self.igdb_path / f"{playlist.title}.json"
+            self._log.debug("Loading IGDB game dump from '%s'", path)
             return (playlist, await pool.apply(load_game_file, (path,)))
 
         playlist_jobs = (job(p) for p in playlists)
@@ -642,6 +666,7 @@ class IndexSubCommand(CommonArgs):
         async for (playlist, games) in as_completed(playlist_jobs):
             # Collect all unique objects to insert
 
+            self._log.info("[%s] Processing %d games", playlist.title, len(games))
             # Aggregate all nested models from all games in the playlist
             nested_models = map_reduce(
                 chain(games, chain.from_iterable(g.nested_models for g in games)),
@@ -658,36 +683,44 @@ class IndexSubCommand(CommonArgs):
 
             async with self._db_lock:
                 async with db.begin() as tx:
+                    self._log.info("[%s] Inserting %d games", playlist.title, len(games))
                     for (model_type, models) in nested_models.items():
+                        self._log.info("[%s] Inserting %d %s records", playlist.title, len(models), model_type.__name__)
                         assert model_type.__tablename__ in metadata.tables, f"Model type '{model_type.__name__}' has no corresponding table in metadata"
 
                         await tx.execute(
-                            insert(metadata.tables[model_type.__tablename__]).prefix_with("OR IGNORE"),
+                            insert(metadata.tables[model_type.__tablename__]).on_conflict_do_nothing(),
                             # Insert game records, ignoring conflicts because
                             # the same game (or franchise, or genre, or other object)
                             # may appear in multiple playlists
 
-                            [m.model_dump(context="row") for m in models]
+                            [m.as_row for m in models]
                             # BaseModel.model_dump serializes the model to a dict,
                             # and IgdbObject in particular defines custom serialization behavior
                             # that's activated by passing a context value of "row".
                         )
 
+                        self._log.info("[%s] Inserted %d %s records", playlist.title, len(models), model_type.__name__)
+
                     # TODO: Insert the age rating-related relationships
                     for (field_name, rels) in relationships.items():
+                        self._log.info("[%s] Inserting %d '%s' relationships", playlist.title, len(rels), field_name)
                         tablename = f"{IgdbGame.__tablename__}_{field_name}"
                         assert tablename in metadata.tables, f"Relationship field '{field_name}' has no corresponding table in metadata"
 
                         await tx.execute(
-                            insert(metadata.tables[tablename]).prefix_with("OR IGNORE"),
+                            insert(metadata.tables[tablename]).on_conflict_do_nothing(),
                             rels
                         )
 
+                        self._log.info("[%s] Inserted %d '%s' relationships", playlist.title, len(rels), field_name)
 
                     await tx.commit()
                     # Commit the session to persist all added objects
 
-            print(f"Inserted {len(games)} IGDB games for playlist '{playlist.title}' into database")
+            self._log.info("[%s] Inserted %d games", playlist.title, len(games))
+
+        self._log.info("Finished inserting data")
 
     async def _insert_hasheous_games(self, db: AsyncEngine, pool: Pool, metadata: MetaData, config: PlaylistConfig, playlists: Iterable[Playlist]):
         requested_dumps = set(chain.from_iterable(p.hasheous_dirs for p in playlists))
@@ -695,15 +728,13 @@ class IndexSubCommand(CommonArgs):
         requested_dump_paths = tuple(self.hasheous_path / f"{d}.zip" for d in requested_dumps)
         dump_iterator = as_completed(pool.apply(load_zip, (d,)) for d in requested_dump_paths)
 
-        if self.verbose:
-            print(f"Inserting data from {len(requested_dump_paths)} Hasheous dump files:")
-            pprint(requested_dump_paths, width=120)
+        self._log.info("Inserting data from %d Hasheous dump files", len(requested_dump_paths))
 
         # TODO: Process each playlist in a separate task
         # (unless it doesn't offer the improved concurrency I want)
         async for games in dump_iterator:
             # Collect all unique objects to insert
-
+            self._log.info("Loaded %d Hasheous games from dump", len(games))
             nested_models = map_reduce(
                 chain(games, chain.from_iterable(g.nested_models for g in games)),
                 lambda model: type(model),
@@ -723,7 +754,7 @@ class IndexSubCommand(CommonArgs):
                         assert model_type.__tablename__ in metadata.tables, f"Model type '{model_type.__name__}' has no corresponding table in metadata"
 
                         await tx.execute(
-                            insert(metadata.tables[model_type.__tablename__]).prefix_with("OR IGNORE"),
+                            insert(metadata.tables[model_type.__tablename__]).on_conflict_do_nothing(),
                             # Insert game records, ignoring conflicts because
                             # the same game (or franchise, or genre, or other object)
                             # may appear in multiple dumps
@@ -734,31 +765,35 @@ class IndexSubCommand(CommonArgs):
                         )
 
                     for (field_name, rels) in relationships.items():
-                        tablename = f"{DataObject.__tablename__}_{field_name}"
+                        tablename = f"{GameDataObject.__tablename__}_{field_name}"
                         assert tablename in metadata.tables, f"Relationship field '{field_name}' has no corresponding table in metadata"
 
                         await tx.execute(
-                            insert(metadata.tables[tablename]).prefix_with("OR IGNORE"),
+                            insert(metadata.tables[tablename]).on_conflict_do_nothing(),
                             rels
                         )
-
 
                     await tx.commit()
                     # Commit the session to persist all added objects
 
-            print(f"Inserted {len(games)} Hasheous games into database")
+            self._log.info("Inserted %d Hasheous games into database", len(games))
+
+        self._log.info("Finished inserting Hasheous data")
 
     async def _insert_dat_games(self, db: AsyncEngine, pool: Pool, metadata: MetaData, config: PlaylistConfig, playlists: Collection[Playlist]):
-        if self.verbose:
-            print(f"Inserting data from {len(playlists)} DAT playlists:")
-            pprint([p.title for p in playlists], width=120)
+        self._log.info("Inserting games from %d playlists", len(playlists))
+
+        # Recursively find all subdirectories of the requested DAT directories
+        nested_dat_paths = chain.from_iterable(p.rglob("*") for p in self.dat_dirs)
+        dat_subdirs = await aiobuiltins.tuple(p for p in nested_dat_paths if await aiopath.isdir(p))
+        all_dat_dirs = tuple(chain(self.dat_dirs, dat_subdirs))
 
         async def load_dats(playlist: Playlist) -> AsyncIterable[DatGame]:
             # Use the name of the playlist and the alt names to find all relevant DAT files
             dat_names = prepend(str(playlist.title), playlist.alts)
 
             # Check for playlists of these names in all requested DAT directories
-            dat_paths = (d / f'{n}.dat' for d, n in product(self.dat_dirs, dat_names))
+            dat_paths = (d / f'{n}.dat' for d, n in product(all_dat_dirs, dat_names))
 
             # HACK: Some XML files have a `.dat` extension, filter them out
             dat_paths = filter(lambda p: 'xml' not in p.name.lower(), dat_paths)
@@ -766,60 +801,150 @@ class IndexSubCommand(CommonArgs):
 
             # Now that we've checked all the paths, load them concurrently
             # (Pydantic models pickle efficiently)
-            jobs = (pool.apply(ParsedDatFile.from_dat_file_ignore_errors, (p,)) for p in valid_dat_paths)
-            dats = (d async for d in as_completed(jobs) if d is not None)
+            jobs = (pool.apply(ParsedDatFile.from_dat_file_async_or_error, (p,)) for p in valid_dat_paths)
 
-            async for dat in dats:
-                (clrmamepro, *dat_games) = dat.root
-                for game in dat_games:
-                    yield game
+            async for dat in as_completed(jobs):
+                match dat:
+                    case Exception() as error, PathLike() as path:
+                        self._log.warning("[%s] Failed to load '%s', ignoring: %s", playlist.title, path, error)
+                    case ParsedDatFile(root=(clrmamepro, *games)) as dat:
+                        for game in games:
+                            yield game
 
         dat_iterator = ((p, await aiobuiltins.tuple(load_dats(p))) for p in playlists)
 
         async for (playlist, games) in dat_iterator:
+            self._log.info("[%s] Loaded %d games", playlist.title, len(games))
+            if not games:
+                continue
             # Collect all unique objects to insert
             # Aggregate all nested models from all games in the playlist
-            nested_models = map_reduce(
-                chain(games, chain.from_iterable(g.nested_models for g in games)),
-                lambda model: type(model),
-                None,
-                frozenset
-            )
+            roms = tuple(chain.from_iterable(g.rom for g in games))
             relationships = map_reduce(
                 chain.from_iterable(g.relationships.items() for g in games),
                 lambda rels: rels[0], # key is the field name
                 lambda rels: rels[1], # value is the set of relationships
                 lambda entries: tuple(chain.from_iterable(entries)) # group by field name, aggregate unique relationships
             )
+
             async with self._db_lock:
                 async with db.begin() as tx:
-                    for (model_type, models) in nested_models.items():
-                        assert model_type.__tablename__ in metadata.tables, f"Model type '{model_type.__name__}' has no corresponding table in metadata"
+                    self._log.info("[%s] Inserting %d games", playlist.title, len(games))
 
+                    game_table = metadata.tables[DatGame.__tablename__]
+                    insert_games = insert(game_table)
+                    # The same game is often represented in multiple DAT files,
+                    # so instead of discarding duplicates we merge them together;
+                    # NULL fields in the existing record are filled in
+                    # with non-NULL values from the new record.
+                    def coalesce_game_field(field):
+                        return coalesce(game_table.columns[field], insert_games.excluded[field])
+
+                    await tx.execute(
+                        insert_games.on_conflict_do_update(
+                            index_elements=("pk",),
+                            set_={
+                                #"achievements": coalesce_game_field('achievements'),
+                                "analog": coalesce_game_field('analog'),
+                                #"bbfc_rating": coalesce_game_field('bbfc_rating'),
+                                #"category": coalesce_game_field('category'),
+                                #"cero_rating": coalesce_game_field('cero_rating'),
+                                "code": coalesce_game_field('code'),
+                                #"comment": coalesce_game_field('comment'),
+                                #"console_exclusive": coalesce_game_field('console_exclusive'),
+                                #"controls": coalesce_game_field('controls'),
+                                #"coop": coalesce_game_field('coop'),
+                                #"date": coalesce_game_field('date'),
+                                "description": coalesce_game_field('description'),
+                                "developer": coalesce_game_field('developer'),
+                                "download": coalesce_game_field('download'),
+                                "edge_issue": coalesce_game_field('edge_issue'),
+                                "edge_rating": coalesce_game_field('edge_rating'),
+                                "elspa_rating": coalesce_game_field('elspa_rating'),
+                                #"enhancement_hw": coalesce_game_field('enhancement_hw'),
+                                #"enhancement_hardware": coalesce_game_field('enhancement_hardware'),
+                                #"esrb_rating": coalesce_game_field('esrb_rating'),
+                                #"famitsu_rating": coalesce_game_field('famitsu_rating'),
+                                "franchise": coalesce_game_field('franchise'),
+                                "genre": coalesce_game_field('genre'),
+                                #"homepage": coalesce_game_field('homepage'),
+                                "id": coalesce_game_field('id'),
+                                #"igdb_id": coalesce_game_field('igdb_id'),
+                                #"igdb_url": coalesce_game_field('igdb_url'),
+                                #"igdb_platform_id": coalesce_game_field('igdb_platform_id'),
+                                #"igdb_release_date_id": coalesce_game_field('igdb_release_date_id'),
+                                "language": coalesce_game_field('language'),
+                                #"license": coalesce_game_field('license'),
+                                "manufacturer": coalesce_game_field('manufacturer'),
+                                "media": coalesce_game_field('media'),
+                                "name": coalesce_game_field('name'),
+                                "origin": coalesce_game_field('origin'),
+                                #"pegi_rating": coalesce_game_field('pegi_rating'),
+                                #"perspective": coalesce_game_field('perspective'),
+                                #"platform_exclusive": coalesce_game_field('platform_exclusive'),
+                                "publisher": coalesce_game_field('publisher'),
+                                "region": coalesce_game_field('region'),
+                                "releaseday": coalesce_game_field('releaseday'),
+                                "releasemonth": coalesce_game_field('releasemonth'),
+                                "releaseyear": coalesce_game_field('releaseyear'),
+                                "rumble": coalesce_game_field('rumble'),
+                                #"score": coalesce_game_field('score'),
+                                "serial": coalesce_game_field('serial'),
+                                #"setting": coalesce_game_field('setting'),
+                                "tags": coalesce_game_field('tags'),
+                                "users": coalesce_game_field('users'),
+                                "version": coalesce_game_field('version'),
+                                "visual": coalesce_game_field('visual'),
+                                "year": coalesce_game_field('year'),
+                            }
+                        ),
+                        [g.as_row for g in games]
+                    )
+                    self._log.info("[%s] Inserted %d games", playlist.title, len(games))
+
+                    if roms:
+                        self._log.info("[%s] Inserting %d ROMs", playlist.title, len(tuple(roms)))
+                        # The same ROM is often represented in multiple DAT files,
+                        # so instead of discarding duplicates we merge them together;
+                        # NULL fields in the existing record are filled in
+                        # with non-NULL values from the new record.
+                        rom_table = metadata.tables[DatRom.__tablename__]
+
+                        insert_roms = insert(rom_table)
                         await tx.execute(
-                            insert(metadata.tables[model_type.__tablename__]).prefix_with("OR IGNORE"),
-                            # Insert game records, ignoring conflicts because
-                            # the same game (or franchise, or genre, or other object)
-                            # may appear in multiple playlists
-
-                            [m.model_dump(context="row") for m in models]
-                            # BaseModel.model_dump serializes the model to a dict,
-                            # and IgdbObject in particular defines custom serialization behavior
-                            # that's activated by passing a context value of "row".
+                            insert_roms.on_conflict_do_update(
+                                index_elements=("pk",),
+                                set_={
+                                    "crc": coalesce(rom_table.columns.crc, insert_roms.excluded.crc),
+                                    "image": coalesce(rom_table.columns.image, insert_roms.excluded.image),
+                                    "md5": coalesce(rom_table.columns.md5, insert_roms.excluded.md5),
+                                    "name": coalesce(rom_table.columns.name, insert_roms.excluded.name),
+                                    "serial": coalesce(rom_table.columns.serial, insert_roms.excluded.serial),
+                                    "sha1": coalesce(rom_table.columns.sha1, insert_roms.excluded.sha1),
+                                    "size": coalesce(rom_table.columns.size, insert_roms.excluded.size),
+                                }
+                            ),
+                            [r.as_row for r in roms]
                         )
+                        self._log.info("[%s] Inserted %d ROMs", playlist.title, len(roms))
 
                     for (field_name, rels) in relationships.items():
                         tablename = f"{DatGame.__tablename__}_{field_name}"
                         assert tablename in metadata.tables, f"Relationship field '{field_name}' has no corresponding table in metadata"
 
+                        self._log.info("[%s] Inserting %d relationships for field '%s'", playlist.title, len(rels), field_name)
                         await tx.execute(
-                            insert(metadata.tables[tablename]).prefix_with("OR IGNORE"),
+                            insert(metadata.tables[tablename]).on_conflict_do_nothing(),
                             rels
                         )
-
+                        self._log.info("[%s] Inserted %d relationships for field '%s'", playlist.title, len(rels), field_name)
 
                     await tx.commit()
                     # Commit the session to persist all added objects
+
+            self._log.info("[%s] Inserted %d games into database", playlist.title, len(games))
+
+        self._log.info("Finished inserting data")
 
 class MatchCommand(BaseSettings):
     index: CliSubCommand[IndexSubCommand]
