@@ -9,7 +9,7 @@ import sys
 from abc import ABC
 from collections.abc import Iterable, Mapping, Sequence
 from copy import deepcopy
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import date, datetime
 from functools import cache, cached_property
 from itertools import chain
@@ -19,7 +19,8 @@ import sqlalchemy
 
 from frozendict import frozendict
 from more_itertools import always_iterable, only
-from pydantic import BaseModel, BeforeValidator, HttpUrl, JsonValue, PlainSerializer, StringConstraints, ValidatorFunctionWrapHandler, WrapSerializer, WrapValidator
+from pydantic import AfterValidator, BaseModel, BeforeValidator, GetCoreSchemaHandler, GetPydanticSchema, HttpUrl, JsonValue, PlainSerializer, StringConstraints, ValidatorFunctionWrapHandler, WrapSerializer, WrapValidator
+from pydantic_core import CoreSchema, core_schema
 from pydantic.fields import ComputedFieldInfo, FieldInfo
 from pydantic_extra_types.country import CountryNumericCode
 from sqlalchemy import DDL, Column, ForeignKey, MetaData, Table
@@ -650,7 +651,7 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
         models: set[DatabaseModel] = set()
         for field_name in chain(type(self).model_fields, type(self).model_computed_fields):
             match getattr(self, field_name):
-                case DatabaseModel() as obj:
+                case obj if isinstance(obj, DatabaseModel):
                     models.add(obj)
                     models.update(obj.nested_models)
                 case [*items]:
@@ -732,10 +733,31 @@ def validate_frozendict(v: Any, handler: ValidatorFunctionWrapHandler) -> frozen
 
     raise TypeError(f"Expected frozendict or Mapping, got {type(v)}")
 
-FrozenDictValidator = WrapValidator(validate_frozendict)
+def _frozen_dict_schema(tp: Any, handler: GetCoreSchemaHandler) -> CoreSchema:
+    args = get_args(tp)
+    key_type = args[0] if len(args) >= 1 else Any
+    value_type = args[1] if len(args) >= 2 else Any
 
-type FrozenDict[K, V] = Annotated[frozendict[K, V], FrozenDictValidator]
-Hash = Annotated[str, StringConstraints(to_lower=True)]
+    return core_schema.no_info_after_validator_function(
+        frozendict,
+        core_schema.dict_schema(
+            keys_schema=handler.generate_schema(key_type),
+            values_schema=handler.generate_schema(value_type)
+        )
+    )
+
+def ZeroPad(min_length: int):
+    return BeforeValidator(lambda s: s.zfill(min_length))
+
+type FrozenDict[K, V] = Annotated[frozendict[K, V], GetPydanticSchema(_frozen_dict_schema)]
+type TypedFrozenDict[T] = Annotated[T, AfterValidator(lambda v: frozendict(v))]
+# NOTE: The pattern is in Rust syntax, not Python syntax! (Pydantic-core is implemented in Rust.)
+Crc = Annotated[str, ZeroPad(8), StringConstraints(to_lower=True, pattern=r"[a-fA-F0-9]{8}")]
+Md5 = Annotated[str, StringConstraints(to_lower=True, pattern=r"[a-fA-F0-9]{32}")]
+Sha1 = Annotated[str, StringConstraints(to_lower=True, pattern=r"[a-fA-F0-9]{40}")]
+Sha256 = Annotated[str, StringConstraints(to_lower=True, pattern=r"[a-fA-F0-9]{64}")]
+
+
 type WrapInTuple[T] = Annotated[tuple[T, ...], BeforeValidator(lambda v: always_iterable(v))]
 
 type EmptyStringToNone[T] = Annotated[
@@ -750,10 +772,13 @@ A type that serializes and validates empty strings as None.
 __all__ = (
     "DatabaseModel",
     "Relationship",
-    "Hash",
+    "Sha256",
+    "Sha1",
+    "Md5",
+    "Crc",
+    "EmptyStringToNone",
     "is_non_string_sequence_type",
     "CoercedHttpUrl",
-    "FrozenDictValidator",
     "InsertInRowContext",
     "WrapInTuple",
     "FrozenDict",

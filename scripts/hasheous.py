@@ -37,7 +37,7 @@ from sqlalchemy.dialects.sqlite import INTEGER, JSON
 from sqlalchemy.util import is_non_string_iterable
 
 from igdb import IgdbId, PlaylistConfig
-from utils import DatabaseModel, FrozenDictValidator, Hash, InsertInRowContext, EmptyStringToNone, EMPTY_DICT, Relationship
+from utils import Crc, DatabaseModel, FrozenDict, TypedFrozenDict, InsertInRowContext, EmptyStringToNone, EMPTY_DICT, Md5, Sha1, Sha256
 
 METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
 
@@ -115,25 +115,25 @@ class RomItem(HasheousObject, frozen=True, alias_generator=to_pascal):
     __tablename__: ClassVar[str] = "HasheousRomItem"
     id: Annotated[int, Column(primary_key=True)]
     name: EmptyStringToNone[str]
-    attributes: Annotated[Mapping[str, str], Column(JSON), FrozenDictValidator]
+    attributes: Annotated[FrozenDict[str, str], Column(JSON)]
     rom_type: Annotated[str, Column(index=True)]
     size: ByteSize
-    crc: Annotated[EmptyStringToNone[Hash], Column(index=True)]
-    md5: Annotated[EmptyStringToNone[Hash], Column(index=True)]
-    sha1: Annotated[EmptyStringToNone[Hash], Column(index=True)]
-    sha256: Annotated[EmptyStringToNone[Hash], Column(index=True)]
+    crc: Annotated[EmptyStringToNone[Crc], Column(index=True)]
+    md5: Annotated[EmptyStringToNone[Md5], Column(index=True)]
+    sha1: Annotated[EmptyStringToNone[Sha1], Column(index=True)]
+    sha256: Annotated[EmptyStringToNone[Sha256], Column(index=True)]
     status: EmptyStringToNone[str]
 
     # TODO: Represent Country with computed columns
-    country: Annotated[Mapping[str, str], Column(JSON), FrozenDictValidator]
+    country: Annotated[FrozenDict[str, str], Column(JSON)]
 
     # TODO: Represent Language with computed columns
-    language: Annotated[Mapping[str, str], Column(JSON), FrozenDictValidator]
+    language: Annotated[FrozenDict[str, str], Column(JSON)]
     development_status: EmptyStringToNone[str]
     rom_type_media: EmptyStringToNone[str]
 
     # TODO: Represent MediaDetail with computed columns
-    media_detail: Annotated[MediaType, Column(JSON), FrozenDictValidator]
+    media_detail: Annotated[TypedFrozenDict[MediaType], Column(JSON)]
     media_label: EmptyStringToNone[str]
     signature_source: Annotated[EmptyStringToNone[str], Column(index=True)]
 
@@ -162,7 +162,7 @@ class Attribute:
     attribute_name: Annotated[str, Field(validation_alias='attributeName')]
     attribute_relation_type: Annotated[str, Field(validation_alias='attributeRelationType')]
 
-    value: Annotated["str | tuple[RomItem, ...] | DataObject | Mapping", PlainValidator(coerce_attribute), Field(validation_alias='Value')]
+    value: Annotated["str | tuple[RomItem, ...] | GameDataObject | CompanyDataObject | PlatformDataObject | Mapping", PlainValidator(coerce_attribute), Field(validation_alias='Value')]
 
     id: Annotated[int | None, Field(validation_alias='Id')] = None
 
