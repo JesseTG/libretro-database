@@ -30,7 +30,7 @@ from sqlalchemy.util.typing import (GenericProtocol, TypeAliasType,
                                     de_optionalize_union_types,
                                     eval_expression, flatten_newtype, get_args,
                                     includes_none, is_fwd_ref, is_generic,
-                                    is_literal, is_newtype, is_pep593, is_pep695, make_union_type)
+                                    is_literal, is_newtype, is_pep593, is_pep695, is_union, make_union_type)
 
 type AnnotationScanType = type[Any] | str | ForwardRef | NewType | TypeAliasType | GenericProtocol[Any]
 
@@ -235,42 +235,50 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
 
         :param t: The type annotation to unwrap
         """
-        match t:
-            case type() as concrete_type:
-                return concrete_type
-            case alias if is_pep695(alias) and (args := get_args(alias)):
-                # If this is a type alias with parameters...
-                return cls.unwrap_type(args[0])
-            case alias if is_pep695(alias):
-                # If this is a plain type alias...
-                return cls.unwrap_type(alias.__value__)
-            case literal if is_literal(literal):
-                # If this is a Literal[...], unwrap to get the argument types
-                args = get_args(literal)
-                literal_types = set(map(type, args))
+        unwrapped = t
+        while not isinstance(unwrapped, type):
+            match unwrapped:
+                case type():
+                    break
+                case newtype if is_newtype(newtype):
+                    # If this is a newtype, unwrap to get the underlying type
+                    unwrapped = flatten_newtype(newtype)
+                case literal if is_literal(literal):
+                    # If this is a Literal[A, B, C, ...], unwrap to get the types of A, B, C, ...
+                    # (but if there's just one unique type, resolve to it)
+                    args = get_args(literal)
+                    literal_types = set(map(type, args))
+                    unwrapped = type(args[0]) if len(literal_types) == 1 else make_union_type(*literal_types)
+                case annotation if is_pep593(annotation):
+                    # If this is Annotated[T, ...], unwrap to get T
+                    args = get_args(annotation)
+                    assert len(args) >= 2
+                    unwrapped = args[0]
+                case ref if is_fwd_ref(ref, check_generic=True, check_for_plain_string=True):
+                    # If this is a ForwardRef...
+                    unwrapped = eval_expression(ref.__forward_arg__, cls.__module__, locals_=sys.modules[cls.__module__].__dict__)
+                case str() as type_expression:
+                    unwrapped = eval_expression(type_expression, cls.__module__, locals_=sys.modules[cls.__module__].__dict__)
+                case alias if is_pep695(alias) and not alias.__type_params__:
+                    # If this is a type alias without parameters...
+                    unwrapped = alias.__value__
+                case alias if is_pep695(alias) and (args := get_args(alias)):
+                    # If this is a parameterized type alias...
+                    unwrapped = alias.__value__[args]
+                case generic if is_generic(generic) and not is_union(generic): # and is_non_string_sequence_type(get_origin(generic)):
+                    # If this is parameterized type like list[T]...
+                    unwrapped = get_origin(generic)
+                    assert unwrapped is not None
+                case optional if includes_none(unwrapped):
+                    # If this type can have a value of None...
+                    # (For most purposes you can treat it as Optional[T],
+                    # but Python has several equivalent constructs.)
+                    unwrapped = de_optionalize_union_types(unwrapped)
+                case _:
+                    raise TypeError(f"Unexpected type annotation: {t} ({type(t)})")
 
-                return type(args[0]) if len(literal_types) == 1 else make_union_type(*literal_types)
-            case annotation if is_pep593(annotation):
-                # If this is Annotated[T, ...], unwrap to get T
-                args = get_args(annotation)
-                return cls.unwrap_type(args[0])
-            case newtype if is_newtype(newtype):
-                # If this is a newtype, unwrap to get the underlying type
-                return cls.unwrap_type(flatten_newtype(newtype))
-            case generic if is_generic(generic):
-                # If this is a generic type (likely a collection), unwrap to get the first argument
-                return cls.unwrap_type(get_args(generic)[0])
-            case ref if is_fwd_ref(ref, check_generic=True, check_for_plain_string=True):
-                return cls.unwrap_type(eval_expression(ref.__forward_arg__, cls.__module__, locals_=sys.modules[cls.__module__].__dict__))
-            case str() as type_expression:
-                return cls.unwrap_type(eval_expression(type_expression, cls.__module__, locals_=sys.modules[cls.__module__].__dict__))
-            case optional if includes_none(t):
-                # If this type can have a value of None...
-                # (For most purposes you can think of it as Optional[], but
-                # Python has several ways to express that.)
-                return cls.unwrap_type(de_optionalize_union_types(t))
-            case _:
-                raise TypeError(f"Unexpected type annotation: {t} ({type(t)})")
+        assert isinstance(unwrapped, type)
+        return unwrapped
 
     @classmethod
     def get_field_type(cls, field: FieldInfo | ComputedFieldInfo | str) -> type:
@@ -418,7 +426,7 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
             field_annotation = cls.get_field_annotation(field)
             unwrapped_field_type = cls.unwrap_type(field_annotation)
             field_origin = get_origin(field_annotation)
-            if is_non_string_sequence_type(field_origin):
+            if is_non_string_sequence_type(field_origin) or is_non_string_sequence_type(unwrapped_field_type):
                 # Skip automatic FK generation for collection types,
                 # otherwise we run the risk of infinite recursion
                 # (they should use RelationshipTableDef instead)
