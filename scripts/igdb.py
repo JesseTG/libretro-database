@@ -481,7 +481,7 @@ IGDB_OBJECT_TYPES = (
 )
 
 type SortDirection = Literal['asc', 'desc']
-DEFAULT_SORT: tuple[str, SortDirection] = ('name', 'asc')
+DEFAULT_SORT = ('name', 'asc')
 QUERY_CLAUSE = r'(fields|f|exclude|x|where|w|limit|l|offset|o|sort|s|search)\s+([^;]+)\s*;'
 
 class GameResponse(TypedDict, total=False):
