@@ -210,32 +210,36 @@ class Game(DatModel, frozen=True):
     # not semantically important, but easier to read.
     rom: Annotated[tuple[Rom, ...], Relationship(
         self_columns=Column("pk",  ForeignKey("DatGame.pk"), primary_key=True, nullable=False),
-        related_columns=(
-            Column(
+        related_columns=({
+            # The field names don't map 1:1 with column names,
+            # so we specify the field names explicitly as keys
+            "pk": Column(
+                "rom",
+                ForeignKey("DatRom.pk"),
+                primary_key=True,
+                nullable=False,
+            ),
+            "crc": Column(
                 "crc",
                 ForeignKey("DatRom.crc"),
-                primary_key=True,
                 nullable=True,
             ),
-            Column(
+            "serial": Column(
                 "serial",
                 ForeignKey("DatRom.serial"),
-                primary_key=True,
                 nullable=True,
             ),
-            Column(
+            "md5": Column(
                 "md5",
                 ForeignKey("DatRom.md5"),
-                primary_key=True,
                 nullable=True,
             ),
-            Column(
+            "sha1": Column(
                 "sha1",
                 ForeignKey("DatRom.sha1"),
-                primary_key=True,
                 nullable=True,
             ),
-        )
+        }),
     )] = ()
 
     @computed_field
