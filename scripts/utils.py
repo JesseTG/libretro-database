@@ -27,6 +27,7 @@ from sqlalchemy import DDL, Column, ForeignKey, MetaData, Table
 from sqlalchemy import event
 from sqlalchemy.schema import SchemaConst, SchemaItem
 from sqlalchemy.types import NullType, TypeEngine
+from sqlalchemy.util import is_non_string_iterable
 from sqlalchemy.util.typing import (GenericProtocol, TypeAliasType,
                                     de_optionalize_union_types,
                                     eval_expression, flatten_newtype, get_args,
@@ -56,6 +57,8 @@ class CopyableSchemaItem(SchemaItem, ABC):
 type RelationshipTableArg = Mapping[str, Column] | Iterable[Column] | Column | ForeignKey
 
 EMPTY_DICT = frozendict()
+
+DEFAULT_RELATIONSHIP_TABLE_KWARGS = frozendict({"sqlite_with_rowid": False})
 
 @dataclass(eq=True, unsafe_hash=True)
 class Relationship:
@@ -101,8 +104,8 @@ class Relationship:
         tablename: str | None = None,
         self_columns: RelationshipTableArg = EMPTY_DICT,
         related_columns: RelationshipTableArg = EMPTY_DICT,
-        tableargs: tuple[CopyableSchemaItem, ...] = (),
-        tablekwargs: frozendict[str, Any] | None = None
+        tableargs: Iterable[CopyableSchemaItem] = (),
+        tablekwargs: Mapping[str, Any] | None = DEFAULT_RELATIONSHIP_TABLE_KWARGS
     ):
         self.tablename = tablename
 
@@ -134,8 +137,8 @@ class Relationship:
             case _:
                 raise TypeError(f"Unsupported related_columns type: {type(related_columns)}")
 
-        self.tableargs = tableargs
-        self.tablekwargs = tablekwargs or EMPTY_DICT
+        self.tableargs = tuple(tableargs)
+        self.tablekwargs = frozendict(tablekwargs) if tablekwargs is not None else EMPTY_DICT
 
 
     def __deepcopy__(self, memo: dict[int, Any]) -> "Relationship":
@@ -766,6 +769,7 @@ Sha256 = Annotated[str, StringConstraints(to_lower=True, pattern=r"[a-fA-F0-9]{6
 
 
 type WrapInTuple[T] = Annotated[tuple[T, ...], BeforeValidator(lambda v: always_iterable(v))]
+type OnlyFirst[T] = Annotated[T, BeforeValidator(lambda v: v[0] if is_non_string_iterable(v) and isinstance(v, Sequence) else v)]
 
 type EmptyStringToNone[T] = Annotated[
     T | None,
