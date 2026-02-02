@@ -680,19 +680,26 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
             # If the field isn't a non-string sequence type, we don't handle it here
             return ()
 
+        self_cols = dict()
+        for col_fieldname, col in reldef.self_columns.items():
+            # For each column that defines this relationship table...
+            # Get the value from this object that corresponds to the column
+            self_cols[col.name] = getattr(self, col_fieldname)
+
         rows: list[frozendict[str, Any]] = []
         field_value = getattr(self, field_name)
         for v in field_value:
             # For each item in this collection...
-            row: dict[str, Any] = {}
-            for col_fieldname, col in reldef.self_columns.items():
-                # For each column that's used to identify this object...
-                row[col.name] = getattr(self, col_fieldname)
+            row: dict[str, Any] = dict(self_cols)
             for col_fieldname, col in reldef.related_columns.items():
-                # For each column that's used to identify the related object...
-                row[col.name] = getattr(v, col_fieldname) if isinstance(v, DatabaseModel) else v
-                # ...set it to the field value if it's another DatabaseModel,
-                # otherwise just use the value directly
+                # For each column that defines this relationship table...
+                if isinstance(v, DatabaseModel):
+                    # Try the field name first, fall back to the column name
+                    row[col.name] = getattr(v, col_fieldname, getattr(v, col.name, None))
+                else:
+                    # Or it's just a primitive value
+                    row[col.name] = v
+
             rows.append(frozendict(row))
 
         return tuple(rows)
