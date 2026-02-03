@@ -444,6 +444,12 @@ DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
     "version_title",
 )
 
+class PlaylistMapping(DatabaseModel, frozen=True):
+    __tablename__: ClassVar[str] = "IgdbPlaylistMapping"
+    __tablekwargs__ = {"sqlite_with_rowid": False}
+    title: Annotated[PlaylistTitle, Column(primary_key=True, index=True)]
+    game: Annotated[IgdbId, Column(ForeignKey('IgdbGame.id'), primary_key=True, index=True)]
+
 IGDB_OBJECT_TYPES = (
     AgeRatingOrganization,
     AgeRatingCategory,
@@ -478,6 +484,7 @@ IGDB_OBJECT_TYPES = (
     ReleaseDate,
     Theme,
     Game,
+    PlaylistMapping,
 )
 
 type SortDirection = Literal['asc', 'desc']

@@ -36,7 +36,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from sqlalchemy.sql.functions import coalesce
 
 from dats import DAT_OBJECT_TYPES, Game as DatGame, Rom as DatRom, ParsedDatFile, ClrMamePro
-from igdb import Game as IgdbGame, PlaylistConfig, load_game_file
+from igdb import Game as IgdbGame, Playlist, PlaylistConfig, load_game_file, PlaylistMapping as IgdbPlaylistMapping
 from igdb import *
 from hasheous import HASHEOUS_OBJECT_TYPES, DataObject, GameDataObject, MatchRecord, load_zip
 
@@ -622,17 +622,17 @@ class IndexSubCommand(CommonArgs):
         async with Pool(processes=self.processes) as pool:
             async with TaskGroup() as group:
                 igdb_task = group.create_task(
-                    self._insert_igdb_games(db, pool, metadata, config, playlists),
+                    self._insert_igdb_games(db, pool, metadata, playlists),
                     name="IGDB"
                 )
 
                 hasheous_task = group.create_task(
-                    self._insert_hasheous_games(db, pool, metadata, config, playlists),
+                    self._insert_hasheous_games(db, pool, metadata, playlists),
                     name="Hasheous"
                 )
 
                 dat_task = group.create_task(
-                    self._insert_dat_games(db, pool, metadata, config, playlists),
+                    self._insert_dat_games(db, pool, metadata, playlists),
                     name="DAT"
                 )
 
@@ -650,7 +650,7 @@ class IndexSubCommand(CommonArgs):
         end = time.perf_counter()
         self._log.info(f"Elapsed time: {end - start:.2f} seconds")
 
-    async def _insert_igdb_games(self, db: AsyncEngine, pool: Pool, metadata: MetaData, config: PlaylistConfig, playlists: Collection[Playlist]):
+    async def _insert_igdb_games(self, db: AsyncEngine, pool: Pool, metadata: MetaData, playlists: Collection[Playlist]):
         # Load all playlists concurrently, yielding them as they're loaded.
         self._log.info("Inserting games from %d playlists", len(playlists))
 
@@ -680,6 +680,8 @@ class IndexSubCommand(CommonArgs):
                 lambda rels: rels[1], # value is the set of relationships
                 lambda entries: tuple(chain.from_iterable(entries)) # group by field name, aggregate unique relationships
             )
+
+            mappings = tuple(IgdbPlaylistMapping(title=playlist.title, game=g.id) for g in games)
 
             async with self._db_lock:
                 async with db.begin() as tx:
@@ -715,6 +717,11 @@ class IndexSubCommand(CommonArgs):
 
                         self._log.info("[%s] Inserted %d '%s' relationships", playlist.title, len(rels), field_name)
 
+                    self._log.info("[%s] Inserting %d playlist mappings", playlist.title, len(mappings))
+                    await tx.execute(
+                        insert(metadata.tables[IgdbPlaylistMapping.__tablename__]).on_conflict_do_nothing(),
+                        [m.as_row for m in mappings]
+                    )
                     await tx.commit()
                     # Commit the session to persist all added objects
 
@@ -722,7 +729,7 @@ class IndexSubCommand(CommonArgs):
 
         self._log.info("Finished inserting data")
 
-    async def _insert_hasheous_games(self, db: AsyncEngine, pool: Pool, metadata: MetaData, config: PlaylistConfig, playlists: Iterable[Playlist]):
+    async def _insert_hasheous_games(self, db: AsyncEngine, pool: Pool, metadata: MetaData, playlists: Iterable[Playlist]):
         requested_dumps = set(chain.from_iterable(p.hasheous_dirs for p in playlists))
         requested_dumps.add("Unknown Platform")
         requested_dump_paths = tuple(self.hasheous_path / f"{d}.zip" for d in requested_dumps)
@@ -780,7 +787,7 @@ class IndexSubCommand(CommonArgs):
 
         self._log.info("Finished inserting Hasheous data")
 
-    async def _insert_dat_games(self, db: AsyncEngine, pool: Pool, metadata: MetaData, config: PlaylistConfig, playlists: Collection[Playlist]):
+    async def _insert_dat_games(self, db: AsyncEngine, pool: Pool, metadata: MetaData, playlists: Collection[Playlist]):
         self._log.info("Inserting games from %d playlists", len(playlists))
 
         # Recursively find all subdirectories of the requested DAT directories
@@ -850,7 +857,7 @@ class IndexSubCommand(CommonArgs):
                                 #"category": coalesce_game_field('category'),
                                 #"cero_rating": coalesce_game_field('cero_rating'),
                                 "code": coalesce_game_field('code'),
-                                #"comment": coalesce_game_field('comment'),
+                                "comment": coalesce_game_field('comment'),
                                 #"console_exclusive": coalesce_game_field('console_exclusive'),
                                 #"controls": coalesce_game_field('controls'),
                                 #"coop": coalesce_game_field('coop'),
