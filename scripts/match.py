@@ -557,7 +557,11 @@ class IndexSubCommand(CommonArgs):
 
         self._log.setLevel(logging.DEBUG if self.verbose else logging.INFO)
         self._log.addHandler(log_handler)
-        sqlalchemy_engine_log.setLevel(logging.INFO if self.verbose else logging.WARNING)
+        if self.verbose:
+            # Log the SQL table creation statements being executed,
+            # but we'll lower the level later during data insertion
+            # so we don't get overwhelmed with output.
+            sqlalchemy_engine_log.setLevel(logging.INFO)
 
         self.output.parent.mkdir(parents=True, exist_ok=True)
 
@@ -619,6 +623,7 @@ class IndexSubCommand(CommonArgs):
 
             await connection.execute(text("PRAGMA optimize"))
 
+        sqlalchemy_engine_log.setLevel(logging.WARNING)
         async with Pool(processes=self.processes) as pool:
             async with TaskGroup() as group:
                 igdb_task = group.create_task(
