@@ -541,7 +541,8 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
                     pkcol_name: Column(
                         f"{defn.tablename}_{pkcol.name}",
                         ForeignKey(f"{cls.__tablename__}.{pkcol.name}"),
-                        primary_key=True
+                        primary_key=True,
+                        index=True,
                     ) for pkcol_name, pkcol in pk_cols.items()
                 })
 
@@ -567,7 +568,8 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
                         pkcol_name: Column(
                             f"{related_type.__tablename__}_{pkcol.name}",
                             ForeignKey(f"{related_type.__tablename__}.{pkcol.name}"),
-                            primary_key=True
+                            primary_key=True,
+                            index=True
                         )
                         for pkcol_name, pkcol in related_pk_cols.items()
                     })
