@@ -2,6 +2,7 @@
 
 import asyncio
 import dataclasses
+import datetime
 import os.path
 import re
 import sys
@@ -11,7 +12,7 @@ from abc import ABC
 from asyncio import Task, TaskGroup
 from collections.abc import Iterable, Iterator, Mapping
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date
 from functools import cached_property
 from itertools import chain
 from pathlib import Path
@@ -296,7 +297,7 @@ class ReleaseDateStatus(IgdbObject, frozen=True):
 class ReleaseDate(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbReleaseDate"
     id: IgdbPrimaryId
-    date: datetime | None = None
+    date: datetime.date | None = None
     date_format: DateFormat
     game: GameReference
     human: str
