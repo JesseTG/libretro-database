@@ -508,7 +508,7 @@ class CountResponse(TypedDict):
 
 CountResponseAdapter = TypeAdapter(CountResponse)
 
-@dataclass(kw_only=True, eq=True)
+@dataclass(kw_only=True, eq=True, frozen=True)
 class Query:
     fields: tuple[str, ...] | None
     exclude: tuple[str, ...] | None
@@ -568,21 +568,21 @@ class Query:
 
         match fields:
             case str():
-                self.fields = tuple(f.strip(" ;") for f in fields.split(",") if f)
+                object.__setattr__(self, 'fields', tuple(f.strip(" ;") for f in fields.split(",") if f))
             case Iterable():
-                self.fields = tuple(f.strip(" ;") for f in fields if f)
+                object.__setattr__(self, 'fields', tuple(f.strip(" ;") for f in fields if f))
             case None:
-                self.fields = None
+                object.__setattr__(self, 'fields', None)
             case _:
                 raise TypeError(f"Expected fields to be str, Iterable[str], or None; got {type(fields).__name__}")
 
         match exclude:
             case str():
-                self.exclude = tuple(f.strip() for f in exclude.split(","))
+                object.__setattr__(self, 'exclude', tuple(f.strip() for f in exclude.split(",")))
             case Iterable():
-                self.exclude = tuple(f.strip() for f in exclude)
+                object.__setattr__(self, 'exclude', tuple(f.strip() for f in exclude))
             case None:
-                self.exclude = None
+                object.__setattr__(self, 'exclude', None)
             case _:
                 raise TypeError(f"Expected exclude to be str, Iterable[str], or None; got {type(exclude).__name__}")
 
@@ -590,20 +590,20 @@ class Query:
         #  (Gotta handle ANDs, ORs, NOTs, operators, etc.)
         match where:
             case str():
-                self.where = where.strip()
+                object.__setattr__(self, 'where', where.strip())
             case None:
-                self.where = None
+                object.__setattr__(self, 'where', None)
             case _:
                 raise TypeError(f"Expected where to be str or None; got {type(where).__name__}")
 
-        self.limit = limit
-        self.offset = offset
+        object.__setattr__(self, 'limit', limit)
+        object.__setattr__(self, 'offset', offset)
 
         if search and sort:
             raise ValueError("Cannot specify both search and sort in a query.")
 
-        self.search = search
-        self.sort = sort
+        object.__setattr__(self, 'search', search)
+        object.__setattr__(self, 'sort', sort)
 
     def expand_to_all(self, count: int, limit: int = 500) -> Iterator['Query']:
         for i in range(0, count, limit):
@@ -646,7 +646,7 @@ class Query:
 
         return ''.join(clauses)
 
-@dataclass()
+@dataclass(frozen=True)
 class MultiqueryQuery(Query):
     name: str
     endpoint: str
