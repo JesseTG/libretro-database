@@ -549,6 +549,21 @@ class IndexSubCommand(CommonArgs):
         description="Number of processes to use for loading data. Defaults to the number of CPU cores.",
     )
 
+    skip_dats: bool = Field(
+        default=False,
+        description="Skip loading DAT files when building the index.",
+    )
+
+    skip_igdb: bool = Field(
+        default=False,
+        description="Skip loading IGDB data when building the index.",
+    )
+
+    skip_hasheous: bool = Field(
+        default=False,
+        description="Skip loading Hasheous data when building the index.",
+    )
+
     _db_lock = asyncio.Lock()
     _log = logging.getLogger('match.index')
 
@@ -588,8 +603,13 @@ class IndexSubCommand(CommonArgs):
             },
         )
 
+        model_types = (
+            *(IGDB_OBJECT_TYPES if not self.skip_igdb else ()),
+            *(HASHEOUS_OBJECT_TYPES if not self.skip_hasheous else ()),
+            *(DAT_OBJECT_TYPES if not self.skip_dats else ()),
+        )
         metadata = MetaData()
-        for model_type in MODEL_TYPES:
+        for model_type in model_types:
             model_type.create_tables(metadata)
 
         @event.listens_for(db.sync_engine, "connect")
@@ -626,20 +646,23 @@ class IndexSubCommand(CommonArgs):
         sqlalchemy_engine_log.setLevel(logging.WARNING)
         async with Pool(processes=self.processes) as pool:
             async with TaskGroup() as group:
-                igdb_task = group.create_task(
-                    self._insert_igdb_games(db, pool, metadata, playlists),
-                    name="IGDB"
-                )
+                if not self.skip_igdb:
+                    igdb_task = group.create_task(
+                        self._insert_igdb_games(db, pool, metadata, playlists),
+                        name="IGDB"
+                    )
 
-                hasheous_task = group.create_task(
-                    self._insert_hasheous_games(db, pool, metadata, playlists),
-                    name="Hasheous"
-                )
+                if not self.skip_hasheous:
+                    hasheous_task = group.create_task(
+                        self._insert_hasheous_games(db, pool, metadata, playlists),
+                        name="Hasheous"
+                    )
 
-                dat_task = group.create_task(
-                    self._insert_dat_games(db, pool, metadata, playlists),
-                    name="DAT"
-                )
+                if not self.skip_dats:
+                    dat_task = group.create_task(
+                        self._insert_dat_games(db, pool, metadata, playlists),
+                        name="DAT"
+                    )
 
                 self._log.info("Started data insertion tasks, waiting for completion...")
 
