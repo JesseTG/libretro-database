@@ -19,7 +19,7 @@ import sqlalchemy
 
 from frozendict import frozendict
 from more_itertools import always_iterable, only
-from pydantic import AfterValidator, BaseModel, BeforeValidator, GetCoreSchemaHandler, GetPydanticSchema, HttpUrl, JsonValue, PlainSerializer, StringConstraints, ValidatorFunctionWrapHandler, WrapSerializer, WrapValidator
+from pydantic import AfterValidator, BaseModel, BeforeValidator, Field, GetCoreSchemaHandler, GetPydanticSchema, HttpUrl, JsonValue, PlainSerializer, StringConstraints, ValidatorFunctionWrapHandler, WrapSerializer, WrapValidator
 from pydantic_core import CoreSchema, core_schema
 from pydantic.fields import ComputedFieldInfo, FieldInfo
 from pydantic_extra_types.country import CountryNumericCode
@@ -77,7 +77,8 @@ def copy_schema_item(item: CopyableSchemaItem) -> CopyableSchemaItem:
 
 
 type RelationshipTableArg = Mapping[str, Column] | Iterable[Column] | Column | ForeignKey
-
+RowId = NewType("RowId", int)
+RowIdColumn = Annotated[RowId | None, Column(primary_key=True, index=True, nullable=False), Field(default=None)]
 EMPTY_DICT = frozendict()
 
 DEFAULT_RELATIONSHIP_TABLE_KWARGS = frozendict({"sqlite_with_rowid": False})
