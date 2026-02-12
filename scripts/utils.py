@@ -23,7 +23,7 @@ from pydantic import AfterValidator, BaseModel, BeforeValidator, GetCoreSchemaHa
 from pydantic_core import CoreSchema, core_schema
 from pydantic.fields import ComputedFieldInfo, FieldInfo
 from pydantic_extra_types.country import CountryNumericCode
-from sqlalchemy import DDL, Column, ForeignKey, MetaData, Table
+from sqlalchemy import DDL, Column, Constraint, ForeignKey, MetaData, Table, Index
 from sqlalchemy import event
 from sqlalchemy.schema import SchemaConst, SchemaItem
 from sqlalchemy.types import NullType, TypeEngine
@@ -45,14 +45,36 @@ def is_non_string_sequence_type(t: Any) -> TypeGuard[type[Sequence[Any]]]:
 
     return False
 
-class CopyableSchemaItem(SchemaItem, ABC):
-    """
-    A SchemaItem that can be copied.
-    Use as a type annotation.
-    """
+def flatten_newtype(type_: NewType) -> type[Any]:
+    super_type = type_.__supertype__
+    while is_newtype(super_type):
+        super_type = super_type.__supertype__
+    return super_type  # type: ignore[return-value]
 
-    def _copy(self, **kwargs) -> Self:
-        ...
+type CopyableSchemaItem = Column | ForeignKey | Constraint | Index
+
+@overload
+def copy_schema_item(item: Column) -> Column: ...
+@overload
+def copy_schema_item(item: ForeignKey) -> ForeignKey: ...
+@overload
+def copy_schema_item(item: Constraint) -> Constraint: ...
+@overload
+def copy_schema_item(item: Index) -> Index: ...
+
+def copy_schema_item(item: CopyableSchemaItem) -> CopyableSchemaItem:
+    """
+    Creates a copy of a SQLAlchemy schema item (Column, ForeignKey, or Constraint).
+    This is necessary because SQLAlchemy schema items have internal state that can cause issues if shared between multiple tables.
+    """
+    match item:
+        case Column() | ForeignKey() | Constraint():
+            return item._copy()
+        case Index():
+            return Index(item.name, *item.expressions, unique=item.unique, info=item.info, **item.dialect_kwargs)
+        case _:
+            raise TypeError(f"Unsupported schema item type: {type(item)}")
+
 
 type RelationshipTableArg = Mapping[str, Column] | Iterable[Column] | Column | ForeignKey
 
@@ -144,9 +166,9 @@ class Relationship:
     def __deepcopy__(self, memo: dict[int, Any]) -> "Relationship":
         return Relationship(
             tablename=self.tablename,
-            self_columns=frozendict({k: v._copy() for k, v in self.self_columns.items()}),
-            related_columns=frozendict({k: c._copy() for k, c in self.related_columns.items()}),
-            tableargs=tuple(i._copy() for i in self.tableargs),
+            self_columns=frozendict({k: copy_schema_item(v) for k, v in self.self_columns.items()}),
+            related_columns=frozendict({k: copy_schema_item(c) for k, c in self.related_columns.items()}),
+            tableargs=tuple(copy_schema_item(i) for i in self.tableargs),
             tablekwargs=frozendict(self.tablekwargs),
         )
 
@@ -154,7 +176,7 @@ SchemaDef = Column | Relationship
 
 class DatabaseModel(BaseModel, ABC, frozen=True):
     __tablename__: ClassVar[str]
-    __tableconstraints__: ClassVar[tuple[SchemaItem, ...]] = ()
+    __tableargs__: ClassVar[tuple[CopyableSchemaItem, ...]] = ()
     __tablekwargs__: ClassVar[Mapping[str, Any]] = EMPTY_DICT
     __tableddl__: ClassVar[str | None] = None
     """
@@ -629,9 +651,9 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
                     reltable = Table(
                         reldef.tablename or f"{cls.__tablename__}_{field_name}",
                         metadata,
-                        *(c._copy() for c in reldef.self_columns.values()),
-                        *(c._copy() for c in reldef.related_columns.values()),
-                        *(i._copy() for i in reldef.tableargs),
+                        *(copy_schema_item(c) for c in reldef.self_columns.values()),
+                        *(copy_schema_item(c) for c in reldef.related_columns.values()),
+                        *(copy_schema_item(i) for i in reldef.tableargs),
                         **reldef.tablekwargs,
                     )
                     relationship_tables.append(reltable)
