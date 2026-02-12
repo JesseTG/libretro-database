@@ -791,10 +791,10 @@ def ZeroPad(min_length: int):
 type FrozenDict[K, V] = Annotated[frozendict[K, V], GetPydanticSchema(_frozen_dict_schema)]
 type TypedFrozenDict[T] = Annotated[T, AfterValidator(lambda v: frozendict(v))]
 # NOTE: The pattern is in Rust syntax, not Python syntax! (Pydantic-core is implemented in Rust.)
-Crc = Annotated[str, ZeroPad(8), StringConstraints(to_lower=True, pattern=r"[a-fA-F0-9]{8}")]
-Md5 = Annotated[str, StringConstraints(to_lower=True, pattern=r"[a-fA-F0-9]{32}")]
-Sha1 = Annotated[str, StringConstraints(to_lower=True, pattern=r"[a-fA-F0-9]{40}")]
-Sha256 = Annotated[str, StringConstraints(to_lower=True, pattern=r"[a-fA-F0-9]{64}")]
+Crc = Annotated[str, StringConstraints(to_lower=True, strip_whitespace=True, pattern=r"^[a-fA-F0-9]{8}$")]
+Md5 = Annotated[str, StringConstraints(to_lower=True, strip_whitespace=True, pattern=r"^[a-fA-F0-9]{32}$")]
+Sha1 = Annotated[str, StringConstraints(to_lower=True, strip_whitespace=True, pattern=r"^[a-fA-F0-9]{40}$")]
+Sha256 = Annotated[str, StringConstraints(to_lower=True, strip_whitespace=True, pattern=r"^[a-fA-F0-9]{64}$")]
 
 
 type WrapInTuple[T] = Annotated[tuple[T, ...], BeforeValidator(lambda v: always_iterable(v))]
