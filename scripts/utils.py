@@ -620,13 +620,9 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
         :return: A tuple of `Table`s, where the first item is the main table
                     and any subsequent items are relationship tables.
         """
-        main_table = Table(
-            cls.__tablename__,
-            metadata,
-            *cls.__tableconstraints__,
-            **cls.__tablekwargs__,
-        )
+
         relationship_tables: list[Table] = []
+        main_table_columns: list[Column] = []
 
         columns = cls.columns()
         relationship_table_defs = cls.relationship_table_defs()
@@ -639,7 +635,7 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
                 case (FieldInfo() | ComputedFieldInfo()) if field_name in columns:
                     # Columns contain internal state, so we need to copy them;
                     # otherwise SQLAlchemy will think we're adding the same Column to multiple tables
-                    main_table.append_column(columns[field_name]._copy())
+                    main_table_columns.append(columns[field_name]._copy())
                 case (FieldInfo() | ComputedFieldInfo()) if field_name in relationship_table_defs:
                     reldef = relationship_table_defs[field_name]
                     if __debug__:
@@ -658,6 +654,14 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
                         **reldef.tablekwargs,
                     )
                     relationship_tables.append(reltable)
+
+        main_table = Table(
+            cls.__tablename__,
+            metadata,
+            *main_table_columns,
+            *cls.__tableargs__,
+            **cls.__tablekwargs__,
+        )
 
         if cls.__tableddl__:
             # If we want to execute any extra data definition language statements (e.g. CREATE, ALTER, etc.),
