@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from functools import cache, cached_property
 from itertools import chain
-from typing import Annotated, Any, ClassVar, ForwardRef, Literal, NewType, Self, TypeGuard, get_origin
+from typing import Annotated, Any, ClassVar, ForwardRef, Literal, NewType, TypeGuard, get_origin, overload, get_args
 
 import sqlalchemy
 
@@ -30,7 +30,7 @@ from sqlalchemy.types import NullType, TypeEngine
 from sqlalchemy.util import is_non_string_iterable
 from sqlalchemy.util.typing import (GenericProtocol, TypeAliasType,
                                     de_optionalize_union_types,
-                                    eval_expression, flatten_newtype, get_args,
+                                    eval_expression, flatten_newtype,
                                     includes_none, is_fwd_ref, is_generic,
                                     is_literal, is_newtype, is_pep593, is_pep695, is_union, make_union_type)
 
