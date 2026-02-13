@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import dataclasses
 import sys
 
 from abc import ABC
@@ -9,23 +8,24 @@ from io import StringIO
 from itertools import chain, repeat
 from os import PathLike
 from pathlib import Path
-from typing import IO, Annotated, Any, BinaryIO, ClassVar, Literal, LiteralString, NamedTuple, NewType, Self, TextIO, overload
+from typing import IO, Annotated, Any, BinaryIO, ClassVar, Literal, LiteralString, NamedTuple, Self, TextIO, TypedDict
 
 import aiofiles
-# pe lacks type stubs, so let's silence MyPy's complaints
-from more_itertools import map_reduce, partition
-import pe  # type: ignore
+import pe
 
 from aiomultiprocess import Pool
+from frozendict import frozendict
+from more_itertools import map_reduce, partition
 from pe.actions import Pack
 from pe.operators import Class, Star
-from pydantic import AliasChoices, BaseModel, ByteSize, DirectoryPath, Field, FilePath, ModelWrapValidatorHandler, RootModel, SerializationInfo, SerializerFunctionWrapHandler, TypeAdapter, ValidationError, ValidationInfo, computed_field, model_serializer, model_validator
-from pydantic_core import CoreSchema, from_json, core_schema
+from pydantic import AfterValidator, AliasChoices, BaseModel, ByteSize, DirectoryPath, Field, FilePath, GetPydanticSchema, ModelWrapValidatorHandler, OnErrorOmit, RootModel, TypeAdapter, ValidationInfo, computed_field, model_validator
+from pydantic_core import from_json, core_schema
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
-from sqlalchemy import Column, ForeignKey
+from sqlalchemy import CheckConstraint, Column, ForeignKey, Index
+from sqlalchemy.dialects.sqlite import JSON
 
 from igdb import PlaylistTitle
-from utils import DatabaseModel, EmptyStringToNone, Hash, Relationship, WrapInTuple
+from utils import Crc, DatabaseModel, EmptyStringToNone, FrozenDict, Md5, OnlyFirst, Relationship, RowId, RowIdColumn, Sha1
 
 type DatValidationMode = Literal['dat'] | None
 type DatPair = tuple[str, DatValue]
@@ -34,8 +34,21 @@ type DatValue = str | DatRecord
 type DatTopLevelRecord = tuple[str, DatRecord]
 type DatFile = tuple[DatTopLevelRecord, ...]
 
-class DatModel(DatabaseModel, ABC, frozen=True):
+class DatModel(DatabaseModel, ABC, frozen=True, extra="allow", str_strip_whitespace=True, validate_by_name=True):
     __dattype__: ClassVar[LiteralString]
+
+    @computed_field(
+        return_type=Annotated[FrozenDict[str, Any] | None, Column(JSON(none_as_null=True), nullable=True)],
+        repr=False,
+    )
+    @property
+    def extra(self) -> frozendict[str, Any] | None:
+        """
+        A computed field that gathers any extra fields not defined in the model
+        into a dictionary. This allows us to preserve unrecognized fields from the DAT file
+        without losing them during validation.
+        """
+        return frozendict(self.model_extra) if self.model_extra else None
 
     @classmethod
     def from_dat(cls, value: DatRecord | DatTopLevelRecord) -> Self:
@@ -75,6 +88,7 @@ class ClrMamePro(DatModel, frozen=True):
     __tablename__ = "DatClrMamePro"
     __dattype__ = "clrmamepro"
 
+    rowid: RowIdColumn
     name: str
     description: str | None = None
     category: str | None = None
@@ -86,38 +100,27 @@ class ClrMamePro(DatModel, frozen=True):
     comment: str | None = None
     homepage: str | None = None
 
+class RomId(TypedDict, total=False):
+    crc: Crc | None
+    serial: str | None
+    md5: Md5 | None
+    sha1: Sha1 | None
 
 class Rom(DatModel, frozen=True):
-    # TODO: Add a table-level CHECK constraint that at least one of `crc` or `serial` is non-NULL
     __tablename__ = "DatRom"
     __dattype__ = "rom"
-    __tablekwargs__ = {
-        "sqlite_with_rowid": False,
-    }
+    __tableargs__ = (
+        CheckConstraint("crc NOT NULL OR serial NOT NULL", name="chk_retroarch_id"),
+        Index("idx_rom_ids", "crc", "serial", "md5", "sha1", unique=True)
+    )
 
-    crc: Annotated[Crc, Column(unique=True, index=True)] | None = None
-    serial: Annotated[str, Column(unique=True, index=True)] | None = None
-    image: str | None = None
-    name: str | None = None
+    rowid: RowIdColumn
+    name: Annotated[str | None, Column(index=True), Field(alias="image")] = None
+    crc: Annotated[Crc | None, Column(CheckConstraint("crc IS NULL OR length(crc) = 8"), unique=True, index=True)] = None
+    serial: Annotated[str | None, Column(index=True)] = None
+    md5: Annotated[Md5 | None, Column(CheckConstraint("md5 IS NULL OR length(md5) = 32"), unique=True, index=True)] = None
+    sha1: Annotated[Sha1 | None, Column(CheckConstraint("sha1 IS NULL OR length(sha1) = 40"), unique=True, index=True), Field(alias="sha1sum")] = None
     size: ByteSize | None = None
-    md5: Annotated[Md5, Column(unique=True, index=True)] | None = None
-    sha1: Annotated[Sha1, Column(unique=True, index=True)] | None = None
-
-    @computed_field
-    @property
-    def pk(self) -> Annotated[str, Column(primary_key=True)]:
-        if self.crc:
-            return self.crc
-        if self.serial:
-            return self.serial
-
-        raise ValueError("Rom model must have at least one of `crc` or `serial`")
-
-    @override
-    def model_post_init(self, _context) -> None:
-        self.pk # Force computation of pk to validate presence of identifying fields
-
-GamePrimaryKey = NewType('GamePrimaryKey', str)
 
 class Game(DatModel, frozen=True):
     """
@@ -130,157 +133,73 @@ class Game(DatModel, frozen=True):
     """
     __tablename__ = "DatGame"
     __dattype__ = "game"
-    __tablekwargs__ = {
-        "sqlite_with_rowid": False,
-    }
+    __tableconstraints__ = (
+        CheckConstraint("name IS NOT NULL OR description IS NOT NULL OR comment IS NOT NULL OR id IS NOT NULL", name="chk_game_at_least_one_identifier"),
+    )
 
-    achievements: int | None = None
+    rowid: RowIdColumn
     analog: bool | None = None
-
-    bbfc_rating: str | None = None
-    category: str | None = None
-    """May include multiple categories separated by commas, slashes, or pipes."""
-
-    cero_rating: str | None = None
-    code: str | None = None
-    comment: WrapInTuple[str] | None = None
-    console_exclusive: bool | None = None
-    controls: str | None = None
-    coop: bool | None = None
-    date: str | None = None
+    comment: OnlyFirst[str] | None = None
     description: str | None = None
     developer: str | None = None
     """May include multiple developers separated by commas, slashes, or pipes"""
 
-    download: str | None = None
-    edge_issue: int | None = None
-    edge_rating: int | None = None
-    elspa_rating: str | None = None
-    enhancement_hardware: str | None = None
-    enhancement_hw: str | None = None
-    esrb_rating: str | None = None
-    famitsu_rating: int | None = None
     franchise: str | None = None
 
     genre: str | None = None
     """May include multiple genres separated by commas, slashes, or pipes."""
 
-    homepage: str | None = None
     id: str | None = None
-    igdb_id: int | None = None
-    igdb_url: str | None = None
-    """URL of the IGDB page for this game."""
 
-    igdb_platform_id: int | None = None
-    igdb_release_date_id: int | None = None
-    language: str | None = None
-    """May include multiple languages separated by commas, slashes, or pipes."""
-
-    license: str | None = None
     manufacturer: str | None = None
-    media: str | None = None
     """May include multiple media types separated by commas, slashes, or pipes."""
+
     name: str | None = None
-    origin: str | None = None
-    patch: WrapInTuple[str] | None = None
-    pegi_rating: str | None = None
-    perspective: str | None = None
-    platform_exclusive: bool | None = None
     publisher: str | None = None
     """May include multiple publishers separated by commas, slashes, or pipes."""
 
     region: str | None = None
     releaseday: int | None = None
     releasemonth: int | None = None
-    releaseyear: EmptyStringToNone[str] = None
+    releaseyear: EmptyStringToNone[int] = None
     rumble: bool | None = None
-    score: str | None = None
-    serial: str | None = None
-    setting: str | None = None
     tags: str | None = None
     users: int | None = None
-    version: str | None = None
-    visual: str | None = None
-
-    # May be a string because of entries like "???" for unknown years,
-    # or "198?" for an unknown year in the 1980s
-    year: EmptyStringToNone[str] = None
 
     # Declared last so that it appears last in the generated DATs;
     # not semantically important, but easier to read.
-    rom: Annotated[tuple[Rom, ...], Relationship(
-        self_columns=Column("pk",  ForeignKey("DatGame.pk"), primary_key=True, nullable=False),
+    roms: Annotated[tuple[Rom, ...], Field(validation_alias="rom"), Relationship(
+        self_columns={"rowid": Column("game", ForeignKey("DatGame.rowid"), primary_key=True)},
         related_columns=({
             # The field names don't map 1:1 with column names,
             # so we specify the field names explicitly as keys
-            "pk": Column(
-                "rom",
-                ForeignKey("DatRom.pk"),
-                primary_key=True,
-                nullable=False,
-            ),
-            "crc": Column(
-                "crc",
-                ForeignKey("DatRom.crc"),
-                nullable=True,
-            ),
-            "serial": Column(
-                "serial",
-                ForeignKey("DatRom.serial"),
-                nullable=True,
-            ),
-            "md5": Column(
-                "md5",
-                ForeignKey("DatRom.md5"),
-                nullable=True,
-            ),
-            "sha1": Column(
-                "sha1",
-                ForeignKey("DatRom.sha1"),
-                nullable=True,
-            ),
+            "crc": Column("crc", ForeignKey("DatRom.crc"), CheckConstraint("crc IS NULL OR length(crc) = 8"), nullable=True, unique=True, index=True, primary_key=True),
+            "serial": Column("serial", ForeignKey("DatRom.serial"), nullable=True, index=True, primary_key=True),
+            "md5": Column("md5", ForeignKey("DatRom.md5"), CheckConstraint("md5 IS NULL OR length(md5) = 32"), nullable=True, unique=True, index=True, primary_key=True),
+            "sha1": Column("sha1", ForeignKey("DatRom.sha1"), CheckConstraint("sha1 IS NULL OR length(sha1) = 40"), nullable=True, unique=True, index=True, primary_key=True),
         }),
+        tableargs=(
+            CheckConstraint("crc NOT NULL OR serial NOT NULL", name="chk_game_rom_mapping_retroarch_id"),
+            Index("idx_game_rom_mapping_rom_ids", "crc", "serial", "md5", "sha1"),
+        ),
+        tablekwargs=None,
+        # Unlike most other relationship tables in this project,
+        # this one isn't WITHOUT ROWID because some columns of the primary key are nullable.
     )] = ()
 
-    @computed_field
+    @computed_field(return_type=Annotated[tuple[RomId, ...], Column(JSON, nullable=False)])
     @property
-    def pk(self) -> Annotated[GamePrimaryKey, Column(primary_key=True)]:
-        """
-        A unique identifier for this game.
-
-        Checks several possible fields in order of preference,
-        since DATs use different fields as the "name" of a game.
-        """
-        if self.id:
-            return GamePrimaryKey(self.id)
-
-        if self.name:
-            return GamePrimaryKey(self.name)
-
-        if self.comment:
-            return GamePrimaryKey(self.comment[0])
-
-        if self.description:
-            return GamePrimaryKey(self.description)
-
-        raise ValueError("Game record has neither 'id', 'name', 'comment', nor 'description' field.")
-
-    @override
-    def model_post_init(self, _context: Any) -> None:
-        self.pk # Force computation of pk to validate presence of identifying fields
+    def romids(self):
+        """Rom IDs"""
+        return tuple(RomId(**r.model_dump(include={"crc", "serial", "md5", "sha1"})) for r in self.roms)
 
 
-class DatPlaylists(DatabaseModel, frozen=True):
-    """
-    A mapping of playlist titles to DAT file paths.
-    Derived from the loaded playlist config,
-    but doesn't directly represent a specific file.
-    """
-    __tablename__ = "DatPlaylists"
+class PlaylistGameMapping(DatabaseModel, frozen=True):
+    __tablename__ = "DatPlaylistGameMapping"
+    __tablekwargs__ = {"sqlite_with_rowid": False}
 
-    playlist: Annotated[PlaylistTitle, Column(primary_key=True)]
-    games: tuple[GamePrimaryKey, ...] = ()
-
+    playlist: Annotated[PlaylistTitle, Column(primary_key=True, index=True)]
+    game: Annotated[RowId, Column(ForeignKey("DatGame.rowid"), primary_key=True, index=True)]
 
 # PEG grammar for DAT file format
 DAT_GRAMMAR = r'''
@@ -447,6 +366,8 @@ class ParsedDatFile(RootModel, frozen=True):
 DAT_OBJECT_TYPES = (
     Game,
     Rom,
+    ClrMamePro,
+    PlaylistGameMapping,
 )
 
 def load_dat(dat: str | bytes | PathLike | TextIO | BinaryIO) -> DatRecord:
@@ -612,7 +533,6 @@ class DatCommand(BaseSettings):
 __all__ = (
     "ClrMamePro",
     "Game",
-    "GamePrimaryKey",
     "load_dat",
     "Rom",
     "DAT_OBJECT_TYPES",
