@@ -38,7 +38,8 @@ from sqlalchemy.sql.functions import coalesce
 from dats import DAT_OBJECT_TYPES, Game as DatGame, Rom as DatRom, ParsedDatFile, ClrMamePro
 from igdb import Game as IgdbGame, Playlist, PlaylistConfig, load_game_file, PlaylistMapping as IgdbPlaylistMapping
 from igdb import *
-from utils import RowId, set_common_pragmas
+from hasheous import HASHEOUS_OBJECT_TYPES, DataObject, GameDataObject, MatchRecord, load_zip, PlaylistDumpMapping as HasheousPlaylistDumpMapping, GameDumpMapping as HasheousGameDumpMapping
+from utils import RowId, create_db
 
 class PlaylistData(NamedTuple):
     playlist: Playlist
@@ -594,32 +595,14 @@ class IndexSubCommand(CommonArgs):
         else:
             playlists = config.playlists
 
-        # Create async engine with SQLite
-        db = create_async_engine(
-            f"sqlite+aiosqlite:///{self.output}",
-            connect_args={
-                "check_same_thread": False,
-                "autocommit": False,
-            },
-        )
-
         model_types = (
             *(IGDB_OBJECT_TYPES if not self.skip_igdb else ()),
             *(HASHEOUS_OBJECT_TYPES if not self.skip_hasheous else ()),
             *(DAT_OBJECT_TYPES if not self.skip_dats else ()),
         )
-        metadata = MetaData()
-        for model_type in model_types:
-            model_type.create_tables(metadata)
 
-
-        event.listen(db.sync_engine, "connect", set_common_pragmas)
-
-        async with db.connect() as connection:
-            await connection.run_sync(metadata.create_all)
-            await connection.commit()
-
-            await connection.execute(text("PRAGMA optimize"))
+        # Create async engine with SQLite
+        db, metadata = await create_db(self.output, model_types)
 
         sqlalchemy_engine_log.setLevel(logging.WARNING)
         async with Pool(processes=self.processes) as pool:

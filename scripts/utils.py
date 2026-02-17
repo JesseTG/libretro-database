@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from functools import cache, cached_property
 from itertools import chain
+from pathlib import Path
 from typing import Annotated, Any, ClassVar, ForwardRef, Literal, NewType, TypeGuard, get_origin, overload, get_args
 
 import sqlalchemy
@@ -23,8 +24,9 @@ from pydantic import AfterValidator, BaseModel, BeforeValidator, Field, GetCoreS
 from pydantic_core import CoreSchema, core_schema
 from pydantic.fields import ComputedFieldInfo, FieldInfo
 from pydantic_extra_types.country import CountryNumericCode
-from sqlalchemy import DDL, Column, Constraint, ForeignKey, MetaData, Table, Index
+from sqlalchemy import DDL, Column, Constraint, ForeignKey, MetaData, Table, Index, text
 from sqlalchemy import event
+from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from sqlalchemy.schema import SchemaConst, SchemaItem
 from sqlalchemy.types import NullType, TypeEngine
 from sqlalchemy.util import is_non_string_iterable
@@ -764,29 +766,52 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
     def as_row(self) -> dict[str, Any]:
         return self.model_dump(context='row')
 
-def set_common_pragmas(dbapi_connection, connection_record):
-    #dbapi_connection.execute("PRAGMA synchronous = OFF")
 
-    # Use in-memory journaling for better performance at the expense of durability,
-    # but that's okay since the database is just used as a local cache
-    # (as opposed to persistent storage of critical data).
-    dbapi_connection.execute("PRAGMA journal_mode = MEMORY")
+async def create_db(path: Path, model_types: Iterable[type[DatabaseModel]]) -> tuple[AsyncEngine, MetaData]:
+    db = create_async_engine(
+        f"sqlite+aiosqlite:///{path}",
+        connect_args={
+            "check_same_thread": False,
+            "autocommit": False,
+        },
+    )
 
-    # Explicitly disable foreign key constraints for two reasons:
-    # 1. Some data sources may refer to newer games
-    #    that we're not interested in tracking in RetroArch,
-    #    like current-gen remakes of SNES games.
-    #    We want to keep the IDs in the database so we can query exclusivity.
-    # 2. Enforcing foreign key constraints would require that
-    #    related records be inserted in the same transaction.
-    #
-    # Foreign key constraints are still useful for visualizing or browsing
-    # the raw SQLite database, even if they're not enforced at runtime.
-    #
-    # SQLite doesn't enforce foreign key constraints by default,
-    # but the docs say that could change in the future.
-    dbapi_connection.execute("PRAGMA foreign_keys = OFF")
-    dbapi_connection.commit()
+    metadata = MetaData()
+    for model_type in model_types:
+        model_type.create_tables(metadata)
+
+    @event.listens_for(db.sync_engine, "connect")
+    def set_common_pragmas(dbapi_connection, connection_record):
+        #dbapi_connection.execute("PRAGMA synchronous = OFF")
+
+        # Use in-memory journaling for better performance at the expense of durability,
+        # but that's okay since the database is just used as a local cache
+        # (as opposed to persistent storage of critical data).
+        dbapi_connection.execute("PRAGMA journal_mode = MEMORY")
+
+        # Explicitly disable foreign key constraints for two reasons:
+        # 1. Some data sources may refer to newer games
+        #    that we're not interested in tracking in RetroArch,
+        #    like current-gen remakes of SNES games.
+        #    We want to keep the IDs in the database so we can query exclusivity.
+        # 2. Enforcing foreign key constraints would require that
+        #    related records be inserted in the same transaction.
+        #
+        # Foreign key constraints are still useful for visualizing or browsing
+        # the raw SQLite database, even if they're not enforced at runtime.
+        #
+        # SQLite doesn't enforce foreign key constraints by default,
+        # but the docs say that could change in the future.
+        dbapi_connection.execute("PRAGMA foreign_keys = OFF")
+        dbapi_connection.commit()
+
+    async with db.connect() as connection:
+        await connection.run_sync(metadata.create_all)
+        await connection.commit()
+
+        await connection.execute(text("PRAGMA optimize"))
+
+    return (db, metadata)
 
 type CoercedHttpUrl = Annotated[HttpUrl, WrapValidator(lambda v, h: h(v) if v else None), PlainSerializer(str, str)]
 type InsertInRowContext = Literal['row'] | None
