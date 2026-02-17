@@ -33,7 +33,7 @@ from pydantic import AliasChoices, BaseModel, BeforeValidator, Field, FieldSeria
 from pydantic_core import from_json, to_json
 from pydantic_extra_types.country import CountryNumericCode
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
-from sqlalchemy import Column, ForeignKey
+from sqlalchemy import Column, ForeignKey, column
 from sqlalchemy.dialects.sqlite import INTEGER
 
 from utils import CoercedHttpUrl, DatabaseModel, Relationship
@@ -100,7 +100,7 @@ class IgdbObject(DatabaseModel, ABC, frozen=True):
                 # Otherwise, run the default serializer to handle other types or contexts
                 return handler(value)
 
-GameReference = Annotated[IgdbId, Column(ForeignKey('IgdbGame.id'))]
+GameReference = Annotated[IgdbId, Column(ForeignKey('IgdbGame.id'), index=True)]
 class AgeRatingOrganization(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbAgeRatingOrganization"
     id: IgdbPrimaryId
@@ -191,7 +191,7 @@ class Company(IgdbObject, frozen=True):
 class InvolvedCompany(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbInvolvedCompany"
     id: IgdbPrimaryId
-    company: Company
+    company: Annotated[Company, Column(index=True)]
     game: GameReference
     developer: bool
     porting: bool
@@ -265,7 +265,14 @@ class MultiplayerMode(IgdbObject, frozen=True):
     onlinecoop: bool
     onlinecoopmax: int | None = None
     onlinemax: int | None = None
-    platform: Annotated[IgdbId | None, Column(ForeignKey('IgdbPlatform.id'))] = None
+    platform: Annotated[
+        IgdbId | None,
+        Column(
+            ForeignKey('IgdbPlatform.id'),
+            index=True,
+            sqlite_where=column("platform").is_not(None)
+        )
+    ] = None
     splitscreen: bool
     splitscreenonline: bool | None = None
 
@@ -302,7 +309,7 @@ class ReleaseDate(IgdbObject, frozen=True):
     game: GameReference
     human: str
     m: Literal[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] | None = None  # Month (1-12)
-    platform: Annotated[IgdbId, Column(ForeignKey('IgdbPlatform.id'))]
+    platform: Annotated[IgdbId, Column(ForeignKey('IgdbPlatform.id'), index=True)]
     release_region: ReleaseDateRegion
     status: ReleaseDateStatus | None = None
     y: int | None = None  # Year
