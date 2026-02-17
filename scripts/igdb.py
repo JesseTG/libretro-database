@@ -685,6 +685,8 @@ def validate_igdb_query(value: Any, handler: SerializerFunctionWrapHandler) -> Q
 
 MAX_OBJECTS_PER_QUERY = 500
 
+type DumpIdType = Literal['crc', 'serial']
+
 @dataclass(frozen=True)
 class Playlist:
     """
@@ -725,6 +727,20 @@ class Playlist:
     The names of zero or more Hasheous dump files, excluding the zip suffix.
     Passed to "https://hasheous.org/api/v1/Dumps/platforms/{name}".
     '''
+
+    id_type: DumpIdType = 'crc'
+    """
+    Used to determine which ID is most useful for a platform.
+
+    Some platforms (mostly CD-based) can have a given dump
+    encoded or compressed in many different ways,
+    making CRCs useless for reliably identifying them.
+    For these platforms, we use the serial number
+    that's usually embedded in the ROM data.
+
+    The values in playlists.toml are taken from
+    https://github.com/libretro/RetroArch/blob/master/tasks/task_database_cue.c
+    """
 
     def expand_to_all(self, count: int, limit: int = MAX_OBJECTS_PER_QUERY) -> Iterator[MultiqueryQuery]:
         return map(lambda q: MultiqueryQuery(

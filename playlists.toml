@@ -399,6 +399,7 @@ igdb.where = "platforms = (22)"
 title = "Nintendo - GameCube"
 hasheous = ["Nintendo GameCube"]
 igdb.where = "platforms = (21)"
+id_type = "serial"
 
 [[playlists]]
 title = "Nintendo - Nintendo DS"
@@ -472,6 +473,7 @@ title = "Nintendo - Wii"
 hasheous = ["Nintendo Wii"]
 # Released for the Wii and does not include the keywords listed in the comment below
 igdb.where = "platforms = (5) & keywords != (4134, 4522, 27078, 27629, 43725)"
+id_type = "serial"
 
 [[playlists]]
 title = "Nintendo - Wii (Digital)"
@@ -590,6 +592,7 @@ hasheous = ["Microsoft DOS", "Microsoft Windows", "Atari ST_STE", "Commodore Ami
 title = "Sega - Dreamcast"
 hasheous = ["Sega Dreamcast"]
 igdb.where = "platforms = (23)"
+id_type = "serial"
 
 [[playlists]]
 title = "Sega - Game Gear"
@@ -615,6 +618,7 @@ hasheous = ["Sega Mega CD _ Sega CD"]
 # Sega CD, Sega CD 32X (informal name for games that needed both the Sega CD and 32X)
 # (libretro records Sega CD 32X games in the Sega CD playlist)
 igdb.where = "platforms =  (78, 482)"
+id_type = "serial"
 
 # Naomi is a hardware platform but has a game engine entry for some reason
 [[playlists]]
@@ -632,6 +636,7 @@ title = "Sega - Saturn"
 hasheous = ["Sega Saturn"]
 alts = ["Saturn hacks"]
 igdb.where = "platforms = (32)"
+id_type = "serial"
 
 # Sega ST-V is a hardware platform but has a game engine entry for some reason
 # TODO: IGDB's ST-V entry is incomplete, this query needs to be expanded
@@ -709,12 +714,14 @@ title = "Sony - PlayStation"
 hasheous = ["Sony PlayStation"]
 alts = ["PlayStation hacks"]
 igdb.where = "platforms = (7)"
+id_type = "serial"
 
 [[playlists]]
 title = "Sony - PlayStation Portable"
 # NOTE: Some hasheous dumps spell it as "Playstation", others as "PlayStation" (note the S)
 hasheous = ["Sony Playstation Portable"]
 alts = ["PlayStation Portable hacks", "Sony - PlayStation Portable (PSX2PSP)", "Sony - PlayStation Portable (UMD Music)", "Sony - PlayStation Portable (UMD Video)"]
+id_type = "serial"
 
 # PSP, without the "playstation minis" (4435) keyword
 # (some PSP games were later released on other platforms' digital storefronts,
@@ -737,6 +744,7 @@ title = "Sony - PlayStation 2"
 hasheous = ["Sony PlayStation 2"]
 alts = ["PlayStation 2 hacks"]
 igdb.where = "platforms = (8)"
+id_type = "serial"
 
 [[playlists]]
 title = "Sony - PlayStation 3"
