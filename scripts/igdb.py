@@ -33,7 +33,7 @@ from pydantic import AliasChoices, BaseModel, BeforeValidator, Field, FieldSeria
 from pydantic_core import from_json, to_json
 from pydantic_extra_types.country import CountryNumericCode
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
-from sqlalchemy import Column, ForeignKey, column
+from sqlalchemy import Column, ForeignKey, Index, column
 from sqlalchemy.dialects.sqlite import INTEGER
 
 from utils import CoercedHttpUrl, DatabaseModel, Relationship
@@ -254,6 +254,9 @@ class Platform(IgdbObject, frozen=True):
 
 class MultiplayerMode(IgdbObject, frozen=True):
     __tablename__: ClassVar[str] = "IgdbMultiplayerMode"
+    __tableargs__ = (
+        Index("ix_IgdbMultiplayerMode_platform_not_null", "platform", sqlite_where=column("platform").is_not(None)),
+    )
     id: IgdbPrimaryId
     campaigncoop: bool
     dropin: bool
@@ -265,14 +268,7 @@ class MultiplayerMode(IgdbObject, frozen=True):
     onlinecoop: bool
     onlinecoopmax: int | None = None
     onlinemax: int | None = None
-    platform: Annotated[
-        IgdbId | None,
-        Column(
-            ForeignKey('IgdbPlatform.id'),
-            index=True,
-            sqlite_where=column("platform").is_not(None)
-        )
-    ] = None
+    platform: Annotated[IgdbId | None, Column(ForeignKey('IgdbPlatform.id'))] = None
     splitscreen: bool
     splitscreenonline: bool | None = None
 
