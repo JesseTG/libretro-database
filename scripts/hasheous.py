@@ -29,10 +29,10 @@ import backoff
 import httpx
 
 from more_itertools import first_true
-from pydantic import AliasChoices, BaseModel, ByteSize, ConfigDict, Field, FieldSerializationInfo, FilePath, HttpUrl, OnErrorOmit, PlainSerializer, SerializerFunctionWrapHandler, StringConstraints, ValidationError, WrapValidator, computed_field, field_serializer
+from pydantic import AliasChoices, BaseModel, ByteSize, ConfigDict, Field, FieldSerializationInfo, FilePath, HttpUrl, OnErrorOmit, SerializerFunctionWrapHandler, StringConstraints, ValidationError, computed_field, field_serializer
 from pydantic.alias_generators import to_pascal
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
-from sqlalchemy import Column, Computed, ForeignKey, String
+from sqlalchemy import Column, Computed, ForeignKey, String, Index, column
 from sqlalchemy.dialects.sqlite import INTEGER, JSON
 from sqlalchemy.util import is_non_string_iterable
 
@@ -52,7 +52,7 @@ class SignatureDataObject(HasheousObject, frozen=True, alias_generator=to_pascal
     name: EmptyStringToNone[str] = None
     year: EmptyStringToNone[str] = None
     platform: EmptyStringToNone[str] = None
-    source_id: Annotated[EmptyStringToNone[int], Column(index=True)] = None
+    source_id: EmptyStringToNone[int] = None
     publisher: EmptyStringToNone[str] = None
     metadata_source: EmptyStringToNone[str] = None
 
@@ -77,7 +77,7 @@ class MetadataItem:
     status: MappingStatus
     match_method: MatchMethodType
     source: str
-    link: Annotated[HttpUrl | None, WrapValidator(lambda v, h: h(v) if v else None), PlainSerializer(lambda v: v or None, str | None)]
+    link: Annotated[EmptyStringToNone[HttpUrl], Field(default=None)]
     next_search: datetime
     winning_vote_count: int
     total_vote_count: int
@@ -115,17 +115,22 @@ class RomItem(HasheousObject, frozen=True, alias_generator=to_pascal):
     __tablename__: ClassVar[str] = "HasheousRomItem"
     __tableargs__ = (
         Column("serial", String(), Computed("attributes ->> '$.serial'"), index=True, nullable=True),
+        Index("ix_HasheousRomItem_crc_where_not_null", "crc", unique=True, sqlite_where=column("crc").is_not(None)),
+        Index("ix_HasheousRomItem_serial_where_not_null", "serial", sqlite_where=column("serial").is_not(None)),
+        Index("ix_HasheousRomItem_md5_where_not_null", "md5", unique=True, sqlite_where=column("md5").is_not(None)),
+        Index("ix_HasheousRomItem_sha1_where_not_null", "sha1", unique=True, sqlite_where=column("sha1").is_not(None)),
     )
+    # Adds partial indexes to speed up lookups
 
     id: Annotated[int, Column(primary_key=True)]
     name: EmptyStringToNone[str]
     attributes: Annotated[FrozenDict[str, str], Column(JSON)]
     rom_type: str
     size: ByteSize
-    crc: Annotated[EmptyStringToNone[Crc], Column(index=True, unique=True)]
-    md5: Annotated[EmptyStringToNone[Md5], Column(index=True, unique=True)]
-    sha1: Annotated[EmptyStringToNone[Sha1], Column(index=True, unique=True)]
-    sha256: Annotated[EmptyStringToNone[Sha256], Column(index=True, unique=True)]
+    crc: Annotated[EmptyStringToNone[Crc], Column(unique=True)]
+    md5: Annotated[EmptyStringToNone[Md5], Column(unique=True)]
+    sha1: Annotated[EmptyStringToNone[Sha1], Column(unique=True)]
+    sha256: Annotated[EmptyStringToNone[Sha256], Column(unique=True)]
     status: EmptyStringToNone[str]
 
     # TODO: Represent Country with computed columns
@@ -239,6 +244,10 @@ class CompanyDataObject(DataObject, frozen=True, alias_generator=to_pascal):
 
 class GameDataObject(DataObject, frozen=True, alias_generator=to_pascal):
     __tablename__: ClassVar[str] = "HasheousGameDataObject"
+    __tableargs__ = (
+        Index("ix_HasheousGameDataObject_igdb_id_where_not_null", "igdb_id", sqlite_where=column("igdb_id").is_not(None)),
+    )
+
     object_type: Annotated[Literal["Game"], Field(exclude=True)]
 
     @computed_field
@@ -428,14 +437,14 @@ def _giveup(e: Exception):
 
     return e.response.is_error
 
-class CommonArgs(BaseModel):
+class CommonArgs:
     verbose: bool = Field(
         default=False,
         description="Enable verbose output.",
         validation_alias=AliasChoices('v', 'verbose'),
     )
 
-class FetchSubCommand(CommonArgs):
+class FetchSubCommand(BaseModel, CommonArgs):
     config: FilePath = Field(
         default=Path(__file__).parent.parent / 'playlists.toml',
         title="Playlist Config File",
@@ -568,7 +577,7 @@ async def submit_matches(tsv_path: Path, api_key: str, dry_run: bool = False, ve
         valid_matches = filter(can_submit, matches)
         raise NotImplementedError("Submission functionality is not yet implemented.")
 
-class SubmitSubCommand(CommonArgs):
+class SubmitSubCommand(BaseModel, CommonArgs):
     api_key: str  = Field(
         description="The Hasheous API key to use for submission. Overrides the HASHEOUS_API_KEY environment variable if provided.",
         validation_alias=AliasChoices('a', 'api-key'),
