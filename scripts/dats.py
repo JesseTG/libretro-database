@@ -392,7 +392,7 @@ class ParsedDatFile(RootModel, frozen=True):
             lambda tp, handler: core_schema.tuple_schema(
                 items_schema=[
                     handler.generate_schema(ClrMamePro),  # first item
-                    handler.generate_schema(Game),        # repeated item
+                    handler.generate_schema(OnErrorOmit[Game]),        # repeated item
                 ],
                 variadic_item_index=1,  # repeat schema at index 1
                 min_length=1,           # must have at least the first item
