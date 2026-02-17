@@ -764,6 +764,29 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
     def as_row(self) -> dict[str, Any]:
         return self.model_dump(context='row')
 
+def set_common_pragmas(dbapi_connection, connection_record):
+    #dbapi_connection.execute("PRAGMA synchronous = OFF")
+
+    # Use in-memory journaling for better performance at the expense of durability,
+    # but that's okay since the database is just used as a local cache
+    # (as opposed to persistent storage of critical data).
+    dbapi_connection.execute("PRAGMA journal_mode = MEMORY")
+
+    # Explicitly disable foreign key constraints for two reasons:
+    # 1. Some data sources may refer to newer games
+    #    that we're not interested in tracking in RetroArch,
+    #    like current-gen remakes of SNES games.
+    #    We want to keep the IDs in the database so we can query exclusivity.
+    # 2. Enforcing foreign key constraints would require that
+    #    related records be inserted in the same transaction.
+    #
+    # Foreign key constraints are still useful for visualizing or browsing
+    # the raw SQLite database, even if they're not enforced at runtime.
+    #
+    # SQLite doesn't enforce foreign key constraints by default,
+    # but the docs say that could change in the future.
+    dbapi_connection.execute("PRAGMA foreign_keys = OFF")
+    dbapi_connection.commit()
 
 type CoercedHttpUrl = Annotated[HttpUrl, WrapValidator(lambda v, h: h(v) if v else None), PlainSerializer(str, str)]
 type InsertInRowContext = Literal['row'] | None
