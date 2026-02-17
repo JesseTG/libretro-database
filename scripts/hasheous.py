@@ -14,7 +14,7 @@ import sys
 import tomllib
 
 from abc import ABC
-from collections.abc import Sequence, Mapping
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime
 from functools import cached_property
@@ -29,15 +29,15 @@ import backoff
 import httpx
 
 from more_itertools import first_true
-from pydantic import AliasChoices, BaseModel, ByteSize, ConfigDict, Field, FieldSerializationInfo, FilePath, HttpUrl, PlainSerializer, PlainValidator, SerializerFunctionWrapHandler, StringConstraints, TypeAdapter, ValidationError, WrapSerializer, WrapValidator, computed_field, field_serializer
+from pydantic import AliasChoices, BaseModel, ByteSize, ConfigDict, Field, FieldSerializationInfo, FilePath, HttpUrl, OnErrorOmit, PlainSerializer, SerializerFunctionWrapHandler, StringConstraints, ValidationError, WrapValidator, computed_field, field_serializer
 from pydantic.alias_generators import to_pascal
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
-from sqlalchemy import Column, ForeignKey
+from sqlalchemy import Column, Computed, ForeignKey, String
 from sqlalchemy.dialects.sqlite import INTEGER, JSON
 from sqlalchemy.util import is_non_string_iterable
 
-from igdb import IgdbId, PlaylistConfig
-from utils import Crc, DatabaseModel, FrozenDict, TypedFrozenDict, InsertInRowContext, EmptyStringToNone, EMPTY_DICT, Md5, Sha1, Sha256
+from igdb import IgdbId, PlaylistConfig, PlaylistTitle
+from utils import Crc, DatabaseModel, FrozenDict, TypedFrozenDict, InsertInRowContext, EmptyStringToNone, Md5, Sha1, Sha256
 
 METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
 
@@ -113,15 +113,19 @@ class RomItem(HasheousObject, frozen=True, alias_generator=to_pascal):
     (specifically the Signatures_Roms table)
     """
     __tablename__: ClassVar[str] = "HasheousRomItem"
+    __tableargs__ = (
+        Column("serial", String(), Computed("attributes ->> '$.serial'"), index=True, nullable=True),
+    )
+
     id: Annotated[int, Column(primary_key=True)]
     name: EmptyStringToNone[str]
     attributes: Annotated[FrozenDict[str, str], Column(JSON)]
-    rom_type: Annotated[str, Column(index=True)]
+    rom_type: str
     size: ByteSize
-    crc: Annotated[EmptyStringToNone[Crc], Column(index=True)]
-    md5: Annotated[EmptyStringToNone[Md5], Column(index=True)]
-    sha1: Annotated[EmptyStringToNone[Sha1], Column(index=True)]
-    sha256: Annotated[EmptyStringToNone[Sha256], Column(index=True)]
+    crc: Annotated[EmptyStringToNone[Crc], Column(index=True, unique=True)]
+    md5: Annotated[EmptyStringToNone[Md5], Column(index=True, unique=True)]
+    sha1: Annotated[EmptyStringToNone[Sha1], Column(index=True, unique=True)]
+    sha256: Annotated[EmptyStringToNone[Sha256], Column(index=True, unique=True)]
     status: EmptyStringToNone[str]
 
     # TODO: Represent Country with computed columns
@@ -135,23 +139,7 @@ class RomItem(HasheousObject, frozen=True, alias_generator=to_pascal):
     # TODO: Represent MediaDetail with computed columns
     media_detail: Annotated[TypedFrozenDict[MediaType], Column(JSON)]
     media_label: EmptyStringToNone[str]
-    signature_source: Annotated[EmptyStringToNone[str], Column(index=True)]
-
-RomItemTupleAdapter = TypeAdapter(tuple[RomItem, ...])
-def coerce_attribute(value: Any) -> "str | tuple[RomItem, ...] | DataObject | Mapping":
-    match value:
-        case {} if not value:
-            return EMPTY_DICT
-        case {**mapping}:
-            return DataObject.model_validate(mapping)
-        case [*items]:
-            return RomItemTupleAdapter.validate_python(items)
-        case DataObject() as dobj:
-            return dobj
-        case str() as s:
-            return s
-        case _:
-            raise TypeError(f"Cannot coerce value of type {type(value).__name__} to valid Attribute Value type")
+    signature_source: EmptyStringToNone[str]
 
 @dataclass(frozen=True)
 class Attribute:
@@ -162,7 +150,7 @@ class Attribute:
     attribute_name: Annotated[str, Field(validation_alias='attributeName')]
     attribute_relation_type: Annotated[str, Field(validation_alias='attributeRelationType')]
 
-    value: Annotated["str | tuple[RomItem, ...] | GameDataObject | CompanyDataObject | PlatformDataObject | Mapping", PlainValidator(coerce_attribute), Field(validation_alias='Value')]
+    value: Annotated["str | tuple[RomItem, ...] | GameDataObject | CompanyDataObject | PlatformDataObject", Field(validation_alias='Value')]
 
     id: Annotated[int | None, Field(validation_alias='Id')] = None
 
@@ -193,7 +181,7 @@ class DataObject(DatabaseModel, ABC, frozen=True, alias_generator=to_pascal):
     name: str
     signature_data_objects: tuple[SignatureDataObject, ...]
     metadata: Annotated[tuple[MetadataItem, ...], Field(exclude=True)]
-    attributes: Annotated[tuple[Attribute, ...], Field(exclude=True)]
+    attributes: Annotated[tuple[OnErrorOmit[Attribute], ...], Field(exclude=True)]
     created_date: datetime
     updated_date: datetime
 
@@ -302,6 +290,17 @@ class GameDataObject(DataObject, frozen=True, alias_generator=to_pascal):
 
         return tuple(lang.strip() for lang in attribute.value.split(','))
 
+class PlaylistDumpMapping(DatabaseModel, frozen=True):
+    __tablename__: ClassVar[str] = "HasheousPlaylistDumpMapping"
+    __tablekwargs__ = {"sqlite_with_rowid": False}
+    playlist: Annotated[PlaylistTitle, Column(primary_key=True, index=True)]
+    dump: Annotated[str, Column(primary_key=True, index=True)]
+
+class GameDumpMapping(DatabaseModel, frozen=True):
+    __tablename__: ClassVar[str] = "HasheousGameDumpMapping"
+    __tablekwargs__ = {"sqlite_with_rowid": False}
+    game: Annotated[HasheousId, Column(ForeignKey('HasheousGameDataObject.id'), primary_key=True, index=True)]
+    dump: Annotated[str, Column(primary_key=True, index=True)]
 
 HASHEOUS_OBJECT_TYPES = (
     GameDataObject,
@@ -309,6 +308,8 @@ HASHEOUS_OBJECT_TYPES = (
     CompanyDataObject,
     SignatureDataObject,
     RomItem,
+    PlaylistDumpMapping,
+    GameDumpMapping,
 )
 
 class MatchRecord(NamedTuple):
