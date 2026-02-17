@@ -21,7 +21,7 @@ from pe.operators import Class, Star
 from pydantic import AfterValidator, AliasChoices, BaseModel, ByteSize, DirectoryPath, Field, FilePath, GetPydanticSchema, ModelWrapValidatorHandler, OnErrorOmit, RootModel, TypeAdapter, ValidationInfo, computed_field, model_validator
 from pydantic_core import from_json, core_schema
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
-from sqlalchemy import CheckConstraint, Column, ForeignKey, Index
+from sqlalchemy import CheckConstraint, Column, ForeignKey, Index, column
 from sqlalchemy.dialects.sqlite import JSON
 
 from igdb import PlaylistTitle
@@ -83,6 +83,33 @@ class DatModel(DatabaseModel, ABC, frozen=True, extra="allow", str_strip_whitesp
                 # Handle other cases normally
                 return handler(data)
 
+def _split_for_retroarch_validator(value: str) -> tuple[str, ...]:
+    """
+    Split the string by commas, pipes, or slashes, matching RetroArch's logic.
+
+    Rules:
+    - Strip whitespace before and after each segment
+    - Don't treat corporate suffixes (e.g. ", Inc." or ", Ltd." or ", The") as separators
+
+    Matches logic from:
+    https://github.com/libretro/RetroArch/blob/master/menu/menu_explore.c#L272
+    """
+    import re
+
+    if not value or not value.strip():
+        return ()
+
+    # Split on delimiters that are NOT preceded by a corporate suffix.
+    # The pattern uses a negative lookbehind to exclude commas that follow suffixes.
+    # For slashes and pipes, we always split (they're not used with company names).
+    pattern = r'\s*(?:(?<=\.)(?=\s*[,/|])|(?<!\s(?:Inc|Ltd|The)\.?))\s*[,/|]\s*'
+
+    # Split and filter out empty strings
+    segments = [seg.strip() for seg in re.split(pattern, value, re.IGNORECASE) if seg.strip()]
+
+    return tuple(segments)
+
+RetroArchStringTuple = Annotated[tuple[str, ...], AfterValidator(_split_for_retroarch_validator)]
 
 class ClrMamePro(DatModel, frozen=True):
     __tablename__ = "DatClrMamePro"
@@ -116,8 +143,13 @@ class Rom(DatModel, frozen=True):
 
     rowid: RowIdColumn
     name: Annotated[str | None, Column(index=True), Field(alias="image")] = None
-    crc: Annotated[Crc | None, Column(CheckConstraint("crc IS NULL OR length(crc) = 8"), unique=True, index=True)] = None
-    serial: Annotated[str | None, Column(index=True)] = None
+    crc: Annotated[Crc | None, Column(
+        CheckConstraint("crc IS NULL OR length(crc) = 8"),
+        unique=True,
+        index=True,
+        sqlite_where=column("crc").is_not(None)
+    )] = None
+    serial: Annotated[str | None, Column(index=True, sqlite_where=column("serial").is_not(None))] = None
     md5: Annotated[Md5 | None, Column(CheckConstraint("md5 IS NULL OR length(md5) = 32"), unique=True, index=True)] = None
     sha1: Annotated[Sha1 | None, Column(CheckConstraint("sha1 IS NULL OR length(sha1) = 40"), unique=True, index=True), Field(alias="sha1sum")] = None
     size: ByteSize | None = None
@@ -173,10 +205,44 @@ class Game(DatModel, frozen=True):
         related_columns=({
             # The field names don't map 1:1 with column names,
             # so we specify the field names explicitly as keys
-            "crc": Column("crc", ForeignKey("DatRom.crc"), CheckConstraint("crc IS NULL OR length(crc) = 8"), nullable=True, unique=True, index=True, primary_key=True),
-            "serial": Column("serial", ForeignKey("DatRom.serial"), nullable=True, index=True, primary_key=True),
-            "md5": Column("md5", ForeignKey("DatRom.md5"), CheckConstraint("md5 IS NULL OR length(md5) = 32"), nullable=True, unique=True, index=True, primary_key=True),
-            "sha1": Column("sha1", ForeignKey("DatRom.sha1"), CheckConstraint("sha1 IS NULL OR length(sha1) = 40"), nullable=True, unique=True, index=True, primary_key=True),
+            "crc": Column(
+                "crc",
+                ForeignKey("DatRom.crc"),
+                CheckConstraint("crc IS NULL OR length(crc) = 8"),
+                nullable=True,
+                unique=True,
+                index=True,
+                primary_key=True,
+                sqlite_where=column('crc').is_not(None)
+            ),
+            "serial": Column(
+                "serial",
+                ForeignKey("DatRom.serial"),
+                nullable=True,
+                index=True,
+                primary_key=True,
+                sqlite_where=column('serial').is_not(None)
+            ),
+            "md5": Column(
+                "md5",
+                ForeignKey("DatRom.md5"),
+                CheckConstraint("md5 IS NULL OR length(md5) = 32"),
+                nullable=True,
+                unique=True,
+                index=True,
+                primary_key=True,
+                sqlite_where=column('md5').is_not(None)
+            ),
+            "sha1": Column(
+                "sha1",
+                ForeignKey("DatRom.sha1"),
+                CheckConstraint("sha1 IS NULL OR length(sha1) = 40"),
+                nullable=True,
+                unique=True,
+                index=True,
+                primary_key=True,
+                sqlite_where=column('sha1').is_not(None)
+            ),
         }),
         tableargs=(
             CheckConstraint("crc NOT NULL OR serial NOT NULL", name="chk_game_rom_mapping_retroarch_id"),
