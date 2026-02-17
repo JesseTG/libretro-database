@@ -171,6 +171,12 @@ igdb.where = "platforms = (13)"
 hasheous = ["Microsoft DOS", "Microsoft Windows"]
 
 [[playlists]]
+title = "Elektor - TV Games Computer"
+igdb.where = "platforms = (505)"
+# Hasheous lists no ROMs specifically for this platform,
+# but maybe some of them are in the "Unknown Platform" dump
+
+[[playlists]]
 title = "Emerson - Arcadia 2001"
 hasheous = ["Emerson Arcadia 2001"]
 igdb.where = "platforms = (473)"
@@ -233,6 +239,11 @@ igdb.where = "platforms = (307, 411) & parent_game != (38010, 38147, 48725, 1988
 title = "Infocom - Z-Machine"
 hasheous = ["Infocom Z-Machine"]
 igdb.where = "game_engines = (71)"
+
+[[playlists]]
+title = "Interton - VC 4000"
+hasheous = ["Interton - VC 4000"]
+igdb.where = "platforms = (138)"
 
 # IGDB lacks a `platforms` entry for the Hartung Game Master
 # [[playlists]]
