@@ -442,10 +442,6 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
         all_fields = chain(cls.model_fields.items(), cls.model_computed_fields.items())
         for field_name, field in all_fields:
             # For each field (real or computed)...
-            if isinstance(field, FieldInfo) and field.exclude:
-                # Don't create Columns for excluded fields
-                continue
-
             if cls.get_relationship_table_def(field):
                 # Don't create Columns for known relationship tables
                 continue
@@ -453,20 +449,29 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
             field_annotation = cls.get_field_annotation(field)
             unwrapped_field_type = cls.unwrap_type(field_annotation)
             field_origin = get_origin(field_annotation)
-            if is_non_string_sequence_type(field_origin) or is_non_string_sequence_type(unwrapped_field_type):
-                # Skip automatic FK generation for collection types,
+            column = cls.get_column_metadata(field)
+
+            if column is None and (is_non_string_sequence_type(field_origin) or is_non_string_sequence_type(unwrapped_field_type)):
+                # Skip automatic FK generation for collection types
+                # that don't explicitly define a column
                 # otherwise we run the risk of infinite recursion
                 # (they should use RelationshipTableDef instead)
                 continue
 
-            if (column := cls.get_column_metadata(field)) is None:
-                # If this field doesn't define a Column, create a new one with defaults
-                column = Column()
-            else:
+
+            if isinstance(field, FieldInfo) and field.exclude:
+                # Don't create Columns for excluded fields, except for primary keys
+                # (this is so we can have rowids, which aren't interesting outside of the DB)
+                if column is None or not column.primary_key:
+                    continue
+
+            column = column._copy() if column is not None else Column()
+            # Create a copy of the Column to avoid mutating the one in the Annotated metadata
+
+            if __debug__:
+                # Wrapped in a __debug__ even though asserts are stripped with -O
+                # so that mypy doesn't treat Column as a Never
                 assert column.table is None, f"{column} unexpectedly linked to {column.table}, did something mutate it?"
-                # Columns have internal state,
-                # so we shouldn't mutate the ones in the Annotated metadata
-                column = column._copy()
 
             if not column.name:
                 # Use the field name as the column name if not given
