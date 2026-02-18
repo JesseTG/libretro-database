@@ -3,16 +3,18 @@
 import asyncio
 import dataclasses
 import datetime
+import logging
 import os.path
 import re
 import sys
+import time
 import tomllib
 
 from abc import ABC
 from asyncio import Task, TaskGroup
-from collections.abc import Iterable, Iterator, Mapping
+from collections.abc import Collection, Iterable, Iterator, Mapping
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timedelta
 from functools import cached_property
 from itertools import chain
 from pathlib import Path
@@ -20,6 +22,8 @@ from typing import Annotated, Any, ClassVar, Never, NotRequired, Literal, NewTyp
 
 import aiofiles
 import aiofiles.os
+from aioitertools.asyncio import as_completed
+from aiomultiprocess import Pool
 import asynciolimiter
 import backoff
 import httpx
@@ -28,15 +32,16 @@ from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
 from frozendict import frozendict
 from httpx import HTTPStatusError, Response, Timeout
-from more_itertools import batched, spy
-from pydantic import AliasChoices, BaseModel, BeforeValidator, Field, FieldSerializationInfo, FilePath, SerializerFunctionWrapHandler, TypeAdapter, JsonValue, WrapValidator, computed_field, field_serializer
+from more_itertools import batched, map_reduce, spy
+from pydantic import AliasChoices, BaseModel, BeforeValidator, DirectoryPath, Field, FieldSerializationInfo, FilePath, SerializerFunctionWrapHandler, TypeAdapter, JsonValue, WrapValidator, computed_field, field_serializer
 from pydantic_core import from_json, to_json
 from pydantic_extra_types.country import CountryNumericCode
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
-from sqlalchemy import Column, ForeignKey, Index, column
-from sqlalchemy.dialects.sqlite import INTEGER
+from sqlalchemy import Column, ForeignKey, Index, MetaData, column, text
+from sqlalchemy.dialects.sqlite import INTEGER, insert
+from sqlalchemy.ext.asyncio import AsyncEngine
 
-from utils import CoercedHttpUrl, DatabaseModel, Relationship
+from utils import CoercedHttpUrl, DatabaseModel, PoolArgs, Relationship, create_db
 
 IgdbId = NewType('IgdbId', int)
 IgdbPrimaryId = Annotated[
@@ -1003,7 +1008,7 @@ async def load_game_file(path: Path) -> tuple[Game, ...]:
         games = GameTupleAdapter.validate_json(json_bytes, extra='allow')
         return games
 
-class CommonArgs(BaseModel):
+class AuthArgs:
     client_id: str = Field(
         title="Twitch Client ID",
         description="""
@@ -1021,13 +1026,37 @@ class CommonArgs(BaseModel):
         validation_alias=AliasChoices('client-secret', 's'),
         min_length=1,
     )
+
+class CommonArgs:
     verbose: bool = Field(
         default=False,
         description="Enable verbose output.",
         validation_alias=AliasChoices('v', 'verbose'),
     )
 
-class QuerySubCommand(CommonArgs):
+class PlaylistArgs:
+    config: FilePath = Field(
+        default=Path(__file__).parent.parent / 'playlists.toml',
+        title="Playlist Config File",
+        description="Path to the config file that defines available playlists.",
+        validation_alias=AliasChoices('c', 'config'),
+        validate_default=True,
+    )
+
+    playlists: tuple[str, ...] = Field(
+        default=(),
+        description="""
+            Query IGDB with the filters defined in playlist_config.
+            Pass as -p '<playlist_title>' multiple times or once as -p '<playlist1>,<playlist2>,...'
+            to fetch multiple playlists.
+            If omitted, all playlists in the config that define an 'igdb.query' field will be fetched.
+            Unrecognized playlist titles will be ignored.
+        """,
+        validation_alias=AliasChoices('p', 'playlists'),
+        examples=[("Coleco - ColecoVision", "Dinothawr")]
+    )
+
+class QuerySubCommand(BaseModel, CommonArgs, AuthArgs):
     """
     Execute an arbitrary Apicalypse query against the IGDB API
     and print the results as JSON to stdout.
@@ -1119,7 +1148,7 @@ class QuerySubCommand(CommonArgs):
                 json = to_json(results, indent=2)
                 await aiofiles.stdout_bytes.write(json)
 
-class FetchSubCommand(CommonArgs):
+class FetchSubCommand(BaseModel, CommonArgs, AuthArgs, PlaylistArgs):
     """
     Fetch game data from IGDB for one or more playlists
     and save the results as JSON files.
@@ -1127,27 +1156,6 @@ class FetchSubCommand(CommonArgs):
     Each JSON file will be named after the playlist title,
     and will contain all retrieved game objects sorted by game title.
     """
-
-    config: FilePath = Field(
-        default=Path(__file__).parent.parent / 'playlists.toml',
-        title="Playlist Config File",
-        description="Path to the config file that defines available playlists.",
-        validation_alias=AliasChoices('c', 'config'),
-        validate_default=True,
-    )
-
-    playlists: tuple[str, ...] = Field(
-        default=(),
-        description="""
-            Query IGDB with the filters defined in playlist_config.
-            Pass as -p '<playlist_title>' multiple times or once as -p '<playlist1>,<playlist2>,...'
-            to fetch multiple playlists.
-            If omitted, all playlists in the config that define an 'igdb.query' field will be fetched.
-            Unrecognized playlist titles will be ignored.
-        """,
-        validation_alias=AliasChoices('p', 'playlists'),
-        examples=[("Coleco - ColecoVision", "Dinothawr")]
-    )
 
     outdir: CliPositionalArg[Path] = Field(
         default=Path(__file__).parent.parent / 'tmp' / 'igdb',
@@ -1207,9 +1215,175 @@ class FetchSubCommand(CommonArgs):
                     group.create_task(fetch_playlist(client, p, group), name=p.title)
             # The task group will wait for all fetch tasks to complete
 
+
+PARENT_DIR = Path(__file__).parent.parent
+
+class IndexSubCommand(BaseModel, CommonArgs, PlaylistArgs, PoolArgs):
+    output: Path = Field(
+        default=PARENT_DIR / 'tmp' / 'igdb.db',
+        description="Path to the output SQLite database file.",
+        validation_alias=AliasChoices('o', 'output'),
+        validate_default=True,
+    )
+
+    igdb_path: DirectoryPath = Field(
+        default=PARENT_DIR / 'tmp' / 'igdb',
+        description="Path to the directory containing IGDB JSON files fetched with `igdb.py fetch`.",
+        validation_alias=AliasChoices('i', 'igdb'),
+        validate_default=True,
+    )
+
+    force: bool = Field(
+        default=False,
+        description="Overwrite existing output database file if it exists.",
+        validation_alias=AliasChoices('f', 'force'),
+    )
+
+    _db_lock = asyncio.Lock()
+    _log = logging.getLogger('igdb.index')
+
+    async def cli_cmd(self):
+        start = time.perf_counter()
+
+        log_handler = logging.StreamHandler()
+        log_handler.setFormatter(logging.Formatter('[%(asctime)s][%(name)s][%(taskName)s] %(message)s'))
+        sqlalchemy_engine_log = logging.getLogger('sqlalchemy.engine.Engine')
+        sqlalchemy_engine_log.addHandler(log_handler)
+
+        self._log.setLevel(logging.DEBUG if self.verbose else logging.INFO)
+        self._log.addHandler(log_handler)
+        if self.verbose:
+            # Log the SQL table creation statements being executed,
+            # but we'll lower the level later during data insertion
+            # so we don't get overwhelmed with output.
+            sqlalchemy_engine_log.setLevel(logging.INFO)
+
+        self.output.parent.mkdir(parents=True, exist_ok=True)
+
+        if self.output.exists() and not self.force:
+            raise FileExistsError(f"Output database file '{self.output}' already exists. Use --force to overwrite.")
+
+        # Remove existing database file if it exists
+        self.output.unlink(missing_ok=True)
+
+        async with aiofiles.open(self.config, "r") as config_file:
+            config = PlaylistConfig.model_validate(tomllib.loads(await config_file.read()))
+
+        if self.playlists:
+            playlists = tuple(p for p in config.playlists if p.title in self.playlists)
+        else:
+            playlists = config.playlists
+
+        # Create async engine with SQLite
+        db, metadata = await create_db(self.output, IGDB_OBJECT_TYPES)
+        sqlalchemy_engine_log.setLevel(logging.WARNING)
+
+        async with Pool(processes=self.processes) as pool:
+            self._log.info("Inserting games from %d playlists", len(playlists))
+
+            async def job(playlist: Playlist):
+                path = self.igdb_path / f"{playlist.title}.json"
+                self._log.debug("Loading queried games from '%s'", path)
+                loaded = await pool.apply(load_game_file, (path,))
+                self._log.info("Loaded %d games from '%s'", len(loaded), path)
+                return (playlist, loaded)
+
+            async with TaskGroup() as group:
+                playlist_jobs = (group.create_task(job(p), name=f"Load: {p.title}") for p in playlists)
+
+                async for (playlist, games) in as_completed(playlist_jobs):
+                    await group.create_task(
+                        self._insert_igdb_playlist(db, metadata, playlist, games),
+                        name=f"Insert: {playlist.title}"
+                    )
+
+            self._log.info("Finished inserting data")
+
+        async with db.connect() as connection:
+            # Run the SQLite optimizer to improve performance on all tables (0x10000),
+            # but don't take too long (0x00010)
+            await connection.execute(text("PRAGMA optimize = 0x10012"))
+
+        # Close the engine
+        await db.dispose()
+
+        end = time.perf_counter()
+        elapsed = timedelta(seconds=end - start)
+        self._log.info(f"Elapsed time: %s", elapsed)
+
+    async def _insert_igdb_playlist(self, db: AsyncEngine, metadata: MetaData, playlist: Playlist, games: Collection[Game]):
+        self._log.debug("Extracting nested models from %d games", len(games))
+        nested_models = map_reduce(
+            chain(games, chain.from_iterable(g.nested_models for g in games)),
+            lambda model: type(model),
+            None,
+            frozenset
+        )
+
+        self._log.info("Extracted nested models from %d games", len(games))
+
+        for (model_type, models) in nested_models.items():
+            async with self._db_lock:
+                async with db.begin() as tx:
+                    self._log.info("Inserting %d %s records", len(models), model_type.__name__)
+                    assert model_type.__tablename__ in metadata.tables, f"Model type '{model_type.__name__}' has no corresponding table in metadata"
+
+                    table = metadata.tables[model_type.__tablename__]
+                    cursor = await tx.execute(
+                        insert(table).on_conflict_do_nothing(),
+                        # Insert game records, ignoring conflicts because
+                        # the same game (or franchise, or genre, or other object)
+                        # may appear in multiple playlists
+
+                        [m.as_row for m in models]
+                        # BaseModel.model_dump serializes the model to a dict,
+                        # and IgdbObject in particular defines custom serialization behavior
+                        # that's activated by passing a context value of "row".
+                    )
+
+                    await tx.commit()
+                    self._log.info("Inserted %d %s records", len(models),  model_type.__name__)
+
+        relationships = map_reduce(
+            chain.from_iterable(g.relationships.items() for g in games),
+            lambda rels: rels[0], # key is the field name
+            lambda rels: rels[1], # value is the set of relationships
+            lambda entries: tuple(chain.from_iterable(entries)) # group by field name, aggregate unique relationships
+        )
+        # TODO: Insert the age rating-related relationships
+        for (field_name, rels) in relationships.items():
+            async with self._db_lock:
+                async with db.begin() as tx:
+                    self._log.info("Inserting %d '%s' relationships", len(rels), field_name)
+                    tablename = f"{Game.__tablename__}_{field_name}"
+                    assert tablename in metadata.tables, f"Relationship field '{field_name}' has no corresponding table in metadata"
+
+                    await tx.execute(
+                        insert(metadata.tables[tablename]).on_conflict_do_nothing(),
+                        rels
+                    )
+                    await tx.commit()
+
+                    self._log.info("Inserted %d '%s' relationships", len(rels), field_name)
+
+        mappings = tuple(PlaylistMapping(title=playlist.title, game=g.id) for g in games)
+
+        async with self._db_lock:
+            async with db.begin() as tx:
+                self._log.info("Inserting %d playlist mappings", len(mappings))
+                await tx.execute(
+                    insert(metadata.tables[PlaylistMapping.__tablename__]).on_conflict_do_nothing(),
+                    [m.as_row for m in mappings]
+                )
+                await tx.commit()
+
+        self._log.info("Inserted %d games", len(games))
+
+
 class IgdbCommand(BaseSettings):
     fetch: CliSubCommand[FetchSubCommand]
     query: CliSubCommand[QuerySubCommand]
+    index: CliSubCommand[IndexSubCommand]
     model_config = SettingsConfigDict(
         case_sensitive=False,
         cli_avoid_json=True,
