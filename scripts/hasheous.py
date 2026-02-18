@@ -10,13 +10,15 @@ Dictionary definitions taken from the following Hasheous source files:
 
 import asyncio
 import csv
+import logging
 import sys
+import time
 import tomllib
 
 from abc import ABC
-from collections.abc import Sequence
+from collections.abc import Collection, Sequence
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import cached_property
 from itertools import chain
 from pathlib import Path
@@ -28,16 +30,19 @@ import aiofiles.os
 import backoff
 import httpx
 
-from more_itertools import first_true
-from pydantic import AliasChoices, BaseModel, ByteSize, ConfigDict, Field, FieldSerializationInfo, FilePath, HttpUrl, OnErrorOmit, SerializerFunctionWrapHandler, StringConstraints, ValidationError, computed_field, field_serializer
+from aioitertools.asyncio import as_completed
+from aiomultiprocess import Pool
+from more_itertools import first_true, map_reduce
+from pydantic import AliasChoices, BaseModel, ByteSize, ConfigDict, DirectoryPath, Field, FieldSerializationInfo, FilePath, HttpUrl, OnErrorOmit, SerializerFunctionWrapHandler, StringConstraints, ValidationError, computed_field, field_serializer
 from pydantic.alias_generators import to_pascal
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
-from sqlalchemy import Column, Computed, ForeignKey, String, Index, column
-from sqlalchemy.dialects.sqlite import INTEGER, JSON
+from sqlalchemy import Column, Computed, ForeignKey, MetaData, String, Index, column, text
+from sqlalchemy.dialects.sqlite import INTEGER, JSON, insert
+from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy.util import is_non_string_iterable
 
-from igdb import IgdbId, PlaylistConfig, PlaylistTitle
-from utils import Crc, DatabaseModel, FrozenDict, TypedFrozenDict, InsertInRowContext, EmptyStringToNone, Md5, Sha1, Sha256
+from igdb import IgdbId, Playlist, PlaylistConfig, PlaylistTitle
+from utils import Crc, DatabaseModel, FrozenDict, PoolArgs, TypedFrozenDict, InsertInRowContext, EmptyStringToNone, Md5, Sha1, Sha256, create_db
 
 METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
 
@@ -174,9 +179,6 @@ PlatformDataObjectAttributeColumn = Annotated[
     Column(ForeignKey('HasheousPlatformDataObject.id'), index=True)
 ]
 
-def IgdbIdReference(column: str):
-    return Annotated[IgdbId | None, Column(ForeignKey(column))]
-
 class DataObject(DatabaseModel, ABC, frozen=True, alias_generator=to_pascal):
     """
     Type info for attributes taken from https://github.com/gaseous-project/hasheous/blob/main/hasheous-lib/Classes/DataObjects.cs
@@ -220,7 +222,7 @@ class PlatformDataObject(DataObject, frozen=True, alias_generator=to_pascal):
     __tablename__: ClassVar[str] = "HasheousPlatformDataObject"
     object_type: Annotated[Literal["Platform"], Field(exclude=True)]
 
-    @computed_field(return_type=IgdbIdReference('IgdbPlatform.id'))
+    @computed_field(return_type=IgdbId | None)
     @cached_property
     def igdb_id(self):
         """Returns the IGDB ID mapped to this DataObject, or None if there's no IGDB mapping."""
@@ -236,7 +238,7 @@ class CompanyDataObject(DataObject, frozen=True, alias_generator=to_pascal):
     __tablename__: ClassVar[str] = "HasheousCompanyDataObject"
     object_type: Annotated[Literal["Company"], Field(exclude=True)]
 
-    @computed_field(return_type=IgdbIdReference('IgdbCompany.id'))
+    @computed_field(return_type=IgdbId | None)
     @cached_property
     def igdb_id(self):
         """Returns the IGDB ID mapped to this DataObject, or None if there's no IGDB mapping."""
@@ -256,7 +258,7 @@ class GameDataObject(DataObject, frozen=True, alias_generator=to_pascal):
         attribute = first_true(self.attributes, pred=lambda a: a.attribute_name == "ROMs")
         return tuple(attribute.value) if attribute and is_non_string_iterable(attribute.value) else ()
 
-    @computed_field(return_type=IgdbIdReference('IgdbGame.id'))
+    @computed_field(return_type=IgdbId | None)
     @cached_property
     def igdb_id(self):
         """Returns the IGDB ID mapped to this DataObject, or None if there's no IGDB mapping."""
@@ -610,9 +612,209 @@ class SubmitSubCommand(BaseModel, CommonArgs):
                     name=matchfile.stem
                 )
 
+PARENT_DIR = Path(__file__).parent.parent
+
+class HasheousJob(NamedTuple):
+    name: str
+    playlists: set[Playlist]
+    games: Collection[GameDataObject]
+
+class IndexSubCommand(BaseModel, CommonArgs, PoolArgs):
+    config: FilePath = Field(
+        default=Path(__file__).parent.parent / 'playlists.toml',
+        title="Playlist Config File",
+        description="Path to the config file that defines available playlists.",
+        validation_alias=AliasChoices('c', 'config'),
+        validate_default=True,
+    )
+
+    playlists: tuple[str, ...] = Field(
+        default=(),
+        validation_alias=AliasChoices('p', 'playlists'),
+        examples=[("Coleco - ColecoVision", "Dinothawr")]
+    )
+
+    hasheous_path: DirectoryPath = Field(
+        default=PARENT_DIR / 'tmp' / 'hasheous',
+        description="Path to the directory containing Hasheous ZIP dumps fetched with `hasheous.py fetch`.",
+        validation_alias=AliasChoices('s', 'hasheous'),
+        validate_default=True,
+    )
+
+    output: Path = Field(
+        default=PARENT_DIR / 'tmp' / 'hasheous.db',
+        description="Path to the output SQLite database file.",
+        validation_alias=AliasChoices('o', 'output'),
+        validate_default=True,
+    )
+
+    force: bool = Field(
+        default=False,
+        description="Overwrite existing output database file if it exists.",
+        validation_alias=AliasChoices('f', 'force'),
+    )
+
+    _db_lock = asyncio.Lock()
+    _log = logging.getLogger('hasheous.index')
+
+    async def cli_cmd(self):
+        start = time.perf_counter()
+
+        log_handler = logging.StreamHandler()
+        log_handler.setFormatter(logging.Formatter('[%(asctime)s][%(name)s][%(taskName)s] %(message)s'))
+        sqlalchemy_engine_log = logging.getLogger('sqlalchemy.engine.Engine')
+        sqlalchemy_engine_log.addHandler(log_handler)
+
+        self._log.setLevel(logging.DEBUG if self.verbose else logging.INFO)
+        self._log.addHandler(log_handler)
+        if self.verbose:
+            # Log the SQL table creation statements being executed,
+            # but we'll lower the level later during data insertion
+            # so we don't get overwhelmed with output.
+            sqlalchemy_engine_log.setLevel(logging.INFO)
+
+        self.output.parent.mkdir(parents=True, exist_ok=True)
+
+        if self.output.exists() and not self.force:
+            raise FileExistsError(f"Output database file '{self.output}' already exists. Use --force to overwrite.")
+
+        # Remove existing database file if it exists
+        self.output.unlink(missing_ok=True)
+
+        async with aiofiles.open(self.config, "r") as config_file:
+            config = PlaylistConfig.model_validate(tomllib.loads(await config_file.read()))
+
+        if self.playlists:
+            playlists = tuple(p for p in config.playlists if p.title in self.playlists)
+        else:
+            playlists = config.playlists
+
+        # Create async engine with SQLite
+        db, metadata = await create_db(self.output, HASHEOUS_OBJECT_TYPES)
+        sqlalchemy_engine_log.setLevel(logging.WARNING)
+
+        requested_dumps = set(chain.from_iterable(p.hasheous_dirs for p in playlists)) | {'Unknown Platform'}
+        async with Pool(processes=self.processes) as pool:
+            async def job(name: str) -> HasheousJob:
+                path = self.hasheous_path / f"{name}.zip"
+                self._log.debug("Loading %s", path)
+                games = await pool.apply(load_zip, (path,))
+                self._log.info("Loaded %d games from %s", len(games), path)
+
+                # Get all playlists that reference this Hasheous dump
+                # (except the implicit "Unknown Platform" dump,
+                # but it'll be included if explicitly named)
+                referencing_playlists = {p for p in playlists if name in p.hasheous_dirs}
+                return HasheousJob(name, referencing_playlists, games)
+
+            async with asyncio.TaskGroup() as group:
+                self._log.info("Inserting data from %d dump archives", len(requested_dumps))
+                jobs = (group.create_task(job(name), name=f"Load: {name}") for name in requested_dumps)
+                async for j in as_completed(jobs):
+                    group.create_task(
+                        self._insert_hasheous_dump(db, metadata, j),
+                        name=f"Insert: {j.name}"
+                    )
+
+        self._log.info("Finished inserting data")
+
+        async with db.connect() as connection:
+            # Run the SQLite optimizer to improve performance on all tables (0x10000),
+            # but don't take too long (0x00010)
+            await connection.execute(text("PRAGMA optimize = 0x10012"))
+
+        # Close the engine
+        await db.dispose()
+
+        end = time.perf_counter()
+        elapsed = timedelta(seconds=end - start)
+        self._log.info(f"Elapsed time: %s", elapsed)
+
+    async def _insert_hasheous_dump(self, db: AsyncEngine, metadata: MetaData, job: HasheousJob):
+        # Collect all unique objects to insert
+        self._log.debug("Inserting %d games from %s", len(job.games), job.name)
+        nested_models = map_reduce(
+            chain(job.games, chain.from_iterable(g.nested_models for g in job.games)),
+            lambda model: type(model),
+            None,
+            frozenset
+        )
+
+        async with self._db_lock:
+            async with db.begin() as tx:
+                for (model_type, models) in nested_models.items():
+                    assert model_type.__tablename__ in metadata.tables, f"Model type '{model_type.__name__}' has no corresponding table in metadata"
+
+                    await tx.execute(
+                        insert(metadata.tables[model_type.__tablename__]).on_conflict_do_nothing(),
+                        # Insert game records, ignoring conflicts because
+                        # the same game (or franchise, or genre, or other object)
+                        # may appear in multiple dumps
+
+                        # Create a row dict for each model
+                        [m.as_row for m in models]
+                    )
+
+                await tx.commit()
+
+        relationships = map_reduce(
+            chain.from_iterable(g.relationships.items() for g in job.games),
+            lambda rels: rels[0], # key is the field name
+            lambda rels: rels[1], # value is the set of relationships
+            lambda entries: tuple(chain.from_iterable(entries)) # group by field name, aggregate unique relationships
+        )
+
+        playlist_dump_mappings = tuple(PlaylistDumpMapping(playlist=p.title, dump=job.name) for p in job.playlists)
+
+        async with self._db_lock:
+            async with db.begin() as tx:
+                for (field_name, rels) in relationships.items():
+                    tablename = f"{GameDataObject.__tablename__}_{field_name}"
+                    assert tablename in metadata.tables, f"Relationship field '{field_name}' has no corresponding table in metadata"
+
+                    await tx.execute(
+                        insert(metadata.tables[tablename]).on_conflict_do_nothing(),
+                        rels
+                    )
+
+                await tx.commit()
+
+        if playlist_dump_mappings:
+            async with self._db_lock:
+                async with db.begin() as tx:
+                    self._log.debug("Inserting %d playlist-dump mappings", len(playlist_dump_mappings))
+                    await tx.execute(
+                        insert(metadata.tables[PlaylistDumpMapping.__tablename__]).on_conflict_do_nothing(),
+                        [m.as_row for m in playlist_dump_mappings]
+                    )
+                    await tx.commit()
+                    self._log.info("Inserted %d playlist-dump mappings", len(playlist_dump_mappings))
+        else:
+            self._log.info("No playlist-dump mappings to insert")
+
+        game_dump_mappings = tuple(GameDumpMapping(dump=job.name, game=g.id) for g in job.games)
+        if game_dump_mappings:
+            async with self._db_lock:
+                async with db.begin() as tx:
+                    self._log.debug("Inserting %d game-dump mappings", len(game_dump_mappings))
+                    await tx.execute(
+                        insert(metadata.tables[GameDumpMapping.__tablename__]).on_conflict_do_nothing(),
+                        [m.as_row for m in game_dump_mappings]
+                    )
+                    await tx.commit()
+                    self._log.info("Inserted %d game-dump mappings", len(game_dump_mappings))
+        else:
+            self._log.info("No game-dump mappings to insert")
+
+        self._log.info("Inserted %d games", len(job.games))
+
+
+
+
 class HasheousCommand(BaseSettings):
     fetch: CliSubCommand[FetchSubCommand]
     submit: CliSubCommand[SubmitSubCommand]
+    index: CliSubCommand[IndexSubCommand]
     model_config = SettingsConfigDict(
         case_sensitive=False,
         cli_avoid_json=True,
