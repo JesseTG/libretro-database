@@ -1,31 +1,40 @@
 #!/usr/bin/env python3
 
+import asyncio
+import logging
 import sys
+import time
+import tomllib
 
 from abc import ABC
 from collections.abc import Sequence
+from datetime import timedelta
 from io import StringIO
-from itertools import chain, repeat
+from itertools import chain, repeat, product
 from os import PathLike
 from pathlib import Path
 from typing import IO, Annotated, Any, BinaryIO, ClassVar, Literal, LiteralString, NamedTuple, Self, TextIO, TypedDict
 
 import aiofiles
+import aioitertools.builtins as aiobuiltins
+import aiofiles.ospath as aiopath
 import pe
 
+from aioitertools.asyncio import as_completed
 from aiomultiprocess import Pool
 from frozendict import frozendict
-from more_itertools import map_reduce, partition
+from more_itertools import map_reduce, partition, prepend
 from pe.actions import Pack
 from pe.operators import Class, Star
 from pydantic import AfterValidator, AliasChoices, BaseModel, ByteSize, DirectoryPath, Field, FilePath, GetPydanticSchema, ModelWrapValidatorHandler, OnErrorOmit, RootModel, TypeAdapter, ValidationInfo, computed_field, model_validator
 from pydantic_core import from_json, core_schema
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
-from sqlalchemy import CheckConstraint, Column, ForeignKey, Index, column
-from sqlalchemy.dialects.sqlite import JSON
+from sqlalchemy import CheckConstraint, Column, ForeignKey, Index, MetaData, column, text
+from sqlalchemy.dialects.sqlite import JSON, insert
+from sqlalchemy.sql.functions import coalesce
 
-from igdb import PlaylistTitle
-from utils import Crc, DatabaseModel, EmptyStringToNone, FrozenDict, Md5, OnlyFirst, Relationship, RowId, RowIdColumn, Sha1
+from igdb import Playlist, PlaylistConfig, PlaylistTitle
+from utils import AsyncEngine, Crc, DatabaseModel, EmptyStringToNone, FrozenDict, Md5, OnlyFirst, PoolArgs, Relationship, RowId, RowIdColumn, Sha1, create_db
 
 type DatValidationMode = Literal['dat'] | None
 type DatPair = tuple[str, DatValue]
@@ -137,19 +146,17 @@ class Rom(DatModel, frozen=True):
     __tablename__ = "DatRom"
     __dattype__ = "rom"
     __tableargs__ = (
-        CheckConstraint("crc NOT NULL OR serial NOT NULL", name="chk_retroarch_id"),
-        Index("idx_rom_ids", "crc", "serial", "md5", "sha1", unique=True)
+        CheckConstraint("crc NOT NULL OR serial NOT NULL", name="ix_DatRom_has_retroarch_id"),
+        Index("ix_DatRom", "crc", "serial", "md5", "sha1", unique=True),
+        Index("ix_DatRom_name_where_not_null", "name", sqlite_where=column("name").is_not(None)),
+        Index("ix_DatRom_crc_where_not_null", "crc", sqlite_where=column("crc").is_not(None), unique=True),
+        Index("ix_DatRom_serial_where_not_null", "serial", sqlite_where=column("serial").is_not(None)),
     )
 
     rowid: RowIdColumn
-    name: Annotated[str | None, Column(index=True), Field(alias="image")] = None
-    crc: Annotated[Crc | None, Column(
-        CheckConstraint("crc IS NULL OR length(crc) = 8"),
-        unique=True,
-        index=True,
-        sqlite_where=column("crc").is_not(None)
-    )] = None
-    serial: Annotated[str | None, Column(index=True, sqlite_where=column("serial").is_not(None))] = None
+    name: Annotated[str | None, Field(alias="image")] = None
+    crc: Annotated[Crc | None, Column(CheckConstraint("crc IS NULL OR length(crc) = 8"), unique=True)] = None
+    serial: str | None = None
     md5: Annotated[Md5 | None, Column(CheckConstraint("md5 IS NULL OR length(md5) = 32"), unique=True, index=True)] = None
     sha1: Annotated[Sha1 | None, Column(CheckConstraint("sha1 IS NULL OR length(sha1) = 40"), unique=True, index=True), Field(alias="sha1sum")] = None
     size: ByteSize | None = None
@@ -211,18 +218,9 @@ class Game(DatModel, frozen=True):
                 CheckConstraint("crc IS NULL OR length(crc) = 8"),
                 nullable=True,
                 unique=True,
-                index=True,
                 primary_key=True,
-                sqlite_where=column('crc').is_not(None)
             ),
-            "serial": Column(
-                "serial",
-                ForeignKey("DatRom.serial"),
-                nullable=True,
-                index=True,
-                primary_key=True,
-                sqlite_where=column('serial').is_not(None)
-            ),
+            "serial": Column("serial", ForeignKey("DatRom.serial"), nullable=True, primary_key=True),
             "md5": Column(
                 "md5",
                 ForeignKey("DatRom.md5"),
@@ -231,7 +229,6 @@ class Game(DatModel, frozen=True):
                 unique=True,
                 index=True,
                 primary_key=True,
-                sqlite_where=column('md5').is_not(None)
             ),
             "sha1": Column(
                 "sha1",
@@ -241,12 +238,15 @@ class Game(DatModel, frozen=True):
                 unique=True,
                 index=True,
                 primary_key=True,
-                sqlite_where=column('sha1').is_not(None)
             ),
         }),
         tableargs=(
             CheckConstraint("crc NOT NULL OR serial NOT NULL", name="chk_game_rom_mapping_retroarch_id"),
-            Index("idx_game_rom_mapping_rom_ids", "crc", "serial", "md5", "sha1"),
+            Index("ix_DatGame_roms", "crc", "serial", "md5", "sha1"),
+            Index("ix_DatGame_crc_where_not_null", "crc", sqlite_where=column("crc").is_not(None), unique=True),
+            Index("ix_DatGame_serial_where_not_null", "serial", sqlite_where=column("serial").is_not(None)),
+            Index("ix_DatGame_md5_where_not_null", "md5", sqlite_where=column("md5").is_not(None), unique=True),
+            Index("ix_DatGame_sha1_where_not_null", "sha1", sqlite_where=column("sha1").is_not(None), unique=True)
         ),
         tablekwargs=None,
         # Unlike most other relationship tables in this project,
@@ -409,6 +409,16 @@ class ParsedDatFile(RootModel, frozen=True):
     Once Unpack is supported properly, we can omit the GetPydanticSchema handler above.
     """
 
+    @property
+    def clrmamepro(self) -> ClrMamePro:
+        """The ClrMamePro record of this DAT file, which contains metadata about the DAT."""
+        return self.root[0]
+
+    @property
+    def games(self) -> tuple[Game, ...]:
+        """The Game records of this DAT file, which contain the actual game data."""
+        return self.root[1:] if len(self.root) > 1 else ()
+
     @classmethod
     async def from_dat_file_async(cls, dat: PathLike) -> Self:
         """
@@ -423,11 +433,11 @@ class ParsedDatFile(RootModel, frozen=True):
         return cls.model_validate(raw_dat, context="dat")
 
     @classmethod
-    async def from_dat_file_async_or_error(cls, dat: PathLike) -> Self | tuple[Exception, PathLike]:
+    async def from_dat_file_async_or_error(cls, dat: PathLike) -> Self | Exception:
         try:
             return await cls.from_dat_file_async(dat)
         except Exception as e:
-            return e, dat
+            return e
 
 DAT_OBJECT_TYPES = (
     Game,
@@ -473,7 +483,14 @@ class LoadedDat(NamedTuple):
 # but Pydantic doesn't read the Game correctly in that case.
 GameTupleAdapter = TypeAdapter(tuple[Game, ...])
 
-class CheckSubCommand(BaseModel):
+class VerboseArgs:
+    verbose: bool = Field(
+        default=False,
+        description="Enable verbose output.",
+        validation_alias=AliasChoices('v', 'verbose'),
+    )
+
+class CheckSubCommand(BaseModel, VerboseArgs):
     """Check DAT files for valid syntax."""
 
     dat_paths: CliPositionalArg[list[FilePath | DirectoryPath]] = Field(
@@ -486,12 +503,6 @@ class CheckSubCommand(BaseModel):
         default=False,
         description="If set, check that all DATs can be validated as Pydantic models. Otherwise just check syntax.",
         validation_alias=AliasChoices('m', 'models'),
-    )
-
-    verbose: bool = Field(
-        default=False,
-        description="Enable verbose output.",
-        validation_alias=AliasChoices('v', 'verbose'),
     )
 
     @staticmethod
@@ -578,10 +589,231 @@ class FromJsonSubCommand(BaseModel):
         dat = from_json(json_contents)
         encode_dat(dat, sys.stdout)
 
+PARENT_DIR = Path(__file__).parent.parent
+
+class LoadJobResult(NamedTuple):
+    playlist: Playlist
+    path: Path
+    datfile: ParsedDatFile
+
+class IndexSubCommand(BaseModel, VerboseArgs, PoolArgs):
+    config: FilePath = Field(
+        default=PARENT_DIR / 'playlists.toml',
+        title="Playlist Config File",
+        description="Path to the config file that defines available playlists.",
+        validation_alias=AliasChoices('c', 'config'),
+        validate_default=True,
+    )
+
+    playlists: tuple[str, ...] = Field(
+        default=(),
+        validation_alias=AliasChoices('p', 'playlists'),
+        examples=[("Coleco - ColecoVision", "Dinothawr")]
+    )
+
+    dat_dirs: tuple[DirectoryPath, ...] = Field(
+        default=(PARENT_DIR / 'dat', PARENT_DIR / 'metadat',),
+        description="Paths to the directories containing existing DAT files to scan for games to process.",
+        validation_alias=AliasChoices('d', 'dat'),
+        validate_default=True,
+    )
+
+    output: Path = Field(
+        default=PARENT_DIR / 'tmp' / 'dats.db',
+        description="Path to the output SQLite database file.",
+        validation_alias=AliasChoices('o', 'output'),
+        validate_default=True,
+    )
+
+    force: bool = Field(
+        default=False,
+        description="Overwrite existing output database file if it exists.",
+        validation_alias=AliasChoices('f', 'force'),
+    )
+
+    _db_lock = asyncio.Lock()
+    _log = logging.getLogger('dats.index')
+
+    async def cli_cmd(self):
+        start = time.perf_counter()
+
+        log_handler = logging.StreamHandler()
+        log_handler.setFormatter(logging.Formatter('[%(asctime)s][%(name)s][%(taskName)s] %(message)s'))
+        sqlalchemy_engine_log = logging.getLogger('sqlalchemy.engine.Engine')
+        sqlalchemy_engine_log.addHandler(log_handler)
+
+        self._log.setLevel(logging.DEBUG if self.verbose else logging.INFO)
+        self._log.addHandler(log_handler)
+        if self.verbose:
+            # Log the SQL table creation statements being executed,
+            # but we'll lower the level later during data insertion
+            # so we don't get overwhelmed with output.
+            sqlalchemy_engine_log.setLevel(logging.INFO)
+
+        self.output.parent.mkdir(parents=True, exist_ok=True)
+
+        if self.output.exists() and not self.force:
+            raise FileExistsError(f"Output database file '{self.output}' already exists. Use --force to overwrite.")
+
+        # Remove existing database file if it exists
+        self.output.unlink(missing_ok=True)
+
+        async with aiofiles.open(self.config, "r") as config_file:
+            config = PlaylistConfig.model_validate(tomllib.loads(await config_file.read()))
+
+        if self.playlists:
+            playlists = tuple(p for p in config.playlists if p.title in self.playlists)
+        else:
+            playlists = config.playlists
+
+        # Create async engine with SQLite
+        db, metadata = await create_db(self.output, DAT_OBJECT_TYPES)
+        sqlalchemy_engine_log.setLevel(logging.WARNING)
+
+        # Recursively find all subdirectories of the requested DAT directories
+        nested_dat_paths = chain.from_iterable(p.rglob("*") for p in self.dat_dirs)
+        dat_subdirs = await aiobuiltins.tuple(p for p in nested_dat_paths if await aiopath.isdir(p))
+        all_dat_dirs = tuple(chain(self.dat_dirs, dat_subdirs))
+
+        async def get_dat_paths(playlist: Playlist) -> tuple[Path, ...]:
+            # Use the name of the playlist and the alt names to find all relevant DAT files
+            dat_names = prepend(str(playlist.title), playlist.alts)
+
+            # Check for playlists of these names in all requested DAT directories
+            dat_paths = (d / f'{n}.dat' for d, n in product(all_dat_dirs, dat_names))
+
+            # HACK: Some XML files have a `.dat` extension, filter them out
+            dat_paths = filter(lambda p: 'xml' not in p.name.lower(), dat_paths)
+            return await aiobuiltins.tuple(p for p in dat_paths if await aiopath.exists(p))
+
+        dat_paths = {p: await get_dat_paths(p) for p in playlists}
+
+        self._log.debug("Loading games from %d playlists", len(playlists))
+        async with Pool(processes=self.processes) as pool:
+            async def job(playlist: Playlist, path: Path) -> LoadJobResult:
+                self._log.debug("Loading")
+                dat = await pool.apply(ParsedDatFile.from_dat_file_async, args=(path,))
+                self._log.info("Loaded with %d games", len(dat.root) - 1)
+                return LoadJobResult(playlist, path, dat)
+
+            async with asyncio.TaskGroup() as group:
+                jobs = (group.create_task(job(playlist, path), name=f"Load: {path}") for playlist in playlists for path in dat_paths[playlist])
+                async for j in as_completed(jobs):
+                    if len(j.datfile.root) > 1:
+                        group.create_task(
+                            self._insert_dat_file(db, metadata, j),
+                            name=f"Insert: {j.path}"
+                        )
+                    else:
+                        self._log.warning("DAT file %s has no games, skipping database insertion", j.path)
+
+        self._log.info("Finished inserting data")
+
+        async with db.connect() as connection:
+            # Run the SQLite optimizer to improve performance on all tables (0x10000),
+            # but don't take too long (0x00010)
+            await connection.execute(text("PRAGMA optimize = 0x10012"))
+
+        # Close the engine
+        await db.dispose()
+
+        end = time.perf_counter()
+        elapsed = timedelta(seconds=end - start)
+        self._log.info(f"Elapsed time: %s", elapsed)
+
+    async def _insert_dat_file(self, db: AsyncEngine, metadata: MetaData, dat: LoadJobResult) -> None:
+        # Collect all unique objects to insert
+        # Aggregate all nested models from all games in the playlist
+        clrmamepro = dat.datfile.clrmamepro
+        games = dat.datfile.games
+        roms = tuple(chain.from_iterable(g.roms for g in games))
+
+        async with self._db_lock:
+            async with db.begin() as tx:
+                self._log.debug("Inserting %d games", len(games))
+
+                game_table = metadata.tables[Game.__tablename__]
+                game_columns = game_table.columns
+                game_cursor = await tx.execute(
+                    insert(game_table).returning(game_columns.rowid, game_columns.romids),
+                    [g.as_row for g in games]
+                )
+                inserted_game_rows = game_cursor.all()
+                self._log.info("Inserted %d games", len(games))
+
+                game_playlist_mappings = tuple(PlaylistGameMapping(playlist=dat.playlist.title, game=row.rowid) for row in inserted_game_rows)
+                if game_playlist_mappings:
+                    self._log.debug("Inserting %d game-playlist mappings", len(game_playlist_mappings))
+                    await tx.execute(
+                        insert(metadata.tables[PlaylistGameMapping.__tablename__]).on_conflict_do_nothing(),
+                        [m.as_row for m in game_playlist_mappings]
+                    )
+                    self._log.info("Inserted %d game-playlist mappings", len(game_playlist_mappings))
+                else:
+                    self._log.info("No game-playlist mappings to insert")
+
+                if roms:
+                    self._log.debug("Inserting %d ROMs", len(tuple(roms)))
+                    # The same ROM is often represented in multiple DAT files,
+                    # so instead of discarding duplicates we merge them together;
+                    # NULL fields in the existing record are filled in
+                    # with non-NULL values from the new record.
+                    rom_table = metadata.tables[Rom.__tablename__]
+                    insert_roms = insert(rom_table)
+                    update_set = {
+                        "crc": coalesce(rom_table.columns.crc, insert_roms.excluded.crc),
+                        "md5": coalesce(rom_table.columns.md5, insert_roms.excluded.md5),
+                        "name": coalesce(rom_table.columns.name, insert_roms.excluded.name),
+                        "serial": coalesce(rom_table.columns.serial, insert_roms.excluded.serial),
+                        # TODO: Insert the excluded sha1 if and only if the existing one is null and the sha1 is valid (40 hex characters)
+                        "sha1": coalesce(
+                            rom_table.columns.sha1,
+                            #text("CASE WHEN excluded.sha1 IS NOT NULL AND length(excluded.sha1) = 40 THEN excluded.sha1 END")
+                            insert_roms.excluded.sha1
+                        ),
+                        "size": coalesce(rom_table.columns.size, insert_roms.excluded.size),
+                    }
+                    await tx.execute(
+                        insert_roms.on_conflict_do_update(set_=update_set),
+                        [r.as_row for r in roms]
+                    )
+                    self._log.info("Inserted %d ROMs", len(roms))
+
+                game_rom_mappings = []
+                for game in inserted_game_rows:
+                    rowid: RowId = game.rowid
+                    romids: list[RomId] = game.romids
+                    assert isinstance(rowid, int), f"Expected rowid to be an int, got {type(rowid)}"
+                    assert isinstance(romids, list), f"Expected romids to be a list, got {type(romids)}"
+
+                    game_rom_mappings.extend({"game": rowid, **r} for r in romids)
+
+                if game_rom_mappings:
+                    self._log.debug("Inserting %d game-ROM mappings", len(game_rom_mappings))
+                    mapping_table = metadata.tables[f"{Game.__tablename__}_roms"]
+                    insert_mapping = insert(mapping_table)
+                    rom_update_set = {
+                        "crc": coalesce(mapping_table.columns.crc, insert_mapping.excluded.crc),
+                        "md5": coalesce(mapping_table.columns.md5, insert_mapping.excluded.md5),
+                        "serial": coalesce(mapping_table.columns.serial, insert_mapping.excluded.serial),
+                        "sha1": coalesce(mapping_table.columns.sha1, insert_mapping.excluded.sha1),
+                    }
+                    await tx.execute(
+                        insert_mapping.on_conflict_do_update(set_=rom_update_set),
+                        game_rom_mappings
+                    )
+                    self._log.info("Inserted %d game-ROM mappings", len(game_rom_mappings))
+
+                await tx.commit()
+                # Commit the session to persist all added objects
+
+        self._log.info("Inserted %d games into database", len(games))
+
 class DatCommand(BaseSettings):
     tojson: CliSubCommand[ToJsonSubCommand]
     fromjson: CliSubCommand[FromJsonSubCommand]
     check: CliSubCommand[CheckSubCommand]
+    index: CliSubCommand[IndexSubCommand]
 
     model_config = SettingsConfigDict(
         case_sensitive=False,

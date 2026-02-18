@@ -862,6 +862,12 @@ type EmptyStringToNone[T] = Annotated[
 A type that serializes and validates empty strings as None.
 """
 
+class PoolArgs:
+    processes: int | None = Field(
+        default=None,
+        description="Number of processes to use for loading data. Defaults to the number of CPU cores.",
+    )
+
 __all__ = (
     "DatabaseModel",
     "Relationship",
