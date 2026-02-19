@@ -7,7 +7,7 @@ import time
 import tomllib
 
 from abc import ABC
-from collections.abc import Sequence
+from collections.abc import Collection, Sequence
 from datetime import timedelta
 from io import StringIO
 from itertools import chain, repeat, product
@@ -34,7 +34,7 @@ from sqlalchemy.dialects.sqlite import JSON, insert
 from sqlalchemy.sql.functions import coalesce
 
 from igdb import Playlist, PlaylistConfig, PlaylistTitle
-from utils import AsyncEngine, Crc, DatabaseModel, EmptyStringToNone, FrozenDict, Md5, OnlyFirst, PoolArgs, Relationship, RowId, RowIdColumn, Sha1, create_db
+from utils import AsyncEngine, Crc, DatabaseModel, EmptyStringToNone, FrozenDict, IndexArgs, Md5, OnlyFirst, PlaylistArgs, PoolArgs, Relationship, RowId, RowIdColumn, Sha1, VerboseArgs, create_db
 
 type DatValidationMode = Literal['dat'] | None
 type DatPair = tuple[str, DatValue]
@@ -483,13 +483,6 @@ class LoadedDat(NamedTuple):
 # but Pydantic doesn't read the Game correctly in that case.
 GameTupleAdapter = TypeAdapter(tuple[Game, ...])
 
-class VerboseArgs:
-    verbose: bool = Field(
-        default=False,
-        description="Enable verbose output.",
-        validation_alias=AliasChoices('v', 'verbose'),
-    )
-
 class CheckSubCommand(BaseModel, VerboseArgs):
     """Check DAT files for valid syntax."""
 
@@ -596,21 +589,152 @@ class LoadJobResult(NamedTuple):
     path: Path
     datfile: ParsedDatFile
 
-class IndexSubCommand(BaseModel, VerboseArgs, PoolArgs):
-    config: FilePath = Field(
-        default=PARENT_DIR / 'playlists.toml',
-        title="Playlist Config File",
-        description="Path to the config file that defines available playlists.",
-        validation_alias=AliasChoices('c', 'config'),
-        validate_default=True,
-    )
 
-    playlists: tuple[str, ...] = Field(
-        default=(),
-        validation_alias=AliasChoices('p', 'playlists'),
-        examples=[("Coleco - ColecoVision", "Dinothawr")]
-    )
+_dats_index_log = logging.getLogger('dats.index')
 
+
+async def _insert_dat_file(db: AsyncEngine, metadata: MetaData, db_lock: asyncio.Lock, dat: LoadJobResult) -> None:
+    """Insert a parsed DAT file's contents into the database."""
+    log = _dats_index_log
+    clrmamepro = dat.datfile.clrmamepro
+    games = dat.datfile.games
+    roms = tuple(chain.from_iterable(g.roms for g in games))
+
+    async with db_lock:
+        async with db.begin() as tx:
+            log.debug("Inserting %d games", len(games))
+
+            game_table = metadata.tables[Game.__tablename__]
+            game_columns = game_table.columns
+            game_cursor = await tx.execute(
+                insert(game_table).returning(game_columns.rowid, game_columns.romids),
+                [g.as_row for g in games]
+            )
+            inserted_game_rows = game_cursor.all()
+            log.info("Inserted %d games", len(games))
+
+            game_playlist_mappings = tuple(PlaylistGameMapping(playlist=dat.playlist.title, game=row.rowid) for row in inserted_game_rows)
+            if game_playlist_mappings:
+                log.debug("Inserting %d game-playlist mappings", len(game_playlist_mappings))
+                await tx.execute(
+                    insert(metadata.tables[PlaylistGameMapping.__tablename__]).on_conflict_do_nothing(),
+                    [m.as_row for m in game_playlist_mappings]
+                )
+                log.info("Inserted %d game-playlist mappings", len(game_playlist_mappings))
+            else:
+                log.info("No game-playlist mappings to insert")
+
+            if roms:
+                log.debug("Inserting %d ROMs", len(tuple(roms)))
+                # The same ROM is often represented in multiple DAT files,
+                # so instead of discarding duplicates we merge them together;
+                # NULL fields in the existing record are filled in
+                # with non-NULL values from the new record.
+                rom_table = metadata.tables[Rom.__tablename__]
+                insert_roms = insert(rom_table)
+                update_set = {
+                    "crc": coalesce(rom_table.columns.crc, insert_roms.excluded.crc),
+                    "md5": coalesce(rom_table.columns.md5, insert_roms.excluded.md5),
+                    "name": coalesce(rom_table.columns.name, insert_roms.excluded.name),
+                    "serial": coalesce(rom_table.columns.serial, insert_roms.excluded.serial),
+                    # TODO: Insert the excluded sha1 if and only if the existing one is null and the sha1 is valid (40 hex characters)
+                    "sha1": coalesce(
+                        rom_table.columns.sha1,
+                        #text("CASE WHEN excluded.sha1 IS NOT NULL AND length(excluded.sha1) = 40 THEN excluded.sha1 END")
+                        insert_roms.excluded.sha1
+                    ),
+                    "size": coalesce(rom_table.columns.size, insert_roms.excluded.size),
+                }
+                await tx.execute(
+                    insert_roms.on_conflict_do_update(set_=update_set),
+                    [r.as_row for r in roms]
+                )
+                log.info("Inserted %d ROMs", len(roms))
+
+            game_rom_mappings = []
+            for game in inserted_game_rows:
+                rowid: RowId = game.rowid
+                romids: list[RomId] = game.romids
+                assert isinstance(rowid, int), f"Expected rowid to be an int, got {type(rowid)}"
+                assert isinstance(romids, list), f"Expected romids to be a list, got {type(romids)}"
+
+                game_rom_mappings.extend({"game": rowid, **r} for r in romids)
+
+            if game_rom_mappings:
+                log.debug("Inserting %d game-ROM mappings", len(game_rom_mappings))
+                mapping_table = metadata.tables[f"{Game.__tablename__}_roms"]
+                insert_mapping = insert(mapping_table)
+                rom_update_set = {
+                    "crc": coalesce(mapping_table.columns.crc, insert_mapping.excluded.crc),
+                    "md5": coalesce(mapping_table.columns.md5, insert_mapping.excluded.md5),
+                    "serial": coalesce(mapping_table.columns.serial, insert_mapping.excluded.serial),
+                    "sha1": coalesce(mapping_table.columns.sha1, insert_mapping.excluded.sha1),
+                }
+                await tx.execute(
+                    insert_mapping.on_conflict_do_update(set_=rom_update_set),
+                    game_rom_mappings
+                )
+                log.info("Inserted %d game-ROM mappings", len(game_rom_mappings))
+
+            await tx.commit()
+            # Commit the session to persist all added objects
+
+    log.info("Inserted %d games into database", len(games))
+
+
+async def index_dats(
+    *,
+    db: AsyncEngine,
+    metadata: MetaData,
+    db_lock: asyncio.Lock,
+    playlists: Collection[Playlist],
+    dat_dirs: tuple[DirectoryPath, ...],
+    pool: Pool,
+) -> None:
+    """Load and index DAT files into the database."""
+    log = _dats_index_log
+
+    # Recursively find all subdirectories of the requested DAT directories
+    nested_dat_paths = chain.from_iterable(p.rglob("*") for p in dat_dirs)
+    dat_subdirs = await aiobuiltins.tuple(p for p in nested_dat_paths if await aiopath.isdir(p))
+    all_dat_dirs = tuple(chain(dat_dirs, dat_subdirs))
+
+    async def get_dat_paths(playlist: Playlist) -> tuple[Path, ...]:
+        # Use the name of the playlist and the alt names to find existing DAT files
+        dat_names = prepend(str(playlist.title), playlist.alts)
+
+        # Check for playlists of these names in all requested DAT directories
+        dat_paths = (d / f'{n}.dat' for d, n in product(all_dat_dirs, dat_names))
+
+        # HACK: Some XML files have a `.dat` extension, filter them out
+        dat_paths = filter(lambda p: 'xml' not in p.name.lower(), dat_paths)
+        return await aiobuiltins.tuple(p for p in dat_paths if await aiopath.exists(p))
+
+    dat_paths = {p: await get_dat_paths(p) for p in playlists}
+
+    log.debug("Loading games from %d playlists", len(playlists))
+
+    async def job(playlist: Playlist, path: Path) -> LoadJobResult:
+        log.debug("Loading")
+        dat = await pool.apply(ParsedDatFile.from_dat_file_async, args=(path,))
+        log.info("Loaded with %d games", len(dat.root) - 1)
+        return LoadJobResult(playlist, path, dat)
+
+    async with asyncio.TaskGroup() as group:
+        jobs = (group.create_task(job(playlist, path), name=f"Load: {path}") for playlist in playlists for path in dat_paths[playlist])
+        async for j in as_completed(jobs):
+            if len(j.datfile.root) > 1:
+                group.create_task(
+                    _insert_dat_file(db, metadata, db_lock, j),
+                    name=f"Insert: {j.path}"
+                )
+            else:
+                log.warning("DAT file %s has no games, skipping database insertion", j.path)
+
+    log.info("Finished inserting data")
+
+
+class IndexSubCommand(BaseModel, VerboseArgs, PlaylistArgs, IndexArgs, PoolArgs):
     dat_dirs: tuple[DirectoryPath, ...] = Field(
         default=(PARENT_DIR / 'dat', PARENT_DIR / 'metadat',),
         description="Paths to the directories containing existing DAT files to scan for games to process.",
@@ -623,12 +747,6 @@ class IndexSubCommand(BaseModel, VerboseArgs, PoolArgs):
         description="Path to the output SQLite database file.",
         validation_alias=AliasChoices('o', 'output'),
         validate_default=True,
-    )
-
-    force: bool = Field(
-        default=False,
-        description="Overwrite existing output database file if it exists.",
-        validation_alias=AliasChoices('f', 'force'),
     )
 
     _db_lock = asyncio.Lock()
@@ -670,44 +788,9 @@ class IndexSubCommand(BaseModel, VerboseArgs, PoolArgs):
         db, metadata = await create_db(self.output, DAT_OBJECT_TYPES)
         sqlalchemy_engine_log.setLevel(logging.WARNING)
 
-        # Recursively find all subdirectories of the requested DAT directories
-        nested_dat_paths = chain.from_iterable(p.rglob("*") for p in self.dat_dirs)
-        dat_subdirs = await aiobuiltins.tuple(p for p in nested_dat_paths if await aiopath.isdir(p))
-        all_dat_dirs = tuple(chain(self.dat_dirs, dat_subdirs))
 
-        async def get_dat_paths(playlist: Playlist) -> tuple[Path, ...]:
-            # Use the name of the playlist and the alt names to find all relevant DAT files
-            dat_names = prepend(str(playlist.title), playlist.alts)
-
-            # Check for playlists of these names in all requested DAT directories
-            dat_paths = (d / f'{n}.dat' for d, n in product(all_dat_dirs, dat_names))
-
-            # HACK: Some XML files have a `.dat` extension, filter them out
-            dat_paths = filter(lambda p: 'xml' not in p.name.lower(), dat_paths)
-            return await aiobuiltins.tuple(p for p in dat_paths if await aiopath.exists(p))
-
-        dat_paths = {p: await get_dat_paths(p) for p in playlists}
-
-        self._log.debug("Loading games from %d playlists", len(playlists))
-        async with Pool(processes=self.processes) as pool:
-            async def job(playlist: Playlist, path: Path) -> LoadJobResult:
-                self._log.debug("Loading")
-                dat = await pool.apply(ParsedDatFile.from_dat_file_async, args=(path,))
-                self._log.info("Loaded with %d games", len(dat.root) - 1)
-                return LoadJobResult(playlist, path, dat)
-
-            async with asyncio.TaskGroup() as group:
-                jobs = (group.create_task(job(playlist, path), name=f"Load: {path}") for playlist in playlists for path in dat_paths[playlist])
-                async for j in as_completed(jobs):
-                    if len(j.datfile.root) > 1:
-                        group.create_task(
-                            self._insert_dat_file(db, metadata, j),
-                            name=f"Insert: {j.path}"
-                        )
-                    else:
-                        self._log.warning("DAT file %s has no games, skipping database insertion", j.path)
-
-        self._log.info("Finished inserting data")
+        async with self.create_pool() as pool:
+            await index_dats(db=db, metadata=metadata, db_lock=self._db_lock, playlists=playlists, dat_dirs=self.dat_dirs, pool=pool)
 
         async with db.connect() as connection:
             # Run the SQLite optimizer to improve performance on all tables (0x10000),
@@ -721,93 +804,6 @@ class IndexSubCommand(BaseModel, VerboseArgs, PoolArgs):
         elapsed = timedelta(seconds=end - start)
         self._log.info(f"Elapsed time: %s", elapsed)
 
-    async def _insert_dat_file(self, db: AsyncEngine, metadata: MetaData, dat: LoadJobResult) -> None:
-        # Collect all unique objects to insert
-        # Aggregate all nested models from all games in the playlist
-        clrmamepro = dat.datfile.clrmamepro
-        games = dat.datfile.games
-        roms = tuple(chain.from_iterable(g.roms for g in games))
-
-        async with self._db_lock:
-            async with db.begin() as tx:
-                self._log.debug("Inserting %d games", len(games))
-
-                game_table = metadata.tables[Game.__tablename__]
-                game_columns = game_table.columns
-                game_cursor = await tx.execute(
-                    insert(game_table).returning(game_columns.rowid, game_columns.romids),
-                    [g.as_row for g in games]
-                )
-                inserted_game_rows = game_cursor.all()
-                self._log.info("Inserted %d games", len(games))
-
-                game_playlist_mappings = tuple(PlaylistGameMapping(playlist=dat.playlist.title, game=row.rowid) for row in inserted_game_rows)
-                if game_playlist_mappings:
-                    self._log.debug("Inserting %d game-playlist mappings", len(game_playlist_mappings))
-                    await tx.execute(
-                        insert(metadata.tables[PlaylistGameMapping.__tablename__]).on_conflict_do_nothing(),
-                        [m.as_row for m in game_playlist_mappings]
-                    )
-                    self._log.info("Inserted %d game-playlist mappings", len(game_playlist_mappings))
-                else:
-                    self._log.info("No game-playlist mappings to insert")
-
-                if roms:
-                    self._log.debug("Inserting %d ROMs", len(tuple(roms)))
-                    # The same ROM is often represented in multiple DAT files,
-                    # so instead of discarding duplicates we merge them together;
-                    # NULL fields in the existing record are filled in
-                    # with non-NULL values from the new record.
-                    rom_table = metadata.tables[Rom.__tablename__]
-                    insert_roms = insert(rom_table)
-                    update_set = {
-                        "crc": coalesce(rom_table.columns.crc, insert_roms.excluded.crc),
-                        "md5": coalesce(rom_table.columns.md5, insert_roms.excluded.md5),
-                        "name": coalesce(rom_table.columns.name, insert_roms.excluded.name),
-                        "serial": coalesce(rom_table.columns.serial, insert_roms.excluded.serial),
-                        # TODO: Insert the excluded sha1 if and only if the existing one is null and the sha1 is valid (40 hex characters)
-                        "sha1": coalesce(
-                            rom_table.columns.sha1,
-                            #text("CASE WHEN excluded.sha1 IS NOT NULL AND length(excluded.sha1) = 40 THEN excluded.sha1 END")
-                            insert_roms.excluded.sha1
-                        ),
-                        "size": coalesce(rom_table.columns.size, insert_roms.excluded.size),
-                    }
-                    await tx.execute(
-                        insert_roms.on_conflict_do_update(set_=update_set),
-                        [r.as_row for r in roms]
-                    )
-                    self._log.info("Inserted %d ROMs", len(roms))
-
-                game_rom_mappings = []
-                for game in inserted_game_rows:
-                    rowid: RowId = game.rowid
-                    romids: list[RomId] = game.romids
-                    assert isinstance(rowid, int), f"Expected rowid to be an int, got {type(rowid)}"
-                    assert isinstance(romids, list), f"Expected romids to be a list, got {type(romids)}"
-
-                    game_rom_mappings.extend({"game": rowid, **r} for r in romids)
-
-                if game_rom_mappings:
-                    self._log.debug("Inserting %d game-ROM mappings", len(game_rom_mappings))
-                    mapping_table = metadata.tables[f"{Game.__tablename__}_roms"]
-                    insert_mapping = insert(mapping_table)
-                    rom_update_set = {
-                        "crc": coalesce(mapping_table.columns.crc, insert_mapping.excluded.crc),
-                        "md5": coalesce(mapping_table.columns.md5, insert_mapping.excluded.md5),
-                        "serial": coalesce(mapping_table.columns.serial, insert_mapping.excluded.serial),
-                        "sha1": coalesce(mapping_table.columns.sha1, insert_mapping.excluded.sha1),
-                    }
-                    await tx.execute(
-                        insert_mapping.on_conflict_do_update(set_=rom_update_set),
-                        game_rom_mappings
-                    )
-                    self._log.info("Inserted %d game-ROM mappings", len(game_rom_mappings))
-
-                await tx.commit()
-                # Commit the session to persist all added objects
-
-        self._log.info("Inserted %d games into database", len(games))
 
 class DatCommand(BaseSettings):
     tojson: CliSubCommand[ToJsonSubCommand]
@@ -831,6 +827,7 @@ class DatCommand(BaseSettings):
 __all__ = (
     "ClrMamePro",
     "Game",
+    "index_dats",
     "load_dat",
     "Rom",
     "DAT_OBJECT_TYPES",

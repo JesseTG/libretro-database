@@ -16,18 +16,19 @@ from itertools import chain
 from pathlib import Path
 from typing import Annotated, Any, ClassVar, ForwardRef, Literal, NewType, TypeGuard, get_origin, overload, get_args
 
+from aiomultiprocess import Pool
 import sqlalchemy
 
 from frozendict import frozendict
 from more_itertools import always_iterable, only
-from pydantic import AfterValidator, BaseModel, BeforeValidator, Field, GetCoreSchemaHandler, GetPydanticSchema, HttpUrl, JsonValue, PlainSerializer, StringConstraints, ValidatorFunctionWrapHandler, WrapSerializer, WrapValidator
+from pydantic import AfterValidator, AliasChoices, BaseModel, BeforeValidator, Field, FilePath, GetCoreSchemaHandler, GetPydanticSchema, HttpUrl, JsonValue, NonNegativeInt, PlainSerializer, PositiveInt, StringConstraints, ValidatorFunctionWrapHandler, WrapSerializer, WrapValidator
 from pydantic_core import CoreSchema, core_schema
 from pydantic.fields import ComputedFieldInfo, FieldInfo
 from pydantic_extra_types.country import CountryNumericCode
 from sqlalchemy import DDL, Column, Constraint, ForeignKey, MetaData, Table, Index, text
 from sqlalchemy import event
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
-from sqlalchemy.schema import SchemaConst, SchemaItem
+from sqlalchemy.schema import SchemaConst
 from sqlalchemy.types import NullType, TypeEngine
 from sqlalchemy.util import is_non_string_iterable
 from sqlalchemy.util.typing import (GenericProtocol, TypeAliasType,
@@ -862,10 +863,53 @@ type EmptyStringToNone[T] = Annotated[
 A type that serializes and validates empty strings as None.
 """
 
+PARENT_DIR = Path(__file__).parent.parent
+
 class PoolArgs:
     processes: int | None = Field(
         default=None,
         description="Number of processes to use for loading data. Defaults to the number of CPU cores.",
+    )
+
+    maxtasksperchild: NonNegativeInt = 0
+    childconcurrency: PositiveInt = 16
+    queuecount: PositiveInt = 1
+
+    def create_pool(self) -> Pool:
+        return Pool(
+            processes=self.processes,
+            maxtasksperchild=self.maxtasksperchild,
+            childconcurrency=self.childconcurrency,
+            queuecount=self.queuecount,
+        )
+
+class IndexArgs:
+    force: bool = Field(
+        default=False,
+        description="Overwrite existing output database file if it exists.",
+        validation_alias=AliasChoices('f', 'force'),
+    )
+
+class VerboseArgs:
+    verbose: bool = Field(
+        default=False,
+        description="Enable verbose output.",
+        validation_alias=AliasChoices('v', 'verbose'),
+    )
+
+class PlaylistArgs:
+    config: FilePath = Field(
+        default=PARENT_DIR / 'playlists.toml',
+        title="Playlist Config File",
+        description="Path to the config file that defines available playlists.",
+        validation_alias=AliasChoices('c', 'config'),
+        validate_default=True,
+    )
+
+    playlists: tuple[str, ...] = Field(
+        default=(),
+        validation_alias=AliasChoices('p', 'playlists'),
+        examples=[("Coleco - ColecoVision", "Dinothawr")]
     )
 
 __all__ = (

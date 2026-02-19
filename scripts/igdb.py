@@ -22,12 +22,12 @@ from typing import Annotated, Any, ClassVar, Never, NotRequired, Literal, NewTyp
 
 import aiofiles
 import aiofiles.os
-from aioitertools.asyncio import as_completed
-from aiomultiprocess import Pool
 import asynciolimiter
 import backoff
 import httpx
 
+from aioitertools.asyncio import as_completed
+from aiomultiprocess import Pool
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
 from frozendict import frozendict
@@ -41,7 +41,7 @@ from sqlalchemy import Column, ForeignKey, Index, MetaData, column, text
 from sqlalchemy.dialects.sqlite import INTEGER, insert
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-from utils import CoercedHttpUrl, DatabaseModel, PoolArgs, Relationship, create_db
+from utils import CoercedHttpUrl, DatabaseModel, PoolArgs, Relationship, create_db, VerboseArgs
 
 IgdbId = NewType('IgdbId', int)
 IgdbPrimaryId = Annotated[
@@ -1027,13 +1027,6 @@ class AuthArgs:
         min_length=1,
     )
 
-class CommonArgs:
-    verbose: bool = Field(
-        default=False,
-        description="Enable verbose output.",
-        validation_alias=AliasChoices('v', 'verbose'),
-    )
-
 class PlaylistArgs:
     config: FilePath = Field(
         default=Path(__file__).parent.parent / 'playlists.toml',
@@ -1056,7 +1049,7 @@ class PlaylistArgs:
         examples=[("Coleco - ColecoVision", "Dinothawr")]
     )
 
-class QuerySubCommand(BaseModel, CommonArgs, AuthArgs):
+class QuerySubCommand(BaseModel, VerboseArgs, AuthArgs):
     """
     Execute an arbitrary Apicalypse query against the IGDB API
     and print the results as JSON to stdout.
@@ -1148,7 +1141,7 @@ class QuerySubCommand(BaseModel, CommonArgs, AuthArgs):
                 json = to_json(results, indent=2)
                 await aiofiles.stdout_bytes.write(json)
 
-class FetchSubCommand(BaseModel, CommonArgs, AuthArgs, PlaylistArgs):
+class FetchSubCommand(BaseModel, VerboseArgs, AuthArgs, PlaylistArgs):
     """
     Fetch game data from IGDB for one or more playlists
     and save the results as JSON files.
@@ -1218,7 +1211,115 @@ class FetchSubCommand(BaseModel, CommonArgs, AuthArgs, PlaylistArgs):
 
 PARENT_DIR = Path(__file__).parent.parent
 
-class IndexSubCommand(BaseModel, CommonArgs, PlaylistArgs, PoolArgs):
+_igdb_index_log = logging.getLogger('igdb.index')
+
+
+async def _insert_igdb_playlist(db: AsyncEngine, metadata: MetaData, db_lock: asyncio.Lock, playlist: Playlist, games: Collection[Game]) -> None:
+    """Insert an IGDB playlist's games into the database."""
+    log = _igdb_index_log
+    log.debug("Extracting nested models from %d games", len(games))
+    nested_models = map_reduce(
+        chain(games, chain.from_iterable(g.nested_models for g in games)),
+        lambda model: type(model),
+        None,
+        frozenset
+    )
+
+    log.info("Extracted nested models from %d games", len(games))
+
+    for (model_type, models) in nested_models.items():
+        async with db_lock:
+            async with db.begin() as tx:
+                log.info("Inserting %d %s records", len(models), model_type.__name__)
+                assert model_type.__tablename__ in metadata.tables, f"Model type '{model_type.__name__}' has no corresponding table in metadata"
+
+                table = metadata.tables[model_type.__tablename__]
+                cursor = await tx.execute(
+                    insert(table).on_conflict_do_nothing(),
+                    # Insert game records, ignoring conflicts because
+                    # the same game (or franchise, or genre, or other object)
+                    # may appear in multiple playlists
+
+                    [m.as_row for m in models]
+                    # BaseModel.model_dump serializes the model to a dict,
+                    # and IgdbObject in particular defines custom serialization behavior
+                    # that's activated by passing a context value of "row".
+                )
+
+                await tx.commit()
+                log.info("Inserted %d %s records", len(models),  model_type.__name__)
+
+    relationships = map_reduce(
+        chain.from_iterable(g.relationships.items() for g in games),
+        lambda rels: rels[0], # key is the field name
+        lambda rels: rels[1], # value is the set of relationships
+        lambda entries: tuple(chain.from_iterable(entries)) # group by field name, aggregate unique relationships
+    )
+    # TODO: Insert the age rating-related relationships
+    for (field_name, rels) in relationships.items():
+        async with db_lock:
+            async with db.begin() as tx:
+                log.info("Inserting %d '%s' relationships", len(rels), field_name)
+                tablename = f"{Game.__tablename__}_{field_name}"
+                assert tablename in metadata.tables, f"Relationship field '{field_name}' has no corresponding table in metadata"
+
+                await tx.execute(
+                    insert(metadata.tables[tablename]).on_conflict_do_nothing(),
+                    rels
+                )
+                await tx.commit()
+
+                log.info("Inserted %d '%s' relationships", len(rels), field_name)
+
+    mappings = tuple(PlaylistMapping(title=playlist.title, game=g.id) for g in games)
+
+    async with db_lock:
+        async with db.begin() as tx:
+            log.info("Inserting %d playlist mappings", len(mappings))
+            await tx.execute(
+                insert(metadata.tables[PlaylistMapping.__tablename__]).on_conflict_do_nothing(),
+                [m.as_row for m in mappings]
+            )
+            await tx.commit()
+
+    log.info("Inserted %d games", len(games))
+
+
+async def index_igdb(
+    *,
+    db: AsyncEngine,
+    metadata: MetaData,
+    db_lock: asyncio.Lock,
+    playlists: Collection[Playlist],
+    igdb_path: DirectoryPath,
+    pool: Pool
+) -> None:
+    """Load and index IGDB game data into the database."""
+    log = _igdb_index_log
+    playlists = tuple(playlists)
+
+    log.info("Inserting games from %d playlists", len(playlists))
+
+    async def job(playlist: Playlist):
+        path = igdb_path / f"{playlist.title}.json"
+        log.debug("Loading queried games from '%s'", path)
+        loaded = await pool.apply(load_game_file, (path,))
+        log.info("Loaded %d games from '%s'", len(loaded), path)
+        return (playlist, loaded)
+
+    async with TaskGroup() as group:
+        playlist_jobs = (group.create_task(job(p), name=f"Load: {p.title}") for p in playlists)
+
+        async for (playlist, games) in as_completed(playlist_jobs):
+            await group.create_task(
+                _insert_igdb_playlist(db, metadata, db_lock, playlist, games),
+                name=f"Insert: {playlist.title}"
+            )
+
+    log.info("Finished inserting data")
+
+
+class IndexSubCommand(BaseModel, VerboseArgs, PlaylistArgs, PoolArgs):
     output: Path = Field(
         default=PARENT_DIR / 'tmp' / 'igdb.db',
         description="Path to the output SQLite database file.",
@@ -1278,26 +1379,8 @@ class IndexSubCommand(BaseModel, CommonArgs, PlaylistArgs, PoolArgs):
         db, metadata = await create_db(self.output, IGDB_OBJECT_TYPES)
         sqlalchemy_engine_log.setLevel(logging.WARNING)
 
-        async with Pool(processes=self.processes) as pool:
-            self._log.info("Inserting games from %d playlists", len(playlists))
-
-            async def job(playlist: Playlist):
-                path = self.igdb_path / f"{playlist.title}.json"
-                self._log.debug("Loading queried games from '%s'", path)
-                loaded = await pool.apply(load_game_file, (path,))
-                self._log.info("Loaded %d games from '%s'", len(loaded), path)
-                return (playlist, loaded)
-
-            async with TaskGroup() as group:
-                playlist_jobs = (group.create_task(job(p), name=f"Load: {p.title}") for p in playlists)
-
-                async for (playlist, games) in as_completed(playlist_jobs):
-                    await group.create_task(
-                        self._insert_igdb_playlist(db, metadata, playlist, games),
-                        name=f"Insert: {playlist.title}"
-                    )
-
-            self._log.info("Finished inserting data")
+        async with self.create_pool() as pool:
+            await index_igdb(db=db, metadata=metadata, db_lock=self._db_lock, playlists=playlists, igdb_path=self.igdb_path, pool=pool)
 
         async with db.connect() as connection:
             # Run the SQLite optimizer to improve performance on all tables (0x10000),
@@ -1310,75 +1393,6 @@ class IndexSubCommand(BaseModel, CommonArgs, PlaylistArgs, PoolArgs):
         end = time.perf_counter()
         elapsed = timedelta(seconds=end - start)
         self._log.info(f"Elapsed time: %s", elapsed)
-
-    async def _insert_igdb_playlist(self, db: AsyncEngine, metadata: MetaData, playlist: Playlist, games: Collection[Game]):
-        self._log.debug("Extracting nested models from %d games", len(games))
-        nested_models = map_reduce(
-            chain(games, chain.from_iterable(g.nested_models for g in games)),
-            lambda model: type(model),
-            None,
-            frozenset
-        )
-
-        self._log.info("Extracted nested models from %d games", len(games))
-
-        for (model_type, models) in nested_models.items():
-            async with self._db_lock:
-                async with db.begin() as tx:
-                    self._log.info("Inserting %d %s records", len(models), model_type.__name__)
-                    assert model_type.__tablename__ in metadata.tables, f"Model type '{model_type.__name__}' has no corresponding table in metadata"
-
-                    table = metadata.tables[model_type.__tablename__]
-                    cursor = await tx.execute(
-                        insert(table).on_conflict_do_nothing(),
-                        # Insert game records, ignoring conflicts because
-                        # the same game (or franchise, or genre, or other object)
-                        # may appear in multiple playlists
-
-                        [m.as_row for m in models]
-                        # BaseModel.model_dump serializes the model to a dict,
-                        # and IgdbObject in particular defines custom serialization behavior
-                        # that's activated by passing a context value of "row".
-                    )
-
-                    await tx.commit()
-                    self._log.info("Inserted %d %s records", len(models),  model_type.__name__)
-
-        relationships = map_reduce(
-            chain.from_iterable(g.relationships.items() for g in games),
-            lambda rels: rels[0], # key is the field name
-            lambda rels: rels[1], # value is the set of relationships
-            lambda entries: tuple(chain.from_iterable(entries)) # group by field name, aggregate unique relationships
-        )
-        # TODO: Insert the age rating-related relationships
-        for (field_name, rels) in relationships.items():
-            async with self._db_lock:
-                async with db.begin() as tx:
-                    self._log.info("Inserting %d '%s' relationships", len(rels), field_name)
-                    tablename = f"{Game.__tablename__}_{field_name}"
-                    assert tablename in metadata.tables, f"Relationship field '{field_name}' has no corresponding table in metadata"
-
-                    await tx.execute(
-                        insert(metadata.tables[tablename]).on_conflict_do_nothing(),
-                        rels
-                    )
-                    await tx.commit()
-
-                    self._log.info("Inserted %d '%s' relationships", len(rels), field_name)
-
-        mappings = tuple(PlaylistMapping(title=playlist.title, game=g.id) for g in games)
-
-        async with self._db_lock:
-            async with db.begin() as tx:
-                self._log.info("Inserting %d playlist mappings", len(mappings))
-                await tx.execute(
-                    insert(metadata.tables[PlaylistMapping.__tablename__]).on_conflict_do_nothing(),
-                    [m.as_row for m in mappings]
-                )
-                await tx.commit()
-
-        self._log.info("Inserted %d games", len(games))
-
 
 class IgdbCommand(BaseSettings):
     fetch: CliSubCommand[FetchSubCommand]
@@ -1421,6 +1435,7 @@ __all__ = (
     "IgdbId",
     "IgdbObject",
     "IGDB_OBJECT_TYPES",
+    "index_igdb",
     "InvolvedCompany",
     "Keyword",
     "Language",

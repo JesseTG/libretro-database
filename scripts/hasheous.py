@@ -16,7 +16,7 @@ import time
 import tomllib
 
 from abc import ABC
-from collections.abc import Collection, Sequence
+from collections.abc import Collection, Iterable, Sequence
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from functools import cached_property
@@ -42,7 +42,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy.util import is_non_string_iterable
 
 from igdb import IgdbId, Playlist, PlaylistConfig, PlaylistTitle
-from utils import Crc, DatabaseModel, FrozenDict, PoolArgs, TypedFrozenDict, InsertInRowContext, EmptyStringToNone, Md5, Sha1, Sha256, create_db
+from utils import Crc, DatabaseModel, FrozenDict, IndexArgs, PlaylistArgs, PoolArgs, TypedFrozenDict, InsertInRowContext, EmptyStringToNone, Md5, Sha1, Sha256, create_db, VerboseArgs
 
 METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
 
@@ -439,14 +439,7 @@ def _giveup(e: Exception):
 
     return e.response.is_error
 
-class CommonArgs:
-    verbose: bool = Field(
-        default=False,
-        description="Enable verbose output.",
-        validation_alias=AliasChoices('v', 'verbose'),
-    )
-
-class FetchSubCommand(BaseModel, CommonArgs):
+class FetchSubCommand(BaseModel, VerboseArgs):
     config: FilePath = Field(
         default=Path(__file__).parent.parent / 'playlists.toml',
         title="Playlist Config File",
@@ -579,7 +572,7 @@ async def submit_matches(tsv_path: Path, api_key: str, dry_run: bool = False, ve
         valid_matches = filter(can_submit, matches)
         raise NotImplementedError("Submission functionality is not yet implemented.")
 
-class SubmitSubCommand(BaseModel, CommonArgs):
+class SubmitSubCommand(BaseModel, VerboseArgs):
     api_key: str  = Field(
         description="The Hasheous API key to use for submission. Overrides the HASHEOUS_API_KEY environment variable if provided.",
         validation_alias=AliasChoices('a', 'api-key'),
@@ -619,21 +612,131 @@ class HasheousJob(NamedTuple):
     playlists: set[Playlist]
     games: Collection[GameDataObject]
 
-class IndexSubCommand(BaseModel, CommonArgs, PoolArgs):
-    config: FilePath = Field(
-        default=Path(__file__).parent.parent / 'playlists.toml',
-        title="Playlist Config File",
-        description="Path to the config file that defines available playlists.",
-        validation_alias=AliasChoices('c', 'config'),
-        validate_default=True,
+
+_hasheous_index_log = logging.getLogger('hasheous.index')
+
+
+async def _insert_hasheous_dump(db: AsyncEngine, metadata: MetaData, db_lock: asyncio.Lock, job: HasheousJob) -> None:
+    """Insert a Hasheous dump's contents into the database."""
+    log = _hasheous_index_log
+    # Collect all unique objects to insert
+    log.debug("Inserting %d games from %s", len(job.games), job.name)
+    nested_models = map_reduce(
+        chain(job.games, chain.from_iterable(g.nested_models for g in job.games)),
+        lambda model: type(model),
+        None,
+        frozenset
     )
 
-    playlists: tuple[str, ...] = Field(
-        default=(),
-        validation_alias=AliasChoices('p', 'playlists'),
-        examples=[("Coleco - ColecoVision", "Dinothawr")]
+    async with db_lock:
+        async with db.begin() as tx:
+            for (model_type, models) in nested_models.items():
+                assert model_type.__tablename__ in metadata.tables, f"Model type '{model_type.__name__}' has no corresponding table in metadata"
+
+                await tx.execute(
+                    insert(metadata.tables[model_type.__tablename__]).on_conflict_do_nothing(),
+                    # Insert game records, ignoring conflicts because
+                    # the same game (or franchise, or genre, or other object)
+                    # may appear in multiple dumps
+
+                    # Create a row dict for each model
+                    [m.as_row for m in models]
+                )
+
+            await tx.commit()
+
+    relationships = map_reduce(
+        chain.from_iterable(g.relationships.items() for g in job.games),
+        lambda rels: rels[0], # key is the field name
+        lambda rels: rels[1], # value is the set of relationships
+        lambda entries: tuple(chain.from_iterable(entries)) # group by field name, aggregate unique relationships
     )
 
+    playlist_dump_mappings = tuple(PlaylistDumpMapping(playlist=p.title, dump=job.name) for p in job.playlists)
+
+    async with db_lock:
+        async with db.begin() as tx:
+            for (field_name, rels) in relationships.items():
+                tablename = f"{GameDataObject.__tablename__}_{field_name}"
+                assert tablename in metadata.tables, f"Relationship field '{field_name}' has no corresponding table in metadata"
+
+                await tx.execute(
+                    insert(metadata.tables[tablename]).on_conflict_do_nothing(),
+                    rels
+                )
+
+            await tx.commit()
+
+    if playlist_dump_mappings:
+        async with db_lock:
+            async with db.begin() as tx:
+                log.debug("Inserting %d playlist-dump mappings", len(playlist_dump_mappings))
+                await tx.execute(
+                    insert(metadata.tables[PlaylistDumpMapping.__tablename__]).on_conflict_do_nothing(),
+                    [m.as_row for m in playlist_dump_mappings]
+                )
+                await tx.commit()
+                log.info("Inserted %d playlist-dump mappings", len(playlist_dump_mappings))
+    else:
+        log.info("No playlist-dump mappings to insert")
+
+    game_dump_mappings = tuple(GameDumpMapping(dump=job.name, game=g.id) for g in job.games)
+    if game_dump_mappings:
+        async with db_lock:
+            async with db.begin() as tx:
+                log.debug("Inserting %d game-dump mappings", len(game_dump_mappings))
+                await tx.execute(
+                    insert(metadata.tables[GameDumpMapping.__tablename__]).on_conflict_do_nothing(),
+                    [m.as_row for m in game_dump_mappings]
+                )
+                await tx.commit()
+                log.info("Inserted %d game-dump mappings", len(game_dump_mappings))
+    else:
+        log.info("No game-dump mappings to insert")
+
+    log.info("Inserted %d games", len(job.games))
+
+
+async def index_hasheous(
+    *,
+    db: AsyncEngine,
+    metadata: MetaData,
+    db_lock: asyncio.Lock,
+    playlists: Iterable[Playlist],
+    hasheous_path: DirectoryPath,
+    pool: Pool
+) -> None:
+    """Load and index Hasheous dump data into the database."""
+    log = _hasheous_index_log
+    playlists = tuple(playlists)
+
+    requested_dumps = set(chain.from_iterable(p.hasheous_dirs for p in playlists)) | {'Unknown Platform'}
+
+    async def job(name: str) -> HasheousJob:
+        path = hasheous_path / f"{name}.zip"
+        log.debug("Loading %s", path)
+        games = await pool.apply(load_zip, (path,))
+        log.info("Loaded %d games from %s", len(games), path)
+
+        # Get all playlists that reference this Hasheous dump
+        # (except the implicit "Unknown Platform" dump,
+        # but it'll be included if explicitly named)
+        referencing_playlists = {p for p in playlists if name in p.hasheous_dirs}
+        return HasheousJob(name, referencing_playlists, games)
+
+    async with asyncio.TaskGroup() as group:
+        log.info("Inserting data from %d dump archives", len(requested_dumps))
+        jobs = (group.create_task(job(name), name=f"Load: {name}") for name in requested_dumps)
+        async for j in as_completed(jobs):
+            group.create_task(
+                _insert_hasheous_dump(db, metadata, db_lock, j),
+                name=f"Insert: {j.name}"
+                )
+
+    log.info("Finished inserting data")
+
+
+class IndexSubCommand(BaseModel, PlaylistArgs, IndexArgs, VerboseArgs, PoolArgs):
     hasheous_path: DirectoryPath = Field(
         default=PARENT_DIR / 'tmp' / 'hasheous',
         description="Path to the directory containing Hasheous ZIP dumps fetched with `hasheous.py fetch`.",
@@ -646,12 +749,6 @@ class IndexSubCommand(BaseModel, CommonArgs, PoolArgs):
         description="Path to the output SQLite database file.",
         validation_alias=AliasChoices('o', 'output'),
         validate_default=True,
-    )
-
-    force: bool = Field(
-        default=False,
-        description="Overwrite existing output database file if it exists.",
-        validation_alias=AliasChoices('f', 'force'),
     )
 
     _db_lock = asyncio.Lock()
@@ -693,28 +790,8 @@ class IndexSubCommand(BaseModel, CommonArgs, PoolArgs):
         db, metadata = await create_db(self.output, HASHEOUS_OBJECT_TYPES)
         sqlalchemy_engine_log.setLevel(logging.WARNING)
 
-        requested_dumps = set(chain.from_iterable(p.hasheous_dirs for p in playlists)) | {'Unknown Platform'}
-        async with Pool(processes=self.processes) as pool:
-            async def job(name: str) -> HasheousJob:
-                path = self.hasheous_path / f"{name}.zip"
-                self._log.debug("Loading %s", path)
-                games = await pool.apply(load_zip, (path,))
-                self._log.info("Loaded %d games from %s", len(games), path)
-
-                # Get all playlists that reference this Hasheous dump
-                # (except the implicit "Unknown Platform" dump,
-                # but it'll be included if explicitly named)
-                referencing_playlists = {p for p in playlists if name in p.hasheous_dirs}
-                return HasheousJob(name, referencing_playlists, games)
-
-            async with asyncio.TaskGroup() as group:
-                self._log.info("Inserting data from %d dump archives", len(requested_dumps))
-                jobs = (group.create_task(job(name), name=f"Load: {name}") for name in requested_dumps)
-                async for j in as_completed(jobs):
-                    group.create_task(
-                        self._insert_hasheous_dump(db, metadata, j),
-                        name=f"Insert: {j.name}"
-                    )
+        async with self.create_pool() as pool:
+            await index_hasheous(db=db, metadata=metadata, db_lock=self._db_lock, playlists=playlists, hasheous_path=self.hasheous_path, pool=pool)
 
         self._log.info("Finished inserting data")
 
@@ -729,84 +806,6 @@ class IndexSubCommand(BaseModel, CommonArgs, PoolArgs):
         end = time.perf_counter()
         elapsed = timedelta(seconds=end - start)
         self._log.info(f"Elapsed time: %s", elapsed)
-
-    async def _insert_hasheous_dump(self, db: AsyncEngine, metadata: MetaData, job: HasheousJob):
-        # Collect all unique objects to insert
-        self._log.debug("Inserting %d games from %s", len(job.games), job.name)
-        nested_models = map_reduce(
-            chain(job.games, chain.from_iterable(g.nested_models for g in job.games)),
-            lambda model: type(model),
-            None,
-            frozenset
-        )
-
-        async with self._db_lock:
-            async with db.begin() as tx:
-                for (model_type, models) in nested_models.items():
-                    assert model_type.__tablename__ in metadata.tables, f"Model type '{model_type.__name__}' has no corresponding table in metadata"
-
-                    await tx.execute(
-                        insert(metadata.tables[model_type.__tablename__]).on_conflict_do_nothing(),
-                        # Insert game records, ignoring conflicts because
-                        # the same game (or franchise, or genre, or other object)
-                        # may appear in multiple dumps
-
-                        # Create a row dict for each model
-                        [m.as_row for m in models]
-                    )
-
-                await tx.commit()
-
-        relationships = map_reduce(
-            chain.from_iterable(g.relationships.items() for g in job.games),
-            lambda rels: rels[0], # key is the field name
-            lambda rels: rels[1], # value is the set of relationships
-            lambda entries: tuple(chain.from_iterable(entries)) # group by field name, aggregate unique relationships
-        )
-
-        playlist_dump_mappings = tuple(PlaylistDumpMapping(playlist=p.title, dump=job.name) for p in job.playlists)
-
-        async with self._db_lock:
-            async with db.begin() as tx:
-                for (field_name, rels) in relationships.items():
-                    tablename = f"{GameDataObject.__tablename__}_{field_name}"
-                    assert tablename in metadata.tables, f"Relationship field '{field_name}' has no corresponding table in metadata"
-
-                    await tx.execute(
-                        insert(metadata.tables[tablename]).on_conflict_do_nothing(),
-                        rels
-                    )
-
-                await tx.commit()
-
-        if playlist_dump_mappings:
-            async with self._db_lock:
-                async with db.begin() as tx:
-                    self._log.debug("Inserting %d playlist-dump mappings", len(playlist_dump_mappings))
-                    await tx.execute(
-                        insert(metadata.tables[PlaylistDumpMapping.__tablename__]).on_conflict_do_nothing(),
-                        [m.as_row for m in playlist_dump_mappings]
-                    )
-                    await tx.commit()
-                    self._log.info("Inserted %d playlist-dump mappings", len(playlist_dump_mappings))
-        else:
-            self._log.info("No playlist-dump mappings to insert")
-
-        game_dump_mappings = tuple(GameDumpMapping(dump=job.name, game=g.id) for g in job.games)
-        if game_dump_mappings:
-            async with self._db_lock:
-                async with db.begin() as tx:
-                    self._log.debug("Inserting %d game-dump mappings", len(game_dump_mappings))
-                    await tx.execute(
-                        insert(metadata.tables[GameDumpMapping.__tablename__]).on_conflict_do_nothing(),
-                        [m.as_row for m in game_dump_mappings]
-                    )
-                    await tx.commit()
-                    self._log.info("Inserted %d game-dump mappings", len(game_dump_mappings))
-        else:
-            self._log.info("No game-dump mappings to insert")
-
-        self._log.info("Inserted %d games", len(job.games))
 
 
 
@@ -835,6 +834,7 @@ __all__ = (
     "DataObjectType",
     "HasheousId",
     "HASHEOUS_OBJECT_TYPES",
+    "index_hasheous",
     "load_zip",
     "MappingStatus",
     "MatchMethodType",
