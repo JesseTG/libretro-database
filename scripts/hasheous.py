@@ -52,7 +52,7 @@ class HasheousObject(DatabaseModel, ABC, frozen=True):
     pass
 
 class SignatureDataObject(HasheousObject, frozen=True, alias_generator=to_pascal):
-    __tablename__: ClassVar[str] = "HasheousSignatureDataObject"
+    __tablename__ = "HasheousSignatureDataObject"
     signature_id: Annotated[int, Column(primary_key=True)]
     name: EmptyStringToNone[str] = None
     year: EmptyStringToNone[str] = None
@@ -117,7 +117,7 @@ class RomItem(HasheousObject, frozen=True, alias_generator=to_pascal):
     Structure taken from https://github.com/gaseous-project/hasheous/blob/main/hasheous-lib/Schema/hasheous-1000.sql
     (specifically the Signatures_Roms table)
     """
-    __tablename__: ClassVar[str] = "HasheousRomItem"
+    __tablename__ = "HasheousRomItem"
     __tableargs__ = (
         Column("serial", String(), Computed("attributes ->> '$.serial'"), index=True, nullable=True),
         Index("ix_HasheousRomItem_crc_where_not_null", "crc", unique=True, sqlite_where=column("crc").is_not(None)),
@@ -219,7 +219,7 @@ class DataObject(DatabaseModel, ABC, frozen=True, alias_generator=to_pascal):
             return None
 
 class PlatformDataObject(DataObject, frozen=True, alias_generator=to_pascal):
-    __tablename__: ClassVar[str] = "HasheousPlatformDataObject"
+    __tablename__ = "HasheousPlatformDataObject"
     object_type: Annotated[Literal["Platform"], Field(exclude=True)]
 
     @computed_field(return_type=IgdbId | None)
@@ -235,7 +235,7 @@ class PlatformDataObject(DataObject, frozen=True, alias_generator=to_pascal):
         return attribute.value if attribute and isinstance(attribute.value, CompanyDataObject) else None
 
 class CompanyDataObject(DataObject, frozen=True, alias_generator=to_pascal):
-    __tablename__: ClassVar[str] = "HasheousCompanyDataObject"
+    __tablename__ = "HasheousCompanyDataObject"
     object_type: Annotated[Literal["Company"], Field(exclude=True)]
 
     @computed_field(return_type=IgdbId | None)
@@ -245,7 +245,7 @@ class CompanyDataObject(DataObject, frozen=True, alias_generator=to_pascal):
         return self._get_igdb_id()
 
 class GameDataObject(DataObject, frozen=True, alias_generator=to_pascal):
-    __tablename__: ClassVar[str] = "HasheousGameDataObject"
+    __tablename__ = "HasheousGameDataObject"
     __tableargs__ = (
         Index("ix_HasheousGameDataObject_igdb_id_where_not_null", "igdb_id", sqlite_where=column("igdb_id").is_not(None)),
     )
@@ -302,13 +302,13 @@ class GameDataObject(DataObject, frozen=True, alias_generator=to_pascal):
         return tuple(lang.strip() for lang in attribute.value.split(','))
 
 class PlaylistDumpMapping(DatabaseModel, frozen=True):
-    __tablename__: ClassVar[str] = "HasheousPlaylistDumpMapping"
+    __tablename__ = "HasheousPlaylistDumpMapping"
     __tablekwargs__ = {"sqlite_with_rowid": False}
     playlist: Annotated[PlaylistTitle, Column(primary_key=True, index=True)]
     dump: Annotated[str, Column(primary_key=True, index=True)]
 
 class GameDumpMapping(DatabaseModel, frozen=True):
-    __tablename__: ClassVar[str] = "HasheousGameDumpMapping"
+    __tablename__ = "HasheousGameDumpMapping"
     __tablekwargs__ = {"sqlite_with_rowid": False}
     game: Annotated[HasheousId, Column(ForeignKey('HasheousGameDataObject.id'), primary_key=True, index=True)]
     dump: Annotated[str, Column(primary_key=True, index=True)]
