@@ -182,7 +182,7 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
     __tablename__: ClassVar[str]
     __tableargs__: ClassVar[tuple[CopyableSchemaItem, ...]] = ()
     __tablekwargs__: ClassVar[Mapping[str, Any]] = EMPTY_DICT
-    __tableddl__: ClassVar[str | None] = None
+    __tableddl__: ClassVar[LiteralString | tuple[LiteralString, ...] | None] = None
     """
     Extra DDL statements to execute after creating this class's table.
     Intended for database-specific features that SQLAlchemy doesn't natively support.
@@ -671,10 +671,14 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
             **cls.__tablekwargs__,
         )
 
-        if cls.__tableddl__:
-            # If we want to execute any extra data definition language statements (e.g. CREATE, ALTER, etc.),
-            # register an event listener to do so after creating the table
-            event.listen(main_table, "after_create", DDL(cls.__tableddl__))
+        # If we want to execute any extra data definition language statements (e.g. CREATE, ALTER, etc.),
+        # register an event listener to do so after creating the table
+        match cls.__tableddl__:
+            case str() as ddl:
+                event.listen(main_table, "after_create", DDL(ddl))
+            case [*ddls]:
+                for ddl in ddls:
+                    event.listen(main_table, "after_create", DDL(ddl))
 
         return (main_table, *relationship_tables)
 
