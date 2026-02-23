@@ -662,7 +662,7 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
                             assert col.table is None, f"{col} representing {colname} unexpectedly linked to {col.table}, did something mutate it?"
 
                     reltable = Table(
-                        reldef.tablename or f"{cls.__tablename__}_{field_name}",
+                        reldef.tablename or f"{cls.__tablename__ or cls.__name__}_{field_name}",
                         metadata,
                         *(copy_schema_item(c) for c in reldef.self_columns.values()),
                         *(copy_schema_item(c) for c in reldef.related_columns.values()),
