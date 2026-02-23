@@ -187,7 +187,7 @@ class Relationship:
 SchemaDef = Column | Relationship
 
 class DatabaseModel(BaseModel, ABC, frozen=True):
-    __tablename__: ClassVar[str]
+    __tablename__: ClassVar[LiteralString]
     __tableargs__: ClassVar[tuple[CopyableSchemaItem, ...]] = ()
     __tablekwargs__: ClassVar[Mapping[str, Any]] = EMPTY_DICT
     __tableddl__: ClassVar[LiteralString | tuple[LiteralString, ...] | None] = None

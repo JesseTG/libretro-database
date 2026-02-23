@@ -18,7 +18,7 @@ from datetime import date, timedelta
 from functools import cached_property
 from itertools import chain
 from pathlib import Path
-from typing import Annotated, Any, ClassVar, Never, NotRequired, Literal, NewType, Required, Self, TypedDict, cast, overload
+from typing import Annotated, Any, Never, NotRequired, Literal, NewType, Required, Self, TypedDict, cast, overload
 
 import aiofiles
 import aiofiles.os
@@ -81,7 +81,6 @@ type IgdbObjectSerializeMode = Literal['row'] | None
 
 
 class IgdbObject(DatabaseModel, ABC, frozen=True):
-    __tablename__: ClassVar[str] # type: ignore
     id: IgdbPrimaryId
 
     @field_serializer('*', mode='wrap')
@@ -107,94 +106,94 @@ class IgdbObject(DatabaseModel, ABC, frozen=True):
 
 GameReference = Annotated[IgdbId, Column(ForeignKey('IgdbGame.id'), index=True)]
 class AgeRatingOrganization(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbAgeRatingOrganization"
+    __tablename__ = "IgdbAgeRatingOrganization"
     id: IgdbPrimaryId
     name: str
 
 class AgeRatingCategory(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbAgeRatingCategory"
+    __tablename__ = "IgdbAgeRatingCategory"
 
     id: IgdbPrimaryId
     organization: Annotated[IgdbId, Column(ForeignKey('IgdbAgeRatingOrganization.id'))]
     rating: str
 
 class AgeRatingContentDescriptionType(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbAgeRatingContentDescriptionType"
+    __tablename__ = "IgdbAgeRatingContentDescriptionType"
     id: IgdbPrimaryId
     name: str
 
 class AgeRatingContentDescriptionV2(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbAgeRatingContentDescriptionV2"
+    __tablename__ = "IgdbAgeRatingContentDescriptionV2"
     id: IgdbPrimaryId
     description: str
     description_type: AgeRatingContentDescriptionType
     organization: Annotated[IgdbId, Column(ForeignKey('IgdbAgeRatingOrganization.id'))]
 
 class AgeRating(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbAgeRating"
+    __tablename__ = "IgdbAgeRating"
     id: IgdbPrimaryId
     organization: AgeRatingOrganization
     rating_category: AgeRatingCategory
     rating_content_descriptions: tuple[AgeRatingContentDescriptionV2, ...] = ()
 
 class AlternativeName(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbAlternativeName"
+    __tablename__ = "IgdbAlternativeName"
     id: IgdbPrimaryId
     name: str
     comment: str | None = None
     game: GameReference
 
 class Franchise(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbFranchise"
+    __tablename__ = "IgdbFranchise"
     id: IgdbPrimaryId
     name: str
 
 class GameEngine(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbGameEngine"
+    __tablename__ = "IgdbGameEngine"
     id: IgdbPrimaryId
     name: str
 
 class GameLocalization(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbGameLocalization"
+    __tablename__ = "IgdbGameLocalization"
     id: IgdbPrimaryId
     name: str | None = None
     game: GameReference
     region: 'Region'
 
 class GameMode(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbGameMode"
+    __tablename__ = "IgdbGameMode"
     id: IgdbPrimaryId
     name: str
 
 class GameStatus(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbGameStatus"
+    __tablename__ = "IgdbGameStatus"
     id: IgdbPrimaryId
     status: str
 
 class GameType(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbGameType"
+    __tablename__ = "IgdbGameType"
     id: IgdbPrimaryId
     type: str
 
 class Genre(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbGenre"
+    __tablename__ = "IgdbGenre"
     id: IgdbPrimaryId
     name: str
 
 class CompanyStatus(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbCompanyStatus"
+    __tablename__ = "IgdbCompanyStatus"
     id: IgdbPrimaryId
     name: str
 
 class Company(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbCompany"
+    __tablename__ = "IgdbCompany"
     id: IgdbPrimaryId
     name: str
     country: CoercedCountryCode | None = None
     status: CompanyStatus | None = None
 
 class InvolvedCompany(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbInvolvedCompany"
+    __tablename__ = "IgdbInvolvedCompany"
     id: IgdbPrimaryId
     company: Annotated[Company, Column(index=True)]
     game: GameReference
@@ -204,52 +203,52 @@ class InvolvedCompany(IgdbObject, frozen=True):
     supporting: bool
 
 class Region(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbRegion"
+    __tablename__ = "IgdbRegion"
     id: IgdbPrimaryId
     identifier: str
     name: str
     category: Literal['locale', 'continent']
 
 class Keyword(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbKeyword"
+    __tablename__ = "IgdbKeyword"
     id: IgdbPrimaryId
     name: str
 
 class Language(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbLanguage"
+    __tablename__ = "IgdbLanguage"
     id: IgdbPrimaryId
     locale: str # TODO: Represent as a tuple[LanguageAlpha2, CountryAlpha2]?
     name: str
 
 class LanguageSupportType(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbLanguageSupportType"
+    __tablename__ = "IgdbLanguageSupportType"
     id: IgdbPrimaryId
     name: str
 
 class LanguageSupport(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbLanguageSupport"
+    __tablename__ = "IgdbLanguageSupport"
     id: IgdbPrimaryId
     game: GameReference
     language: Language
     language_support_type: LanguageSupportType
 
 class PlatformFamily(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbPlatformFamily"
+    __tablename__ = "IgdbPlatformFamily"
     id: IgdbPrimaryId
     name: str
 
 class PlatformType(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbPlatformType"
+    __tablename__ = "IgdbPlatformType"
     id: IgdbPrimaryId
     name: str
 
 class PlatformVersion(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbPlatformVersion"
+    __tablename__ = "IgdbPlatformVersion"
     id: IgdbPrimaryId
     name: str
 
 class Platform(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbPlatform"
+    __tablename__ = "IgdbPlatform"
     id: IgdbPrimaryId
     name: str
     alternative_name: str | None = None
@@ -258,7 +257,7 @@ class Platform(IgdbObject, frozen=True):
     platform_type: PlatformType | None = None
 
 class MultiplayerMode(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbMultiplayerMode"
+    __tablename__ = "IgdbMultiplayerMode"
     __tableargs__ = (
         Index("ix_IgdbMultiplayerMode_platform_not_null", "platform", sqlite_where=column("platform").is_not(None)),
     )
@@ -282,28 +281,28 @@ class MultiplayerMode(IgdbObject, frozen=True):
         return self.campaigncoop or self.lancoop or self.offlinecoop or self.onlinecoop
 
 class PlayerPerspective(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbPlayerPerspective"
+    __tablename__ = "IgdbPlayerPerspective"
     id: IgdbPrimaryId
     name: str
 
 class DateFormat(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbDateFormat"
+    __tablename__ = "IgdbDateFormat"
     id: IgdbPrimaryId
     format: str
 
 class ReleaseDateRegion(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbReleaseDateRegion"
+    __tablename__ = "IgdbReleaseDateRegion"
     id: IgdbPrimaryId
     region: str
 
 class ReleaseDateStatus(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbReleaseDateStatus"
+    __tablename__ = "IgdbReleaseDateStatus"
     id: IgdbPrimaryId
     description: str
     name: str
 
 class ReleaseDate(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbReleaseDate"
+    __tablename__ = "IgdbReleaseDate"
     id: IgdbPrimaryId
     date: datetime.date | None = None
     date_format: DateFormat
@@ -316,7 +315,7 @@ class ReleaseDate(IgdbObject, frozen=True):
     y: int | None = None  # Year
 
 class Theme(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbTheme"
+    __tablename__ = "IgdbTheme"
     id: IgdbPrimaryId
     name: str
 
@@ -327,7 +326,7 @@ def GameToGameRelationship(related_name: str) -> Relationship:
     )
 
 class Game(IgdbObject, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbGame"
+    __tablename__ = "IgdbGame"
     id: IgdbPrimaryId
     name: str
     age_ratings: tuple[AgeRating, ...] = ()
@@ -454,7 +453,7 @@ DEFAULT_GAME_FIELD_TUPLE: tuple[str, ...] = (
 )
 
 class PlaylistMapping(DatabaseModel, frozen=True):
-    __tablename__: ClassVar[str] = "IgdbPlaylistMapping"
+    __tablename__ = "IgdbPlaylistMapping"
     __tablekwargs__ = {"sqlite_with_rowid": False}
     title: Annotated[PlaylistTitle, Column(primary_key=True, index=True)]
     game: Annotated[IgdbId, Column(ForeignKey('IgdbGame.id'), primary_key=True, index=True)]
