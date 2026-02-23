@@ -119,7 +119,6 @@ class RomItem(HasheousObject, frozen=True, alias_generator=to_pascal):
     """
     __tablename__ = "HasheousRomItem"
     __tableargs__ = (
-        Column("serial", String(), Computed("attributes ->> '$.serial'"), index=True, nullable=True),
         Index("ix_HasheousRomItem_crc_where_not_null", "crc", unique=True, sqlite_where=column("crc").is_not(None)),
         Index("ix_HasheousRomItem_serial_where_not_null", "serial", sqlite_where=column("serial").is_not(None)),
         Index("ix_HasheousRomItem_md5_where_not_null", "md5", unique=True, sqlite_where=column("md5").is_not(None)),
@@ -136,6 +135,7 @@ class RomItem(HasheousObject, frozen=True, alias_generator=to_pascal):
     md5: Annotated[EmptyStringToNone[Md5], Column(unique=True)]
     sha1: Annotated[EmptyStringToNone[Sha1], Column(unique=True)]
     sha256: Annotated[EmptyStringToNone[Sha256], Column(unique=True)]
+
     status: EmptyStringToNone[str]
 
     # TODO: Represent Country with computed columns
@@ -150,6 +150,17 @@ class RomItem(HasheousObject, frozen=True, alias_generator=to_pascal):
     media_detail: Annotated[TypedFrozenDict[MediaType], Column(JSON)]
     media_label: EmptyStringToNone[str]
     signature_source: EmptyStringToNone[str]
+
+    @computed_field(return_type=Annotated[str | None, Column("serial", String(), Computed("attributes ->> '$.serial'"), index=True, nullable=True)])
+    @property
+    def serial(self):
+        return self.attributes.get("serial")
+
+    @property
+    @override
+    def as_row(self) -> dict[str, Any]:
+        return self.model_dump(context='row', exclude={"serial"})
+
 
 @dataclass(frozen=True)
 class Attribute:
