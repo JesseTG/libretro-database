@@ -83,10 +83,6 @@ class MetadataItem:
     match_method: MatchMethodType
     source: str
     link: Annotated[EmptyStringToNone[HttpUrl], Field(default=None)]
-    next_search: datetime
-    winning_vote_count: int
-    total_vote_count: int
-    winning_vote_percent: int
 
 AttributeType: TypeAlias = Literal[
     "LongString",
@@ -200,8 +196,10 @@ class DataObject(DatabaseModel, ABC, frozen=True, alias_generator=to_pascal):
     signature_data_objects: tuple[SignatureDataObject, ...]
     metadata: Annotated[tuple[MetadataItem, ...], Field(exclude=True)]
     attributes: Annotated[tuple[OnErrorOmit[Attribute], ...], Field(exclude=True)]
-    created_date: datetime
-    updated_date: datetime
+    # We may want to add created_date/update_date back
+    # if we decide to start updating the index database incrementally
+    #created_date: datetime
+    #updated_date: datetime
 
     @field_serializer('platform', 'manufacturer', 'publisher', mode='wrap', check_fields=False)
     def _serialize_field(self, value: Any, handler: SerializerFunctionWrapHandler, info: FieldSerializationInfo[InsertInRowContext]):
