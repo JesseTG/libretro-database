@@ -273,6 +273,20 @@ class GameDataObject(DataObject, frozen=True, alias_generator=to_pascal):
         """Returns the IGDB ID mapped to this DataObject, or None if there's no IGDB mapping."""
         return self._get_igdb_id()
 
+    @computed_field(return_type=int | None)
+    @cached_property
+    def retroachievements_id(self):
+        ra_metadata = first_true(self.metadata, pred=lambda m: m.source == "RetroAchievements" and m.status == "Mapped")
+        if not ra_metadata:
+            return None
+        if not ra_metadata.immutable_id:
+            return None
+
+        try:
+            return int(ra_metadata.immutable_id)
+        except ValueError:
+            return None
+
     @computed_field
     @cached_property
     def manufacturer(self) -> CompanyDataObjectAttributeColumn:
