@@ -22,7 +22,7 @@ from datetime import datetime, timedelta
 from functools import cached_property
 from itertools import chain
 from pathlib import Path
-from typing import Annotated, Any, ClassVar, Literal, NamedTuple, NewType, Optional, TypeAlias, TypedDict
+from typing import Annotated, Any, ClassVar, Literal, NamedTuple, NewType, Optional, TypeAlias, TypedDict, override
 from zipfile import ZipFile, ZipInfo
 
 import aiofiles
@@ -42,7 +42,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy.util import is_non_string_iterable
 
 from igdb import IgdbId, Playlist, PlaylistConfig, PlaylistTitle
-from utils import Crc, DatabaseModel, FrozenDict, IndexArgs, PlaylistArgs, PoolArgs, TypedFrozenDict, InsertInRowContext, EmptyStringToNone, Md5, Sha1, Sha256, create_db, VerboseArgs
+from utils import Crc, DatabaseModel, FrozenDict, IndexArgs, PlaylistArgs, PoolArgs, TypedFrozenDict, InsertInRowContext, EmptyStringToNone, Md5, Sha1, Sha256, create_db, VerboseArgs, db_transaction
 
 METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
 
@@ -612,7 +612,6 @@ class HasheousJob(NamedTuple):
     playlists: set[Playlist]
     games: Collection[GameDataObject]
 
-
 _hasheous_index_log = logging.getLogger('hasheous.index')
 
 
@@ -628,22 +627,23 @@ async def _insert_hasheous_dump(db: AsyncEngine, metadata: MetaData, db_lock: as
         frozenset
     )
 
-    async with db_lock:
-        async with db.begin() as tx:
-            for (model_type, models) in nested_models.items():
-                assert model_type.__tablename__ in metadata.tables, f"Model type '{model_type.__name__}' has no corresponding table in metadata"
+    for (model_type, models) in nested_models.items():
+        assert model_type.__tablename__ in metadata.tables, f"Model type '{model_type.__name__}' has no corresponding table in metadata"
 
+        if models:
+            async with db_transaction(db, db_lock) as tx:
+                log.debug("Inserting %d %s objects", len(models), model_type.__name__)
                 await tx.execute(
                     insert(metadata.tables[model_type.__tablename__]).on_conflict_do_nothing(),
-                    # Insert game records, ignoring conflicts because
-                    # the same game (or franchise, or genre, or other object)
+                    # Insert objects from Hasheous, ignoring conflicts because
+                    # the same game (or company, or signature, or ROM)
                     # may appear in multiple dumps
-
-                    # Create a row dict for each model
                     [m.as_row for m in models]
                 )
-
-            await tx.commit()
+                await tx.commit()
+                log.info("Inserted %d %s objects", len(models), model_type.__name__)
+        else:
+            log.warning("No %s objects to insert", model_type.__name__)
 
     relationships = map_reduce(
         chain.from_iterable(g.relationships.items() for g in job.games),
@@ -652,45 +652,46 @@ async def _insert_hasheous_dump(db: AsyncEngine, metadata: MetaData, db_lock: as
         lambda entries: tuple(chain.from_iterable(entries)) # group by field name, aggregate unique relationships
     )
 
-    playlist_dump_mappings = tuple(PlaylistDumpMapping(playlist=p.title, dump=job.name) for p in job.playlists)
-
-    async with db_lock:
-        async with db.begin() as tx:
-            for (field_name, rels) in relationships.items():
+    for (field_name, rels) in relationships.items():
+        if rels:
+            async with db_transaction(db, db_lock) as tx:
                 tablename = f"{GameDataObject.__tablename__}_{field_name}"
                 assert tablename in metadata.tables, f"Relationship field '{field_name}' has no corresponding table in metadata"
 
+                log.debug("Inserting %d relationships for field '%s'", len(rels), field_name)
                 await tx.execute(
                     insert(metadata.tables[tablename]).on_conflict_do_nothing(),
                     rels
                 )
 
-            await tx.commit()
-
-    if playlist_dump_mappings:
-        async with db_lock:
-            async with db.begin() as tx:
-                log.debug("Inserting %d playlist-dump mappings", len(playlist_dump_mappings))
-                await tx.execute(
-                    insert(metadata.tables[PlaylistDumpMapping.__tablename__]).on_conflict_do_nothing(),
-                    [m.as_row for m in playlist_dump_mappings]
-                )
                 await tx.commit()
-                log.info("Inserted %d playlist-dump mappings", len(playlist_dump_mappings))
+            log.info("Inserted %d relationships for field '%s'", len(rels), field_name)
+        else:
+            log.warning("No relationships to insert for field '%s'", field_name)
+
+    if playlist_dump_mappings := tuple(PlaylistDumpMapping(playlist=p.title, dump=job.name) for p in job.playlists):
+        async with db_transaction(db, db_lock) as tx:
+            log.debug("Inserting %d playlist-dump mappings", len(playlist_dump_mappings))
+            await tx.execute(
+                insert(metadata.tables[PlaylistDumpMapping.__tablename__]).on_conflict_do_nothing(),
+                [m.as_row for m in playlist_dump_mappings]
+            )
+            await tx.commit()
+            log.info("Inserted %d playlist-dump mappings", len(playlist_dump_mappings))
     else:
         log.info("No playlist-dump mappings to insert")
 
     game_dump_mappings = tuple(GameDumpMapping(dump=job.name, game=g.id) for g in job.games)
     if game_dump_mappings:
-        async with db_lock:
-            async with db.begin() as tx:
-                log.debug("Inserting %d game-dump mappings", len(game_dump_mappings))
-                await tx.execute(
-                    insert(metadata.tables[GameDumpMapping.__tablename__]).on_conflict_do_nothing(),
-                    [m.as_row for m in game_dump_mappings]
+        async with db_transaction(db, db_lock) as tx:
+            log.debug("Inserting %d game-dump mappings", len(game_dump_mappings))
+            await tx.execute(
+                insert(metadata.tables[GameDumpMapping.__tablename__]).on_conflict_do_nothing(),
+                [m.as_row for m in game_dump_mappings]
                 )
-                await tx.commit()
-                log.info("Inserted %d game-dump mappings", len(game_dump_mappings))
+
+            await tx.commit()
+            log.info("Inserted %d game-dump mappings", len(game_dump_mappings))
     else:
         log.info("No game-dump mappings to insert")
 

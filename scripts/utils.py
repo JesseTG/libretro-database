@@ -4,21 +4,23 @@
 Provides base classes and utilities for defining database models using Pydantic and SQLAlchemy.
 """
 
+import asyncio
 import sys
 
 from abc import ABC
 from collections.abc import Iterable, Mapping, Sequence
+from contextlib import asynccontextmanager
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import date, datetime
 from functools import cache, cached_property
 from itertools import chain
 from pathlib import Path
-from typing import Annotated, Any, ClassVar, ForwardRef, Literal, NewType, TypeGuard, get_origin, overload, get_args
+from typing import Annotated, Any, ClassVar, ForwardRef, Literal, LiteralString, NewType, TypeGuard, get_origin, overload, get_args
 
-from aiomultiprocess import Pool
 import sqlalchemy
 
+from aiomultiprocess import Pool
 from frozendict import frozendict
 from more_itertools import always_iterable, only
 from pydantic import AfterValidator, AliasChoices, BaseModel, BeforeValidator, Field, FilePath, GetCoreSchemaHandler, GetPydanticSchema, HttpUrl, JsonValue, NonNegativeInt, PlainSerializer, PositiveInt, StringConstraints, ValidatorFunctionWrapHandler, WrapSerializer, WrapValidator
@@ -85,6 +87,12 @@ RowIdColumn = Annotated[RowId | None, Column(primary_key=True, index=True, nulla
 EMPTY_DICT = frozendict()
 
 DEFAULT_RELATIONSHIP_TABLE_KWARGS = frozendict({"sqlite_with_rowid": False})
+
+@asynccontextmanager
+async def db_transaction(db: AsyncEngine, db_lock: asyncio.Lock):
+    async with db_lock:
+        async with db.begin() as tx:
+            yield tx
 
 @dataclass(eq=True, unsafe_hash=True)
 class Relationship:

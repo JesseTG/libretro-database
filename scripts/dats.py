@@ -31,10 +31,11 @@ from pydantic_core import from_json, core_schema
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
 from sqlalchemy import CheckConstraint, Column, ForeignKey, Index, MetaData, column, text
 from sqlalchemy.dialects.sqlite import JSON, insert
+from sqlalchemy.ext.asyncio import AsyncConnection, AsyncEngine
 from sqlalchemy.sql.functions import coalesce
 
 from igdb import Playlist, PlaylistConfig, PlaylistTitle
-from utils import AsyncEngine, Crc, DatabaseModel, EmptyStringToNone, FrozenDict, IndexArgs, Md5, OnlyFirst, PlaylistArgs, PoolArgs, Relationship, RowId, RowIdColumn, Sha1, VerboseArgs, create_db
+from utils import AsyncEngine, Crc, DatabaseModel, EmptyStringToNone, FrozenDict, IndexArgs, Md5, OnlyFirst, PlaylistArgs, PoolArgs, Relationship, RowId, RowIdColumn, Sha1, VerboseArgs, create_db, db_transaction
 
 type DatValidationMode = Literal['dat'] | None
 type DatPair = tuple[str, DatValue]
@@ -479,10 +480,6 @@ class LoadedDat(NamedTuple):
     clrmamepro: ClrMamePro
     games: Sequence[Game]
 
-# I wanted to have a tuple[ClrMamePro, *tuple[Game, ...]],
-# but Pydantic doesn't read the Game correctly in that case.
-GameTupleAdapter = TypeAdapter(tuple[Game, ...])
-
 class CheckSubCommand(BaseModel, VerboseArgs):
     """Check DAT files for valid syntax."""
 
@@ -589,97 +586,132 @@ class LoadJobResult(NamedTuple):
     path: Path
     datfile: ParsedDatFile
 
+    @property
+    def clrmamepro(self) -> ClrMamePro:
+        return self.datfile.clrmamepro
+
+    @property
+    def games(self) -> tuple[Game, ...]:
+        return self.datfile.games
+
 
 _dats_index_log = logging.getLogger('dats.index')
 
 
+
+class GameRomMapping(RomId):
+    game: RowId
+
 async def _insert_dat_file(db: AsyncEngine, metadata: MetaData, db_lock: asyncio.Lock, dat: LoadJobResult) -> None:
     """Insert a parsed DAT file's contents into the database."""
     log = _dats_index_log
-    clrmamepro = dat.datfile.clrmamepro
-    games = dat.datfile.games
-    roms = tuple(chain.from_iterable(g.roms for g in games))
 
-    async with db_lock:
-        async with db.begin() as tx:
-            log.debug("Inserting %d games", len(games))
+    async def insert_games(tx: AsyncConnection, games: Sequence[Game]):
+        log.debug("Inserting %d games", len(games))
 
-            game_table = metadata.tables[Game.__tablename__]
-            game_columns = game_table.columns
-            game_cursor = await tx.execute(
-                insert(game_table).returning(game_columns.rowid, game_columns.romids),
-                [g.as_row for g in games]
-            )
-            inserted_game_rows = game_cursor.all()
-            log.info("Inserted %d games", len(games))
+        game_table = metadata.tables[Game.__tablename__]
+        rowid_column = game_table.columns.rowid
+        romids_column = game_table.columns.romids
+        inserted_games = await tx.execute(
+            insert(game_table).returning(rowid_column, romids_column),
+            [g.as_row for g in games]
+        )
 
-            game_playlist_mappings = tuple(PlaylistGameMapping(playlist=dat.playlist.title, game=row.rowid) for row in inserted_game_rows)
-            if game_playlist_mappings:
-                log.debug("Inserting %d game-playlist mappings", len(game_playlist_mappings))
-                await tx.execute(
-                    insert(metadata.tables[PlaylistGameMapping.__tablename__]).on_conflict_do_nothing(),
-                    [m.as_row for m in game_playlist_mappings]
-                )
-                log.info("Inserted %d game-playlist mappings", len(game_playlist_mappings))
-            else:
-                log.info("No game-playlist mappings to insert")
+        await tx.commit()
+        log.info("Inserted %d games", len(games))
+        return inserted_games.mappings().all()
 
-            if roms:
-                log.debug("Inserting %d ROMs", len(tuple(roms)))
-                # The same ROM is often represented in multiple DAT files,
-                # so instead of discarding duplicates we merge them together;
-                # NULL fields in the existing record are filled in
-                # with non-NULL values from the new record.
-                rom_table = metadata.tables[Rom.__tablename__]
-                insert_roms = insert(rom_table)
-                update_set = {
-                    "crc": coalesce(rom_table.columns.crc, insert_roms.excluded.crc),
-                    "md5": coalesce(rom_table.columns.md5, insert_roms.excluded.md5),
-                    "name": coalesce(rom_table.columns.name, insert_roms.excluded.name),
-                    "serial": coalesce(rom_table.columns.serial, insert_roms.excluded.serial),
-                    # TODO: Insert the excluded sha1 if and only if the existing one is null and the sha1 is valid (40 hex characters)
-                    "sha1": coalesce(
+    async def insert_game_playlist_mappings(tx: AsyncConnection, mappings: Collection[PlaylistGameMapping]):
+        log.debug("Inserting %d game-playlist mappings", len(mappings))
+        await tx.execute(
+            insert(metadata.tables[PlaylistGameMapping.__tablename__]).on_conflict_do_nothing(),
+            [m.as_row for m in mappings]
+        )
+        await tx.commit()
+        log.info("Inserted %d game-playlist mappings", len(mappings))
+
+    async def insert_roms(tx: AsyncConnection, roms: Sequence[Rom]):
+        log.debug("Inserting %d ROMs", len(tuple(roms)))
+        # The same ROM is often represented in multiple DAT files,
+        # so we merge ROM records on conflict instead of skipping or replacing them.
+        # The first non-null value for each field is preserved
+        rom_table = metadata.tables[Rom.__tablename__]
+        insert_roms = insert(rom_table)
+        rom_cursor = await tx.execute(
+            insert_roms
+                    .on_conflict_do_update(set_={
+                        "crc": coalesce(rom_table.columns.crc, insert_roms.excluded.crc),
+                        "md5": coalesce(rom_table.columns.md5, insert_roms.excluded.md5),
+                        "name": coalesce(rom_table.columns.name, insert_roms.excluded.name),
+                        "serial": coalesce(rom_table.columns.serial, insert_roms.excluded.serial),
+                        "sha1": coalesce(rom_table.columns.sha1, insert_roms.excluded.sha1),
+                        "size": coalesce(rom_table.columns.size, insert_roms.excluded.size),
+                    })
+                    .returning(
+                        # Label the rowid so we can insert this ROM into AllRoms as-is
+                        rom_table.columns.rowid.label("dat_rom"),
+                        rom_table.columns.crc,
+                        rom_table.columns.serial,
+                        rom_table.columns.md5,
                         rom_table.columns.sha1,
-                        #text("CASE WHEN excluded.sha1 IS NOT NULL AND length(excluded.sha1) = 40 THEN excluded.sha1 END")
-                        insert_roms.excluded.sha1
                     ),
-                    "size": coalesce(rom_table.columns.size, insert_roms.excluded.size),
-                }
-                await tx.execute(
-                    insert_roms.on_conflict_do_update(set_=update_set),
-                    [r.as_row for r in roms]
-                )
-                log.info("Inserted %d ROMs", len(roms))
+            [r.as_row for r in roms]
+        )
 
-            game_rom_mappings = []
-            for game in inserted_game_rows:
-                rowid: RowId = game.rowid
-                romids: list[RomId] = game.romids
-                assert isinstance(rowid, int), f"Expected rowid to be an int, got {type(rowid)}"
-                assert isinstance(romids, list), f"Expected romids to be a list, got {type(romids)}"
+        mappings = rom_cursor.mappings().all()
 
-                game_rom_mappings.extend({"game": rowid, **r} for r in romids)
+        await tx.commit()
+        log.info("Inserted %d ROMs", len(roms))
+        return mappings
 
-            if game_rom_mappings:
-                log.debug("Inserting %d game-ROM mappings", len(game_rom_mappings))
-                mapping_table = metadata.tables[f"{Game.__tablename__}_roms"]
-                insert_mapping = insert(mapping_table)
-                rom_update_set = {
-                    "crc": coalesce(mapping_table.columns.crc, insert_mapping.excluded.crc),
-                    "md5": coalesce(mapping_table.columns.md5, insert_mapping.excluded.md5),
-                    "serial": coalesce(mapping_table.columns.serial, insert_mapping.excluded.serial),
-                    "sha1": coalesce(mapping_table.columns.sha1, insert_mapping.excluded.sha1),
-                }
-                await tx.execute(
-                    insert_mapping.on_conflict_do_update(set_=rom_update_set),
-                    game_rom_mappings
-                )
-                log.info("Inserted %d game-ROM mappings", len(game_rom_mappings))
+    async def insert_game_rom_mappings(tx: AsyncConnection, mappings: list[GameRomMapping]):
+        # See Rom.__tableargs__ for the table definition
+        log.debug("Inserting %d game-ROM mappings", len(mappings))
+        mapping_table = metadata.tables[f"{Game.__tablename__}_roms"]
+        insert_mapping = insert(mapping_table)
 
-            await tx.commit()
-            # Commit the session to persist all added objects
+        await tx.execute(
+            insert_mapping.on_conflict_do_update(set_={
+                "crc": coalesce(mapping_table.columns.crc, insert_mapping.excluded.crc),
+                "md5": coalesce(mapping_table.columns.md5, insert_mapping.excluded.md5),
+                "serial": coalesce(mapping_table.columns.serial, insert_mapping.excluded.serial),
+                "sha1": coalesce(mapping_table.columns.sha1, insert_mapping.excluded.sha1),
+            }),
+            mappings
+        )
+        await tx.commit()
+        log.info("Inserted %d game-ROM mappings into %s", len(mappings), f"{Game.__tablename__}_roms")
 
-    log.info("Inserted %d games into database", len(games))
+    async with db_transaction(db, db_lock) as tx:
+        game_rows = await insert_games(tx, dat.games)
+
+    game_rom_mappings: list[GameRomMapping] = []
+    for game in game_rows:
+        rowid: RowId = game.rowid
+        romids: list[RomId] = game.romids
+
+        game_rom_mappings.extend(GameRomMapping(game=rowid, **rom) for rom in romids)
+
+    if game_rom_mappings:
+        async with db_transaction(db, db_lock) as tx:
+            await insert_game_rom_mappings(tx, game_rom_mappings)
+    else:
+        log.warning("No game-ROM mappings to insert")
+
+    pgm = lambda g: PlaylistGameMapping(playlist=dat.playlist.title, game=g.rowid)
+    if game_playlist_mappings := [pgm(row) for row in game_rows]:
+        async with db_transaction(db, db_lock) as tx:
+            await insert_game_playlist_mappings(tx, game_playlist_mappings)
+    else:
+        log.warning("No game-playlist mappings to insert")
+
+    if roms := tuple(chain.from_iterable(g.roms for g in dat.games)):
+        async with db_transaction(db, db_lock) as tx:
+            rom_rows = await insert_roms(tx, roms)
+    else:
+        log.warning("No ROMs to insert")
+
+    log.info("Inserted %d games into database", len(dat.games))
 
 
 async def index_dats(
