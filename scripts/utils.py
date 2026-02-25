@@ -875,6 +875,12 @@ type EmptyStringToNone[T] = Annotated[
 A type that serializes and validates empty strings as None.
 """
 
+type EmptyToNone[T] = Annotated[
+    T | None,
+    BeforeValidator(lambda v: v if v else None),
+    WrapSerializer(lambda v, h: h(v) if v else None, return_type=(T | None))
+]
+
 PARENT_DIR = Path(__file__).parent.parent
 
 class PoolArgs:

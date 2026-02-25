@@ -42,7 +42,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy.util import is_non_string_iterable
 
 from igdb import IgdbId, Playlist, PlaylistConfig, PlaylistTitle
-from utils import Crc, DatabaseModel, FrozenDict, IndexArgs, PlaylistArgs, PoolArgs, TypedFrozenDict, InsertInRowContext, EmptyStringToNone, Md5, Sha1, Sha256, create_db, VerboseArgs, db_transaction
+from utils import Crc, DatabaseModel, EmptyToNone, FrozenDict, IndexArgs, PlaylistArgs, PoolArgs, TypedFrozenDict, InsertInRowContext, EmptyStringToNone, Md5, Sha1, Sha256, create_db, VerboseArgs, db_transaction
 
 METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
 
@@ -124,33 +124,26 @@ class RomItem(HasheousObject, frozen=True, alias_generator=to_pascal):
 
     id: Annotated[int, Column(primary_key=True)]
     name: EmptyStringToNone[str]
-    attributes: Annotated[FrozenDict[str, str], Column(JSON)]
+    attributes: Annotated[EmptyToNone[FrozenDict[str, str]], Column(JSON(none_as_null=True))]
     rom_type: str
     size: ByteSize
-    crc: Annotated[EmptyStringToNone[Crc], Column(unique=True)]
-    md5: Annotated[EmptyStringToNone[Md5], Column(unique=True)]
-    sha1: Annotated[EmptyStringToNone[Sha1], Column(unique=True)]
-    sha256: Annotated[EmptyStringToNone[Sha256], Column(unique=True)]
-
-    status: EmptyStringToNone[str]
-
-    # TODO: Represent Country with computed columns
-    country: Annotated[FrozenDict[str, str], Column(JSON)]
-
-    # TODO: Represent Language with computed columns
-    language: Annotated[FrozenDict[str, str], Column(JSON)]
-    development_status: EmptyStringToNone[str]
-    rom_type_media: EmptyStringToNone[str]
-
-    # TODO: Represent MediaDetail with computed columns
-    media_detail: Annotated[TypedFrozenDict[MediaType], Column(JSON)]
-    media_label: EmptyStringToNone[str]
-    signature_source: EmptyStringToNone[str]
+    crc: Annotated[EmptyToNone[Crc], Column(unique=True)]
+    md5: Annotated[EmptyToNone[Md5], Column(unique=True)]
+    sha1: Annotated[EmptyToNone[Sha1], Column(unique=True)]
+    sha256: Annotated[EmptyToNone[Sha256], Column(unique=True)]
+    status: EmptyToNone[str]
+    country: Annotated[EmptyToNone[FrozenDict[str, str]], Column(JSON(none_as_null=True))]
+    language: Annotated[EmptyToNone[FrozenDict[str, str]], Column(JSON(none_as_null=True))]
+    development_status: EmptyToNone[str]
+    rom_type_media: EmptyToNone[str]
+    media_detail: Annotated[EmptyToNone[TypedFrozenDict[MediaType]], Column(JSON(none_as_null=True))]
+    media_label: EmptyToNone[str]
+    signature_source: EmptyToNone[str]
 
     @computed_field(return_type=Annotated[str | None, Column("serial", String(), Computed("attributes ->> '$.serial'"), index=True, nullable=True)])
     @property
     def serial(self):
-        return self.attributes.get("serial")
+        return self.attributes.get("serial") if self.attributes else None
 
     @property
     @override
