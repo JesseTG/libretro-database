@@ -148,6 +148,7 @@ class RomItem(HasheousObject, frozen=True, alias_generator=to_pascal):
     @property
     @override
     def as_row(self) -> dict[str, Any]:
+        # Exclude serial so we don't try to insert it into a computed column
         return self.model_dump(context='row', exclude={"serial"})
 
 
