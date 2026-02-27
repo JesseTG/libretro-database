@@ -825,9 +825,6 @@ class IndexSubCommand(BaseModel, PlaylistArgs, IndexArgs, VerboseArgs, PoolArgs)
         elapsed = timedelta(seconds=end - start)
         self._log.info(f"Elapsed time: %s", elapsed)
 
-
-
-
 class HasheousCommand(BaseSettings):
     fetch: CliSubCommand[FetchSubCommand]
     submit: CliSubCommand[SubmitSubCommand]
