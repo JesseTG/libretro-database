@@ -8,3 +8,8 @@ tmp
 __pycache__
 *.pyc
 .idea
+MetadataMap/
+node_modules
+.nx
+.vscode
+scalene-profile.json
