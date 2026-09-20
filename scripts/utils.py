@@ -29,6 +29,7 @@ from pydantic.fields import ComputedFieldInfo, FieldInfo
 from pydantic_extra_types.country import CountryNumericCode
 from sqlalchemy import DDL, Column, Constraint, ForeignKey, MetaData, Table, Index, text
 from sqlalchemy import event
+from sqlalchemy.dialects.sqlite import insert, Insert
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from sqlalchemy.schema import SchemaConst
 from sqlalchemy.types import NullType, TypeEngine
@@ -778,6 +779,14 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
     @property
     def as_row(self) -> dict[str, Any]:
         return self.model_dump(context='row')
+
+    @classmethod
+    def insert(cls, metadata: MetaData) -> Insert:
+        """
+        Returns an `Insert` object for this model's main table.
+        """
+        assert cls.__tablename__ in metadata.tables, f"Table {cls.__tablename__} not found in metadata; did you forget to call create_tables()?"
+        return insert(metadata.tables[cls.__tablename__])
 
 
 async def create_db(path: Path, model_types: Iterable[type[DatabaseModel]]) -> tuple[AsyncEngine, MetaData]:
