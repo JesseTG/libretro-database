@@ -17,7 +17,7 @@ igdb.where = "platforms = (506)"
 
 [[playlists]]
 title = "Arduboy Inc - Arduboy"
-hasheous = ["Arduboy Arduboy"]
+hasheous = ["Arduboy"]
 igdb.where = "platforms = (438)"
 
 [[playlists]]
@@ -455,7 +455,7 @@ igdb.where = "platforms = (166)"
 
 [[playlists]]
 title = "Nintendo - Satellaview"
-hasheous = ["Nintendo - Satellaview"]
+hasheous = ["Nintendo Satellaview"]
 igdb.where = "platforms = (306)"
 
 [[playlists]]
@@ -506,7 +506,7 @@ igdb.where = "platforms = (117)"
 
 [[playlists]]
 title = "Philips - Videopac+"
-hasheous = ["Philips Videopac+"]
+hasheous = ["Philips - Videopac+"]
 igdb.where = "platforms = (133)"
 
 [[playlists]]
