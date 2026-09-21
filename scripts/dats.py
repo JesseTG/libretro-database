@@ -35,7 +35,7 @@ from sqlalchemy.ext.asyncio import AsyncConnection, AsyncEngine
 from sqlalchemy.sql.functions import coalesce
 
 from igdb import Playlist, PlaylistConfig, PlaylistTitle
-from utils import AsyncEngine, Crc, DatabaseModel, EmptyStringToNone, FrozenDict, IndexArgs, Md5, OnlyFirst, PlaylistArgs, PoolArgs, Relationship, RowId, RowIdColumn, Sha1, VerboseArgs, create_db, db_transaction
+from utils import AsyncEngine, CliTuple, Crc, DEFAULT_DAT_CONCURRENCY, DatabaseModel, EmptyStringToNone, FrozenDict, IndexArgs, Md5, OnlyFirst, PlaylistArgs, PoolArgs, Relationship, RowId, RowIdColumn, Sha1, VerboseArgs, create_db, db_transaction
 
 type DatValidationMode = Literal['dat'] | None
 type DatPair = tuple[str, DatValue]

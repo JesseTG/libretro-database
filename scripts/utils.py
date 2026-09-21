@@ -25,6 +25,7 @@ from frozendict import frozendict
 from more_itertools import always_iterable, only
 from pydantic import AfterValidator, AliasChoices, BaseModel, BeforeValidator, Field, FilePath, GetCoreSchemaHandler, GetPydanticSchema, HttpUrl, JsonValue, NonNegativeInt, PlainSerializer, PositiveInt, StringConstraints, ValidatorFunctionWrapHandler, WrapSerializer, WrapValidator
 from pydantic_core import CoreSchema, core_schema
+from pydantic_settings import NoDecode
 from pydantic.fields import ComputedFieldInfo, FieldInfo
 from pydantic_extra_types.country import CountryNumericCode
 from sqlalchemy import DDL, Column, Constraint, ForeignKey, MetaData, Table, Index, text
@@ -890,6 +891,26 @@ type EmptyToNone[T] = Annotated[
     WrapSerializer(lambda v, h: h(v) if v else None, return_type=(T | None))
 ]
 
+def _split_cli_csv(value: Any) -> Any:
+    """
+    Splits a comma-separated CLI argument into a tuple of strings.
+
+    `pydantic-settings` normally decodes collection-typed settings as JSON,
+    which fails for plain values like `-p 'Nintendo - Game Boy'`.
+    Fields using this validator are marked with `NoDecode`
+    so that they receive the raw string instead.
+    """
+    if isinstance(value, str):
+        return tuple(filter(None, (item.strip() for item in value.split(","))))
+
+    return value
+
+type CliTuple[T] = Annotated[tuple[T, ...], NoDecode, BeforeValidator(_split_cli_csv)]
+"""
+A tuple field that can be given on the command line
+as one comma-separated argument or as a repeated argument.
+"""
+
 PARENT_DIR = Path(__file__).parent.parent
 
 class PoolArgs:
@@ -933,9 +954,14 @@ class PlaylistArgs:
         validate_default=True,
     )
 
-    playlists: tuple[str, ...] = Field(
+    playlists: CliTuple[str] = Field(
         default=(),
-        validation_alias=AliasChoices('p', 'playlists'),
+        description="""
+            Restrict processing to these playlists.
+            Pass as -p '<playlist1>,<playlist2>,...' or as repeated -p '<playlist>' arguments.
+            If omitted, every playlist in the config is processed.
+        """,
+        validation_alias=AliasChoices('playlists', 'p'),
         examples=[("Coleco - ColecoVision", "Dinothawr")]
     )
 

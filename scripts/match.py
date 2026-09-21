@@ -23,7 +23,7 @@ from sqlalchemy.sql.functions import coalesce
 from dats import DAT_OBJECT_TYPES, index_dats, Rom as DatRom
 from igdb import Playlist, PlaylistConfig, IGDB_OBJECT_TYPES, index_igdb
 from hasheous import HASHEOUS_OBJECT_TYPES, index_hasheous
-from utils import IndexArgs, PlaylistArgs, PoolArgs, RowId, VerboseArgs, create_db, DatabaseModel, Crc, Md5, Sha1, db_transaction
+from utils import CliTuple, DEFAULT_DAT_CONCURRENCY, DEFAULT_HASHEOUS_CONCURRENCY, DEFAULT_IGDB_CONCURRENCY, IndexArgs, PlaylistArgs, PoolArgs, RowId, Sha256, VerboseArgs, create_db, create_deferred_indexes, DatabaseModel, Crc, Md5, Sha1, db_transaction
 
 class AllRoms(DatabaseModel, frozen=True):
     __tablename__ = "AllRoms"
@@ -64,7 +64,7 @@ class CommonArgs:
         validate_default=True,
     )
 
-    dat_dirs: tuple[DirectoryPath, ...] = Field(
+    dat_dirs: CliTuple[DirectoryPath] = Field(
         default=(PARENT_DIR / 'dat', PARENT_DIR / 'metadat',),
         description="Paths to the directories containing existing DAT files to scan for games to process.",
         validation_alias=AliasChoices('d', 'dat'),

@@ -41,7 +41,7 @@ from sqlalchemy import Column, ForeignKey, Index, MetaData, column, text
 from sqlalchemy.dialects.sqlite import INTEGER, insert
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-from utils import CoercedHttpUrl, DatabaseModel, PoolArgs, Relationship, create_db, VerboseArgs
+from utils import CliTuple, CoercedHttpUrl, DatabaseModel, PoolArgs, Relationship, create_db, VerboseArgs
 
 IgdbId = NewType('IgdbId', int)
 IgdbPrimaryId = Annotated[
@@ -1035,7 +1035,7 @@ class PlaylistArgs:
         validate_default=True,
     )
 
-    playlists: tuple[str, ...] = Field(
+    playlists: CliTuple[str] = Field(
         default=(),
         description="""
             Query IGDB with the filters defined in playlist_config.
