@@ -84,7 +84,7 @@ def copy_schema_item(item: CopyableSchemaItem) -> CopyableSchemaItem:
 
 type RelationshipTableArg = Mapping[str, Column] | Iterable[Column] | Column | ForeignKey
 RowId = NewType("RowId", int)
-RowIdColumn = Annotated[RowId | None, Column(primary_key=True, index=True, nullable=False), Field(default=None)]
+RowIdColumn = Annotated[RowId | None, Column(primary_key=True, index=True, unique=True, nullable=False), Field(default=None)]
 EMPTY_DICT = frozendict()
 
 DEFAULT_RELATIONSHIP_TABLE_KWARGS = frozendict({"sqlite_with_rowid": False})
