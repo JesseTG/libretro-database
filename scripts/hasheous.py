@@ -678,7 +678,7 @@ class FetchSubCommand(BaseModel, VerboseArgs):
         validate_default=True,
     )
 
-    dumps: CliTuple(str) = Field(
+    dumps: CliTuple[str] = Field(
         default=(),
         validation_alias=AliasChoices('d', 'dumps'),
         description="""
