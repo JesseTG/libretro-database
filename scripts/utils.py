@@ -782,6 +782,32 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
         return self.model_dump(context='row')
 
     @classmethod
+    def table(cls, metadata: MetaData) -> Table:
+        """Returns this model's main table in `metadata`."""
+        return metadata.tables[cls.__tablename__]
+
+    @classmethod
+    def relationship_table(cls, metadata: MetaData, field_name: str) -> Table:
+        """Returns the table in `metadata` that holds one of this model's relationship fields."""
+        tablename = cls.relationship_table_defs()[field_name].tablename
+        assert tablename is not None, "relationship_table_defs() names every table"
+        return metadata.tables[tablename]
+
+    @classmethod
+    def relationship_columns(cls, metadata: MetaData, field_name: str) -> tuple[Column, Column]:
+        """
+        Returns the columns of a relationship table
+        that refer to this model and to each related value, in that order.
+
+        Only for relationships with a single column on each side.
+        """
+        definition = cls.relationship_table_defs()[field_name]
+        table = cls.relationship_table(metadata, field_name)
+        (owner,) = definition.self_columns.values()
+        (related,) = definition.related_columns.values()
+        return table.c[owner.name], table.c[related.name]
+
+    @classmethod
     def insert(cls, metadata: MetaData) -> Insert:
         """
         Returns an `Insert` object for this model's main table.
@@ -982,6 +1008,15 @@ async def create_deferred_indexes(db: AsyncEngine, metadata: MetaData) -> None:
         await tx.commit()
 
 
+def build_metadata(model_types: Iterable[type[DatabaseModel]]) -> MetaData:
+    """Returns the tables that `model_types` are stored in."""
+    metadata = MetaData()
+    for model_type in model_types:
+        model_type.create_tables(metadata)
+
+    return metadata
+
+
 async def create_db(path: Path, model_types: Iterable[type[DatabaseModel]]) -> tuple[AsyncEngine, MetaData]:
     db = create_async_engine(
         f"sqlite+aiosqlite:///{path}",
@@ -991,9 +1026,7 @@ async def create_db(path: Path, model_types: Iterable[type[DatabaseModel]]) -> t
         },
     )
 
-    metadata = MetaData()
-    for model_type in model_types:
-        model_type.create_tables(metadata)
+    metadata = build_metadata(model_types)
 
     # Hold back the indexes that aren't needed while the database is being filled,
     # so that the bulk inserts don't have to maintain them row by row.
@@ -1211,6 +1244,7 @@ class PlaylistArgs:
 
 __all__ = (
     "DatabaseModel",
+    "build_metadata",
     "create_deferred_indexes",
     "deferred_indexes",
     "DEFAULT_DAT_CONCURRENCY",

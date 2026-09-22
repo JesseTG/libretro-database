@@ -26,7 +26,6 @@ import asynciolimiter
 import backoff
 import httpx
 
-from aioitertools.asyncio import as_completed
 from aiomultiprocess import Pool
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.oauth2.rfc6749 import OAuth2Token
@@ -41,7 +40,7 @@ from sqlalchemy import Column, ForeignKey, Index, MetaData, column, text
 from sqlalchemy.dialects.sqlite import INTEGER, insert
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-from utils import CliTuple, CoercedHttpUrl, DatabaseModel, DEFAULT_IGDB_CONCURRENCY, ExtractedRows, PoolArgs, Relationship, RowDeduplicator, create_db, db_transaction, extract_rows, VerboseArgs
+from utils import CliTuple, CoercedHttpUrl, DatabaseModel, DEFAULT_IGDB_CONCURRENCY, ExtractedRows, FrozenDict, PoolArgs, Relationship, RowDeduplicator, create_db, db_transaction, extract_rows, VerboseArgs
 
 IgdbId = NewType('IgdbId', int)
 IgdbPrimaryId = Annotated[
@@ -749,8 +748,54 @@ class Playlist:
             **dataclasses.asdict(q),
         ), self.igdb_query.expand_to_all(count, MAX_QUERIES_IN_MULTIQUERY))
 
+class IgdbConfig(BaseModel, frozen=True):
+    """How `match.py` interprets IGDB's data."""
+
+    keyword_overrides: FrozenDict[int, int] = frozendict()
+    """
+    Keywords that are synonyms of others,
+    mapped to the keyword whose name their tag should use instead.
+    """
+
+    platform_type_overrides: FrozenDict[int, int] = frozendict()
+    """Platforms whose type IGDB gets wrong, mapped to their actual type."""
+
+    origin_overrides: FrozenDict[int, str] = frozendict()
+    """
+    Companies' countries (by ISO 3166-1 numeric code)
+    that the existing `metadat/origin` DATs spell differently than ISO 3166 does,
+    mapped to the DATs' spelling.
+    """
+
+    rumble_keywords: frozenset[int] = frozenset()
+    """Keywords that mean a game supports rumble."""
+
+    analog_keywords: frozenset[int] = frozenset()
+    """Keywords that mean a game supports analog controls."""
+
+class HasheousConfig(BaseModel, frozen=True):
+    """How `match.py` interprets Hasheous's data."""
+
+    regions_by_country_code: FrozenDict[str, str] = frozendict()
+    """
+    Hasheous's country codes for the regions whose names it spells differently than the DAT files.
+    The names of all other countries already match.
+    """
+
 class PlaylistConfig(BaseModel, frozen=True):
+    """The contents of `playlists.toml`."""
+
     playlists: tuple[Playlist, ...]
+    igdb: IgdbConfig = IgdbConfig()
+    hasheous: HasheousConfig = HasheousConfig()
+
+    @classmethod
+    def load(cls, path: Path) -> Self:
+        return cls.model_validate(tomllib.loads(path.read_text(encoding="utf-8")))
+
+    def playlists_titled(self, titles: Collection[str]) -> tuple[Playlist, ...]:
+        """Returns the playlists with the given titles, or all of them if `titles` is empty."""
+        return tuple(p for p in self.playlists if p.title in titles) if titles else self.playlists
 
     @computed_field
     @cached_property
@@ -964,40 +1009,6 @@ class QueryClient:
             raise ValueError(f"Expected response['count'] to be a number, got {type(count)}")
 
         return int(count)
-
-ANALOG_KEYWORD_IDS = (
-    4965, # circle pad pro support
-    10740, # gamecube
-    11394, # gamecube controller support on wii
-    45794, # n64 controller supported
-    48530, # input type - dial controls
-)
-
-KEYWORD_OVERRIDES = {
-    1173: 27627, # "james bond" -> "007"
-    42455: 893, # "1500s" -> "16th Century"
-    3552: 535, # "1990's" -> "1990s"
-    41008: 50517, # "1bit" -> "1-bit"
-    44939: 589, # "25d" -> "2.5d"
-    3696: 25392, # "2d fighter" -> "2d fighting"
-    47978: 3014, # "2d-side-scroller" -> "2d platformer"
-
-    18448: 2231, # "3d platform" -> "3d platformer"
-    16964: 128, # "80s" -> "1980s"
-    7294: 128, # "the 1980s" -> "1980s"
-
-    50684: 3079, # "8bit" -> "8-bit"
-
-}
-
-RUMBLE_KEYWORD_IDS = (
-    8156, # contextual controller rumble
-    50485, # game boy player rumble support
-    46206, # nintendo ds rumble pak
-    10564, # rumble cartridge
-    27048, # rumble pak
-    38907, # rumble support
-)
 
 GameTupleAdapter = TypeAdapter(tuple[Game, ...])
 
@@ -1403,7 +1414,6 @@ __all__ = (
     "AgeRatingContentDescriptionV2",
     "AgeRatingOrganization",
     "AlternativeName",
-    "ANALOG_KEYWORD_IDS",
     "Company",
     "CompanyStatus",
     "DateFormat",
@@ -1444,7 +1454,6 @@ __all__ = (
     "ReleaseDate",
     "ReleaseDateRegion",
     "ReleaseDateStatus",
-    "RUMBLE_KEYWORD_IDS",
     "SortDirection",
     "Theme",
 )

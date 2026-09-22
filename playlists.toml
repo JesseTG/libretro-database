@@ -1,6 +1,64 @@
+# See the PlaylistConfig model in scripts/igdb.py for details about each field.
+
+# How scripts/match.py interprets IGDB's data (see IgdbConfig)
+[igdb]
+rumble_keywords = [
+    8156,   # contextual controller rumble
+    50485,  # game boy player rumble support
+    46206,  # nintendo ds rumble pak
+    10564,  # rumble cartridge
+    27048,  # rumble pak
+    38907,  # rumble support
+]
+
+analog_keywords = [
+    4965,   # circle pad pro support
+    10740,  # gamecube
+    11394,  # gamecube controller support on wii
+    45794,  # n64 controller supported
+    48530,  # input type - dial controls
+]
+
+# Synonym keyword = the keyword whose name its tag uses instead
+[igdb.keyword_overrides]
+1173 = 27627   # "james bond" -> "007"
+42455 = 893    # "1500s" -> "16th Century"
+3552 = 535     # "1990's" -> "1990s"
+41008 = 50517  # "1bit" -> "1-bit"
+44939 = 589    # "25d" -> "2.5d"
+3696 = 25392   # "2d fighter" -> "2d fighting"
+47978 = 3014   # "2d-side-scroller" -> "2d platformer"
+18448 = 2231   # "3d platform" -> "3d platformer"
+16964 = 128    # "80s" -> "1980s"
+7294 = 128     # "the 1980s" -> "1980s"
+50684 = 3079   # "8bit" -> "8-bit"
+
+# Platform = its actual platform type (1 is a console)
+[igdb.platform_type_overrides]
+47 = 1   # Virtual Console, which IGDB calls a "platform"
+133 = 1  # Odyssey 2 / Videopac G7000, which IGDB calls a computer
+150 = 1  # Turbografx-16/PC Engine CD, which IGDB calls a computer
+377 = 1  # Plug & Play, which IGDB calls a "platform"
+
+# ISO 3166-1 numeric country code = the name that the metadat/origin DATs use instead of ISO 3166's
+[igdb.origin_overrides]
+826 = "UK"
+840 = "US"
+
+# How scripts/match.py interprets Hasheous's data (see HasheousConfig)
+# Country code = the region's name as the DAT files spell it
+[hasheous.regions_by_country_code]
+US = "USA"
+EU = "Europe"
+World = "World"
+GB = "United Kingdom"
+UK = "United Kingdom"
+KR = "Korea"
+AS = "Asia"
+Asia = "Asia"
+
 # See https://api-docs.igdb.com#filter for details about how to use filters in IGDB queries.
 # (The "where" fields are passed to the API as-is)
-# See the PlaylistConfig model in scripts/igdb.py for details about each fields.
 
 [[playlists]]
 title = "Amstrad - CPC"

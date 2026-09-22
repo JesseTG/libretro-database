@@ -8,8 +8,9 @@ import time
 import tomllib
 
 from abc import ABC
-from collections.abc import Collection, Iterable, Sequence
+from collections.abc import Collection, Iterable, Iterator, Sequence
 from datetime import timedelta
+from functools import cache
 from io import StringIO
 from itertools import chain, repeat, product
 from os import PathLike
@@ -21,7 +22,6 @@ import aioitertools.builtins as aiobuiltins
 import aiofiles.ospath as aiopath
 import pe
 
-from aioitertools.asyncio import as_completed
 from aiomultiprocess import Pool
 from frozendict import frozendict
 from more_itertools import map_reduce, partition, prepend
@@ -32,11 +32,11 @@ from pydantic_core import from_json, core_schema
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
 from sqlalchemy import CheckConstraint, Column, ForeignKey, Index, MetaData, column, select, text
 from sqlalchemy.dialects.sqlite import JSON, insert
-from sqlalchemy.ext.asyncio import AsyncConnection, AsyncEngine, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from sqlalchemy.sql.functions import coalesce
 
 from igdb import Playlist, PlaylistConfig, PlaylistTitle
-from utils import AsyncEngine, CliTuple, Crc, DEFAULT_DAT_CONCURRENCY, DatabaseModel, EmptyStringToNone, FrozenDict, IndexArgs, Md5, OnlyFirst, PlaylistArgs, PoolArgs, Relationship, RowId, RowIdColumn, Sha1, VerboseArgs, create_db, db_transaction
+from utils import CliTuple, Crc, DEFAULT_DAT_CONCURRENCY, DatabaseModel, EmptyStringToNone, FrozenDict, IndexArgs, Md5, OnlyFirst, PlaylistArgs, PoolArgs, Relationship, RowId, RowIdColumn, Sha1, VerboseArgs, create_db, db_transaction
 
 type DatValidationMode = Literal['dat'] | None
 type DatPair = tuple[str, DatValue]
@@ -64,6 +64,25 @@ class DatModel(DatabaseModel, ABC, frozen=True, extra="allow", str_strip_whitesp
     @classmethod
     def from_dat(cls, value: DatRecord | DatTopLevelRecord) -> Self:
         return cls.model_validate(value, context="dat")
+
+    def to_dat(self) -> DatRecord:
+        """
+        Returns this record as DAT pairs; the inverse of `from_dat`.
+
+        Declared fields come first, under their serialization aliases, followed by extra fields.
+        Nested records come after both, so that e.g. a `game` ends with its `rom`s.
+        Fields that are None are left out.
+        """
+        declared = ((key, getattr(self, name)) for name, key in self._dat_keys())
+        fields = chain(declared, (self.model_extra or {}).items())
+        pairs = [pair for key, value in fields if value is not None for pair in _dat_pairs(key, value)]
+        return tuple(sorted(pairs, key=_is_record))
+
+    @classmethod
+    @cache
+    def _dat_keys(cls) -> tuple[tuple[str, str], ...]:
+        """Returns each declared field's name, and the key that `to_dat` writes it under."""
+        return tuple((name, info.serialization_alias or name) for name, info in cls.model_fields.items())
 
     @model_validator(mode="wrap")
     @classmethod
@@ -93,6 +112,33 @@ class DatModel(DatabaseModel, ABC, frozen=True, extra="allow", str_strip_whitesp
             case _:
                 # Handle other cases normally
                 return handler(data)
+
+def _dat_pairs(key: str, value: Any) -> Iterator[DatPair]:
+    """
+    Encodes one field of a `DatModel` as DAT pairs.
+
+    A sequence becomes one pair per item, the way a `game` lists each of its `rom`s.
+    """
+    match value:
+        case str():
+            yield key, value
+        case bool():
+            yield key, "1" if value else "0"
+        case DatModel():
+            yield key, value.to_dat()
+        case None:
+            return
+        case [(str(), _), *_]:
+            # A nested record that `from_dat` kept as-is among the extra fields
+            yield key, value
+        case [*items]:
+            for item in items:
+                yield from _dat_pairs(key, item)
+        case _:
+            yield key, str(value)
+
+def _is_record(pair: DatPair) -> bool:
+    return isinstance(pair[1], tuple)
 
 def _split_for_retroarch_validator(value: str) -> tuple[str, ...]:
     """
@@ -156,19 +202,19 @@ class Rom(DatModel, frozen=True):
     )
 
     rowid: RowIdColumn
-    name: Annotated[str | None, Field(alias="image")] = None
+    name: Annotated[str | None, Field(validation_alias=AliasChoices("name", "image"))] = None
     crc: Annotated[Crc | None, Column(CheckConstraint("crc IS NULL OR length(crc) = 8"), unique=True)] = None
     serial: str | None = None
     md5: Annotated[Md5 | None, Column(CheckConstraint("md5 IS NULL OR length(md5) = 32"), unique=True, index=True)] = None
-    sha1: Annotated[Sha1 | None, Column(CheckConstraint("sha1 IS NULL OR length(sha1) = 40"), unique=True, index=True), Field(alias="sha1sum")] = None
+    sha1: Annotated[Sha1 | None, Column(CheckConstraint("sha1 IS NULL OR length(sha1) = 40"), unique=True, index=True), Field(validation_alias=AliasChoices("sha1", "sha1sum"))] = None
     size: ByteSize | None = None
 
 class Game(DatModel, frozen=True):
     """
     A parsed and unmarshalled game record from a DAT file.
 
-    Unrecognized fields are ignored.
-    You can read or write a new field by adding it to this class.
+    Unrecognized fields are kept as extra fields, and written back out by `to_dat`.
+    Add a field to this class to give it a type and a database column.
 
     At least one of `name`, `description`, `comment`, or `id` should be present.
     """
@@ -179,6 +225,11 @@ class Game(DatModel, frozen=True):
     )
 
     rowid: RowIdColumn
+
+    # Declared first so that `to_dat` writes it first;
+    # not semantically important, but easier to read.
+    name: str | None = None
+
     analog: bool | None = None
     comment: OnlyFirst[str] | None = None
     description: str | None = None
@@ -195,7 +246,6 @@ class Game(DatModel, frozen=True):
     manufacturer: str | None = None
     """May include multiple media types separated by commas, slashes, or pipes."""
 
-    name: str | None = None
     publisher: str | None = None
     """May include multiple publishers separated by commas, slashes, or pipes."""
 
@@ -207,9 +257,7 @@ class Game(DatModel, frozen=True):
     tags: str | None = None
     users: int | None = None
 
-    # Declared last so that it appears last in the generated DATs;
-    # not semantically important, but easier to read.
-    roms: Annotated[tuple[Rom, ...], Field(validation_alias="rom"), Relationship(
+    roms: Annotated[tuple[Rom, ...], Field(alias="rom"), Relationship(
         self_columns={"rowid": Column("game", ForeignKey("DatGame.rowid"), primary_key=True)},
         related_columns=({
             # The field names don't map 1:1 with column names,
@@ -405,8 +453,7 @@ def to_dat(value: DatFile) -> str:
 
 class ParsedDatFile(RootModel, frozen=True):
     """
-    A RootModel representing a parsed DAT file
-    as a tuple starting with a ClrMamePro record followed by zero or more Game records.
+    A DAT file, as a tuple starting with a ClrMamePro record followed by zero or more Game records.
     """
     root: Annotated[
         tuple[ClrMamePro, *tuple[Game, ...]],
@@ -440,6 +487,10 @@ class ParsedDatFile(RootModel, frozen=True):
     def games(self) -> tuple[Game, ...]:
         """The Game records of this DAT file, which contain the actual game data."""
         return self.root[1:] if len(self.root) > 1 else ()
+
+    def to_dat(self) -> DatFile:
+        """Returns this DAT file's records, ready for `encode_dat`."""
+        return tuple((record.__dattype__, record.to_dat()) for record in self.root)
 
     @classmethod
     async def from_dat_file_async(cls, dat: PathLike) -> Self:

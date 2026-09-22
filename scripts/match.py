@@ -20,17 +20,16 @@ import json
 import logging
 import re
 import time
-import tomllib
 
 from collections import Counter, defaultdict
-from collections.abc import Collection, Iterable, Mapping, Sequence
+from collections.abc import Callable, Collection, Iterable, Iterator, Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import timedelta
-from functools import cache
+from functools import cache, partial
+from itertools import chain
 from pathlib import Path
 from typing import Annotated, Any, NamedTuple
 
-import aiofiles
 import pe
 import pycountry
 
@@ -38,15 +37,38 @@ from aiomultiprocess.types import ProxyException
 
 from pydantic import AliasChoices, BaseModel, DirectoryPath, Field, FilePath
 from pydantic_settings import BaseSettings, CliSubCommand, SettingsConfigDict, CliApp
-from sqlalchemy import CheckConstraint, ForeignKey, MetaData, Column, String, Index, column, select, text, true
+from sqlalchemy import CheckConstraint, ForeignKey, MetaData, Column, Row, Select, String, Index, column, select, text, true, type_coerce
 from sqlalchemy.dialects.sqlite import insert
 from sqlalchemy.ext.asyncio import AsyncConnection, AsyncEngine, create_async_engine
 from sqlalchemy.sql.functions import coalesce, count
 
-from dats import DAT_OBJECT_TYPES, CompiledEntry, DatPair, DatTopLevelRecord, compile_dats_async, encode_dat, get_dat_match, index_dats, write_dat_key_index, Game as DatGame, Rom as DatRom
-from igdb import ANALOG_KEYWORD_IDS, KEYWORD_OVERRIDES, RUMBLE_KEYWORD_IDS, Playlist, PlaylistConfig, IGDB_OBJECT_TYPES, index_igdb
-from hasheous import HASHEOUS_OBJECT_TYPES, index_hasheous
-from utils import CliTuple, DEFAULT_DAT_CONCURRENCY, DEFAULT_HASHEOUS_CONCURRENCY, DEFAULT_IGDB_CONCURRENCY, IndexArgs, PlaylistArgs, PoolArgs, RowId, Sha256, VerboseArgs, create_db, create_deferred_indexes, DatabaseModel, Crc, Md5, Sha1, db_transaction
+from dats import DAT_OBJECT_TYPES, ClrMamePro, CompiledEntry, DatTable, ParsedDatFile, compile_dats_async, encode_dat, get_dat_match, index_dats, write_dat_key_index, Game as DatGame, Rom as DatRom
+from igdb import (
+    IGDB_OBJECT_TYPES,
+    DumpIdType,
+    IgdbConfig,
+    Playlist,
+    PlaylistConfig,
+    index_igdb,
+    AgeRating as IgdbAgeRating,
+    AgeRatingCategory as IgdbAgeRatingCategory,
+    AgeRatingOrganization as IgdbAgeRatingOrganization,
+    Company as IgdbCompany,
+    Franchise as IgdbFranchise,
+    Game as IgdbGame,
+    Genre as IgdbGenre,
+    InvolvedCompany as IgdbInvolvedCompany,
+    Keyword as IgdbKeyword,
+    Language as IgdbLanguage,
+    LanguageSupport as IgdbLanguageSupport,
+    MultiplayerMode as IgdbMultiplayerMode,
+    Platform as IgdbPlatform,
+    PlayerPerspective as IgdbPlayerPerspective,
+    PlaylistMapping as IgdbPlaylistMapping,
+    ReleaseDate as IgdbReleaseDate,
+)
+from hasheous import HASHEOUS_OBJECT_TYPES, index_hasheous, GameDataObject as HasheousGameDataObject, GameDumpMapping as HasheousGameDumpMapping, RomItem as HasheousRomItem
+from utils import CliTuple, DEFAULT_DAT_CONCURRENCY, DEFAULT_HASHEOUS_CONCURRENCY, DEFAULT_IGDB_CONCURRENCY, IndexArgs, PlaylistArgs, PoolArgs, RowId, Sha256, VerboseArgs, build_metadata, create_db, create_deferred_indexes, DatabaseModel, Crc, Md5, Sha1, db_transaction
 
 class AllRoms(DatabaseModel, frozen=True):
     __tablename__ = "AllRoms"
@@ -277,21 +299,6 @@ Region names that the DAT files' own `region` fields spell differently.
 Most of the DAT files spell the UK "United Kingdom", even though No-Intro names use "(UK)".
 """
 
-REGIONS_BY_COUNTRY_CODE: Mapping[str, str] = {
-    "US": "USA",
-    "EU": "Europe",
-    "World": "World",
-    "GB": "United Kingdom",
-    "UK": "United Kingdom",
-    "KR": "Korea",
-    "AS": "Asia",
-    "Asia": "Asia",
-}
-"""
-Hasheous's country codes for the regions whose names it spells differently than the DAT files.
-The names of all other countries already match.
-"""
-
 REGION_LANGUAGES: Mapping[str, frozenset[str]] = {
     "USA": frozenset(("English",)),
     "United Kingdom": frozenset(("English",)),
@@ -366,27 +373,19 @@ COOP_MODE = 3
 CONSOLE_PLATFORM_TYPES = frozenset((1, 5))
 """IGDB's platform types for consoles and portable consoles."""
 
-PLATFORM_TYPE_OVERRIDES: Mapping[int, int] = {
-    47: 1,  # Virtual Console, which IGDB calls a "platform"
-    133: 1,  # Odyssey 2 / Videopac G7000, which IGDB calls a computer
-    150: 1,  # Turbografx-16/PC Engine CD, which IGDB calls a computer
-    377: 1,  # Plug & Play, which IGDB calls a "platform"
-}
-"""IGDB platforms that are consoles, but that IGDB doesn't say are."""
-
 class RatingBoard(NamedTuple):
     field: str
     founded: int
     """The year the board started rating games; a release before then was never rated by it."""
 
     regions: frozenset[int]
-    """The IGDB release regions that the board rates games for."""
+    """The IGDB release regions whose releases the board rates, including worldwide releases."""
 
 
 RATING_BOARDS: Mapping[str, RatingBoard] = {
-    "ESRB": RatingBoard("esrb_rating", 1994, frozenset((2,))),
-    "PEGI": RatingBoard("pegi_rating", 2003, frozenset((1,))),
-    "CERO": RatingBoard("cero_rating", 2002, frozenset((5,))),
+    "ESRB": RatingBoard("esrb_rating", 1994, frozenset((2, WORLDWIDE))),
+    "PEGI": RatingBoard("pegi_rating", 2003, frozenset((1, WORLDWIDE))),
+    "CERO": RatingBoard("cero_rating", 2002, frozenset((5, WORLDWIDE))),
 }
 """
 IGDB records age ratings per game rather than per release,
@@ -398,15 +397,6 @@ after the board existed, on the playlist's platform.
 
 IGNORED_AGE_RATINGS = frozenset(("RP",))
 """ESRB's "Rating Pending" isn't a rating."""
-
-ORIGIN_OVERRIDES: Mapping[str, str] = {
-    "826": "UK",
-    "840": "US",
-}
-"""
-Country names that the existing `metadat/origin` DATs spell differently than ISO 3166 does.
-Keyed by ISO 3166-1 numeric code.
-"""
 
 
 def playlist_igdb_platforms(playlist: Playlist) -> frozenset[int] | None:
@@ -434,12 +424,14 @@ def language_name(name: str | None) -> str | None:
     return name if len(name) > 2 and re.fullmatch(r"[A-Z][a-z]+(?: [A-Z][a-z]+)*", name) else None
 
 
-def country_region(code: str | None, name: str | None) -> str | None:
+def country_region(code: str | None, name: str | None, regions_by_code: Mapping[str, str]) -> str | None:
     """
     Spells one of Hasheous's countries the way the DAT files spell regions,
     or returns None if it isn't a country at all (e.g. "Unset", or a bare code like "ss").
+
+    :param regions_by_code: See `HasheousConfig.regions_by_country_code`.
     """
-    if code and (region := REGIONS_BY_COUNTRY_CODE.get(code)):
+    if code and (region := regions_by_code.get(code)):
         return region
 
     if name and name != "Unset" and re.fullmatch(r"[A-Z][A-Za-z]*(?: [A-Za-z]+)*", name):
@@ -448,12 +440,18 @@ def country_region(code: str | None, name: str | None) -> str | None:
     return None
 
 
-def hasheous_game_region(value: str) -> str | None:
+def hasheous_game_region(value: str, regions_by_code: Mapping[str, str]) -> str | None:
     """Parses one of the countries that Hasheous lists for a whole game, e.g. "Japan (JP)"."""
     if match := re.fullmatch(r"(.*?)\s*\(([^()]*)\)", value):
-        return country_region(match[2], match[1])
+        return country_region(match[2], match[1], regions_by_code)
 
-    return country_region(None, value)
+    return country_region(None, value, regions_by_code)
+
+
+def json_object(value: str | None) -> dict[str, Any]:
+    """Parses a JSON object, or returns an empty one if `value` is anything else."""
+    parsed = json.loads(value) if value else None
+    return parsed if isinstance(parsed, dict) else {}
 
 
 @dataclass(frozen=True, slots=True)
@@ -478,7 +476,9 @@ class IgdbInfo:
     franchise: str | None = None
     franchises: list[str] = field(default_factory=list)
     developers: list[str] = field(default_factory=list)
-    developer_countries: set[str | None] = field(default_factory=set)
+    developer_countries: set[int | None] = field(default_factory=set)
+    """ISO 3166-1 numeric codes."""
+
     publishers: list[str] = field(default_factory=list)
     genres: list[str] = field(default_factory=list)
     perspectives: list[str] = field(default_factory=list)
@@ -521,6 +521,9 @@ class Catalog:
     platform_types: dict[int, int | None]
     """Each IGDB platform's type (see `CONSOLE_PLATFORM_TYPES`)."""
 
+    igdb_config: IgdbConfig
+    """How to interpret IGDB's data. `tags` and `platform_types` already reflect its overrides."""
+
     hasheous_countries: dict[int, frozenset[str]]
     """The regions that Hasheous lists for each of its games, across all of the game's ROMs."""
 
@@ -528,164 +531,260 @@ class Catalog:
     """The languages that Hasheous lists for each of its games, across all of the game's ROMs."""
 
     @classmethod
-    async def load(cls, connection: AsyncConnection) -> Catalog:
-        async def rows(query: str) -> Iterable[Any]:
-            return (await connection.execute(text(query))).all()
+    async def load(cls, connection: AsyncConnection, metadata: MetaData, config: PlaylistConfig) -> Catalog:
+        """
+        :param metadata: The tables that the `index` subcommand wrote to the database that `connection` reads.
+        """
+        index = IndexReader(connection, metadata)
+        regions_by_code = config.hasheous.regions_by_country_code
+        links_by_crc, links_by_serial = await index.hasheous_links(regions_by_code)
 
-        igdb: dict[int, IgdbInfo] = {}
-        franchise_names = {id: name for id, name in await rows("SELECT id, name FROM IgdbFranchise")}
+        return cls(
+            igdb=await index.igdb_games(),
+            igdb_playlists=await index.igdb_playlists(),
+            links_by_crc=links_by_crc,
+            links_by_serial=links_by_serial,
+            tags=await index.igdb_tags(config.igdb.keyword_overrides),
+            platform_types=await index.igdb_platform_types(config.igdb.platform_type_overrides),
+            igdb_config=config.igdb,
+            hasheous_countries=await index.hasheous_values("country", partial(hasheous_game_region, regions_by_code=regions_by_code)),
+            hasheous_languages=await index.hasheous_values("language", language_name),
+        )
 
-        for id, name, franchise in await rows("SELECT id, name, franchise FROM IgdbGame"):
-            igdb[id] = IgdbInfo(name=name, franchise=franchise_names.get(franchise))
 
-        for game, franchise in await rows("SELECT IgdbGame_franchises_id, IgdbFranchise_id FROM IgdbGame_franchises ORDER BY IgdbFranchise_id"):
-            if (info := igdb.get(game)) and franchise in franchise_names:
-                info.franchises.append(franchise_names[franchise])
+def grouped[K, V](pairs: Iterable[tuple[K, V] | Row[tuple[K, V]]]) -> dict[K, frozenset[V]]:
+    """Groups the second item of each pair by the first."""
+    groups: dict[K, set[V]] = defaultdict(set)
+    for key, value in pairs:
+        groups[key].add(value)
 
-        for game, name in await rows(
-            "SELECT r.IgdbGame_genres_id, g.name FROM IgdbGame_genres r "
-            "JOIN IgdbGenre g ON g.id = r.IgdbGenre_id ORDER BY g.name"
-        ):
-            if info := igdb.get(game):
-                info.genres.append(name)
+    return {key: frozenset(values) for key, values in groups.items()}
 
-        for game, name in await rows(
-            "SELECT r.IgdbGame_player_perspectives_id, p.name FROM IgdbGame_player_perspectives r "
-            "JOIN IgdbPlayerPerspective p ON p.id = r.IgdbPlayerPerspective_id ORDER BY p.id"
-        ):
-            if info := igdb.get(game):
-                info.perspectives.append(name)
 
-        for game, platform in await rows("SELECT IgdbGame_platforms_id, IgdbPlatform_id FROM IgdbGame_platforms"):
-            if info := igdb.get(game):
-                info.platforms.add(platform)
+@dataclass(frozen=True)
+class IndexReader:
+    """Reads what a `Catalog` holds from the database that the `index` subcommand writes."""
 
-        for game, mode in await rows("SELECT IgdbGame_game_modes_id, IgdbGameMode_id FROM IgdbGame_game_modes"):
-            if info := igdb.get(game):
-                info.game_modes.add(mode)
+    connection: AsyncConnection
+    metadata: MetaData
 
-        for game, keyword in await rows("SELECT IgdbGame_keywords_id, IgdbKeyword_id FROM IgdbGame_keywords"):
-            if info := igdb.get(game):
-                info.keywords.add(keyword)
+    async def igdb_games(self) -> dict[int, IgdbInfo]:
+        """Loads what the generated DAT files use of each IGDB game, keyed by its ID."""
+        game, franchise = IgdbGame.table(self.metadata), IgdbFranchise.table(self.metadata)
+        query = select(game.c.id, game.c.name, franchise.c.name).outerjoin(franchise, franchise.c.id == game.c.franchise)
+        games = {id: IgdbInfo(name=name, franchise=franchise_name) for id, name, franchise_name in await self._rows(query)}
 
-        for game, name in await rows(
-            "SELECT r.IgdbGame_language_supports_id, l.name FROM IgdbGame_language_supports r "
-            "JOIN IgdbLanguageSupport s ON s.id = r.IgdbLanguageSupport_id "
-            "JOIN IgdbLanguage l ON l.id = s.language ORDER BY l.id"
-        ):
+        await self._add_igdb_relations(games)
+        await self._add_igdb_languages(games)
+        await self._add_igdb_companies(games)
+        await self._add_igdb_releases(games)
+        await self._add_igdb_multiplayer_modes(games)
+        await self._add_igdb_age_ratings(games)
+        return games
+
+    async def igdb_playlists(self) -> dict[str, frozenset[int]]:
+        """Loads the IGDB games that each playlist's query selects."""
+        mapping = IgdbPlaylistMapping.table(self.metadata)
+        return grouped(await self._rows(select(mapping.c.title, mapping.c.game)))
+
+    async def igdb_tags(self, keyword_overrides: Mapping[int, int]) -> dict[int, str]:
+        """
+        Loads the tag that each IGDB keyword becomes, if any.
+
+        :param keyword_overrides: See `IgdbConfig.keyword_overrides`.
+        """
+        keyword = IgdbKeyword.table(self.metadata)
+        names = {id: name for id, name in await self._rows(select(keyword.c.id, keyword.c.name))}
+        tags = {id: names.get(keyword_overrides.get(id, id), name) for id, name in names.items()}
+        return {id: tag for id, tag in tags.items() if not TAG_SEPARATORS.search(tag)}
+
+    async def igdb_platform_types(self, overrides: Mapping[int, int]) -> dict[int, int | None]:
+        """
+        Loads each IGDB platform's type.
+
+        :param overrides: See `IgdbConfig.platform_type_overrides`.
+        """
+        platform = IgdbPlatform.table(self.metadata)
+        types = {id: type for id, type in await self._rows(select(platform.c.id, platform.c.platform_type))}
+        return {**types, **overrides}
+
+    async def hasheous_links(self, regions_by_code: Mapping[str, str]) -> tuple[dict[str, list[HasheousLink]], dict[str, list[HasheousLink]]]:
+        """
+        Loads the Hasheous games that list each ROM in `AllRoms`,
+        keyed by the ROM's CRC32 (in lowercase) and by its serial (in uppercase).
+
+        :param regions_by_code: See `HasheousConfig.regions_by_country_code`.
+        """
+        # Most ROMs share their countries and languages with many others,
+        # so each distinct JSON value is only parsed once
+        @cache
+        def countries(value: str | None) -> tuple[str, ...]:
+            regions = (country_region(code, name, regions_by_code) for code, name in json_object(value).items())
+            return tuple(dict.fromkeys(filter(None, regions)))
+
+        @cache
+        def languages(value: str | None) -> tuple[str, ...]:
+            return tuple(dict.fromkeys(filter(None, map(language_name, json_object(value).values()))))
+
+        by_crc: dict[str, list[HasheousLink]] = defaultdict(list)
+        by_serial: dict[str, list[HasheousLink]] = defaultdict(list)
+
+        for crc, serial, game, igdb, retroachievements, dump, rom_countries, rom_languages in await self._rows(self._hasheous_links_query()):
+            link = HasheousLink(game, igdb, retroachievements, dump, countries(rom_countries), languages(rom_languages))
+            if crc:
+                by_crc[crc.lower()].append(link)
+            if serial:
+                by_serial[serial.upper()].append(link)
+
+        return dict(by_crc), dict(by_serial)
+
+    async def hasheous_values(self, field: str, parse: Callable[[str], str | None]) -> dict[int, frozenset[str]]:
+        """
+        Loads what one of the multi-valued fields of each Hasheous game lists, across all of the game's ROMs.
+
+        :param parse: Returns the value to keep for each listed one, or None to leave it out.
+        """
+        rows = await self._rows(select(*HasheousGameDataObject.relationship_columns(self.metadata, field)))
+        return grouped((game, parsed) for game, value in rows if (parsed := parse(value)))
+
+    async def _add_igdb_relations(self, games: Mapping[int, IgdbInfo]) -> None:
+        for info, name in await self._igdb_related_names(games, "franchises", IgdbFranchise, order_by="id"):
+            info.franchises.append(name)
+
+        for info, name in await self._igdb_related_names(games, "genres", IgdbGenre, order_by="name"):
+            info.genres.append(name)
+
+        for info, name in await self._igdb_related_names(games, "player_perspectives", IgdbPlayerPerspective, order_by="id"):
+            info.perspectives.append(name)
+
+        for info, platform in await self._igdb_related_ids(games, "platforms"):
+            info.platforms.add(platform)
+
+        for info, mode in await self._igdb_related_ids(games, "game_modes"):
+            info.game_modes.add(mode)
+
+        for info, keyword in await self._igdb_related_ids(games, "keywords"):
+            info.keywords.add(keyword)
+
+    async def _add_igdb_languages(self, games: Mapping[int, IgdbInfo]) -> None:
+        game, support_id = IgdbGame.relationship_columns(self.metadata, "language_supports")
+        support, language = IgdbLanguageSupport.table(self.metadata), IgdbLanguage.table(self.metadata)
+        query = (
+            select(game, language.c.name)
+            .join(support, support.c.id == support_id)
+            .join(language, language.c.id == support.c.language)
+            .order_by(language.c.id)
+        )
+
+        for info, name in await self._rows_by_game(games, query):
             # Whether a language is supported in audio, subtitles, or the interface makes no difference here
-            if (info := igdb.get(game)) and (name := language_name(name)) and name not in info.languages:
+            if (name := language_name(name)) and name not in info.languages:
                 info.languages.append(name)
 
-        for game, name, country, developer, publisher in await rows(
-            "SELECT ic.game, c.name, c.country, ic.developer, ic.publisher FROM IgdbInvolvedCompany ic "
-            "JOIN IgdbCompany c ON c.id = ic.company ORDER BY ic.id"
-        ):
-            if not (info := igdb.get(game)):
-                continue
+    async def _add_igdb_companies(self, games: Mapping[int, IgdbInfo]) -> None:
+        involved, company = IgdbInvolvedCompany.table(self.metadata), IgdbCompany.table(self.metadata)
+        query = (
+            select(involved.c.game, company.c.name, company.c.country, involved.c.developer, involved.c.publisher)
+            .join(company, company.c.id == involved.c.company)
+            .order_by(involved.c.id)
+        )
+
+        for info, name, country, developer, publisher in await self._rows_by_game(games, query):
             if developer and name not in info.developers:
                 info.developers.append(name)
                 info.developer_countries.add(country)
             if publisher and name not in info.publishers:
                 info.publishers.append(name)
 
-        for game, platform, region, year, month, format in await rows(
-            "SELECT game, platform, release_region, y, m, date_format FROM IgdbReleaseDate WHERE y IS NOT NULL"
-        ):
-            if info := igdb.get(game):
-                info.releases.append(ReleaseDate(platform, region, year, month, format))
-
-        for game, platform, offlinemax, offlinecoopmax, offlinecoop in await rows(
-            "SELECT game, platform, offlinemax, offlinecoopmax, offlinecoop FROM IgdbMultiplayerMode"
-        ):
-            if info := igdb.get(game):
-                max_players = max((n for n in (offlinemax, offlinecoopmax) if n), default=None)
-                info.multiplayer.append(MultiplayerMode(platform, max_players, bool(offlinecoop)))
-
-        for game, organization, rating in await rows(
-            "SELECT r.IgdbGame_age_ratings_id, o.name, c.rating FROM IgdbGame_age_ratings r "
-            "JOIN IgdbAgeRating a ON a.id = r.IgdbAgeRating_id "
-            "JOIN IgdbAgeRatingOrganization o ON o.id = a.organization "
-            "JOIN IgdbAgeRatingCategory c ON c.id = a.rating_category"
-        ):
-            if info := igdb.get(game):
-                info.age_ratings[organization].add(rating)
-
-        igdb_playlists: dict[str, set[int]] = defaultdict(set)
-        for title, game in await rows("SELECT title, game FROM IgdbPlaylistMapping"):
-            igdb_playlists[title].add(game)
-
-        keyword_names = {id: name for id, name in await rows("SELECT id, name FROM IgdbKeyword")}
-        tags: dict[int, str] = {}
-        for id, name in keyword_names.items():
-            # Some keywords are synonyms of others, which would make for duplicate tags
-            name = keyword_names.get(KEYWORD_OVERRIDES.get(id, id), name)
-            if not TAG_SEPARATORS.search(name):
-                tags[id] = name
-
-        platform_types = {id: type for id, type in await rows("SELECT id, platform_type FROM IgdbPlatform")}
-
-        # Most ROMs share their countries and languages with many others,
-        # so each distinct JSON value is only parsed once
-        @cache
-        def rom_countries(value: str | None) -> tuple[str, ...]:
-            countries = json.loads(value) if value else None
-            if not isinstance(countries, dict):
-                return ()
-            return tuple(dict.fromkeys(r for code, name in countries.items() if (r := country_region(code, name))))
-
-        @cache
-        def rom_languages(value: str | None) -> tuple[str, ...]:
-            languages = json.loads(value) if value else None
-            if not isinstance(languages, dict):
-                return ()
-            return tuple(dict.fromkeys(l for name in languages.values() if (l := language_name(name))))
-
-        by_crc: dict[str, list[HasheousLink]] = defaultdict(list)
-        by_serial: dict[str, list[HasheousLink]] = defaultdict(list)
-
-        for crc, serial, game, igdb_id, ra, dump, countries, languages in await rows(
-            "SELECT a.crc, a.serial, h.id, h.igdb_id, h.retroachievements_id, m.dump, i.country, i.language FROM AllRoms a "
-            "JOIN HasheousRomItem i ON i.id = a.hasheous_rom "
-            "JOIN HasheousGameDataObject_roms r ON r.HasheousRomItem_id = a.hasheous_rom "
-            "JOIN HasheousGameDataObject h ON h.id = r.HasheousGameDataObject_roms_id "
-            "JOIN HasheousGameDumpMapping m ON m.game = h.id "
-            "WHERE a.hasheous_rom IS NOT NULL"
-        ):
-            link = HasheousLink(game, igdb_id, ra, dump, rom_countries(countries), rom_languages(languages))
-            if crc:
-                by_crc[crc.lower()].append(link)
-            if serial:
-                by_serial[serial.upper()].append(link)
-
-        hasheous_countries: dict[int, set[str]] = defaultdict(set)
-        for game, value in await rows(
-            "SELECT HasheousGameDataObject_country_id, HasheousGameDataObject_country FROM HasheousGameDataObject_country"
-        ):
-            if region := hasheous_game_region(value):
-                hasheous_countries[game].add(region)
-
-        hasheous_languages: dict[int, set[str]] = defaultdict(set)
-        for game, value in await rows(
-            "SELECT HasheousGameDataObject_language_id, HasheousGameDataObject_language FROM HasheousGameDataObject_language"
-        ):
-            if language := language_name(value):
-                hasheous_languages[game].add(language)
-
-        return cls(
-            igdb=igdb,
-            igdb_playlists={k: frozenset(v) for k, v in igdb_playlists.items()},
-            links_by_crc=dict(by_crc),
-            links_by_serial=dict(by_serial),
-            tags=tags,
-            platform_types=platform_types,
-            hasheous_countries={k: frozenset(v) for k, v in hasheous_countries.items()},
-            hasheous_languages={k: frozenset(v) for k, v in hasheous_languages.items()},
+    async def _add_igdb_releases(self, games: Mapping[int, IgdbInfo]) -> None:
+        release = IgdbReleaseDate.table(self.metadata)
+        query = (
+            select(release.c.game, release.c.platform, release.c.release_region, release.c.y, release.c.m, release.c.date_format)
+            .where(release.c.y.is_not(None))
         )
+
+        for info, platform, region, year, month, format in await self._rows_by_game(games, query):
+            info.releases.append(ReleaseDate(platform, region, year, month, format))
+
+    async def _add_igdb_multiplayer_modes(self, games: Mapping[int, IgdbInfo]) -> None:
+        mode = IgdbMultiplayerMode.table(self.metadata)
+        query = select(mode.c.game, mode.c.platform, mode.c.offlinemax, mode.c.offlinecoopmax, mode.c.offlinecoop)
+
+        for info, platform, offlinemax, offlinecoopmax, offlinecoop in await self._rows_by_game(games, query):
+            max_players = max((n for n in (offlinemax, offlinecoopmax) if n), default=None)
+            info.multiplayer.append(MultiplayerMode(platform, max_players, bool(offlinecoop)))
+
+    async def _add_igdb_age_ratings(self, games: Mapping[int, IgdbInfo]) -> None:
+        game, rating_id = IgdbGame.relationship_columns(self.metadata, "age_ratings")
+        age_rating, organization, category = (
+            IgdbAgeRating.table(self.metadata),
+            IgdbAgeRatingOrganization.table(self.metadata),
+            IgdbAgeRatingCategory.table(self.metadata),
+        )
+        query = (
+            select(game, organization.c.name, category.c.rating)
+            .join(age_rating, age_rating.c.id == rating_id)
+            .join(organization, organization.c.id == age_rating.c.organization)
+            .join(category, category.c.id == age_rating.c.rating_category)
+        )
+
+        for info, board, rating in await self._rows_by_game(games, query):
+            info.age_ratings[board].add(rating)
+
+    async def _igdb_related_names(self, games: Mapping[int, IgdbInfo], field: str, related: type[DatabaseModel], order_by: str) -> Iterator[Any]:
+        """Loads the names of the objects that one of each IGDB game's fields refers to, ordered by `related`'s `order_by` column."""
+        game, related_id = IgdbGame.relationship_columns(self.metadata, field)
+        table = related.table(self.metadata)
+        query = select(game, table.c.name).join(table, table.c.id == related_id).order_by(table.c[order_by])
+        return await self._rows_by_game(games, query)
+
+    async def _igdb_related_ids(self, games: Mapping[int, IgdbInfo], field: str) -> Iterator[Any]:
+        """Loads the IDs of the objects that one of each IGDB game's fields refers to."""
+        return await self._rows_by_game(games, select(*IgdbGame.relationship_columns(self.metadata, field)))
+
+    async def _rows_by_game(self, games: Mapping[int, IgdbInfo], query: Select) -> Iterator[Any]:
+        """
+        Runs a query whose first column is an IGDB game's ID,
+        replacing it with that game's `IgdbInfo` and skipping the rows of unknown games.
+        """
+        rows = await self._rows(query)
+        # Lazily, since collecting hundreds of thousands of new tuples at once keeps the garbage collector busy
+        return ((games[id], *values) for id, *values in rows if id in games)
+
+    def _hasheous_links_query(self) -> Select:
+        all_roms, rom = AllRoms.table(self.metadata), HasheousRomItem.table(self.metadata)
+        game, dump = HasheousGameDataObject.table(self.metadata), HasheousGameDumpMapping.table(self.metadata)
+        game_id, rom_id = HasheousGameDataObject.relationship_columns(self.metadata, "roms")
+
+        return (
+            select(
+                all_roms.c.crc,
+                all_roms.c.serial,
+                game.c.id,
+                game.c.igdb_id,
+                game.c.retroachievements_id,
+                dump.c.dump,
+                # Read as text, so that `hasheous_links` can parse each distinct value just once
+                type_coerce(rom.c.country, String),
+                type_coerce(rom.c.language, String),
+            )
+            .join_from(all_roms, rom, rom.c.id == all_roms.c.hasheous_rom)
+            .join(rom_id.table, rom_id == all_roms.c.hasheous_rom)
+            .join(game, game.c.id == game_id)
+            .join(dump, dump.c.game == game.c.id)
+            .where(all_roms.c.hasheous_rom.is_not(None))
+        )
+
+    async def _rows(self, query: Select) -> Sequence[Row]:
+        return (await self.connection.execute(query)).all()
+
+
+type FieldValue = str | int | bool
+"""The value of one of `RDB_FIELDS`, before it's written to a DAT file."""
 
 
 class Derivation(NamedTuple):
-    fields: dict[str, str]
+    fields: dict[str, FieldValue]
     """
     Every field our sources could fill in for an entry, whether or not the entry already has it,
     in the order of `RDB_FIELDS`.
@@ -700,17 +799,26 @@ class Derivation(NamedTuple):
     ambiguous: bool
     """Whether the entry's ROMs pointed to several IGDB games equally, so none was chosen."""
 
+    @property
+    def sources(self) -> dict[str, Any]:
+        """
+        The IDs of the games that `fields` were derived from, as extra DAT fields for debugging.
+        `c_converter` leaves fields it doesn't know out of the `.rdb`.
+        """
+        return {"igdb_id": self.igdb, "hasheous_id": tuple(sorted(self.hasheous_games))}
+
+
+def entry_name(entry: CompiledEntry) -> str | None:
+    name = entry.game.get("name")
+    return name if isinstance(name, str) else None
+
 
 def name_regions(entry: CompiledEntry, known: Collection[str]) -> tuple[str, ...]:
     """
     Returns the regions in `known` that the first parenthesized tag of an entry's name to list any lists,
     like No-Intro's "(USA, Europe)", MAME's "(Japan, set 2)", or the second tag of "Tiny Troops (CD) (Europe)".
     """
-    name = entry.game.get("name")
-    if not isinstance(name, str):
-        return ()
-
-    for tag in re.findall(r"\(([^()]*)\)", name):
+    for tag in re.findall(r"\(([^()]*)\)", entry_name(entry) or ""):
         if regions := tuple(r for part in tag.split(",") if (r := part.strip()) in known):
             return regions
 
@@ -728,6 +836,71 @@ def entry_regions(entry: CompiledEntry) -> tuple[str, ...]:
         return tuple(r.strip() for r in re.split(r"[,/|]", region) if r.strip())
 
     return name_regions(entry, IGDB_REGIONS_BY_DAT_REGION)
+
+
+def dump_regions(entry: CompiledEntry, named: tuple[str, ...], derived: str | None) -> tuple[str, ...]:
+    """
+    Returns the regions that an entry's dump is from, as far as they're known:
+    the entry's own `region` field, else the regions its name lists, else the region derived for it.
+    """
+    if isinstance(existing := entry.game.get("region"), str) and existing:
+        return (REGION_ALIASES.get(existing, existing),)
+
+    return named or ((derived,) if derived else ())
+
+
+def igdb_release_regions(regions: Iterable[str]) -> frozenset[int]:
+    """Returns the IGDB release regions that DAT regions map to (see `IGDB_REGIONS_BY_DAT_REGION`)."""
+    return frozenset(r for region in regions for r in IGDB_REGIONS_BY_DAT_REGION.get(region, ()))
+
+
+def developer_origin(countries: Collection[int | None], overrides: Mapping[int, str]) -> str | None:
+    """
+    Returns the country that all of a game's developers are from,
+    spelled the way the existing `metadat/origin` DATs spell it.
+
+    :param countries: ISO 3166-1 numeric codes.
+    :param overrides: See `IgdbConfig.origin_overrides`.
+    """
+    if len(countries) != 1 or (code := next(iter(countries))) is None:
+        return None
+
+    if origin := overrides.get(code):
+        return origin
+
+    country = pycountry.countries.get(numeric=f"{code:03}")
+    return (getattr(country, "common_name", None) or country.name) if country else None
+
+
+def company_fields(info: IgdbInfo, origin_overrides: Mapping[int, str]) -> dict[str, FieldValue]:
+    """:param origin_overrides: See `IgdbConfig.origin_overrides`."""
+    fields: dict[str, FieldValue] = {}
+    if info.developers:
+        fields["developer"] = MULTI_VALUE_SEPARATOR.join(info.developers)
+
+    if origin := developer_origin(info.developer_countries, origin_overrides):
+        fields["origin"] = origin
+
+    if info.publishers:
+        fields["publisher"] = MULTI_VALUE_SEPARATOR.join(info.publishers)
+
+    return fields
+
+
+def classification_fields(info: IgdbInfo) -> dict[str, FieldValue]:
+    fields: dict[str, FieldValue] = {}
+    if info.genres:
+        fields["genre"] = MULTI_VALUE_SEPARATOR.join(info.genres)
+
+    if info.franchise:
+        fields["franchise"] = info.franchise
+    elif len(info.franchises) == 1:
+        fields["franchise"] = info.franchises[0]
+
+    if info.perspectives:
+        fields["perspective"] = MULTI_VALUE_SEPARATOR.join(info.perspectives)
+
+    return fields
 
 
 def agreed_languages(claims: Iterable[Sequence[str]]) -> Sequence[str] | None:
@@ -777,150 +950,111 @@ class Deriver:
         self.platforms = playlist_igdb_platforms(playlist)
         self.by_serial = playlist.id_type == "serial"
 
-    def _links(self, rom: Mapping[str, Any]) -> list[HasheousLink]:
-        """
-        Finds the Hasheous games listing a ROM by the identifiers RetroArch itself uses:
-        its CRC32, or failing that (on platforms identified by serial) its serial.
-        """
-        lookups: list[tuple[str, dict[str, list[HasheousLink]], Any]] = [
-            ("crc", self.catalog.links_by_crc, str.lower),
-        ]
-        if self.by_serial:
-            # A serial identifies a game, not a dump, so it's the last resort
-            lookups.append(("serial", self.catalog.links_by_serial, str.upper))
-
-        for id_type, index, normalize in lookups:
-            value = rom.get(id_type)
-            if isinstance(value, str) and (links := index.get(normalize(value))):
-                return [link for link in links if link.dump in self.dumps]
-
-        return []
-
     def derive(self, entry: CompiledEntry) -> Derivation:
-        roms: list[Any] = list(entry.roms or (entry.game.get("rom"),))
-        if self.by_serial and isinstance(serial := entry.game.get("serial"), str) and not any(
-            isinstance(rom, Mapping) and rom.get("serial") for rom in roms
-        ):
-            # Some DATs only give a serial for the whole game
-            roms.append({"serial": serial})
-
-        links_per_rom = [self._links(rom) for rom in roms if isinstance(rom, Mapping)]
-        links = [link for rom_links in links_per_rom for link in rom_links]
-
-        # Each ROM gets one vote per IGDB game, however many Hasheous entries repeat it
-        votes = Counter(
-            igdb
-            for rom_links in links_per_rom
-            for igdb in {l.igdb for l in rom_links if l.igdb in self.igdb_games}
-        )
-
-        fields: dict[str, str] = {}
-        info: IgdbInfo | None = None
-        chosen: int | None = None
-        ambiguous = False
-
-        if votes:
-            top = max(votes.values())
-            tied = [igdb for igdb, n in votes.items() if n == top]
-            if len(tied) == 1:
-                chosen = tied[0]
-            else:
-                # Hasheous sometimes lists one ROM under several games
-                # that are mapped to different IGDB entries (e.g. SimCity and SimCity 2000);
-                # the identifiers alone can't say which is right, so neither is used
-                ambiguous = True
-
-        if chosen is not None:
-            info = self.catalog.igdb[chosen]
-            fields.update(self._igdb_fields(info, entry))
+        links_per_rom = [self._links(rom) for rom in self._roms(entry)]
+        links = list(chain.from_iterable(links_per_rom))
+        chosen, ambiguous = self._choose_igdb(links_per_rom)
+        info = self.catalog.igdb[chosen] if chosen is not None else None
+        fields = self._igdb_fields(info, entry) if info else {}
 
         if any(link.retroachievements is not None for link in links):
-            fields["achievements"] = "1"
+            fields["achievements"] = True
 
         named = tuple(REGION_ALIASES.get(r, r) for r in name_regions(entry, DAT_REGIONS))
         if region := self._region(links, info, named):
             fields["region"] = region
 
-        if isinstance(existing := entry.game.get("region"), str) and existing:
-            regions: tuple[str, ...] = (REGION_ALIASES.get(existing, existing),)
-        else:
-            regions = named or ((region,) if region else ())
-
-        if language := self._language(entry, links, info, regions):
+        if language := self._language(entry, links, info, dump_regions(entry, named, region)):
             fields["language"] = language
 
         return Derivation(
             {f: fields[f] for f in RDB_FIELDS if f in fields},
             chosen,
-            frozenset(l.game for l in links),
+            frozenset(link.game for link in links),
             ambiguous,
         )
+
+    def _roms(self, entry: CompiledEntry) -> list[DatTable]:
+        """
+        Returns an entry's ROM records.
+
+        On platforms identified by serial,
+        a serial that a DAT only gives for the whole game counts as a ROM of its own.
+        """
+        roms = [rom for rom in entry.roms or (entry.game.get("rom"),) if isinstance(rom, Mapping)]
+        serial = entry.game.get("serial")
+        if self.by_serial and isinstance(serial, str) and not any(rom.get("serial") for rom in roms):
+            roms.append({"serial": serial})
+
+        return roms
+
+    def _links(self, rom: Mapping[str, Any]) -> list[HasheousLink]:
+        """
+        Finds the Hasheous games listing a ROM by the identifiers RetroArch itself uses:
+        its CRC32, or failing that (on platforms identified by serial) its serial.
+        """
+        crc, serial = rom.get("crc"), rom.get("serial")
+        links = self.catalog.links_by_crc.get(crc.lower()) if isinstance(crc, str) else None
+        if not links and self.by_serial and isinstance(serial, str):
+            # A serial identifies a game, not a dump, so it's the last resort
+            links = self.catalog.links_by_serial.get(serial.upper())
+
+        return [link for link in links or () if link.dump in self.dumps]
+
+    def _choose_igdb(self, links_per_rom: Iterable[Iterable[HasheousLink]]) -> tuple[int | None, bool]:
+        """
+        Returns the IGDB game that most of an entry's ROMs are linked to, if any,
+        and whether several games tied for that.
+
+        Each ROM gets one vote per IGDB game, however many Hasheous entries repeat it.
+        A tie chooses nothing: Hasheous sometimes lists one ROM under several games
+        that are mapped to different IGDB entries (e.g. SimCity and SimCity 2000),
+        and the identifiers alone can't say which is right.
+        """
+        votes = Counter(
+            igdb
+            for links in links_per_rom
+            for igdb in {link.igdb for link in links if link.igdb in self.igdb_games}
+        )
+        most = max(votes.values(), default=0)
+        tied = [igdb for igdb, n in votes.items() if n == most]
+        return (tied[0], False) if len(tied) == 1 else (None, len(tied) > 1)
 
     def _on_platform(self, platform: int | None) -> bool:
         return self.platforms is None or platform is None or platform in self.platforms
 
-    def _igdb_fields(self, info: IgdbInfo, entry: CompiledEntry) -> dict[str, str]:
-        fields: dict[str, str] = {}
-
-        if info.developers:
-            fields["developer"] = MULTI_VALUE_SEPARATOR.join(info.developers)
-
-            countries = info.developer_countries
-            if len(countries) == 1 and (code := next(iter(countries))) is not None:
-                code = f"{int(code):03}"
-                if origin := ORIGIN_OVERRIDES.get(code):
-                    fields["origin"] = origin
-                elif country := pycountry.countries.get(numeric=code):
-                    fields["origin"] = getattr(country, "common_name", None) or country.name
-
-        if info.publishers:
-            fields["publisher"] = MULTI_VALUE_SEPARATOR.join(info.publishers)
-
-        if info.genres:
-            fields["genre"] = MULTI_VALUE_SEPARATOR.join(info.genres)
-
-        if info.franchise:
-            fields["franchise"] = info.franchise
-        elif len(info.franchises) == 1:
-            fields["franchise"] = info.franchises[0]
-
-        if info.perspectives:
-            fields["perspective"] = MULTI_VALUE_SEPARATOR.join(info.perspectives)
-
-        fields.update(self._release_fields(info, entry))
-        fields.update(self._player_fields(info))
-
-        if info.keywords.intersection(RUMBLE_KEYWORD_IDS):
-            fields["rumble"] = "1"
-
-        if info.keywords.intersection(ANALOG_KEYWORD_IDS):
-            fields["analog"] = "1"
-
-        fields.update(self._rating_fields(info, entry))
-
-        if self.platforms and info.platforms:
-            fields["platform_exclusive"] = "1" if info.platforms <= self.platforms else "0"
-
-        platform_types = {
-            PLATFORM_TYPE_OVERRIDES.get(p, self.catalog.platform_types.get(p))
-            for p in info.platforms
+    def _igdb_fields(self, info: IgdbInfo, entry: CompiledEntry) -> dict[str, FieldValue]:
+        regions = entry_regions(entry)
+        return {
+            **company_fields(info, self.catalog.igdb_config.origin_overrides),
+            **classification_fields(info),
+            **self._keyword_fields(info),
+            **self._release_fields(info, regions),
+            **self._player_fields(info),
+            **self._rating_fields(info, regions),
+            **self._exclusivity_fields(info),
         }
-        if platform_types and None not in platform_types:
-            fields["console_exclusive"] = "1" if platform_types <= CONSOLE_PLATFORM_TYPES else "0"
+
+    def _keyword_fields(self, info: IgdbInfo) -> dict[str, FieldValue]:
+        fields: dict[str, FieldValue] = {}
+        if info.keywords & self.catalog.igdb_config.rumble_keywords:
+            fields["rumble"] = True
+
+        if info.keywords & self.catalog.igdb_config.analog_keywords:
+            fields["analog"] = True
 
         if tags := sorted({tag for keyword in info.keywords if (tag := self.catalog.tags.get(keyword))}):
             fields["tags"] = MULTI_VALUE_SEPARATOR.join(tags)
 
         return fields
 
-    def _release_fields(self, info: IgdbInfo, entry: CompiledEntry) -> dict[str, str]:
+    def _release_fields(self, info: IgdbInfo, regions: Sequence[str]) -> dict[str, FieldValue]:
+        """:param regions: The regions the entry is from (see `entry_regions`)."""
         releases = [r for r in info.releases if self._on_platform(r.platform)]
         if not releases:
             return {}
 
-        regions = entry_regions(entry)
-        wanted = {r for region in regions for r in IGDB_REGIONS_BY_DAT_REGION.get(region, ())}
-
+        wanted = igdb_release_regions(regions)
         matching = [r for r in releases if r.region in wanted] or [r for r in releases if r.region == WORLDWIDE]
         if not matching:
             if regions:
@@ -930,45 +1064,54 @@ class Deriver:
             matching = releases
 
         earliest = min(matching, key=lambda r: (r.year, r.month or 13))
-        fields = {"releaseyear": str(earliest.year)}
+        fields: dict[str, FieldValue] = {"releaseyear": earliest.year}
         if earliest.month and earliest.format in PRECISE_MONTH_FORMATS:
-            fields["releasemonth"] = str(earliest.month)
+            fields["releasemonth"] = earliest.month
 
         return fields
 
-    def _rating_fields(self, info: IgdbInfo, entry: CompiledEntry) -> dict[str, str]:
-        fields: dict[str, str] = {}
-        entry_regions_igdb = {r for region in entry_regions(entry) for r in IGDB_REGIONS_BY_DAT_REGION.get(region, ())}
+    def _player_fields(self, info: IgdbInfo) -> dict[str, FieldValue]:
+        modes = [m for m in info.multiplayer if self._on_platform(m.platform)]
+        fields: dict[str, FieldValue] = {}
+
+        if players := max((m.max_players for m in modes if m.max_players), default=None):
+            fields["users"] = max(players, 1)
+        elif info.game_modes == {SINGLE_PLAYER_MODE}:
+            fields["users"] = 1
+
+        if any(m.coop for m in modes) or (not modes and COOP_MODE in info.game_modes and self.platforms is not None):
+            fields["coop"] = True
+
+        return fields
+
+    def _rating_fields(self, info: IgdbInfo, regions: Sequence[str]) -> dict[str, FieldValue]:
+        """:param regions: The regions the entry is from (see `entry_regions`)."""
+        fields: dict[str, FieldValue] = {}
+        wanted = igdb_release_regions(regions)
 
         for organization, board in RATING_BOARDS.items():
             ratings = info.age_ratings.get(organization, set()) - IGNORED_AGE_RATINGS
             if len(ratings) != 1:
                 continue
 
-            if entry_regions_igdb and not (entry_regions_igdb & (board.regions | {WORLDWIDE})):
+            if wanted and not (wanted & board.regions):
                 # e.g. an ESRB rating on a Japan-only ROM
                 continue
 
-            releases = [
-                r for r in info.releases
-                if self._on_platform(r.platform) and r.region in (board.regions | {WORLDWIDE})
-            ]
+            releases = [r for r in info.releases if self._on_platform(r.platform) and r.region in board.regions]
             if releases and min(r.year for r in releases) >= board.founded:
                 fields[board.field] = next(iter(ratings))
 
         return fields
 
-    def _player_fields(self, info: IgdbInfo) -> dict[str, str]:
-        modes = [m for m in info.multiplayer if self._on_platform(m.platform)]
-        fields: dict[str, str] = {}
+    def _exclusivity_fields(self, info: IgdbInfo) -> dict[str, FieldValue]:
+        fields: dict[str, FieldValue] = {}
+        if self.platforms and info.platforms:
+            fields["platform_exclusive"] = info.platforms <= self.platforms
 
-        if players := max((m.max_players for m in modes if m.max_players), default=None):
-            fields["users"] = str(max(players, 1))
-        elif info.game_modes == {SINGLE_PLAYER_MODE}:
-            fields["users"] = "1"
-
-        if any(m.coop for m in modes) or (not modes and COOP_MODE in info.game_modes and self.platforms is not None):
-            fields["coop"] = "1"
+        platform_types = {self.catalog.platform_types.get(p) for p in info.platforms}
+        if platform_types and None not in platform_types:
+            fields["console_exclusive"] = platform_types <= CONSOLE_PLATFORM_TYPES
 
         return fields
 
@@ -987,8 +1130,7 @@ class Deriver:
         if languages := agreed_languages(link.languages for link in links):
             return MULTI_VALUE_SEPARATOR.join(languages)
 
-        name = entry.game.get("name")
-        if isinstance(name, str) and TRANSLATION_TAG.search(name):
+        if TRANSLATION_TAG.search(entry_name(entry) or ""):
             return None
 
         expected = frozenset().union(*(REGION_LANGUAGES[r] for r in regions)) if all(r in REGION_LANGUAGES for r in regions) else frozenset()
@@ -1034,7 +1176,7 @@ class Deriver:
         return None
 
 
-def missing_fields(entry: CompiledEntry, fields: Mapping[str, str]) -> dict[str, str]:
+def missing_fields(entry: CompiledEntry, fields: Mapping[str, FieldValue]) -> dict[str, FieldValue]:
     """
     Returns the fields that an entry doesn't already have.
 
@@ -1044,21 +1186,34 @@ def missing_fields(entry: CompiledEntry, fields: Mapping[str, str]) -> dict[str,
     missing = {k: v for k, v in fields.items() if k not in entry.game}
 
     existing_year = entry.game.get("releaseyear")
-    if "releasemonth" in missing and existing_year is not None and existing_year != fields.get("releaseyear"):
+    if "releasemonth" in missing and existing_year is not None and existing_year != str(fields.get("releaseyear")):
         # A month from some other year's release would make for a wrong date
         del missing["releasemonth"]
 
     return missing
 
 
-async def load_playlists(config_path: Path, titles: Collection[str]) -> tuple[Playlist, ...]:
-    async with aiofiles.open(config_path, "r") as config_file:
-        config = PlaylistConfig.model_validate(tomllib.loads(await config_file.read()))
+def dat_header(playlist: Playlist) -> ClrMamePro:
+    """Returns the header of the DAT file that `generate` writes for `playlist`."""
+    return ClrMamePro.model_validate({
+        "name": playlist.title,
+        "description": f"{playlist.title} (IGDB and Hasheous metadata)",
+        "comment": (
+            "Generated by scripts/match.py from IGDB, Hasheous, and this repo's DAT files. "
+            "Only lists fields that no other DAT file provides; compile it after all of them."
+        ),
+        "homepage": "https://github.com/libretro/libretro-database",
+    })
 
-    if titles:
-        return tuple(p for p in config.playlists if p.title in titles)
 
-    return config.playlists
+def key_rom(id_type: DumpIdType, key: str) -> DatRom:
+    """
+    Returns a `rom` record that identifies an entry by its key.
+
+    It's deliberately left unvalidated, which would lowercase a CRC:
+    `c_converter` matches keys case-sensitively, exactly as the other DAT files spell them.
+    """
+    return DatRom.model_construct(serial=key) if id_type == "serial" else DatRom.model_construct(crc=key)
 
 
 class GenerateSubCommand(BaseModel, PlaylistArgs, PoolArgs, VerboseArgs):
@@ -1092,18 +1247,17 @@ class GenerateSubCommand(BaseModel, PlaylistArgs, PoolArgs, VerboseArgs):
 
     async def cli_cmd(self) -> None:
         start = time.perf_counter()
+        show_logs(self._log.name, verbose=self.verbose)
 
-        self._log.setLevel(logging.DEBUG if self.verbose else logging.INFO)
-        self._log.addHandler(log_handler)
-
-        playlists = await load_playlists(self.config, self.playlists)
+        config = PlaylistConfig.load(self.config)
+        playlists = config.playlists_titled(self.playlists)
         self.outdir.mkdir(parents=True, exist_ok=True)
 
         db = create_async_engine(f"sqlite+aiosqlite:///file:{self.input.as_posix()}?mode=ro&uri=true")
 
         self._log.info("Loading IGDB and Hasheous data from %s", self.input)
         async with db.connect() as connection:
-            catalog = await Catalog.load(connection)
+            catalog = await Catalog.load(connection, build_metadata(MODEL_TYPES), config)
         await db.dispose()
 
         # Parsing the existing DAT files is the slow part, so it's spread across processes
@@ -1132,21 +1286,16 @@ class GenerateSubCommand(BaseModel, PlaylistArgs, PoolArgs, VerboseArgs):
 
         stats = [s for s in results if s is not None]
         self._log.info("Summary:\n%s", GenerateStats.table(stats))
-
-        end = time.perf_counter()
-        elapsed = timedelta(seconds=end - start)
-        self._log.info(f"Elapsed time: %s", elapsed)
+        self._log.info("Elapsed time: %s", timedelta(seconds=time.perf_counter() - start))
 
     def _generate_dat(self, catalog: Catalog, playlist: Playlist, entries: Mapping[str, CompiledEntry], path: Path) -> GenerateStats:
         deriver = Deriver(catalog, playlist)
         stats = GenerateStats(playlist.title, entries=len(entries))
-        games: list[DatTopLevelRecord] = []
+        games: list[DatGame] = []
 
         for key, entry in entries.items():
             derivation = deriver.derive(entry)
-            stats.hasheous += bool(derivation.hasheous_games)
-            stats.igdb += derivation.igdb is not None
-            stats.ambiguous += derivation.ambiguous
+            stats.record(derivation)
 
             new_fields = missing_fields(entry, derivation.fields)
             if not new_fields:
@@ -1160,29 +1309,19 @@ class GenerateSubCommand(BaseModel, PlaylistArgs, PoolArgs, VerboseArgs):
                 continue
 
             stats.filled.update(new_fields.keys())
-            game: list[DatPair] = []
-            if isinstance(name := entry.game.get("name"), str):
+            games.append(DatGame.model_validate({
                 # The same name that the entry ends up with anyway, for readability
-                game.append(("name", name))
-            game.extend(new_fields.items())
-            game.append(("rom", ((playlist.id_type, key),)))
-            games.append(("game", tuple(game)))
+                "name": entry_name(entry),
+                **new_fields,
+                **derivation.sources,
+                "rom": (key_rom(playlist.id_type, key),),
+            }))
 
         stats.written = len(games)
         if games:
-            header: DatTopLevelRecord = ("clrmamepro", (
-                ("name", playlist.title),
-                ("description", f"{playlist.title} (IGDB and Hasheous metadata)"),
-                ("comment", (
-                    "Generated by scripts/match.py from IGDB, Hasheous, and this repo's DAT files. "
-                    "Only lists fields that no other DAT file provides; compile it after all of them."
-                )),
-                ("homepage", "https://github.com/libretro/libretro-database"),
-            ))
-
             # c_converter reads bytes, and so may the DAT files this echoes names and keys from
             with path.open("w", encoding="utf-8", errors="surrogateescape", newline="\n") as out:
-                encode_dat((header, *games), out)
+                encode_dat(ParsedDatFile((dat_header(playlist), *games)).to_dat(), out)
         else:
             path.unlink(missing_ok=True)
 
@@ -1203,6 +1342,12 @@ class GenerateStats:
     rekeyed: int = 0
     written: int = 0
     filled: Counter[str] = field(default_factory=Counter)
+
+    def record(self, derivation: Derivation) -> None:
+        """Counts what the sources know about one entry."""
+        self.hasheous += bool(derivation.hasheous_games)
+        self.igdb += derivation.igdb is not None
+        self.ambiguous += derivation.ambiguous
 
     @staticmethod
     def table(stats: Iterable[GenerateStats]) -> str:
@@ -1230,6 +1375,14 @@ sqlalchemy_engine_log = logging.getLogger('sqlalchemy.engine.Engine')
 sqlalchemy_engine_log.addHandler(log_handler)
 
 
+def show_logs(*names: str, verbose: bool) -> None:
+    """Prints what the named loggers log, including debug messages if `verbose`."""
+    for name in names:
+        logger = logging.getLogger(name)
+        logger.setLevel(logging.DEBUG if verbose else logging.INFO)
+        logger.addHandler(log_handler)
+
+
 class IndexSubCommand(BaseModel, CommonArgs, PlaylistArgs, IndexArgs, PoolArgs, VerboseArgs):
     """Build a single SQLite index database containing IGDB, DAT, and Hasheous data."""
 
@@ -1255,15 +1408,7 @@ class IndexSubCommand(BaseModel, CommonArgs, PlaylistArgs, IndexArgs, PoolArgs, 
 
     async def cli_cmd(self) -> None:
         start = time.perf_counter()
-
-        self._log.setLevel(logging.DEBUG if self.verbose else logging.INFO)
-        self._log.addHandler(log_handler)
-        logging.getLogger('hasheous.index').setLevel(logging.DEBUG if self.verbose else logging.INFO)
-        logging.getLogger('hasheous.index').addHandler(log_handler)
-        logging.getLogger('igdb.index').setLevel(logging.DEBUG if self.verbose else logging.INFO)
-        logging.getLogger('igdb.index').addHandler(log_handler)
-        logging.getLogger('dats.index').setLevel(logging.DEBUG if self.verbose else logging.INFO)
-        logging.getLogger('dats.index').addHandler(log_handler)
+        show_logs(self._log.name, 'hasheous.index', 'igdb.index', 'dats.index', verbose=self.verbose)
 
         if self.verbose:
             sqlalchemy_engine_log.setLevel(logging.INFO)
@@ -1276,13 +1421,7 @@ class IndexSubCommand(BaseModel, CommonArgs, PlaylistArgs, IndexArgs, PoolArgs, 
         # Remove existing database file if it exists
         self.output.unlink(missing_ok=True)
 
-        async with aiofiles.open(self.config, "r") as config_file:
-            config = PlaylistConfig.model_validate(tomllib.loads(await config_file.read()))
-
-        if self.playlists:
-            playlists = tuple(p for p in config.playlists if p.title in self.playlists)
-        else:
-            playlists = config.playlists
+        playlists = PlaylistConfig.load(self.config).playlists_titled(self.playlists)
 
         # Create a single database with tables for all three data sources
         db, metadata = await create_db(self.output, MODEL_TYPES)
@@ -1328,9 +1467,7 @@ class IndexSubCommand(BaseModel, CommonArgs, PlaylistArgs, IndexArgs, PoolArgs, 
         # Close the engine
         await db.dispose()
 
-        end = time.perf_counter()
-        elapsed = timedelta(seconds=end - start)
-        self._log.info(f"Elapsed time: %s", elapsed)
+        self._log.info("Elapsed time: %s", timedelta(seconds=time.perf_counter() - start))
 
     # The columns that a DAT ROM and a Hasheous ROM can be matched on,
     # from most to least trustworthy.
@@ -1352,9 +1489,9 @@ class IndexSubCommand(BaseModel, CommonArgs, PlaylistArgs, IndexArgs, PoolArgs, 
 
     async def _insert_allrom_mappings(self, db: AsyncEngine, db_lock: asyncio.Lock, metadata: MetaData) -> None:
         self._log.debug("Aggregating ROM data into one table")
-        allroms = metadata.tables[AllRoms.__tablename__]
-        datrom = metadata.tables[DatRom.__tablename__]
-        hasheousrom = metadata.tables["HasheousRomItem"]
+        allroms = AllRoms.table(metadata)
+        datrom = DatRom.table(metadata)
+        hasheousrom = HasheousRomItem.table(metadata)
 
         # A Hasheous ROM that some AllRoms row has already claimed.
         # Each Hasheous ROM may only be attached to one AllRoms row,
@@ -1418,7 +1555,7 @@ class IndexSubCommand(BaseModel, CommonArgs, PlaylistArgs, IndexArgs, PoolArgs, 
             # So a serial match may legitimately be many DAT ROMs to one Hasheous ROM,
             # and it must not copy that ROM's hashes across,
             # since those describe a different dump than the one the DAT file lists.
-            game_roms = metadata.tables[f"{DatGame.__tablename__}_roms"]
+            game_roms = DatGame.relationship_table(metadata, "roms")
             overused_serials = (
                 select(game_roms.c.serial)
                 .where(game_roms.c.serial.is_not(None))
