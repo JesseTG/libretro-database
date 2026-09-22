@@ -503,6 +503,7 @@ igdb.where = "platforms = (41)"
 title = "Philips - CD-i"
 hasheous = ["Philips CD-i"]
 igdb.where = "platforms = (117)"
+id_type = "serial"
 
 [[playlists]]
 title = "Philips - Videopac+"
@@ -635,6 +636,7 @@ id_type = "serial"
 [[playlists]]
 title = "Sega - Naomi"
 igdb.where = "game_engines = (940)"
+id_type = "serial"
 hasheous = ["Arcade"]
 
 [[playlists]]
@@ -749,6 +751,7 @@ igdb.where = "platforms = (38) & keywords = (2543, 4134, 4435)"
 title = "Sony - PlayStation Vita"
 hasheous = ["Sony PlayStation Vita"]
 igdb.where = "platforms = (46)"
+id_type = "serial"
 
 [[playlists]]
 title = "Sony - PlayStation 2"
@@ -761,6 +764,7 @@ id_type = "serial"
 title = "Sony - PlayStation 3"
 hasheous = ["Sony Playstation 3"]
 igdb.where = "platforms = (9)"
+id_type = "serial"
 
 # TODO: "Sony - PlayStation 3 (PSN)" playlist
 # [[playlists]]

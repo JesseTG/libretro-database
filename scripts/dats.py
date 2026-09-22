@@ -2,12 +2,13 @@
 
 import asyncio
 import logging
+import re
 import sys
 import time
 import tomllib
 
 from abc import ABC
-from collections.abc import Collection, Sequence
+from collections.abc import Collection, Iterable, Sequence
 from datetime import timedelta
 from io import StringIO
 from itertools import chain, repeat, product
@@ -29,9 +30,9 @@ from pe.operators import Class, Star
 from pydantic import AfterValidator, AliasChoices, BaseModel, ByteSize, DirectoryPath, Field, FilePath, GetPydanticSchema, ModelWrapValidatorHandler, OnErrorOmit, RootModel, TypeAdapter, ValidationInfo, computed_field, model_validator
 from pydantic_core import from_json, core_schema
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
-from sqlalchemy import CheckConstraint, Column, ForeignKey, Index, MetaData, column, text
+from sqlalchemy import CheckConstraint, Column, ForeignKey, Index, MetaData, column, select, text
 from sqlalchemy.dialects.sqlite import JSON, insert
-from sqlalchemy.ext.asyncio import AsyncConnection, AsyncEngine
+from sqlalchemy.ext.asyncio import AsyncConnection, AsyncEngine, create_async_engine
 from sqlalchemy.sql.functions import coalesce
 
 from igdb import Playlist, PlaylistConfig, PlaylistTitle
@@ -271,60 +272,61 @@ class PlaylistGameMapping(DatabaseModel, frozen=True):
 # PEG grammar for DAT file format
 DAT_GRAMMAR = r'''
 # Main entry points
-DatFile < (DatTopLevelRecord)* EndOfFile
+DatFile < DatTopLevelRecord* EndOfFile
 
 # Record structure
-DatTopLevelRecord < type:(~DatKey) Open DatRecord Close
-DatRecord <- (DatPair)*
-DatPair < key:(~DatKey) value:DatValue
+DatTopLevelRecord < type:DatString Open DatRecord Close
+DatRecord < DatPair*
+DatPair < key:DatString value:DatValue
+DatValue < Open DatRecord Close / DatString
 
-# Keys and Values
-DatKey <- [a-zA-Z_][-a-zA-Z0-9_]*
-DatValue <- (Open DatRecord Close) / QuotedString / UnquotedString
+# Tokens
+DatString <- !Open !Close (QuotedString / UnquotedString)
+QuotedString <- ["] ~((![\r\n"] .)*) ["]?
+UnquotedString <- ~((![ \t\r\n"] .)+)
 
-# Characters
-QuotedString <- ["] ~(Char*) ["]
-UnquotedString <- ~(![" \r\t\n\\] Char)+
-Char <- ("\\" ['"\\] / !["] .)
+# Parentheses only count as such when they're whole tokens, quoted or not
+Open <- "(" &TokenEnd / ["] "(" (["] / &EndOfLine / EndOfFile)
+Close <- ")" &TokenEnd / ["] ")" (["] / &EndOfLine / EndOfFile)
+TokenEnd <- [ \t\r\n"] / EndOfFile
 
-Open <- "("
-Close <- ")"
-
-# Whitespace and comments
-Space <- [ \t\r\n]
-EndOfLine <- '\r\n' / '\n' / '\r'
+# Whitespace
+EndOfLine <- [\r\n]
 EndOfFile <- !.
 '''
 """
-I don't know of a formal spec for DAT files,
-so I wrote this PEG based on my observations
-of the DAT files in this repo.
-It should handle all of them correctly,
-but you can test this by running `python scripts/dats.py check`.
+There's no formal spec for DAT files,
+so this grammar reads them the way RetroArch's `c_converter` does,
+since that's the program that compiles them into `.rdb` files.
+See `dat_converter_lexer` and `dat_parser_table` in
+https://github.com/libretro/RetroArch/blob/master/libretro-db/c_converter.c
 
-These are the semantics I came up with:
+These are the semantics:
 
-- A DatKey is a string that's a valid C identifier (plus hyphens).
 - A DatValue is either a string or a DatRecord.
-- A DatPair is a DatKey followed by a DatValue.
+- A DatPair is a key (any string) followed by a DatValue.
 - A DatRecord is an ordered sequence of zero or more DatPairs.
 - A DatRecord may have multiple pairs with the same key.
-  The application may interpret this as a list of values for that key.
+  The application may interpret this as a list of values for that key,
+  though `c_converter` merges them instead (see `compile_dats`).
 - A DatFile is a DatRecord where all DatValues are DatRecords.
 
-This is the syntax I came up with:
+This is the syntax:
 
-- Strings may be quoted or unquoted.
-- Unquoted strings may not contain spaces, parentheses, backslashes, or double quotes.
-- Quoted strings may contain backslash-escaped quotes and backslashes.
-- Whitespace (including newlines) outside of quoted strings is ignored.
-- Any key may appear multiple times in a record.
+- Tokens are separated by spaces, tabs, and line breaks.
+- A double quote also ends a token, and starts or ends a quoted string.
+- Quoted strings end at the next double quote or line break, whichever comes first.
+  There are no escape sequences, so `\"` is a backslash that ends the string.
+- A parenthesis only opens or closes a DatRecord if it's a whole token by itself.
+  A quoted `"("` or `")"` counts too, since `c_converter` compares tokens without regard to quotes.
+  Otherwise, parentheses are ordinary characters (e.g. `(abc` is a single token).
 - DatFiles are not wrapped in parentheses.
 - DatRecords are wrapped in parentheses.
 
 We don't try to interpret the meaning of any keys or values while parsing;
 this means we just treat everything as a string,
 and let the unmarshalling step figure out what to do with it.
+Run `python scripts/dats.py check` to find DAT files that don't parse.
 """
 
 def build_top_level_record(pairs: tuple[DatPair, ...], type: str) -> DatTopLevelRecord:
@@ -341,7 +343,18 @@ ACTIONS = {
     'DatFile': Pack(tuple), # Wrap all DatTopLevelRecords into a tuple
 }
 
-dat_parser = pe.compile(DAT_GRAMMAR, actions=ACTIONS, ignore=Star(Class(" \t\n\r\v\f")), flags=pe.OPTIMIZE | pe.MEMOIZE | pe.STRICT)
+dat_parser = pe.compile(DAT_GRAMMAR, actions=ACTIONS, ignore=Star(Class(" \t\r\n")), flags=pe.OPTIMIZE | pe.MEMOIZE | pe.STRICT)
+
+def encode_dat_string(value: str) -> str:
+    """
+    Quotes a string so that `c_converter` (and `dat_parser`) read it back unchanged.
+
+    DAT files have no escape sequences,
+    and a quoted string ends at the next double quote or line break,
+    so neither can be represented;
+    double quotes become single quotes, and line breaks become spaces.
+    """
+    return '"' + re.sub(r'[\r\n]+', ' ', value).replace('"', "'") + '"'
 
 def encode_dat(dat: DatFile, output: IO | None = None):
     if not output:
@@ -354,13 +367,21 @@ def encode_dat(dat: DatFile, output: IO | None = None):
                 output.write('\t' * indent)
                 output.write(key)
                 output.write(' ')
-                # Escape backslashes and double quotes in the string
-                escaped = value.replace('\\', '\\\\').replace('"', '\\"')
-                output.write('"')
-                output.write(escaped)
-                output.write('"\n')
+                output.write(encode_dat_string(value))
+                output.write('\n')
+            case (key, [*pairs]) if indent > 0 and all(isinstance(v, str) for _, v in pairs):
+                # nested DAT record without records of its own (usually a rom), on one line
+                output.write('\t' * indent)
+                output.write(key)
+                output.write(' ( ')
+                for k, v in pairs:
+                    output.write(k)
+                    output.write(' ')
+                    output.write(encode_dat_string(v))
+                    output.write(' ')
+                output.write(')\n')
             case (key, [*pairs]):
-                # nested DAT record (usually a game, clrmamepro, or rom)
+                # nested DAT record (usually a game or clrmamepro)
                 output.write('\t' * indent)
                 output.write(key)
                 output.write(' (\n')
@@ -370,7 +391,7 @@ def encode_dat(dat: DatFile, output: IO | None = None):
                 output.write('\t' * indent)
                 output.write(')\n')
             case _:
-                raise TypeError(f"Cannot encode {val} of type {type(val)}")
+                raise TypeError(f"Cannot encode {pair} of type {type(pair)}")
 
     for pair in dat:
         write_pair(pair)
@@ -474,11 +495,114 @@ def load_dat(dat: str | bytes | PathLike | TextIO | BinaryIO) -> DatRecord:
     assert result is not None
     return result
 
-class LoadedDat(NamedTuple):
-    playlist: PlaylistTitle
-    path: Path
-    clrmamepro: ClrMamePro
-    games: Sequence[Game]
+type DatTable = dict[str, "str | DatTable"]
+"""
+A DatRecord whose repeated keys were merged the way `c_converter` merges them.
+
+A key that appears more than once doesn't become a list.
+Instead, if both values are records, the later one is merged into the earlier one;
+otherwise the later value replaces the earlier one,
+unless the earlier value is a record and the later one is a string,
+in which case the string is dropped.
+This is why a game with several `rom` records ends up with the hashes of its last ROM.
+"""
+
+class CompiledEntry(NamedTuple):
+    """One entry of an `.rdb` file, as `c_converter` would compile it."""
+
+    game: DatTable
+    """The entry after merging every game record that shares its key, across all source files."""
+
+    roms: tuple[DatTable, ...]
+    """Every `rom` record listed under this entry's key, before they were merged."""
+
+def _merge_dat_value(table: DatTable, key: str, value: "str | DatTable") -> None:
+    existing = table.get(key)
+
+    if isinstance(existing, dict):
+        if isinstance(value, dict):
+            for k, v in value.items():
+                _merge_dat_value(existing, k, v)
+        # A string never replaces a record
+    else:
+        table[key] = value
+
+def _to_dat_table(record: DatRecord, roms: list[DatTable] | None = None) -> DatTable:
+    """
+    :param roms: If given, every `rom` record is also appended here,
+      before it's merged with its siblings.
+    """
+    table: DatTable = {}
+    for key, value in record:
+        if isinstance(value, tuple):
+            value = _to_dat_table(value)
+            if roms is not None and key == "rom":
+                roms.append(dict(value))
+
+        _merge_dat_value(table, key, value)
+
+    return table
+
+def get_dat_match(table: DatTable, match_key: str) -> str | None:
+    """
+    Looks up a dotted key like `rom.crc` the way `c_converter` does.
+    """
+    value: str | DatTable | None = table
+    for part in match_key.split("."):
+        if not isinstance(value, dict):
+            return None
+        value = value.get(part)
+
+    return value if isinstance(value, str) else None
+
+def compile_dats(paths: Iterable[PathLike], match_key: str) -> dict[str, CompiledEntry]:
+    """
+    Parses and merges DAT files the way `c_converter` does when it compiles them into one `.rdb`.
+
+    Only `game` records become entries.
+    Each is identified by its value of `match_key`,
+    and games that share one are merged into a single entry (see `DatTable`),
+    with later files taking precedence over earlier ones.
+
+    `c_converter` has one more quirk that this reproduces:
+    the first time a file has a game without the match key,
+    the loop that prints the warning also advances the match key to its last component.
+    So for the rest of that file, games are matched by e.g. a game-level `serial`
+    instead of `rom.serial`.
+    The match key is reset for the next file.
+
+    :param match_key: The field that identifies each entry, like `rom.crc` or `rom.serial`.
+      Games without it are dropped, as `c_converter` drops them.
+    :return: Each entry in the resulting `.rdb`, keyed by its value of `match_key`
+      exactly as written in the DAT file (i.e. case-sensitively).
+    """
+    games: dict[str, DatTable] = {}
+    roms: dict[str, list[DatTable]] = {}
+
+    for path in paths:
+        # c_converter reads bytes, so don't fail on the odd DAT file that isn't valid UTF-8
+        dat = load_dat(Path(path).read_bytes().decode("utf-8", errors="surrogateescape"))
+        file_match_key = match_key
+
+        for type, record in dat:
+            if type != "game":
+                continue
+
+            game_roms: list[DatTable] = []
+            table = _to_dat_table(record, game_roms)
+
+            if (key := get_dat_match(table, file_match_key)) is None:
+                file_match_key = file_match_key.rsplit(".", 1)[-1]
+                continue
+
+            _merge_dat_value(games, key, table)
+            roms.setdefault(key, []).extend(game_roms)
+
+    return {key: CompiledEntry(game, tuple(roms[key])) for key, game in games.items() if isinstance(game, dict)}
+
+async def compile_dats_async(paths: Iterable[PathLike], match_key: str) -> dict[str, CompiledEntry]:
+    """`compile_dats` as a coroutine, for running in an `aiomultiprocess.Pool`."""
+    return compile_dats(paths, match_key)
 
 class CheckSubCommand(BaseModel, VerboseArgs):
     """Check DAT files for valid syntax."""
@@ -581,18 +705,46 @@ class FromJsonSubCommand(BaseModel):
 
 PARENT_DIR = Path(__file__).parent.parent
 
+class LoadedDat(NamedTuple):
+    """
+    One DAT file expanded into database rows.
+
+    The rows are built in a worker process, since turning models into rows
+    costs much more than handing the finished rows to SQLite.
+    """
+
+    games: tuple[dict[str, Any], ...]
+    """Rows for `DatGame`, in the order their ROM lists are returned."""
+
+    roms: tuple[dict[str, Any], ...]
+    """Rows for `DatRom`, deduplicated within this DAT file."""
+
+
+async def load_dat_file(path: Path) -> LoadedDat:
+    """Loads one DAT file and expands it into database rows."""
+    datfile = await ParsedDatFile.from_dat_file_async(path)
+    games = datfile.games
+
+    # The same ROM is often listed by several games in one DAT file,
+    # and DatRom's hashes are unique, so collapse them before they reach the database.
+    roms: dict[tuple[Any, ...], dict[str, Any]] = {}
+    for rom in chain.from_iterable(g.roms for g in games):
+        roms.setdefault((rom.crc, rom.serial, rom.md5, rom.sha1), rom.as_row)
+
+    return LoadedDat(
+        games=tuple(g.as_row for g in games),
+        roms=tuple(roms.values()),
+    )
+
+
 class LoadJobResult(NamedTuple):
     playlist: Playlist
     path: Path
-    datfile: ParsedDatFile
+    loaded: LoadedDat
 
     @property
-    def clrmamepro(self) -> ClrMamePro:
-        return self.datfile.clrmamepro
-
-    @property
-    def games(self) -> tuple[Game, ...]:
-        return self.datfile.games
+    def games(self) -> tuple[dict[str, Any], ...]:
+        return self.loaded.games
 
 
 _dats_index_log = logging.getLogger('dats.index')
@@ -603,115 +755,132 @@ class GameRomMapping(RomId):
     game: RowId
 
 async def _insert_dat_file(db: AsyncEngine, metadata: MetaData, db_lock: asyncio.Lock, dat: LoadJobResult) -> None:
-    """Insert a parsed DAT file's contents into the database."""
+    """Insert a parsed DAT file's rows into the database."""
     log = _dats_index_log
+    loaded = dat.loaded
 
-    async def insert_games(tx: AsyncConnection, games: Sequence[Game]):
-        log.debug("Inserting %d games", len(games))
+    game_table = metadata.tables[Game.__tablename__]
+    rom_table = metadata.tables[Rom.__tablename__]
+    mapping_table = metadata.tables[f"{Game.__tablename__}_roms"]
+    playlist_table = metadata.tables[PlaylistGameMapping.__tablename__]
 
-        game_table = metadata.tables[Game.__tablename__]
-        rowid_column = game_table.columns.rowid
-        romids_column = game_table.columns.romids
-        inserted_games = await tx.execute(
-            insert(game_table).returning(rowid_column, romids_column),
-            [g.as_row for g in games]
-        )
+    insert_roms = insert(rom_table)
+    insert_mapping = insert(mapping_table)
 
-        await tx.commit()
-        log.info("Inserted %d games", len(games))
-        return inserted_games.mappings().all()
-
-    async def insert_game_playlist_mappings(tx: AsyncConnection, mappings: Collection[PlaylistGameMapping]):
-        log.debug("Inserting %d game-playlist mappings", len(mappings))
-        await tx.execute(
-            insert(metadata.tables[PlaylistGameMapping.__tablename__]).on_conflict_do_nothing(),
-            [m.as_row for m in mappings]
-        )
-        await tx.commit()
-        log.info("Inserted %d game-playlist mappings", len(mappings))
-
-    async def insert_roms(tx: AsyncConnection, roms: Sequence[Rom]):
-        log.debug("Inserting %d ROMs", len(tuple(roms)))
-        # The same ROM is often represented in multiple DAT files,
-        # so we merge ROM records on conflict instead of skipping or replacing them.
-        # The first non-null value for each field is preserved
-        rom_table = metadata.tables[Rom.__tablename__]
-        insert_roms = insert(rom_table)
-        rom_cursor = await tx.execute(
-            insert_roms
-                    .on_conflict_do_update(set_={
-                        "crc": coalesce(rom_table.columns.crc, insert_roms.excluded.crc),
-                        "md5": coalesce(rom_table.columns.md5, insert_roms.excluded.md5),
-                        "name": coalesce(rom_table.columns.name, insert_roms.excluded.name),
-                        "serial": coalesce(rom_table.columns.serial, insert_roms.excluded.serial),
-                        "sha1": coalesce(rom_table.columns.sha1, insert_roms.excluded.sha1),
-                        "size": coalesce(rom_table.columns.size, insert_roms.excluded.size),
-                    })
-                    .returning(
-                        # Label the rowid so we can insert this ROM into AllRoms as-is
-                        rom_table.columns.rowid.label("dat_rom"),
-                        rom_table.columns.crc,
-                        rom_table.columns.serial,
-                        rom_table.columns.md5,
-                        rom_table.columns.sha1,
-                    ),
-            [r.as_row for r in roms]
-        )
-
-        mappings = rom_cursor.mappings().all()
-
-        await tx.commit()
-        log.info("Inserted %d ROMs", len(roms))
-        return mappings
-
-    async def insert_game_rom_mappings(tx: AsyncConnection, mappings: list[GameRomMapping]):
-        # See Rom.__tableargs__ for the table definition
-        log.debug("Inserting %d game-ROM mappings", len(mappings))
-        mapping_table = metadata.tables[f"{Game.__tablename__}_roms"]
-        insert_mapping = insert(mapping_table)
-
-        await tx.execute(
-            insert_mapping.on_conflict_do_update(set_={
-                "crc": coalesce(mapping_table.columns.crc, insert_mapping.excluded.crc),
-                "md5": coalesce(mapping_table.columns.md5, insert_mapping.excluded.md5),
-                "serial": coalesce(mapping_table.columns.serial, insert_mapping.excluded.serial),
-                "sha1": coalesce(mapping_table.columns.sha1, insert_mapping.excluded.sha1),
-            }),
-            mappings
-        )
-        await tx.commit()
-        log.info("Inserted %d game-ROM mappings into %s", len(mappings), f"{Game.__tablename__}_roms")
-
+    # One transaction for the whole DAT file.
+    # The games have to go in first so that their rowids can be used
+    # to link each game to the ROMs it lists.
     async with db_transaction(db, db_lock) as tx:
-        game_rows = await insert_games(tx, dat.games)
+        inserted_games = await tx.execute(
+            insert(game_table).returning(game_table.c.rowid, game_table.c.romids),
+            loaded.games
+        )
+        game_rows = inserted_games.mappings().all()
+        log.debug("Inserted %d games", len(game_rows))
 
-    game_rom_mappings: list[GameRomMapping] = []
-    for game in game_rows:
-        rowid: RowId = game.rowid
-        romids: list[RomId] = game.romids
+        game_rom_mappings = [
+            GameRomMapping(game=game.rowid, **rom)
+            for game in game_rows
+            for rom in game.romids
+        ]
 
-        game_rom_mappings.extend(GameRomMapping(game=rowid, **rom) for rom in romids)
+        if game_rom_mappings:
+            # See Rom.__tableargs__ for the table definition
+            await tx.execute(
+                insert_mapping.on_conflict_do_update(set_={
+                    "crc": coalesce(mapping_table.columns.crc, insert_mapping.excluded.crc),
+                    "md5": coalesce(mapping_table.columns.md5, insert_mapping.excluded.md5),
+                    "serial": coalesce(mapping_table.columns.serial, insert_mapping.excluded.serial),
+                    "sha1": coalesce(mapping_table.columns.sha1, insert_mapping.excluded.sha1),
+                }),
+                game_rom_mappings
+            )
+            log.debug("Inserted %d game-ROM mappings", len(game_rom_mappings))
+        else:
+            log.warning("No game-ROM mappings to insert")
 
-    if game_rom_mappings:
-        async with db_transaction(db, db_lock) as tx:
-            await insert_game_rom_mappings(tx, game_rom_mappings)
-    else:
-        log.warning("No game-ROM mappings to insert")
+        if game_playlist_mappings := [{"playlist": dat.playlist.title, "game": game.rowid} for game in game_rows]:
+            await tx.execute(
+                insert(playlist_table).on_conflict_do_nothing(),
+                game_playlist_mappings
+            )
+            log.debug("Inserted %d game-playlist mappings", len(game_playlist_mappings))
+        else:
+            log.warning("No game-playlist mappings to insert")
 
-    pgm = lambda g: PlaylistGameMapping(playlist=dat.playlist.title, game=g.rowid)
-    if game_playlist_mappings := [pgm(row) for row in game_rows]:
-        async with db_transaction(db, db_lock) as tx:
-            await insert_game_playlist_mappings(tx, game_playlist_mappings)
-    else:
-        log.warning("No game-playlist mappings to insert")
+        if loaded.roms:
+            # The same ROM is often represented in multiple DAT files,
+            # so we merge ROM records on conflict instead of skipping or replacing them.
+            # The first non-null value for each field is preserved
+            await tx.execute(
+                insert_roms.on_conflict_do_update(set_={
+                    "crc": coalesce(rom_table.columns.crc, insert_roms.excluded.crc),
+                    "md5": coalesce(rom_table.columns.md5, insert_roms.excluded.md5),
+                    "name": coalesce(rom_table.columns.name, insert_roms.excluded.name),
+                    "serial": coalesce(rom_table.columns.serial, insert_roms.excluded.serial),
+                    "sha1": coalesce(rom_table.columns.sha1, insert_roms.excluded.sha1),
+                    "size": coalesce(rom_table.columns.size, insert_roms.excluded.size),
+                }),
+                loaded.roms
+            )
+            log.debug("Inserted %d ROMs", len(loaded.roms))
+        else:
+            log.warning("No ROMs to insert")
 
-    if roms := tuple(chain.from_iterable(g.roms for g in dat.games)):
-        async with db_transaction(db, db_lock) as tx:
-            rom_rows = await insert_roms(tx, roms)
-    else:
-        log.warning("No ROMs to insert")
+        await tx.commit()
 
-    log.info("Inserted %d games into database", len(dat.games))
+    log.info("Inserted %d games from %s", len(game_rows), dat.path)
+
+
+DAT_KEY_TABLE = "DatRomKey"
+"""The single table in the key index written by `write_dat_key_index`."""
+
+
+async def write_dat_key_index(db: AsyncEngine, metadata: MetaData, path: Path) -> Path:
+    """
+    Writes every identifier that the DAT files describe to a small standalone database.
+
+    Other data sources are far larger than the DAT files
+    but only matter where they overlap with them,
+    so they use this to discard entries that no DAT file could ever refer to.
+    It's a separate file rather than a table in the index
+    because the worker processes read it while the index itself is still being written.
+
+    All four identifier kinds share one column.
+    A serial that happens to look like a CRC would keep one extra row, which is harmless;
+    what matters is that nothing a DAT file mentions is ever missing.
+
+    :param path: Where to write the key index. Overwritten if it already exists.
+    :return: `path`, for convenience.
+    """
+    log = _dats_index_log
+    datrom = metadata.tables[Rom.__tablename__]
+
+    path.unlink(missing_ok=True)
+    keys = create_async_engine(f"sqlite+aiosqlite:///{path}")
+
+    async with keys.begin() as tx:
+        await tx.execute(text(f'CREATE TABLE "{DAT_KEY_TABLE}" (value TEXT PRIMARY KEY) WITHOUT ROWID'))
+        await tx.commit()
+
+    async with db.connect() as source:
+        # Read every identifier out of the index in one pass per column.
+        values = set()
+        for column in (datrom.c.crc, datrom.c.md5, datrom.c.sha1, datrom.c.serial):
+            result = await source.stream(select(column).where(column.is_not(None)).distinct())
+            async for (value,) in result:
+                values.add(value)
+
+    async with keys.begin() as tx:
+        await tx.execute(
+            text(f'INSERT OR IGNORE INTO "{DAT_KEY_TABLE}" (value) VALUES (:value)'),
+            [{"value": v} for v in values]
+        )
+        await tx.commit()
+
+    await keys.dispose()
+    log.info("Wrote %d DAT identifiers to %s", len(values), path)
+    return path
 
 
 async def index_dats(
@@ -722,6 +891,7 @@ async def index_dats(
     playlists: Collection[Playlist],
     dat_dirs: tuple[DirectoryPath, ...],
     pool: Pool,
+    concurrency: int = DEFAULT_DAT_CONCURRENCY,
 ) -> None:
     """Load and index DAT files into the database."""
     log = _dats_index_log
@@ -746,28 +916,34 @@ async def index_dats(
 
     log.debug("Loading games from %d playlists", len(playlists))
 
-    async def job(playlist: Playlist, path: Path) -> LoadJobResult:
-        log.debug("Loading")
-        dat = await pool.apply(ParsedDatFile.from_dat_file_async, args=(path,))
-        log.info("Loaded with %d games", len(dat.root) - 1)
-        return LoadJobResult(playlist, path, dat)
+    # Loading a DAT file is much faster than inserting it,
+    # so without a limit every file would be loaded and held in memory
+    # long before the database caught up.
+    # The limit is released only once a file's rows have been inserted.
+    in_flight = asyncio.Semaphore(concurrency)
+
+    async def job(playlist: Playlist, path: Path) -> None:
+        async with in_flight:
+            log.debug("Loading")
+            loaded = await pool.apply(load_dat_file, args=(path,))
+            log.info("Loaded with %d games", len(loaded.games))
+
+            if not loaded.games:
+                log.warning("DAT file %s has no games, skipping database insertion", path)
+                return
+
+            await _insert_dat_file(db, metadata, db_lock, LoadJobResult(playlist, path, loaded))
 
     async with asyncio.TaskGroup() as group:
-        jobs = (group.create_task(job(playlist, path), name=f"Load: {path}") for playlist in playlists for path in dat_paths[playlist])
-        async for j in as_completed(jobs):
-            if len(j.datfile.root) > 1:
-                group.create_task(
-                    _insert_dat_file(db, metadata, db_lock, j),
-                    name=f"Insert: {j.path}"
-                )
-            else:
-                log.warning("DAT file %s has no games, skipping database insertion", j.path)
+        for playlist in playlists:
+            for path in dat_paths[playlist]:
+                group.create_task(job(playlist, path), name=f"{path}")
 
     log.info("Finished inserting data")
 
 
 class IndexSubCommand(BaseModel, VerboseArgs, PlaylistArgs, IndexArgs, PoolArgs):
-    dat_dirs: tuple[DirectoryPath, ...] = Field(
+    dat_dirs: CliTuple[DirectoryPath] = Field(
         default=(PARENT_DIR / 'dat', PARENT_DIR / 'metadat',),
         description="Paths to the directories containing existing DAT files to scan for games to process.",
         validation_alias=AliasChoices('d', 'dat'),
@@ -858,11 +1034,20 @@ class DatCommand(BaseSettings):
 
 __all__ = (
     "ClrMamePro",
+    "CompiledEntry",
+    "compile_dats",
+    "compile_dats_async",
+    "DatTable",
+    "encode_dat",
+    "encode_dat_string",
     "Game",
+    "get_dat_match",
     "index_dats",
     "load_dat",
     "Rom",
+    "DAT_KEY_TABLE",
     "DAT_OBJECT_TYPES",
+    "write_dat_key_index",
     "ParsedDatFile",
 )
 

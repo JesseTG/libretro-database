@@ -8,7 +8,7 @@ import asyncio
 import sys
 
 from abc import ABC
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from contextlib import asynccontextmanager
 from copy import deepcopy
 from dataclasses import dataclass
@@ -16,7 +16,7 @@ from datetime import date, datetime
 from functools import cache, cached_property
 from itertools import chain
 from pathlib import Path
-from typing import Annotated, Any, ClassVar, ForwardRef, Literal, LiteralString, NewType, TypeGuard, get_origin, overload, get_args
+from typing import Annotated, Any, ClassVar, ForwardRef, Literal, LiteralString, NamedTuple, NewType, TypeGuard, get_origin, overload, get_args
 
 import sqlalchemy
 
@@ -790,6 +790,198 @@ class DatabaseModel(BaseModel, ABC, frozen=True):
         return insert(metadata.tables[cls.__tablename__])
 
 
+class ExtractedRows(NamedTuple):
+    """
+    The database rows that a batch of models expands to,
+    grouped by the table each row belongs in.
+
+    Extracting rows is by far the most expensive part of indexing a data source,
+    so it's done in the worker process that loaded the models
+    rather than in the process that owns the database.
+    Plain dicts of primitives are also much cheaper to send between processes
+    than the `DatabaseModel` graphs they come from.
+    """
+
+    objects: tuple[tuple[str, tuple[dict[str, Any], ...]], ...]
+    """
+    Rows for the models themselves, as `(table name, rows)` pairs.
+    """
+
+    relationships: tuple[tuple[str, tuple[dict[str, Any], ...]], ...]
+    """
+    Rows for the relationship tables, as `(table name, rows)` pairs.
+    """
+
+
+def _dedupe_key(model: DatabaseModel) -> Any:
+    """
+    Returns a cheap value that identifies `model` for deduplication.
+
+    Models are deduplicated by primary key where they have one,
+    since hashing an entire model graph is much more expensive
+    and the database would discard the later duplicate anyway.
+    """
+    pk_fields = type(model).pk_columns()
+
+    if not pk_fields:
+        return model
+
+    return tuple(getattr(model, field_name) for field_name in pk_fields)
+
+
+class RowAccumulator:
+    """
+    Collects the rows that models expand to, one model at a time.
+
+    Lets a caller expand a large file incrementally,
+    instead of holding every model in it in memory at once.
+    Some Hasheous dumps describe hundreds of thousands of games,
+    and the models are far bigger than the rows they turn into.
+    """
+
+    def __init__(self, relationship_prefix: str) -> None:
+        """
+        :param relationship_prefix: The table name that relationship tables are named after,
+          i.e. the `__tablename__` of the model type that owns the relationship fields.
+        """
+        self._relationship_prefix = relationship_prefix
+        self._objects: dict[str, dict[Any, dict[str, Any]]] = {}
+        self._relationships: dict[str, dict[frozendict[str, Any], None]] = {}
+
+    def add(self, model: DatabaseModel, *, keep: Callable[[str, Mapping[str, Any]], bool] | None = None) -> None:
+        """
+        Expands `model` and everything nested inside it into rows.
+
+        :param keep: Decides whether to accept a row, given the table it belongs in.
+          Rejected rows are dropped here rather than after the fact,
+          so the ones that aren't wanted never accumulate.
+        """
+        for nested in chain((model,), model.nested_models):
+            tablename = type(nested).__tablename__
+            rows = self._objects.setdefault(tablename, {})
+            key = _dedupe_key(nested)
+
+            if key in rows:
+                continue
+
+            row = nested.as_row
+            if keep is None or keep(tablename, row):
+                rows[key] = row
+
+        for field_name, field_rows in model.relationships.items():
+            tablename = f"{self._relationship_prefix}_{field_name}"
+            table_rows = self._relationships.setdefault(tablename, {})
+
+            for row in field_rows:
+                if keep is None or keep(tablename, row):
+                    table_rows.setdefault(row, None)
+
+    def result(self) -> ExtractedRows:
+        """Returns everything accumulated so far, ready to be inserted."""
+        return ExtractedRows(
+            objects=tuple((name, tuple(rows.values())) for name, rows in self._objects.items() if rows),
+            relationships=tuple(
+                (name, tuple(dict(row) for row in rows))
+                for name, rows in self._relationships.items()
+                if rows
+            ),
+        )
+
+
+def extract_rows(models: Iterable[DatabaseModel], *, relationship_prefix: str) -> ExtractedRows:
+    """
+    Expands `models` and everything they contain into rows, ready to be inserted.
+
+    A convenience wrapper around `RowAccumulator`
+    for callers that already hold every model in memory.
+
+    :param models: The top-level models to expand.
+      Nested models are included, but only the top-level ones contribute relationships.
+    :param relationship_prefix: The table name that relationship tables are named after,
+      i.e. the `__tablename__` of the model type that owns the relationship fields.
+    """
+    accumulator = RowAccumulator(relationship_prefix)
+
+    for model in models:
+        accumulator.add(model)
+
+    return accumulator.result()
+
+
+class RowDeduplicator:
+    """
+    Remembers which rows have already been sent to each table,
+    so that rows repeated across files never reach the database twice.
+
+    Most of the objects these data sources describe
+    (genres, companies, platforms, age rating boards, and so on)
+    appear in nearly every playlist or dump.
+    Letting SQLite discard those duplicates still costs a parameter bind
+    and an index probe apiece, which adds up to far more
+    than the cost of remembering their primary keys here.
+
+    Only valid for a database that this process built from empty,
+    since it assumes that nothing else has inserted rows behind its back.
+    """
+
+    def __init__(self, metadata: MetaData) -> None:
+        self._metadata = metadata
+        self._seen: dict[str, set[tuple[Any, ...]]] = {}
+
+    def filter(self, tablename: str, rows: Iterable[Mapping[str, Any]]) -> list[Mapping[str, Any]]:
+        """
+        Returns the rows of `rows` whose primary keys this deduplicator hasn't seen before,
+        and remembers them for next time.
+
+        Tables without a primary key are passed through untouched.
+        """
+        key_columns = tuple(c.name for c in self._metadata.tables[tablename].primary_key.columns)
+
+        if not key_columns:
+            return list(rows)
+
+        seen = self._seen.setdefault(tablename, set())
+        unseen: list[Mapping[str, Any]] = []
+
+        for row in rows:
+            key = tuple(row.get(c) for c in key_columns)
+            if key not in seen:
+                seen.add(key)
+                unseen.append(row)
+
+        return unseen
+
+
+def deferred_indexes(metadata: MetaData) -> tuple[Index, ...]:
+    """
+    Returns the indexes in `metadata` that aren't needed while the database is being filled.
+
+    Unique indexes have to exist from the start,
+    because the inserts rely on them to detect conflicts.
+    Every other index only matters once the data is queried,
+    and SQLite can build one in a single sorted pass at the end
+    for much less than it costs to update it on every inserted row.
+    """
+    return tuple(
+        index
+        for table in metadata.tables.values()
+        for index in table.indexes
+        if not index.unique
+    )
+
+
+async def create_deferred_indexes(db: AsyncEngine, metadata: MetaData) -> None:
+    """
+    Creates the indexes that `create_db` held back.
+    Call this once all data has been inserted, but before querying it.
+    """
+    async with db.begin() as tx:
+        for index in deferred_indexes(metadata):
+            await tx.run_sync(lambda connection, index=index: index.create(connection, checkfirst=True))
+
+        await tx.commit()
+
+
 async def create_db(path: Path, model_types: Iterable[type[DatabaseModel]]) -> tuple[AsyncEngine, MetaData]:
     db = create_async_engine(
         f"sqlite+aiosqlite:///{path}",
@@ -803,14 +995,39 @@ async def create_db(path: Path, model_types: Iterable[type[DatabaseModel]]) -> t
     for model_type in model_types:
         model_type.create_tables(metadata)
 
+    # Hold back the indexes that aren't needed while the database is being filled,
+    # so that the bulk inserts don't have to maintain them row by row.
+    # `create_deferred_indexes` puts them back once the data is in.
+    deferred = deferred_indexes(metadata)
+    for index in deferred:
+        index.table.indexes.discard(index)
+
     @event.listens_for(db.sync_engine, "connect")
     def set_common_pragmas(dbapi_connection, connection_record):
-        #dbapi_connection.execute("PRAGMA synchronous = OFF")
+        # `synchronous` and `journal_mode` can't be changed inside a transaction,
+        # and the engine is configured to keep one open at all times.
+        # SQLAlchemy wraps the aiosqlite connection, which in turn wraps the sqlite3 one.
+        raw_connection = dbapi_connection.driver_connection._conn
+        previous_autocommit = raw_connection.autocommit
+        raw_connection.autocommit = True
+
+        # Don't wait for the filesystem to confirm each commit.
+        # Every commit would otherwise cost a flush to disk,
+        # which dominates the runtime when the index is built
+        # out of many small transactions.
+        dbapi_connection.execute("PRAGMA synchronous = OFF")
 
         # Use in-memory journaling for better performance at the expense of durability,
         # but that's okay since the database is just used as a local cache
         # (as opposed to persistent storage of critical data).
         dbapi_connection.execute("PRAGMA journal_mode = MEMORY")
+
+        # Keep a healthy page cache and all temporary tables in RAM;
+        # the index is built in one pass and is far bigger than the default 2 MiB cache.
+        # Every connection gets its own cache, so this isn't free.
+        # (Negative values are in KiB, so this is 256 MiB.)
+        dbapi_connection.execute("PRAGMA cache_size = -262144")
+        dbapi_connection.execute("PRAGMA temp_store = MEMORY")
 
         # Explicitly disable foreign key constraints for two reasons:
         # 1. Some data sources may refer to newer games
@@ -826,13 +1043,17 @@ async def create_db(path: Path, model_types: Iterable[type[DatabaseModel]]) -> t
         # SQLite doesn't enforce foreign key constraints by default,
         # but the docs say that could change in the future.
         dbapi_connection.execute("PRAGMA foreign_keys = OFF")
-        dbapi_connection.commit()
+
+        raw_connection.autocommit = previous_autocommit
 
     async with db.connect() as connection:
         await connection.run_sync(metadata.create_all)
         await connection.commit()
 
         await connection.execute(text("PRAGMA optimize"))
+
+    for index in deferred:
+        index.table.indexes.add(index)
 
     return (db, metadata)
 
@@ -917,6 +1138,7 @@ class PoolArgs:
     processes: int | None = Field(
         default=None,
         description="Number of processes to use for loading data. Defaults to the number of CPU cores.",
+        # TODO: If this is set to 1, just do everything on the main process
     )
 
     maxtasksperchild: NonNegativeInt = 0
@@ -931,7 +1153,29 @@ class PoolArgs:
             queuecount=self.queuecount,
         )
 
+# How many files each data source may hold in memory
+# between loading them and inserting them.
+#
+# Loading is parallel and inserting is not,
+# so an unbounded pipeline ends up holding every data source in memory at once.
+# The right limit depends on how much one unit of work expands to.
+# Hasheous dumps are read in chunks of a fixed number of games,
+# so a chunk is comparable in size to a DAT file.
+DEFAULT_DAT_CONCURRENCY = 32
+DEFAULT_IGDB_CONCURRENCY = 12
+DEFAULT_HASHEOUS_CONCURRENCY = 12
+
 class IndexArgs:
+    concurrency: PositiveInt | None = Field(
+        default=None,
+        description="""
+            How many files may be loaded but not yet inserted at any one time.
+            Raise it to keep the worker pool busier, lower it to use less memory.
+            Applies to every data source; each one picks its own limit by default.
+        """,
+        validation_alias=AliasChoices('concurrency', 'n'),
+    )
+
     force: bool = Field(
         default=False,
         description="Overwrite existing output database file if it exists.",
@@ -967,6 +1211,16 @@ class PlaylistArgs:
 
 __all__ = (
     "DatabaseModel",
+    "create_deferred_indexes",
+    "deferred_indexes",
+    "DEFAULT_DAT_CONCURRENCY",
+    "DEFAULT_IGDB_CONCURRENCY",
+    "DEFAULT_HASHEOUS_CONCURRENCY",
+    "RowDeduplicator",
+    "ExtractedRows",
+    "RowAccumulator",
+    "extract_rows",
+    "CliTuple",
     "Relationship",
     "Sha256",
     "Sha1",

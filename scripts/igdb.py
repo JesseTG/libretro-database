@@ -18,7 +18,7 @@ from datetime import date, timedelta
 from functools import cached_property
 from itertools import chain
 from pathlib import Path
-from typing import Annotated, Any, Never, NotRequired, Literal, NewType, Required, Self, TypedDict, cast, overload
+from typing import Annotated, Any, NamedTuple, Never, NotRequired, Literal, NewType, Required, Self, TypedDict, cast, overload
 
 import aiofiles
 import aiofiles.os
@@ -41,7 +41,7 @@ from sqlalchemy import Column, ForeignKey, Index, MetaData, column, text
 from sqlalchemy.dialects.sqlite import INTEGER, insert
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-from utils import CliTuple, CoercedHttpUrl, DatabaseModel, PoolArgs, Relationship, create_db, VerboseArgs
+from utils import CliTuple, CoercedHttpUrl, DatabaseModel, DEFAULT_IGDB_CONCURRENCY, ExtractedRows, PoolArgs, Relationship, RowDeduplicator, create_db, db_transaction, extract_rows, VerboseArgs
 
 IgdbId = NewType('IgdbId', int)
 IgdbPrimaryId = Annotated[
@@ -1001,11 +1001,29 @@ RUMBLE_KEYWORD_IDS = (
 
 GameTupleAdapter = TypeAdapter(tuple[Game, ...])
 
-async def load_game_file(path: Path) -> tuple[Game, ...]:
+class LoadedGames(NamedTuple):
+    """The result of expanding one playlist's IGDB dump into database rows."""
+
+    game_ids: tuple[IgdbId, ...]
+    """The IDs of the top-level games, used to build the playlist mappings."""
+
+    rows: ExtractedRows
+
+
+async def load_game_file(path: Path) -> LoadedGames:
+    """
+    Loads one playlist's IGDB dump and expands it into database rows.
+
+    Runs in a worker process, so the caller only pays to insert the rows,
+    not to build them.
+    """
     async with aiofiles.open(path, mode='rb') as infile:
         json_bytes = await infile.read()
         games = GameTupleAdapter.validate_json(json_bytes, extra='allow')
-        return games
+        return LoadedGames(
+            game_ids=tuple(g.id for g in games),
+            rows=extract_rows(games, relationship_prefix=Game.__tablename__),
+        )
 
 class AuthArgs:
     client_id: str = Field(
@@ -1213,75 +1231,38 @@ PARENT_DIR = Path(__file__).parent.parent
 _igdb_index_log = logging.getLogger('igdb.index')
 
 
-async def _insert_igdb_playlist(db: AsyncEngine, metadata: MetaData, db_lock: asyncio.Lock, playlist: Playlist, games: Collection[Game]) -> None:
-    """Insert an IGDB playlist's games into the database."""
+async def _insert_igdb_playlist(db: AsyncEngine, metadata: MetaData, db_lock: asyncio.Lock, deduplicator: RowDeduplicator, playlist: Playlist, loaded: LoadedGames) -> None:
+    """Insert an IGDB playlist's already-expanded rows into the database."""
     log = _igdb_index_log
-    log.debug("Extracting nested models from %d games", len(games))
-    nested_models = map_reduce(
-        chain(games, chain.from_iterable(g.nested_models for g in games)),
-        lambda model: type(model),
-        None,
-        frozenset
-    )
+    log.debug("Inserting rows for %d games", len(loaded.game_ids))
 
-    log.info("Extracted nested models from %d games", len(games))
+    # Everything for one playlist goes in as a single transaction.
+    # Committing per table would multiply the number of commits
+    # by the number of IGDB object types, and each commit costs far more
+    # than the handful of rows most of those tables receive.
+    async with db_transaction(db, db_lock) as tx:
+        for tablename, rows in chain(loaded.rows.objects, loaded.rows.relationships):
+            assert tablename in metadata.tables, f"Table '{tablename}' is missing from the metadata"
 
-    for (model_type, models) in nested_models.items():
-        async with db_lock:
-            async with db.begin() as tx:
-                log.info("Inserting %d %s records", len(models), model_type.__name__)
-                assert model_type.__tablename__ in metadata.tables, f"Model type '{model_type.__name__}' has no corresponding table in metadata"
+            # The same game (or franchise, or genre, or other object)
+            # may appear in several playlists, so skip whatever's already been inserted.
+            # Conflicts are still ignored, since a row may have arrived from another data source.
+            if unseen := deduplicator.filter(tablename, rows):
+                await tx.execute(insert(metadata.tables[tablename]).on_conflict_do_nothing(), unseen)
+                log.debug("Inserted %d of %d rows into %s", len(unseen), len(rows), tablename)
 
-                table = metadata.tables[model_type.__tablename__]
-                cursor = await tx.execute(
-                    insert(table).on_conflict_do_nothing(),
-                    # Insert game records, ignoring conflicts because
-                    # the same game (or franchise, or genre, or other object)
-                    # may appear in multiple playlists
-
-                    [m.as_row for m in models]
-                    # BaseModel.model_dump serializes the model to a dict,
-                    # and IgdbObject in particular defines custom serialization behavior
-                    # that's activated by passing a context value of "row".
-                )
-
-                await tx.commit()
-                log.info("Inserted %d %s records", len(models),  model_type.__name__)
-
-    relationships = map_reduce(
-        chain.from_iterable(g.relationships.items() for g in games),
-        lambda rels: rels[0], # key is the field name
-        lambda rels: rels[1], # value is the set of relationships
-        lambda entries: tuple(chain.from_iterable(entries)) # group by field name, aggregate unique relationships
-    )
-    # TODO: Insert the age rating-related relationships
-    for (field_name, rels) in relationships.items():
-        async with db_lock:
-            async with db.begin() as tx:
-                log.info("Inserting %d '%s' relationships", len(rels), field_name)
-                tablename = f"{Game.__tablename__}_{field_name}"
-                assert tablename in metadata.tables, f"Relationship field '{field_name}' has no corresponding table in metadata"
-
-                await tx.execute(
-                    insert(metadata.tables[tablename]).on_conflict_do_nothing(),
-                    rels
-                )
-                await tx.commit()
-
-                log.info("Inserted %d '%s' relationships", len(rels), field_name)
-
-    mappings = tuple(PlaylistMapping(title=playlist.title, game=g.id) for g in games)
-
-    async with db_lock:
-        async with db.begin() as tx:
-            log.info("Inserting %d playlist mappings", len(mappings))
+        if mappings := deduplicator.filter(
+            PlaylistMapping.__tablename__,
+            ({"title": playlist.title, "game": game_id} for game_id in loaded.game_ids),
+        ):
             await tx.execute(
                 insert(metadata.tables[PlaylistMapping.__tablename__]).on_conflict_do_nothing(),
-                [m.as_row for m in mappings]
+                mappings
             )
-            await tx.commit()
 
-    log.info("Inserted %d games", len(games))
+        await tx.commit()
+
+    log.info("Inserted %d games from '%s'", len(loaded.game_ids), playlist.title)
 
 
 async def index_igdb(
@@ -1291,7 +1272,8 @@ async def index_igdb(
     db_lock: asyncio.Lock,
     playlists: Collection[Playlist],
     igdb_path: DirectoryPath,
-    pool: Pool
+    pool: Pool,
+    concurrency: int = DEFAULT_IGDB_CONCURRENCY,
 ) -> None:
     """Load and index IGDB game data into the database."""
     log = _igdb_index_log
@@ -1299,21 +1281,25 @@ async def index_igdb(
 
     log.info("Inserting games from %d playlists", len(playlists))
 
-    async def job(playlist: Playlist):
-        path = igdb_path / f"{playlist.title}.json"
-        log.debug("Loading queried games from '%s'", path)
-        loaded = await pool.apply(load_game_file, (path,))
-        log.info("Loaded %d games from '%s'", len(loaded), path)
-        return (playlist, loaded)
+    deduplicator = RowDeduplicator(metadata)
+
+    # Loading a playlist is much faster than inserting it,
+    # so without a limit every playlist would be loaded and held in memory
+    # long before the database caught up.
+    # The limit is released only once a playlist's rows have been inserted.
+    in_flight = asyncio.Semaphore(concurrency)
+
+    async def job(playlist: Playlist) -> None:
+        async with in_flight:
+            path = igdb_path / f"{playlist.title}.json"
+            log.debug("Loading queried games from '%s'", path)
+            loaded = await pool.apply(load_game_file, (path,))
+            log.info("Loaded %d games from '%s'", len(loaded.game_ids), path)
+            await _insert_igdb_playlist(db, metadata, db_lock, deduplicator, playlist, loaded)
 
     async with TaskGroup() as group:
-        playlist_jobs = (group.create_task(job(p), name=f"Load: {p.title}") for p in playlists)
-
-        async for (playlist, games) in as_completed(playlist_jobs):
-            await group.create_task(
-                _insert_igdb_playlist(db, metadata, db_lock, playlist, games),
-                name=f"Insert: {playlist.title}"
-            )
+        for playlist in playlists:
+            group.create_task(job(playlist), name=playlist.title)
 
     log.info("Finished inserting data")
 

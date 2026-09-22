@@ -11,12 +11,13 @@ Dictionary definitions taken from the following Hasheous source files:
 import asyncio
 import csv
 import logging
+import sqlite3
 import sys
 import time
 import tomllib
 
 from abc import ABC
-from collections.abc import Collection, Iterable, Sequence
+from collections.abc import Callable, Collection, Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from functools import cached_property
@@ -28,21 +29,24 @@ from zipfile import ZipFile, ZipInfo
 import aiofiles
 import aiofiles.os
 import backoff
+import frozendict
 import httpx
 
 from aioitertools.asyncio import as_completed
 from aiomultiprocess import Pool
 from more_itertools import first_true, map_reduce
-from pydantic import AliasChoices, BaseModel, ByteSize, ConfigDict, DirectoryPath, Field, FieldSerializationInfo, FilePath, HttpUrl, OnErrorOmit, SerializerFunctionWrapHandler, StringConstraints, ValidationError, computed_field, field_serializer
+from pydantic import AfterValidator, AliasChoices, BaseModel, ByteSize, ConfigDict, DirectoryPath, Discriminator, Field, FieldSerializationInfo, FilePath, HttpUrl, OnErrorOmit, SerializerFunctionWrapHandler, StringConstraints, Tag, ValidationError, computed_field, field_serializer
 from pydantic.alias_generators import to_pascal
 from pydantic_settings import BaseSettings, CliApp, CliPositionalArg, CliSubCommand, SettingsConfigDict
 from sqlalchemy import Column, Computed, ForeignKey, MetaData, String, Index, column, text
-from sqlalchemy.dialects.sqlite import INTEGER, JSON, insert
-from sqlalchemy.ext.asyncio import AsyncEngine
+from sqlalchemy.dialects.sqlite import INTEGER, JSON, insert, Insert
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncConnection, AsyncEngine
 from sqlalchemy.util import is_non_string_iterable
 
 from igdb import IgdbId, Playlist, PlaylistConfig, PlaylistTitle
-from utils import Crc, DatabaseModel, EmptyToNone, FrozenDict, IndexArgs, PlaylistArgs, PoolArgs, TypedFrozenDict, InsertInRowContext, EmptyStringToNone, Md5, Sha1, Sha256, create_db, VerboseArgs, db_transaction
+from dats import DAT_KEY_TABLE
+from utils import CliTuple, Crc, DatabaseModel, DEFAULT_HASHEOUS_CONCURRENCY, EmptyToNone, ExtractedRows, FrozenDict, IndexArgs, PlaylistArgs, PoolArgs, Relationship, TypedFrozenDict, InsertInRowContext, EmptyStringToNone, Md5, RowAccumulator, RowDeduplicator, Sha1, Sha256, create_db, VerboseArgs, db_transaction
 
 METADATA_MAP_URL = "https://hasheous.org/api/v1/Dumps/MetadataMap.zip"
 
@@ -51,9 +55,11 @@ HasheousId = NewType('HasheousId', int)
 class HasheousObject(DatabaseModel, ABC, frozen=True):
     pass
 
-class SignatureDataObject(HasheousObject, frozen=True, alias_generator=to_pascal):
+@dataclass(frozen=True)
+class SignatureDataObject:
+    __pydantic_config__: ClassVar[ConfigDict] = ConfigDict(alias_generator=to_pascal)
     __tablename__ = "HasheousSignatureDataObject"
-    signature_id: Annotated[int, Column(primary_key=True)]
+    signature_id: int
     name: EmptyStringToNone[str] = None
     year: EmptyStringToNone[str] = None
     platform: EmptyStringToNone[str] = None
@@ -80,24 +86,9 @@ class MetadataItem:
     id: EmptyStringToNone[str]
     immutable_id: EmptyStringToNone[str]
     status: MappingStatus
-    match_method: MatchMethodType
+    match_method: str
     source: str
     link: Annotated[EmptyStringToNone[HttpUrl], Field(default=None)]
-
-AttributeType: TypeAlias = Literal[
-    "LongString",
-    "ShortString",
-    "DateTime",
-    "ImageId",
-    "ImageAttribution",
-    "Link",
-    "Boolean",
-    "ObjectRelationship",
-    "EmbeddedList",
-]
-"""
-Values taken from https://tinyurl.com/yc7baymp
-"""
 
 DataObjectType: TypeAlias = Literal["None", "Company", "Platform", "Game", "ROM", "App"]
 
@@ -115,22 +106,34 @@ class RomItem(HasheousObject, frozen=True, alias_generator=to_pascal):
     """
     __tablename__ = "HasheousRomItem"
     __tableargs__ = (
-        Index("ix_HasheousRomItem_crc_where_not_null", "crc", unique=True, sqlite_where=column("crc").is_not(None)),
+        # These indexes are intentionally not unique, because some games on Hasheous
+        # have multiple ROM entries with the same hash,
+        # probably due to Hasheous fetching data about the same logical ROM from different sources.
+        # Example: Asteroids Deluxe for the Atari 7800, id 296592;
+        # the MD5 of a65f79ad4a0bbdecd59d5f7eb3623fd7 appears with ROM IDs 2591517 and 3455253
+        # Our solution is the AllRoms table in match.py, which de-duplicates ROMs by hash and associates them with all relevant games.
+        Index("ix_HasheousRomItem_crc_where_not_null", "crc", sqlite_where=column("crc").is_not(None)),
         Index("ix_HasheousRomItem_serial_where_not_null", "serial", sqlite_where=column("serial").is_not(None)),
-        Index("ix_HasheousRomItem_md5_where_not_null", "md5", unique=True, sqlite_where=column("md5").is_not(None)),
-        Index("ix_HasheousRomItem_sha1_where_not_null", "sha1", unique=True, sqlite_where=column("sha1").is_not(None)),
+        Index("ix_HasheousRomItem_md5_where_not_null", "md5", sqlite_where=column("md5").is_not(None)),
+        Index("ix_HasheousRomItem_sha1_where_not_null", "sha1", sqlite_where=column("sha1").is_not(None)),
+        Index("ix_HasheousRomItem_sha256_where_not_null", "sha256", sqlite_where=column("sha256").is_not(None)),
     )
     # Adds partial indexes to speed up lookups
 
-    id: Annotated[int, Column(primary_key=True)]
+    id: Annotated[int, Column(primary_key=True, index=True, unique=True)]
     name: EmptyStringToNone[str]
+    score: int
+    """
+    The quality of this ROM's data. Better data means better score.
+    See https://github.com/gaseous-project/hasheous/blob/main/hasheous-lib/Models/Signatures_Games.cs
+    """
     attributes: Annotated[EmptyToNone[FrozenDict[str, str]], Column(JSON(none_as_null=True))]
     rom_type: str
     size: ByteSize
-    crc: Annotated[EmptyToNone[Crc], Column(unique=True)]
-    md5: Annotated[EmptyToNone[Md5], Column(unique=True)]
-    sha1: Annotated[EmptyToNone[Sha1], Column(unique=True)]
-    sha256: Annotated[EmptyToNone[Sha256], Column(unique=True)]
+    crc: EmptyToNone[Crc]
+    md5: EmptyToNone[Md5]
+    sha1: EmptyToNone[Sha1]
+    sha256: EmptyToNone[Sha256]
     status: EmptyToNone[str]
     country: Annotated[EmptyToNone[FrozenDict[str, str]], Column(JSON(none_as_null=True))]
     language: Annotated[EmptyToNone[FrozenDict[str, str]], Column(JSON(none_as_null=True))]
@@ -151,20 +154,84 @@ class RomItem(HasheousObject, frozen=True, alias_generator=to_pascal):
         # Exclude serial so we don't try to insert it into a computed column
         return self.model_dump(context='row', exclude={"serial"})
 
+    @override
+    @classmethod
+    def insert(cls, metadata: MetaData) -> Insert:
+        # Override the default insert to exclude the computed 'serial' column
+        return super().insert(metadata).on_conflict_do_nothing()
+
+type EmptyDict = Annotated[dict, Field(min_length=0, max_length=0)]
+
+def attribute_discriminator(v: Any) -> str:
+    match v:
+        case CompanyAttribute() | {"attributeRelationType": "Company"}:
+            return "Company"
+        case PlatformAttribute() | {"attributeRelationType": "Platform"}:
+            return "Platform"
+        case RomsAttribute() | {"attributeRelationType": "ROM"}:
+            return "ROMs"
+        case CountryAttribute() | {"attributeName": "Country"}:
+            return "Country"
+        case LanguageAttribute() | {"attributeName": "Language"}:
+            return "Language"
+        case UnknownAttribute() | {"attributeType": str(), "attributeName": str(), "attributeRelationType": str(), "Value": _}:
+            return "Unknown"
+        case _:
+            raise ValueError(f"Unable to determine attribute type for value: {v}")
 
 @dataclass(frozen=True)
-class Attribute:
-    # I wanted to use pydantic.dataclass,
-    # but for some reason using frozen=True
-    # causes the attributes to not be recognized by pyright
+class CompanyAttribute:
+    attribute_type: Annotated[Literal["ObjectRelationship"], Field(validation_alias='attributeType')]
+    attribute_name: Annotated[str, Field(validation_alias='attributeName')]
+    attribute_relation_type: Annotated[Literal["Company"], Field(validation_alias='attributeRelationType')]
+    value: Annotated["CompanyDataObject", Field(validation_alias='Value')]
+
+@dataclass(frozen=True)
+class CountryAttribute:
+    attribute_type: Annotated[Literal["ShortString"], Field(validation_alias='attributeType')]
+    attribute_name: Annotated[Literal["Country"], Field(validation_alias='attributeName')]
+    attribute_relation_type: Annotated[Literal["None"], Field(validation_alias='attributeRelationType')]
+    value: Annotated[str, Field(validation_alias='Value')]
+
+@dataclass(frozen=True)
+class LanguageAttribute:
+    attribute_type: Annotated[Literal["ShortString"], Field(validation_alias='attributeType')]
+    attribute_name: Annotated[Literal["Language"], Field(validation_alias='attributeName')]
+    attribute_relation_type: Annotated[Literal["None"], Field(validation_alias='attributeRelationType')]
+    value: Annotated[str, Field(validation_alias='Value')]
+
+@dataclass(frozen=True)
+class PlatformAttribute:
+    attribute_type: Annotated[Literal["ObjectRelationship"], Field(validation_alias='attributeType')]
+    attribute_name: Annotated[Literal["Platform"], Field(validation_alias='attributeName')]
+    attribute_relation_type: Annotated[Literal["Platform"], Field(validation_alias='attributeRelationType')]
+    value: Annotated["PlatformDataObject", Field(validation_alias='Value')]
+    id: Annotated[int, Field(validation_alias='Id')]
+
+@dataclass(frozen=True)
+class RomsAttribute:
+    attribute_type: Annotated[Literal["EmbeddedList"], Field(validation_alias='attributeType')]
+    attribute_name: Annotated[Literal["ROMs"], Field(validation_alias='attributeName')]
+    attribute_relation_type: Annotated[Literal["ROM"], Field(validation_alias='attributeRelationType')]
+    value: Annotated[tuple[OnErrorOmit[RomItem], ...], Field(validation_alias='Value')]
+
+@dataclass(frozen=True)
+class UnknownAttribute:
     attribute_type: Annotated[str, Field(validation_alias='attributeType')]
     attribute_name: Annotated[str, Field(validation_alias='attributeName')]
     attribute_relation_type: Annotated[str, Field(validation_alias='attributeRelationType')]
-
-    value: Annotated["str | tuple[RomItem, ...] | GameDataObject | CompanyDataObject | PlatformDataObject", Field(validation_alias='Value')]
-
+    value: Annotated[Any, Field(validation_alias='Value'), AfterValidator(frozendict.deepfreeze)]
     id: Annotated[int | None, Field(validation_alias='Id')] = None
 
+Attribute = Annotated[
+    Annotated[CompanyAttribute, Tag("Company")] |
+    Annotated[CountryAttribute, Tag("Country")] |
+    Annotated[LanguageAttribute, Tag("Language")] |
+    Annotated[PlatformAttribute, Tag("Platform")] |
+    Annotated[RomsAttribute, Tag("ROMs")] |
+    Annotated[UnknownAttribute, Tag("Unknown")],
+    Discriminator(attribute_discriminator)
+]
 DataObjectAttributeColumn = Annotated[
     "DataObject | None",
     Column(ForeignKey('HasheousDataObject.id'), index=True)
@@ -187,9 +254,9 @@ class DataObject(DatabaseModel, ABC, frozen=True, alias_generator=to_pascal):
 
     id: Annotated[HasheousId, Column(INTEGER, primary_key=True)]
     name: str
-    signature_data_objects: tuple[SignatureDataObject, ...]
+    signature_data_objects: Annotated[tuple[SignatureDataObject, ...], Field(exclude=True)]
     metadata: Annotated[tuple[MetadataItem, ...], Field(exclude=True)]
-    attributes: Annotated[tuple[OnErrorOmit[Attribute], ...], Field(exclude=True)]
+    attributes: Annotated[tuple[Attribute, ...], Field(exclude=True)]
     # We may want to add created_date/update_date back
     # if we decide to start updating the index database incrementally
     #created_date: datetime
@@ -220,6 +287,12 @@ class DataObject(DatabaseModel, ABC, frozen=True, alias_generator=to_pascal):
             return IgdbId(int(igdb_metadata.immutable_id))
         except ValueError:
             return None
+
+    @override
+    @classmethod
+    def insert(cls, metadata: MetaData) -> Insert:
+        return super().insert(metadata).on_conflict_do_nothing()
+
 
 class PlatformDataObject(DataObject, frozen=True, alias_generator=to_pascal):
     __tablename__ = "HasheousPlatformDataObject"
@@ -327,6 +400,10 @@ class PlaylistDumpMapping(DatabaseModel, frozen=True):
 class GameDumpMapping(DatabaseModel, frozen=True):
     __tablename__ = "HasheousGameDumpMapping"
     __tablekwargs__ = {"sqlite_with_rowid": False}
+    __tableargs__ = (
+        Index("ix_HasheousGameDumpMapping_games_unique", "game", unique=True),
+    )
+
     game: Annotated[HasheousId, Column(ForeignKey('HasheousGameDataObject.id'), primary_key=True, index=True)]
     dump: Annotated[str, Column(primary_key=True, index=True)]
 
@@ -334,7 +411,7 @@ HASHEOUS_OBJECT_TYPES = (
     GameDataObject,
     PlatformDataObject,
     CompanyDataObject,
-    SignatureDataObject,
+    #SignatureDataObject,
     RomItem,
     PlaylistDumpMapping,
     GameDumpMapping,
@@ -412,22 +489,158 @@ class MatchRecord(NamedTuple):
             (self.crc is not None or self.serial is not None)
 
 
-async def load_zip(path: Path) -> tuple[GameDataObject, ...]:
+class LoadedDump(NamedTuple):
+    """The result of expanding one Hasheous dump into database rows."""
+
+    game_ids: tuple[int, ...]
+    """The IDs of the games that were kept, used to build the game-dump mappings."""
+
+    rows: ExtractedRows
+
+    loaded_games: int
+    """How many games the archive held, before any were filtered out."""
+
+
+_dat_keys: dict[Path, sqlite3.Connection] = {}
+
+
+def _dat_key_lookup(dat_keys_path: Path) -> sqlite3.Connection:
+    """
+    Opens the DAT key index written by `dats.write_dat_key_index`, once per worker process.
+
+    The file is opened immutable so that SQLite skips all locking
+    and every worker can share the operating system's cache of it.
+    """
+    connection = _dat_keys.get(dat_keys_path)
+
+    if connection is None:
+        connection = sqlite3.connect(f"file:{dat_keys_path.as_posix()}?immutable=1", uri=True)
+        _dat_keys[dat_keys_path] = connection
+
+    return connection
+
+
+def _relevant_rom_ids(game: GameDataObject, dat_keys: sqlite3.Connection) -> frozenset[int]:
+    """
+    Returns the IDs of `game`'s ROMs that some DAT file also describes.
+
+    A ROM counts if any of its identifiers appears in the DAT corpus.
+    CRCs and serials are what RetroArch identifies games by;
+    MD5 and SHA-1 aren't, but they still tie a Hasheous entry to a DAT entry,
+    so a match on either is just as good for our purposes.
+    """
+    query = f'SELECT 1 FROM "{DAT_KEY_TABLE}" WHERE value IN (?, ?, ?, ?) LIMIT 1'
+
+    return frozenset(
+        rom.id
+        for rom in game.roms
+        if dat_keys.execute(query, (rom.crc, rom.md5, rom.sha1, rom.serial)).fetchone()
+    )
+
+
+def _keep_only(rom_ids: frozenset[int]) -> Callable[[str, Mapping[str, Any]], bool]:
+    """
+    Builds a predicate that drops the rows of every ROM outside `rom_ids`.
+
+    A game's other ROMs are dumps that no DAT file lists,
+    so nothing downstream can ever refer to them.
+    """
+    def keep(tablename: str, row: Mapping[str, Any]) -> bool:
+        match tablename:
+            case RomItem.__tablename__:
+                return row["id"] in rom_ids
+            case name if name == f"{GameDataObject.__tablename__}_roms":
+                return row[f"{RomItem.__tablename__}_id"] in rom_ids
+            case _:
+                return True
+
+    return keep
+
+
+GAMES_PER_CHUNK = 1000
+"""
+How many of an archive's games one worker task handles.
+
+A dump is read in chunks rather than whole
+so that neither the worker nor the process inserting the rows
+ever holds more than a chunk's worth at once.
+Microsoft DOS alone expands to roughly 700 MB of rows alone,
+and several dumps are in flight at a time.
+"""
+
+
+def _game_entries(zip: ZipFile) -> list[ZipInfo]:
+    """Returns the archive entries that describe games, in a stable order."""
+    return [
+        info for info in zip.infolist()
+        if info.filename.endswith('.json') and info.filename != 'PlatformMapping.json'
+    ]
+
+
+async def count_zip_games(path: Path) -> int:
+    """
+    Returns how many games an archive holds, without parsing any of them.
+
+    Only the archive's index is read, so this is cheap even for the largest dumps.
+    """
     async with aiofiles.open(path, "rb") as zip_file:
         with ZipFile(zip_file.raw) as zip:
+            return len(_game_entries(zip))
 
-            def validate(info: ZipInfo):
-                byte_data = zip.read(info)
-                try:
-                    return GameDataObject.model_validate_json(byte_data)
-                except ValidationError as ve:
-                    raise
 
-            paths = zip.infolist()
-            json_infos = filter(lambda p: p.filename.endswith('.json') and p.filename != 'PlatformMapping.json', paths)
-            objects = map(validate, json_infos)
+async def load_zip(
+    path: Path,
+    dat_keys_path: Path | None = None,
+    offset: int = 0,
+    limit: int | None = None,
+) -> LoadedDump:
+    """
+    Loads part of a Hasheous dump archive and expands it into database rows.
 
-            return tuple(objects)
+    Runs in a worker process, so the caller only pays to insert the rows,
+    not to build them.
+    Games are read one at a time and discarded as soon as their rows are taken,
+    because the largest dumps don't fit in memory as models all at once.
+
+    :param dat_keys_path: A key index from `dats.write_dat_key_index`.
+      When given, games and ROMs that no DAT file describes are left out;
+      they can't contribute to an `.rdb`, and they outnumber the ones that can
+      by more than ten to one.
+    :param offset: The index of the first game to read.
+    :param limit: How many games to read, or None to read to the end.
+    """
+    dat_keys = _dat_key_lookup(dat_keys_path) if dat_keys_path is not None else None
+    accumulator = RowAccumulator(GameDataObject.__tablename__)
+    game_ids: list[int] = []
+    loaded_games = 0
+
+    async with aiofiles.open(path, "rb") as zip_file:
+        with ZipFile(zip_file.raw) as zip:
+            entries = _game_entries(zip)
+            end = len(entries) if limit is None else offset + limit
+
+            for info in entries[offset:end]:
+                game = GameDataObject.model_validate_json(zip.read(info))
+                loaded_games += 1
+                keep = None
+
+                if dat_keys is not None:
+                    rom_ids = _relevant_rom_ids(game, dat_keys)
+                    if not rom_ids:
+                        # Nothing in this game is anything a DAT file describes.
+                        continue
+
+                    keep = _keep_only(rom_ids)
+
+                accumulator.add(game, keep=keep)
+                game_ids.append(game.id)
+
+    return LoadedDump(
+        game_ids=tuple(game_ids),
+        rows=accumulator.result(),
+        loaded_games=loaded_games,
+    )
+
 
 def _on_backoff(details):
     print("Retrying after backoff:", details['target'].__name__, "with args:", details['args'], "and kwargs:", details['kwargs'], file=sys.stderr)
@@ -465,7 +678,7 @@ class FetchSubCommand(BaseModel, VerboseArgs):
         validate_default=True,
     )
 
-    dumps: tuple[str, ...] = Field(
+    dumps: CliTuple(str) = Field(
         default=(),
         validation_alias=AliasChoices('d', 'dumps'),
         description="""
@@ -627,92 +840,74 @@ PARENT_DIR = Path(__file__).parent.parent
 class HasheousJob(NamedTuple):
     name: str
     playlists: set[Playlist]
-    games: Collection[GameDataObject]
+    loaded: LoadedDump
 
 _hasheous_index_log = logging.getLogger('hasheous.index')
 
+async def _execute_with_bisect_on_error(tx: AsyncConnection, stmt, rows: Sequence[Mapping[str, Any]], log):
+    """
+    Attempt a bulk insert; on IntegrityError, bisect the batch to find the offending row.
+    NOTE: This is a debugging aid — bisecting retries only happen on error,
+    so the happy path has no overhead.
+    """
+    try:
+        await tx.execute(stmt, rows)
+    except Exception as e:
+        if len(rows) == 1:
+            # Base case: we've isolated the offender
+            log.error("Offending row: %s", rows[0])
+            raise
 
-async def _insert_hasheous_dump(db: AsyncEngine, metadata: MetaData, db_lock: asyncio.Lock, job: HasheousJob) -> None:
-    """Insert a Hasheous dump's contents into the database."""
+        mid = len(rows) // 2
+        log.warning(
+            "IntegrityError in batch of %d rows, bisecting into halves of %d and %d",
+            len(rows), mid, len(rows) - mid
+        )
+        await _execute_with_bisect_on_error(tx, stmt, rows[:mid], log)
+        await _execute_with_bisect_on_error(tx, stmt, rows[mid:], log)
+
+async def _insert_hasheous_dump(db: AsyncEngine, metadata: MetaData, db_lock: asyncio.Lock, deduplicator: RowDeduplicator, job: HasheousJob) -> None:
+    """Insert a Hasheous dump's already-expanded rows into the database."""
     log = _hasheous_index_log
-    # Collect all unique objects to insert
-    log.debug("Inserting %d games from %s", len(job.games), job.name)
-    nested_models = map_reduce(
-        chain(job.games, chain.from_iterable(g.nested_models for g in job.games)),
-        lambda model: type(model),
-        None,
-        frozenset
-    )
+    loaded = job.loaded
+    log.debug("Inserting rows for %d games from %s", len(loaded.game_ids), job.name)
 
-    for (model_type, models) in nested_models.items():
-        assert model_type.__tablename__ in metadata.tables, f"Model type '{model_type.__name__}' has no corresponding table in metadata"
+    # One transaction per dump, rather than one per table:
+    # most of these tables only receive a handful of rows,
+    # and a commit costs far more than the rows themselves.
+    async with db_transaction(db, db_lock) as tx:
+        for tablename, rows in chain(loaded.rows.objects, loaded.rows.relationships):
+            assert tablename in metadata.tables, f"Table '{tablename}' is missing from the metadata"
 
-        if models:
-            async with db_transaction(db, db_lock) as tx:
-                log.debug("Inserting %d %s objects", len(models), model_type.__name__)
-                await tx.execute(
-                    insert(metadata.tables[model_type.__tablename__]).on_conflict_do_nothing(),
-                    # Insert objects from Hasheous, ignoring conflicts because
-                    # the same game (or company, or signature, or ROM)
-                    # may appear in multiple dumps
-                    [m.as_row for m in models]
-                )
-                await tx.commit()
-                log.info("Inserted %d %s objects", len(models), model_type.__name__)
-        else:
-            log.warning("No %s objects to insert", model_type.__name__)
+            # The same game (or company, or signature, or ROM) may appear in several dumps,
+            # so skip whatever's already been inserted.
+            # Conflicts are still ignored, since a row may have arrived from another data source.
+            if unseen := deduplicator.filter(tablename, rows):
+                stmt = insert(metadata.tables[tablename]).on_conflict_do_nothing()
+                await _execute_with_bisect_on_error(tx, stmt, unseen, log)
+                log.debug("Inserted %d of %d rows into %s", len(unseen), len(rows), tablename)
 
-    relationships = map_reduce(
-        chain.from_iterable(g.relationships.items() for g in job.games),
-        lambda rels: rels[0], # key is the field name
-        lambda rels: rels[1], # value is the set of relationships
-        lambda entries: tuple(chain.from_iterable(entries)) # group by field name, aggregate unique relationships
-    )
-
-    for (field_name, rels) in relationships.items():
-        if rels:
-            async with db_transaction(db, db_lock) as tx:
-                tablename = f"{GameDataObject.__tablename__}_{field_name}"
-                assert tablename in metadata.tables, f"Relationship field '{field_name}' has no corresponding table in metadata"
-
-                log.debug("Inserting %d relationships for field '%s'", len(rels), field_name)
-                await tx.execute(
-                    insert(metadata.tables[tablename]).on_conflict_do_nothing(),
-                    rels
-                )
-
-                await tx.commit()
-            log.info("Inserted %d relationships for field '%s'", len(rels), field_name)
-        else:
-            log.warning("No relationships to insert for field '%s'", field_name)
-
-    if playlist_dump_mappings := tuple(PlaylistDumpMapping(playlist=p.title, dump=job.name) for p in job.playlists):
-        async with db_transaction(db, db_lock) as tx:
-            log.debug("Inserting %d playlist-dump mappings", len(playlist_dump_mappings))
+        if playlist_dump_mappings := deduplicator.filter(
+            PlaylistDumpMapping.__tablename__,
+            ({"playlist": p.title, "dump": job.name} for p in job.playlists),
+        ):
             await tx.execute(
                 insert(metadata.tables[PlaylistDumpMapping.__tablename__]).on_conflict_do_nothing(),
-                [m.as_row for m in playlist_dump_mappings]
+                playlist_dump_mappings
             )
-            await tx.commit()
-            log.info("Inserted %d playlist-dump mappings", len(playlist_dump_mappings))
-    else:
-        log.info("No playlist-dump mappings to insert")
 
-    game_dump_mappings = tuple(GameDumpMapping(dump=job.name, game=g.id) for g in job.games)
-    if game_dump_mappings:
-        async with db_transaction(db, db_lock) as tx:
-            log.debug("Inserting %d game-dump mappings", len(game_dump_mappings))
+        if game_dump_mappings := deduplicator.filter(
+            GameDumpMapping.__tablename__,
+            ({"dump": job.name, "game": game_id} for game_id in loaded.game_ids),
+        ):
             await tx.execute(
                 insert(metadata.tables[GameDumpMapping.__tablename__]).on_conflict_do_nothing(),
-                [m.as_row for m in game_dump_mappings]
-                )
+                game_dump_mappings
+            )
 
-            await tx.commit()
-            log.info("Inserted %d game-dump mappings", len(game_dump_mappings))
-    else:
-        log.info("No game-dump mappings to insert")
+        await tx.commit()
 
-    log.info("Inserted %d games", len(job.games))
+    log.info("Inserted %d games from %s", len(loaded.game_ids), job.name)
 
 
 async def index_hasheous(
@@ -722,7 +917,9 @@ async def index_hasheous(
     db_lock: asyncio.Lock,
     playlists: Iterable[Playlist],
     hasheous_path: DirectoryPath,
-    pool: Pool
+    pool: Pool,
+    concurrency: int = DEFAULT_HASHEOUS_CONCURRENCY,
+    dat_keys_path: Path | None = None,
 ) -> None:
     """Load and index Hasheous dump data into the database."""
     log = _hasheous_index_log
@@ -730,26 +927,52 @@ async def index_hasheous(
 
     requested_dumps = set(chain.from_iterable(p.hasheous_dirs for p in playlists)) | {'Unknown Platform'}
 
-    async def job(name: str) -> HasheousJob:
+    deduplicator = RowDeduplicator(metadata)
+
+    # Loading a dump is much faster than inserting it,
+    # so without a limit every archive would be loaded and held in memory
+    # long before the database caught up.
+    # The limit is released only once a dump's rows have been inserted.
+    in_flight = asyncio.Semaphore(concurrency)
+
+    async def chunk(name: str, path: Path, playlists_for_dump: set[Playlist], offset: int) -> None:
+        async with in_flight:
+            log.debug("Loading %s from game %d", path, offset)
+            loaded = await pool.apply(load_zip, (path, dat_keys_path, offset, GAMES_PER_CHUNK))
+            log.info(
+                "Loaded %d of %d games from %s (from game %d)",
+                len(loaded.game_ids), loaded.loaded_games, path, offset
+            )
+            await _insert_hasheous_dump(
+                db, metadata, db_lock, deduplicator,
+                HasheousJob(name, playlists_for_dump, loaded)
+            )
+
+    async def job(name: str) -> None:
         path = hasheous_path / f"{name}.zip"
-        log.debug("Loading %s", path)
-        games = await pool.apply(load_zip, (path,))
-        log.info("Loaded %d games from %s", len(games), path)
+
+        # Read the archive in chunks, so that no single task
+        # has to hold a whole dump's worth of rows in memory.
+        total = await pool.apply(count_zip_games, (path,))
 
         # Get all playlists that reference this Hasheous dump
         # (except the implicit "Unknown Platform" dump,
         # but it'll be included if explicitly named)
         referencing_playlists = {p for p in playlists if name in p.hasheous_dirs}
-        return HasheousJob(name, referencing_playlists, games)
+
+        async with asyncio.TaskGroup() as chunks:
+            for offset in range(0, total, GAMES_PER_CHUNK):
+                chunks.create_task(
+                    chunk(name, path, referencing_playlists, offset),
+                    name=f"{name}+{offset}"
+                )
+
+        log.info("Finished %s (%d games)", name, total)
 
     async with asyncio.TaskGroup() as group:
         log.info("Inserting data from %d dump archives", len(requested_dumps))
-        jobs = (group.create_task(job(name), name=f"Load: {name}") for name in requested_dumps)
-        async for j in as_completed(jobs):
-            group.create_task(
-                _insert_hasheous_dump(db, metadata, db_lock, j),
-                name=f"Insert: {j.name}"
-                )
+        for name in requested_dumps:
+            group.create_task(job(name), name=name)
 
     log.info("Finished inserting data")
 
@@ -844,7 +1067,6 @@ class HasheousCommand(BaseSettings):
 
 __all__ = (
     "Attribute",
-    "AttributeType",
     "DataObject",
     "DataObjectType",
     "HasheousId",
