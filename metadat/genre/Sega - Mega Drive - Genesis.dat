@@ -17,19 +17,19 @@ game (
 
 game (
 	comment "16 Zhang Mahjong (Taiwan) (Unl)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 36407C82 )
 )
 
 game (
 	comment "16 Zhang Mahjong II (Taiwan) (Unl)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc B4F4249F )
 )
 
 game (
 	comment "16Bit Rhythm Land (Japan) (En) (Aftermarket) (Unl)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc 67271302 )
 )
 
@@ -887,13 +887,13 @@ game (
 
 game (
 	comment "Ayrton Senna's Super Monaco GP II (USA) (En,Ja)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc EAC8DED6 )
 )
 
 game (
 	comment "Ayrton Senna's Super Monaco GP II (Japan, Europe) (En,Ja)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 60AF0F76 )
 )
 
@@ -971,19 +971,19 @@ game (
 
 game (
 	comment "Ballz 3D - The Battle of the Ballz (USA, Europe)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc B362B705 )
 )
 
 game (
 	comment "Ballz 3D - The Battle of the Ballz (USA, Europe) (Beta 1)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc C89AD87E )
 )
 
 game (
 	comment "Ballz 3D - The Battle of the Ballz (USA, Europe) (Beta 2)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc D349AB90 )
 )
 
@@ -1061,7 +1061,7 @@ game (
 
 game (
 	comment "Barver Battle Saga - Tai Kong Zhan Shi (Taiwan) (Unl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc D37A37C6 )
 )
 
@@ -1109,7 +1109,7 @@ game (
 
 game (
 	comment "Battle Golfer Yui (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 4AA03E4E )
 )
 
@@ -1229,7 +1229,7 @@ game (
 
 game (
 	comment "The hash data is from the first printing of this game"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F3AF46CD )
 )
 
@@ -1241,7 +1241,7 @@ game (
 
 game (
 	comment "Beggar Prince (World) (Rev 1) (Aftermarket) (Unl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 6332EDCC )
 )
 
@@ -1373,13 +1373,13 @@ game (
 
 game (
 	comment "Best of the Best - Championship Karate (Europe) (Proto)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc F842240B )
 )
 
 game (
 	comment "Best of the Best - Championship Karate (USA)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc C3D6A5D4 )
 )
 
@@ -1391,7 +1391,7 @@ game (
 
 game (
 	comment "Beyond Oasis (USA)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc C4728225 )
 )
 
@@ -1403,7 +1403,7 @@ game (
 
 game (
 	comment "Beyond Oasis (USA) (Beta) (1994-11-01)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc FA59F847 )
 )
 
@@ -1421,13 +1421,13 @@ game (
 
 game (
 	comment "Bill's Tomato Game (USA) (Proto)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 0E1F263F )
 )
 
 game (
 	comment "Bimini Run (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc D4DC5188 )
 )
 
@@ -1457,7 +1457,7 @@ game (
 
 game (
 	comment "Blades of Vengeance (USA, Europe)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 74C65A49 )
 )
 
@@ -1481,7 +1481,7 @@ game (
 
 game (
 	comment "Blockout (World)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 5E2966F1 )
 )
 
@@ -1499,7 +1499,7 @@ game (
 
 game (
 	comment "Blue Almanac (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 7222EBB3 )
 )
 
@@ -1583,37 +1583,37 @@ game (
 
 game (
 	comment "Bonkers (USA, Europe) (Beta) (1994-05-03)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc E4CD0D61 )
 )
 
 game (
 	comment "Bonkers (USA, Europe) (Beta) (1994-03-28)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc CD67C588 )
 )
 
 game (
 	comment "Bonkers (USA, Europe) (Beta) (1994-08-04)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 913CC834 )
 )
 
 game (
 	comment "Bonkers (USA, Europe) (Beta) (1994-08-25)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 3E5EDC4F )
 )
 
 game (
 	comment "Bonkers (USA, Europe) (Beta) (1994-08-29)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 7B84793E )
 )
 
 game (
 	comment "Bonkers (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc D1E66017 )
 )
 
@@ -1679,7 +1679,7 @@ game (
 
 game (
 	comment "Brutal - Paws of Fury (Europe) (En,Fr,De)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 7E9A8D32 )
 )
 
@@ -1691,7 +1691,7 @@ game (
 
 game (
 	comment "Brutal - Paws of Fury (USA)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 98D502CD )
 )
 
@@ -1739,25 +1739,25 @@ game (
 
 game (
 	comment "Buck Rogers - Countdown to Doomsday (USA, Europe)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 44E3BFFF )
 )
 
 game (
 	comment "Budokan - The Martial Spirit (Europe)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 97ADD5BD )
 )
 
 game (
 	comment "Budokan - The Martial Spirit (USA) (Unl)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc ACD9F5FC )
 )
 
 game (
 	comment "Budokan - The Martial Spirit (USA) (Rev 1) (Beta) (1990-09-25)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 43532E3D )
 )
 
@@ -1811,7 +1811,7 @@ game (
 
 game (
 	comment "Cadash (USA, Korea) (En)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 13BDF374 )
 )
 
@@ -1829,7 +1829,7 @@ game (
 
 game (
 	comment "Caesars Palace (USA)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 8FDAA9BB )
 )
 
@@ -1901,7 +1901,7 @@ game (
 
 game (
 	comment "Cascade (World) (Aftermarket) (Unl)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc E7B287FE )
 )
 
@@ -2015,19 +2015,19 @@ game (
 
 game (
 	comment "Championship Pro-Am (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc B496DE28 )
 )
 
 game (
 	comment "Chao Ji Da Fu Weng (Taiwan) (Unl)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 2E2EA687 )
 )
 
 game (
 	comment "Chao Ji Mahjong Club (Taiwan) (Unl)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 2B4B40E3 )
 )
 
@@ -2045,7 +2045,7 @@ game (
 
 game (
 	comment "Chase H.Q. II (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc F39E4BF2 )
 )
 
@@ -2069,7 +2069,7 @@ game (
 
 game (
 	comment "Chess (Russia) (En) (Unl)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 47380EDD )
 )
 
@@ -2369,49 +2369,49 @@ game (
 
 game (
 	comment "Columns (Japan) (En)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 03163D7A )
 )
 
 game (
 	comment "Columns (USA, Europe)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc D783C244 )
 )
 
 game (
 	comment "Columns (World) (Sega Ages)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 0A0D1D51 )
 )
 
 game (
 	comment "Columns (USA, Europe) (1990-06-21) (Sega Channel)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 7EEC1A45 )
 )
 
 game (
 	comment "Columns III (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc DC678F6D )
 )
 
 game (
 	comment "Combat Aces (USA) (Proto) (Unl)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 84560D5A )
 )
 
 game (
 	comment "Columns III - Taiketsu! Columns World (Japan, Korea) (Ja)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc CD07462F )
 )
 
 game (
 	comment "Combat Cars (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc E439B101 )
 )
 
@@ -2669,7 +2669,7 @@ game (
 
 game (
 	comment "Crusader of Centy (USA)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 41858F6F )
 )
 
@@ -2921,13 +2921,13 @@ game (
 
 game (
 	comment "Daikoukai Jidai (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 5A652458 )
 )
 
 game (
 	comment "Daikoukai Jidai II (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc E040F0DA )
 )
 
@@ -2981,7 +2981,7 @@ game (
 
 game (
 	comment "Danny Sullivan's Indy Heat (USA) (Proto)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 0E356A3C )
 )
 
@@ -3347,7 +3347,7 @@ game (
 
 game (
 	comment "Dial Q o Mawase! (Japan) (Unl)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc C632E5AF )
 )
 
@@ -3437,7 +3437,7 @@ game (
 
 game (
 	comment "Dong Gu Ri Te Chi Jak Jeon (Korea)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc E32F0B1C )
 )
 
@@ -3455,7 +3455,7 @@ game (
 
 game (
 	comment "Double Clutch (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc D98C623C )
 )
 
@@ -3467,7 +3467,7 @@ game (
 
 game (
 	comment "Double Clutch (Europe) (Beta)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 43E7A117 )
 )
 
@@ -3491,7 +3491,7 @@ game (
 
 game (
 	comment "Double Dragon V - The Shadow Falls (USA)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 27E59E35 )
 )
 
@@ -3503,55 +3503,55 @@ game (
 
 game (
 	comment "Dr. Robotnik's Mean Bean Machine (Europe)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 70680706 )
 )
 
 game (
 	comment "Dr. Robotnik's Mean Bean Machine (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc C7CA517F )
 )
 
 game (
 	comment "Dr. Robotnik's Mean Bean Machine (USA) (Beta 1)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 4D0E5273 )
 )
 
 game (
 	comment "Dr. Robotnik's Mean Bean Machine (USA) (Beta 2)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc C631BFFF )
 )
 
 game (
 	comment "Dragon - The Bruce Lee Story (Europe)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc FDEED51D )
 )
 
 game (
 	comment "Dragon - The Bruce Lee Story (USA)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc EFE850E5 )
 )
 
 game (
 	comment "Dragon Ball - Final Bout (Taiwan) (Unl)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 63847005 )
 )
 
 game (
 	comment "Dragon Ball Z - Buyuu Retsuden (Japan)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc AF8F3371 )
 )
 
 game (
 	comment "Dragon Ball Z - L'Appel du Destin (France)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc F035C737 )
 )
 
@@ -3563,13 +3563,13 @@ game (
 
 game (
 	comment "Dragon Slayer - Eiyuu Densetsu II (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 46924DC3 )
 )
 
 game (
 	comment "Dragon's Eye Plus - Shanghai III (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 81F0C3CF )
 )
 
@@ -3647,7 +3647,7 @@ game (
 
 game (
 	comment "Dungeons & Dragons - Warriors of the Eternal Sun (USA, Europe)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc AF4A9CD7 )
 )
 
@@ -4025,13 +4025,13 @@ game (
 
 game (
 	comment "ESPN Speed World (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc F50BE478 )
 )
 
 game (
 	comment "ESPN Speed World (USA) (Beta)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc AB12849A )
 )
 
@@ -4133,19 +4133,19 @@ game (
 
 game (
 	comment "Exile (USA)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 1B569DC2 )
 )
 
 game (
 	comment "Exile (USA) (Sega Channel)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 8C6E2AA3 )
 )
 
 game (
 	comment "Exile - Toki no Hazama he (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 880BF311 )
 )
 
@@ -4169,7 +4169,7 @@ game (
 
 game (
 	comment "Exodus - Journey to the Promised Land (USA) (Unl)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 22E6FC04 )
 )
 
@@ -4259,37 +4259,37 @@ game (
 
 game (
 	comment "F1 - World Championship Edition (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 74CEE0A7 )
 )
 
 game (
 	comment "F1 - World Championship Edition (Europe) (Beta)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 2269ED6B )
 )
 
 game (
 	comment "F1 - World Championship Edition (USA) (Proto 1)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 2613C005 )
 )
 
 game (
 	comment "F1 - World Championship Edition (USA) (Proto 2)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 5A72FCE8 )
 )
 
 game (
 	comment "F1 Circus MD (USA) (Proto) (1991-12-28) (Sega Channel)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc CD1A1AD8 )
 )
 
 game (
 	comment "F1 Circus MD (Japan) (En)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 5D30BEFB )
 )
 
@@ -4337,7 +4337,7 @@ game (
 
 game (
 	comment "Fastest 1 (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc BB43F0DE )
 )
 
@@ -4355,13 +4355,13 @@ game (
 
 game (
 	comment "Fatal Fury 2 (USA, Korea) (En)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 1B1754CB )
 )
 
 game (
 	comment "Fatal Labyrinth (USA, Europe)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 5F0BD984 )
 )
 
@@ -4373,7 +4373,7 @@ game (
 
 game (
 	comment "Fatman (Japan)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 7867DA3A )
 )
 
@@ -4397,7 +4397,7 @@ game (
 
 game (
 	comment "Ferrari Grand Prix Challenge (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc F73F6BEC )
 )
 
@@ -4409,7 +4409,7 @@ game (
 
 game (
 	comment "Ferrari Grand Prix Challenge (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 250111DF )
 )
 
@@ -4523,7 +4523,7 @@ game (
 
 game (
 	comment "Flash Point (Japan) (En) (Proto)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 0655074D )
 )
 
@@ -4661,7 +4661,7 @@ game (
 
 game (
 	comment "Fun Car Rally (USA) (Beta)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 42E27845 )
 )
 
@@ -4781,7 +4781,7 @@ game (
 
 game (
 	comment "Gambler Jiko Chuushinha - Katayama Masayuki no Mahjong Doujou (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 05650B7A )
 )
 
@@ -4823,7 +4823,7 @@ game (
 
 game (
 	comment "Garou Densetsu 2 - Aratanaru Tatakai (Japan)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 2AF4427F )
 )
 
@@ -4889,7 +4889,7 @@ game (
 
 game (
 	comment "Gensou Senki Kokou no Ryuu - Crying Dragon (Japan) (Proto)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 888193BC )
 )
 
@@ -4949,13 +4949,13 @@ game (
 
 game (
 	comment "Go Net (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc DB30F773 )
 )
 
 game (
 	comment "Gluf (World) (Aftermarket) (Unl)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc F8FE1043 )
 )
 
@@ -5147,7 +5147,7 @@ game (
 
 game (
 	comment "Gunship (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc DA1440C9 )
 )
 
@@ -5195,7 +5195,7 @@ game (
 
 game (
 	comment "Hard Drivin' (World)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 3225BAAF )
 )
 
@@ -5357,13 +5357,13 @@ game (
 
 game (
 	comment "Humans, The (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc A0CF4366 )
 )
 
 game (
 	comment "Huan Le Tao Qi Shu - Smart Mouse (Taiwan) (Unl)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc DECDF740 )
 )
 
@@ -5435,7 +5435,7 @@ game (
 
 game (
 	comment "Ikasuze! Koi no Doki Doki Penguin Land MD (Japan) (Game no Kanzume Otokuyou)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 22736650 )
 )
 
@@ -5453,7 +5453,7 @@ game (
 
 game (
 	comment "Ikasuze! Koi no Doki Doki Penguin Land MD (Japan) (SegaNet)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 0053BFD6 )
 )
 
@@ -5597,7 +5597,7 @@ game (
 
 game (
 	comment "Ishido - The Way of Stones (USA) (Unl)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc B1DE7D5E )
 )
 
@@ -5705,7 +5705,7 @@ game (
 
 game (
 	comment "Janou Touryuumon (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc B5EF97C6 )
 )
 
@@ -5741,7 +5741,7 @@ game (
 
 game (
 	comment "Jeopardy! - Sports Edition (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 13F924D2 )
 )
 
@@ -5783,7 +5783,7 @@ game (
 
 game (
 	comment "Jiu Ji Ma Jiang II - Ye Yan Bian (Taiwan) (Unl)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc E9829B22 )
 )
 
@@ -5873,7 +5873,7 @@ game (
 
 game (
 	comment "Joshua & the Battle of Jericho (USA) (Unl)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc DA9E25AA )
 )
 
@@ -5951,13 +5951,13 @@ game (
 
 game (
 	comment "Junker's High (Japan) (En) (Beta 2)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 73022C67 )
 )
 
 game (
 	comment "Junker's High (Japan) (En) (Beta 1)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 23534949 )
 )
 
@@ -6059,7 +6059,7 @@ game (
 
 game (
 	comment "Justice League Task Force (World)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 88BB241F )
 )
 
@@ -6095,25 +6095,25 @@ game (
 
 game (
 	comment "Ka-Ge-Ki (Japan)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 391866A1 )
 )
 
 game (
 	comment "Ka-Ge-Ki - Fists of Steel (USA)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc EFFC0FA6 )
 )
 
 game (
 	comment "Kawasaki Superbike Challenge (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 631CC8E9 )
 )
 
 game (
 	comment "Kawasaki Superbike Challenge (USA, Europe) (Beta)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 55934D1B )
 )
 
@@ -6125,7 +6125,7 @@ game (
 
 game (
 	comment "Kick Boxing, The (Japan, Korea) (En)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 9BDC230C )
 )
 
@@ -6161,43 +6161,43 @@ game (
 
 game (
 	comment "King of Fighters '99, The (Taiwan) (Unl)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc AB82AFBE )
 )
 
 game (
 	comment "King of Fighters 2000, The (Taiwan) (Unl)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 34CBAC5D )
 )
 
 game (
 	comment "King of Fighters 98', The (Taiwan) (Unl)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc CBC38EEA )
 )
 
 game (
 	comment "King of the Monsters (Japan)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 3AF7E74E )
 )
 
 game (
 	comment "King of the Monsters (Europe)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 7A94FD49 )
 )
 
 game (
 	comment "King of the Monsters (USA)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc F390D406 )
 )
 
 game (
 	comment "King of the Monsters 2 (USA)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc EE1638AC )
 )
 
@@ -6215,7 +6215,7 @@ game (
 
 game (
 	comment "King's Bounty - The Conqueror's Quest (USA, Europe)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc AA68A92E )
 )
 
@@ -6257,13 +6257,13 @@ game (
 
 game (
 	comment "Krusty's Super Fun House (USA, Europe)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc F764005E )
 )
 
 game (
 	comment "Krusty's Super Fun House (USA, Europe) (Rev A)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 56976261 )
 )
 
@@ -6311,7 +6311,7 @@ game (
 
 game (
 	comment "Landstalker (USA) (Genesis Mini)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F2D14A6A )
 )
 
@@ -6323,67 +6323,67 @@ game (
 
 game (
 	comment "Landstalker (USA) (1993-07-13) (Sega Channel)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 8866FB16 )
 )
 
 game (
 	comment "Landstalker (USA)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc FBBB5B97 )
 )
 
 game (
 	comment "Landstalker (USA) (Beta) (1993-02-24)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 70483D03 )
 )
 
 game (
 	comment "Landstalker - Die Schatze von Konig Nolo (Germany)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 10FEDB8F )
 )
 
 game (
 	comment "Landstalker - Die Schatze von Konig Nolo (Germany) (Mega Drive Mini)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc FC64BB8C )
 )
 
 game (
 	comment "Landstalker - Koutei no Zaihou (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 60D4CEDB )
 )
 
 game (
 	comment "Landstalker - Koutei no Zaihou (Japan) (Mega Drive Mini)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc B0AFA45A )
 )
 
 game (
 	comment "Landstalker - Le Tresor du Roi Nole (France)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 5DE7D917 )
 )
 
 game (
 	comment "Landstalker - Le Tresor du Roi Nole (France) (Mega Drive Mini)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 365D282A )
 )
 
 game (
 	comment "Landstalker - The Treasures of King Nole (Europe) (Mega Drive Mini)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 1EC0EC97 )
 )
 
 game (
 	comment "Landstalker - The Treasures of King Nole (Europe)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc E3C65277 )
 )
 
@@ -6395,19 +6395,19 @@ game (
 
 game (
 	comment "Langrisser II (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 7F891DFC )
 )
 
 game (
 	comment "Langrisser II (Japan) (Rev A)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 0CAA0593 )
 )
 
 game (
 	comment "Langrisser II (Japan) (Rev B)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 4967C9F9 )
 )
 
@@ -6431,7 +6431,7 @@ game (
 
 game (
 	comment "Legend of Wukong (World) (Aftermarket) (Unl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 72F11771 )
 )
 
@@ -6443,13 +6443,13 @@ game (
 
 game (
 	comment "Legende de Thor, La (France)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc B97CCA1C )
 )
 
 game (
 	comment "Legende de Thor, La (France) (Mega Drive Mini)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc A9359029 )
 )
 
@@ -6473,13 +6473,13 @@ game (
 
 game (
 	comment "Lemmings 2 - The Tribes (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc DE59A3A3 )
 )
 
 game (
 	comment "Lemmings 2 - The Tribes (Europe)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 741EB624 )
 )
 
@@ -6539,49 +6539,49 @@ game (
 
 game (
 	comment "Light Crusader (Europe) (En,Fr,De,Es)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 52C7252B )
 )
 
 game (
 	comment "Light Crusader (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 237076A4 )
 )
 
 game (
 	comment "Light Crusader (Korea) (En,Ko)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 6D0CBCB2 )
 )
 
 game (
 	comment "Light Crusader (USA) (Beta) (1995-06-08)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc E350CCFA )
 )
 
 game (
 	comment "Light Crusader (USA)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc BEB715DC )
 )
 
 game (
 	comment "Light Crusader (Europe) (En,Fr,De,Es) (Mega Drive Mini)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 600E5709 )
 )
 
 game (
 	comment "Light Crusader (USA) (Genesis Mini)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 84390291 )
 )
 
 game (
 	comment "Light Crusader (Japan) (Mega Drive Mini)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F6550938 )
 )
 
@@ -6629,13 +6629,13 @@ game (
 
 game (
 	comment "Little Medusa (USA) (Demo) (Aftermarket) (Unl)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc B9F6C84D )
 )
 
 game (
 	comment "Little Medusa (USA) (Aftermarket) (Unl)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc DCD8E4F3 )
 )
 
@@ -6689,31 +6689,31 @@ game (
 
 game (
 	comment "Lotus II (USA, Europe) (Beta)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 2997B7D4 )
 )
 
 game (
 	comment "Lotus II (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 1D8EE010 )
 )
 
 game (
 	comment "Lotus Turbo Challenge (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc A3CF6E9C )
 )
 
 game (
 	comment "Lufia & the Fortress of Doom (USA) (Proto)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 2B4C3EC1 )
 )
 
 game (
 	comment "Ma Jiang Qing Ren - Ji Ma Jiang Zhi (Taiwan) (Unl)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc DDD02BA4 )
 )
 
@@ -6725,7 +6725,7 @@ game (
 
 game (
 	comment "Ma Qiao E Mo Ta - Devilish Mahjong Tower (Taiwan) (Unl)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 12E35994 )
 )
 
@@ -6767,7 +6767,7 @@ game (
 
 game (
 	comment "Madou Monogatari I (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc DD82C401 )
 )
 
@@ -6779,7 +6779,7 @@ game (
 
 game (
 	comment "Magic Bubble (Taiwan) (En) (Unl)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 3EC61DC1 )
 )
 
@@ -6899,7 +6899,7 @@ game (
 
 game (
 	comment "Man Overboard! (Europe)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc CAE0E3A6 )
 )
 
@@ -6923,7 +6923,7 @@ game (
 
 game (
 	comment "Mario Andretti Racing (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 7F1DC0AA )
 )
 
@@ -7013,7 +7013,7 @@ game (
 
 game (
 	comment "Maten no Soumetsu (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc B804A105 )
 )
 
@@ -7073,7 +7073,7 @@ game (
 
 game (
 	comment "Medal City (Japan) (SegaNet)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 3EF4135D )
 )
 
@@ -7109,7 +7109,7 @@ game (
 
 game (
 	comment "Mega Games 3 (Europe, Asia) (En)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc B4247D98 )
 )
 
@@ -7163,7 +7163,7 @@ game (
 
 game (
 	comment "Mega Marble World (World) (Aftermarket) (Unl)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 438C7511 )
 )
 
@@ -7229,13 +7229,13 @@ game (
 
 game (
 	comment "MegaPanel (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 6240F579 )
 )
 
 game (
 	comment "MegaTrax (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc A0837741 )
 )
 
@@ -7247,13 +7247,13 @@ game (
 
 game (
 	comment "Meng Huan Shui Guo Pan - 777 Casino (Taiwan) (Unl)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 42DC03E4 )
 )
 
 game (
 	comment "Metal Fangs (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc A8DF1C4C )
 )
 
@@ -7325,73 +7325,73 @@ game (
 
 game (
 	comment "Micro Machines (Europe) (Alt 2)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 50081A0B )
 )
 
 game (
 	comment "Micro Machines (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 7FFBD1AD )
 )
 
 game (
 	comment "Micro Machines (Europe) (Alt)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc E5CF560D )
 )
 
 game (
 	comment "Micro Machines (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 82FE2D3F )
 )
 
 game (
 	comment "Micro Machines (USA) (Rev 1)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 54E4CFF1 )
 )
 
 game (
 	comment "Micro Machines - Military (Europe) (J-Cart)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc B3ABB15E )
 )
 
 game (
 	comment "Micro Machines - Military (Europe) (Beta) (1995)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc B33D01BC )
 )
 
 game (
 	comment "Micro Machines - Turbo Tournament 96 (Europe) (J-Cart)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 7492B1DE )
 )
 
 game (
 	comment "Micro Machines - Turbo Tournament 96 (Europe) (Rev 1) (J-Cart)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 23319D0D )
 )
 
 game (
 	comment "Micro Machines 2 - Turbo Tournament (Europe) (J-Cart)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 42BFB7EB )
 )
 
 game (
 	comment "Micro Machines 2 - Turbo Tournament (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 01C22A5D )
 )
 
 game (
 	comment "Micro Machines 2 - Turbo Tournament (Europe) (Beta)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 51C9F851 )
 )
 
@@ -7433,13 +7433,13 @@ game (
 
 game (
 	comment "Might and Magic - Gates to Another World (USA, Europe)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F509145F )
 )
 
 game (
 	comment "Might and Magic III - Isles of Terra (USA) (Proto)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 6EF7104A )
 )
 
@@ -7493,7 +7493,7 @@ game (
 
 game (
 	comment "Mighty Morphin Power Rangers - The Fighting Edition (Russia) (En) (Unl)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 1046D696 )
 )
 
@@ -7547,7 +7547,7 @@ game (
 
 game (
 	comment "Minato no Traysia (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc BD89FD09 )
 )
 
@@ -7571,19 +7571,19 @@ game (
 
 game (
 	comment "Miracle Piano Teaching System, The (USA)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc A719542E )
 )
 
 game (
 	comment "Misplaced (World) (En) (Aftermarket) (Unl)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc D79FD3EC )
 )
 
 game (
 	comment "Misplaced (World) (Ru) (Aftermarket) (Unl)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 1997B949 )
 )
 
@@ -7601,7 +7601,7 @@ game (
 
 game (
 	comment "Mondu's Fight Palace (USA) (Beta) (1990-07-03)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 754188F9 )
 )
 
@@ -7697,7 +7697,7 @@ game (
 
 game (
 	comment "Mugen Senshi Valis (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 24431625 )
 )
 
@@ -7799,19 +7799,19 @@ game (
 
 game (
 	comment "Nakajima Satoru Kanshuu - F-1 Super License (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 8774BC79 )
 )
 
 game (
 	comment "Nakajima Satoru Kanshuu - F-1 Grand Prix (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 93BE47CF )
 )
 
 game (
 	comment "Nakajima Satoru Kanshuu - F-1 Hero MD (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 24F87987 )
 )
 
@@ -8141,13 +8141,13 @@ game (
 
 game (
 	comment "New Horizons (USA)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc EAD69824 )
 )
 
 game (
 	comment "Newman Haas IndyCar featuring Nigel Mansell (World)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 1233A229 )
 )
 
@@ -8519,13 +8519,13 @@ game (
 
 game (
 	comment "Nigel Mansell's World Championship Racing (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 3FE3D63B )
 )
 
 game (
 	comment "Nigel Mansell's World Championship Racing (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 6BC57B2C )
 )
 
@@ -8603,7 +8603,7 @@ game (
 
 game (
 	comment "Odeio Carros (World) (Aftermarket) (Homebrew)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 770969B6 )
 )
 
@@ -8615,19 +8615,19 @@ game (
 
 game (
 	comment "Old Towers (USA) (Aftermarket) (Unl)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc C66D9C37 )
 )
 
 game (
 	comment "Old Towers (World) (v1.2) (Aftermarket) (Homebrew)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc D875E97D )
 )
 
 game (
 	comment "Old Towers (World) (v1.1) (Aftermarket) (Homebrew)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 1A7E29FC )
 )
 
@@ -8771,67 +8771,67 @@ game (
 
 game (
 	comment "Outlander (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc FE6F2350 )
 )
 
 game (
 	comment "Outlander (USA) (Beta)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc C5BA7BBF )
 )
 
 game (
 	comment "OutRun (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc EE7D9F4A )
 )
 
 game (
 	comment "OutRun (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc FDD9A8D2 )
 )
 
 game (
 	comment "OutRun (USA, Europe) (Sega Smash Pack)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc E6821FB1 )
 )
 
 game (
 	comment "OutRun 2019 (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 5CB3536A )
 )
 
 game (
 	comment "OutRun 2019 (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 0EAC7440 )
 )
 
 game (
 	comment "OutRun 2019 (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc E32E17E2 )
 )
 
 game (
 	comment "OutRun 2019 (USA) (Beta)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc D2ECDDFA )
 )
 
 game (
 	comment "OutRunners (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc E164A09F )
 )
 
 game (
 	comment "OutRunners (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc EDE636B9 )
 )
 
@@ -8843,7 +8843,7 @@ game (
 
 game (
 	comment "Pac-Man 2 - The New Adventures (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc FE7A7ED1 )
 )
 
@@ -8855,7 +8855,7 @@ game (
 
 game (
 	comment "Pac-Attack (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 79587507 )
 )
 
@@ -8867,13 +8867,13 @@ game (
 
 game (
 	comment "Pachinko Kuunyan (Japan)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 9D137E7F )
 )
 
 game (
 	comment "Pac-Panic (Europe)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc EBD6D5BA )
 )
 
@@ -9113,61 +9113,61 @@ game (
 
 game (
 	comment "Phantasy Star - Sennenki no Owari ni (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F0BFAD42 )
 )
 
 game (
 	comment "Phantasy Star - Sennenki no Owari ni (Japan) (Mega Drive Mini)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc B23CD7AA )
 )
 
 game (
 	comment "Phantasy Star - Sennenki no Owari ni (Japan) (PC Rerelease)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc FE45F95D )
 )
 
 game (
 	comment "Phantasy Star Fukkokuban (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 07301F83 )
 )
 
 game (
 	comment "Phantasy Star II (USA, Europe)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 0D07D0EF )
 )
 
 game (
 	comment "Phantasy Star II (USA, Europe) (Rev A)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 904FA047 )
 )
 
 game (
 	comment "Phantasy Star II (Brazil) (En)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc E6688B66 )
 )
 
 game (
 	comment "Phantasy Star II (USA, Europe) (Beta) (1989-07-28)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc B034C46E )
 )
 
 game (
 	comment "Phantasy Star II (USA, Europe) (Rev A) (PC Rerelease)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 75AF3D59 )
 )
 
 game (
 	comment "Phantasy Star II (USA, Europe) (Rev A) (Virtual Console)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 67DB982A )
 )
 
@@ -9209,7 +9209,7 @@ game (
 
 game (
 	comment "Phantasy Star II - Kaerazaru Toki no Owari ni (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc BEC8EB5A )
 )
 
@@ -9233,7 +9233,7 @@ game (
 
 game (
 	comment "Phantasy Star II - Rudger's Adventure (Japan) (SegaNet)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 6B5916D2 )
 )
 
@@ -9251,73 +9251,73 @@ game (
 
 game (
 	comment "Phantasy Star III - Generations of Doom (USA, Europe) (PC Rerelease)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 1D1C62FB )
 )
 
 game (
 	comment "Phantasy Star III - Generations of Doom (Brazil) (En)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 2E9B4C23 )
 )
 
 game (
 	comment "Phantasy Star IV (Europe)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 389C2968 )
 )
 
 game (
 	comment "Phantasy Star IV (USA)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc FE236442 )
 )
 
 game (
 	comment "Phantasy Star III - Generations of Doom (USA, Europe, Korea) (En)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc C6B42B0F )
 )
 
 game (
 	comment "Phantasy Star IV (USA) (Sample)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 1C82E0E3 )
 )
 
 game (
 	comment "Phantasy Star IV (USA) (Beta) (1994-05-30)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc B32B17E1 )
 )
 
 game (
 	comment "Phantasy Star IV (USA) (Beta) (1994-06-08)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc DC2E1C0A )
 )
 
 game (
 	comment "Phantasy Star IV (USA) (Beta) (1994-08-15)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 60137F25 )
 )
 
 game (
 	comment "Phantasy Star IV (USA) (Genesis Mini)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 2EE18BC3 )
 )
 
 game (
 	comment "Phantasy Star IV (USA) (Beta) (1994-10-27)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 12A2590A )
 )
 
 game (
 	comment "Phantasy Star IV (USA) (Beta) (1994-11-07)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc BDA29CDF )
 )
 
@@ -9359,31 +9359,31 @@ game (
 
 game (
 	comment "Pier Solar and the Great Architects (World) (Beta) (Aftermarket) (Unl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 55FFB501 )
 )
 
 game (
 	comment "Pier Solar and the Great Architects (World) (En,Fr,De) (Reprint) (Aftermarket) (Unl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 4261EA9B )
 )
 
 game (
 	comment "Pier Solar and the Great Architects (World) (En,Fr,De) (Reprint A) (Aftermarket) (Unl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 25B7063E )
 )
 
 game (
 	comment "Pier Solar and the Great Architects (World) (En,Es,Pt) (Reprint B) (Aftermarket) (Unl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc DFB94F1B )
 )
 
 game (
 	comment "Pier Solar and the Great Architects (World) (En,Fr,Es) (Aftermarket) (Unl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 003A0754 )
 )
 
@@ -9437,7 +9437,7 @@ game (
 
 game (
 	comment "Pit-Fighter (World) (Beta)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 1E0E0831 )
 )
 
@@ -9449,7 +9449,7 @@ game (
 
 game (
 	comment "Pit-Fighter (World) (En,Ja)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc D48A8B02 )
 )
 
@@ -9503,7 +9503,7 @@ game (
 
 game (
 	comment "Pokemon Stadium (Taiwan) (En) (Unl)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc FE187C5D )
 )
 
@@ -9533,7 +9533,7 @@ game (
 
 game (
 	comment "Power Drive (Europe) (En,Fr,De,Es,Pt)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 8C00AD61 )
 )
 
@@ -9773,25 +9773,25 @@ game (
 
 game (
 	comment "Puyo Puyo (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 7F26614E )
 )
 
 game (
 	comment "Puyo Puyo Tsuu (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 51AD7797 )
 )
 
 game (
 	comment "Puyo Puyo Tsuu (Japan) (Rev A)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 25B7B2AA )
 )
 
 game (
 	comment "Puyo Puyo Tsuu (World) (Ja) (Rev A) (Virtual Console)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc EB6E1894 )
 )
 
@@ -9803,13 +9803,13 @@ game (
 
 game (
 	comment "Puzzle & Action - Tanto-R (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc D2D2D437 )
 )
 
 game (
 	comment "Puzzle & Action - Ichidanto-R (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 7BDEC762 )
 )
 
@@ -9863,13 +9863,13 @@ game (
 
 game (
 	comment "Queen of Poker Club (Taiwan) (Unl)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc AE28D9EB )
 )
 
 game (
 	comment "Quad Challenge (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 74736A80 )
 )
 
@@ -9923,13 +9923,13 @@ game (
 
 game (
 	comment "Race Drivin' (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc D737CF3D )
 )
 
 game (
 	comment "Race Drivin' (USA) (Beta)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 9DE9EB4A )
 )
 
@@ -10049,7 +10049,7 @@ game (
 
 game (
 	comment "Rent a Hero (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 2E515F82 )
 )
 
@@ -10097,49 +10097,49 @@ game (
 
 game (
 	comment "Richard Scarry's Busytown (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 7BB60C3F )
 )
 
 game (
 	comment "Richard Scarry's Busytown (USA) (Beta) (1994-07-21)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 1E92D6FF )
 )
 
 game (
 	comment "Richard Scarry's Busytown (USA) (Beta) (1994-08-09)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc C48CBC30 )
 )
 
 game (
 	comment "Richard Scarry's Busytown (USA) (Beta) (1994-08-15)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 650ED917 )
 )
 
 game (
 	comment "Richard Scarry's Busytown (USA) (Beta) (1994-08-17)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 3B9C3F4A )
 )
 
 game (
 	comment "Richard Scarry's Busytown (USA) (Beta) (1994-08-25)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc A0C013BA )
 )
 
 game (
 	comment "Richard Scarry's Busytown (USA) (Beta) (1994-08-26)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 760CFF62 )
 )
 
 game (
 	comment "Richard Scarry's Busytown (USA) (Beta) (1994-08-26) (Alt)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 1AD270F3 )
 )
 
@@ -10157,19 +10157,19 @@ game (
 
 game (
 	comment "Rings of Power (USA, Europe)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 41FCC497 )
 )
 
 game (
 	comment "Rise of the Robots (Europe)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 5650780B )
 )
 
 game (
 	comment "Risk (USA)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 80416D0D )
 )
 
@@ -10211,67 +10211,67 @@ game (
 
 game (
 	comment "Road Rash (Japan)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 256A21D2 )
 )
 
 game (
 	comment "Road Rash (USA, Europe)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc DEA53D19 )
 )
 
 game (
 	comment "Road Rash 3 (USA, Europe) (Beta) (1994-11-19)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc B6626083 )
 )
 
 game (
 	comment "Road Rash 3 (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 15785956 )
 )
 
 game (
 	comment "Road Rash II (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 9A5723B6 )
 )
 
 game (
 	comment "Road Rash II (USA, Europe) (RR205)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 7B29C209 )
 )
 
 game (
 	comment "Road Rash II (USA, Europe) (RR206)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 0876E992 )
 )
 
 game (
 	comment "Road Rash II (USA) (Genesis Mini)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc C25ABD9E )
 )
 
 game (
 	comment "Road Rash II (Japan) (Mega Drive Mini)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 6CFA9048 )
 )
 
 game (
 	comment "RoadBlasters (USA) (Beta) (1991-06-27)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc E4EF86B9 )
 )
 
 game (
 	comment "RoadBlasters (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc A0015440 )
 )
 
@@ -10283,7 +10283,7 @@ game (
 
 game (
 	comment "RoadBlasters (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc EC6CD5F0 )
 )
 
@@ -10331,13 +10331,13 @@ game (
 
 game (
 	comment "Rock 'n' Roll Racing (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc BC5A0562 )
 )
 
 game (
 	comment "Rock n' Roll Racing (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 6ABAB577 )
 )
 
@@ -10529,13 +10529,13 @@ game (
 
 game (
 	comment "Samurai Spirits II (Taiwan) (Unl)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 2942F180 )
 )
 
 game (
 	comment "Samurai Spirits II (Taiwan) (Unl) (Alt)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc DDE8C55D )
 )
 
@@ -10577,7 +10577,7 @@ game (
 
 game (
 	comment "Sansan (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 5B85DEED )
 )
 
@@ -10721,37 +10721,37 @@ game (
 
 game (
 	comment "Shadowrun (Asia) (En)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc D32199F7 )
 )
 
 game (
 	comment "Shadowrun (USA)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc FBB92909 )
 )
 
 game (
 	comment "Shadowrun (USA) (Beta) (1993-12-28)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 2455ADD2 )
 )
 
 game (
 	comment "Shadowrun (USA) (Beta) (1993-12-31)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc BBB5E2FA )
 )
 
 game (
 	comment "Shadowrun (USA) (Beta) (1994-01-25)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 6E2BBCA8 )
 )
 
 game (
 	comment "Shadowrun (USA) (Beta) (1994-01-25) (Alt)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 2A964BCD )
 )
 
@@ -10763,19 +10763,19 @@ game (
 
 game (
 	comment "Shanghai II - Dragon's Eye (USA)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc EBE9E840 )
 )
 
 game (
 	comment "Shanghai II - Dragon's Eye (USA) (Beta)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 154ACA2D )
 )
 
 game (
 	comment "Shaq-Fu (USA, Europe)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 499955F2 )
 )
 
@@ -10787,43 +10787,43 @@ game (
 
 game (
 	comment "Shi no Meikyuu - Labyrinth of Death (Japan) (SegaNet)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc A6D7E02D )
 )
 
 game (
 	comment "Shi no Meikyuu - Labyrinth of Death (Japan) (Game no Kanzume Otokuyou)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 40C44CD3 )
 )
 
 game (
 	comment "Shikinjou (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 5EA0C97D )
 )
 
 game (
 	comment "Shijou Saidai no Soukoban (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 40F4AACC )
 )
 
 game (
 	comment "Shin Souseiki Ragnacenty (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 6A3F5AE2 )
 )
 
 game (
 	comment "Shin Changsegi - Ragnacenty (Korea)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 77B5B10B )
 )
 
 game (
 	comment "Shin Souseiki Ragnacenty (Japan) (Beta)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 43797455 )
 )
 
@@ -10835,7 +10835,7 @@ game (
 
 game (
 	comment "Shining and the Darkness (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 496AF51C )
 )
 
@@ -10871,55 +10871,55 @@ game (
 
 game (
 	comment "Shining Force II (Europe)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 83CB46D1 )
 )
 
 game (
 	comment "Shining Force II (USA)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 4815E075 )
 )
 
 game (
 	comment "Shining Force II (USA) (Beta) (1994-04-04)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 5843670C )
 )
 
 game (
 	comment "Shining Force II (USA) (Beta) (1994-06-07)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 03B68BBA )
 )
 
 game (
 	comment "Shining Force II (USA, Europe) (Switch Online)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc D677EDD1 )
 )
 
 game (
 	comment "Shining Force II - Inishie no Fuuin (Japan) (Switch Online)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 78D4640A )
 )
 
 game (
 	comment "Shining Force II - Inishie no Fuuin (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 0288F3E1 )
 )
 
 game (
 	comment "Shining in the Darkness (USA, Europe)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 4D2785BC )
 )
 
 game (
 	comment "Shining in the Darkness (Brazil) (En)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 3EE2BBC4 )
 )
 
@@ -10973,7 +10973,7 @@ game (
 
 game (
 	comment "Shove It! ...The Warehouse Game (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc C51F40CB )
 )
 
@@ -11075,13 +11075,13 @@ game (
 
 game (
 	comment "Slaughter Sport (USA)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc AF9F9D9C )
 )
 
 game (
 	comment "Smart Mouse (World) (Aftermarket) (Unl)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc FB01C832 )
 )
 
@@ -11141,79 +11141,79 @@ game (
 
 game (
 	comment "Soleil (Europe)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc A30EBDB1 )
 )
 
 game (
 	comment "Soleil (France)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 08DC1EAD )
 )
 
 game (
 	comment "Soleil (Germany)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 332B9ECD )
 )
 
 game (
 	comment "Soleil (Spain)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 9ED4C323 )
 )
 
 game (
 	comment "Sonic & Knuckles (World) (Beta) (1994-05-25)"
-	genre "Shoot'em Up"
+	genre "Platform"
 	rom ( crc 8E8DADD0 )
 )
 
 game (
 	comment "Sonic & Knuckles (World)"
-	genre "Shoot'em Up"
+	genre "Platform"
 	rom ( crc 0658F691 )
 )
 
 game (
 	comment "Sonic & Knuckles (World) (Beta) (1994-06-06)"
-	genre "Shoot'em Up"
+	genre "Platform"
 	rom ( crc 03A52F63 )
 )
 
 game (
 	comment "Sonic & Knuckles (World) (Beta) (1994-06-08)"
-	genre "Shoot'em Up"
+	genre "Platform"
 	rom ( crc 7A6C1317 )
 )
 
 game (
 	comment "Sonic & Knuckles (World) (Beta) (1994-06-10)"
-	genre "Shoot'em Up"
+	genre "Platform"
 	rom ( crc 7092F368 )
 )
 
 game (
 	comment "Sonic & Knuckles (World) (Beta) (1994-06-12)"
-	genre "Shoot'em Up"
+	genre "Platform"
 	rom ( crc B0A253E8 )
 )
 
 game (
 	comment "Sonic & Knuckles (World) (Beta) (1994-06-18)"
-	genre "Shoot'em Up"
+	genre "Platform"
 	rom ( crc 2615F5DC )
 )
 
 game (
 	comment "Sonic & Knuckles (World) (Beta) (1994-06-19)"
-	genre "Shoot'em Up"
+	genre "Platform"
 	rom ( crc 1EA5B9D1 )
 )
 
 game (
 	comment "Sonic & Knuckles (World) (Sonic Classic Collection)"
-	genre "Shoot'em Up"
+	genre "Platform"
 	rom ( crc C7249CDF )
 )
 
@@ -11225,7 +11225,7 @@ game (
 
 game (
 	comment "Sonic & Knuckles + Sonic The Hedgehog (Japan, Korea) (En)"
-	genre "Shoot'em Up"
+	genre "Platform"
 	rom ( crc B6C67EAC )
 )
 
@@ -11339,7 +11339,7 @@ game (
 
 game (
 	comment "Sonic Eraser (Japan) (SegaNet)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 62D8A0E7 )
 )
 
@@ -11549,49 +11549,49 @@ game (
 
 game (
 	comment "Sorcer Kingdom (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 944135CA )
 )
 
 game (
 	comment "Sorcerer's Kingdom (USA) (Beta)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc CBE6C1EA )
 )
 
 game (
 	comment "Sorcer Kingdom (Japan) (Beta) (1991-11-08)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 3DBC3130 )
 )
 
 game (
 	comment "Sorcerian (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc A143A8C5 )
 )
 
 game (
 	comment "Sorcerer's Kingdom (USA)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc BB1FC9CE )
 )
 
 game (
 	comment "Sorcerian (Japan) (Rev 1) (Virtual Console)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc B60137E0 )
 )
 
 game (
 	comment "Soul Blade (Taiwan) (En) (Unl)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc F26F88D1 )
 )
 
 game (
 	comment "Soul Edge VS Samurai Spirits (Taiwan) (En) (Unl)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc B11BD611 )
 )
 
@@ -11807,19 +11807,19 @@ game (
 
 game (
 	comment "ST II' Turbo (USA) (Proto) (Pirate)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc A85491AE )
 )
 
 game (
 	comment "Star Odyssey (World) (Unl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 0B670A3E )
 )
 
 game (
 	comment "Star Odyssey (USA) (Beta) (1992-01-16)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc FBBD7EF4 )
 )
 
@@ -11885,13 +11885,13 @@ game (
 
 game (
 	comment "Starflight (USA, Europe)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc D550C928 )
 )
 
 game (
 	comment "Starflight (USA, Europe) (Rev A)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 1217DBEA )
 )
 
@@ -11969,7 +11969,7 @@ game (
 
 game (
 	comment "Story of Thor, The (Europe)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 1110B0DB )
 )
 
@@ -11981,115 +11981,115 @@ game (
 
 game (
 	comment "Story of Thor, The (Germany)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc FA20D011 )
 )
 
 game (
 	comment "Story of Thor, The (Europe) (Beta) (April, 1994)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc BFC11649 )
 )
 
 game (
 	comment "Story of Thor, The (Korea)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc EE1603C5 )
 )
 
 game (
 	comment "Story of Thor, The (Spain)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 4631F941 )
 )
 
 game (
 	comment "Story of Thor, The (Europe) (Beta) (1994-10-04)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 9E486F91 )
 )
 
 game (
 	comment "Story of Thor, The (Europe) (Mega Drive Mini)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 8CD9053F )
 )
 
 game (
 	comment "Story of Thor, The (Europe) (Beta) (1994-10-17)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc AA43D34A )
 )
 
 game (
 	comment "Story of Thor, The (Germany) (Mega Drive Mini)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 244D768B )
 )
 
 game (
 	comment "Story of Thor, The (Spain) (Mega Drive Mini)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc DBF84CA5 )
 )
 
 game (
 	comment "Story of Thor, The - Hikari o Tsugumono (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 4F39783C )
 )
 
 game (
 	comment "Street Fighter II' - Champion Edition (Europe) (Beta) (1993-03-25)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 7BB62DB2 )
 )
 
 game (
 	comment "Street Fighter II' - Champion Edition (USA) (Beta) (1993-07-30)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 7FFA8B23 )
 )
 
 game (
 	comment "Street Fighter II' - Special Champion Edition (Europe) (Virtual Console)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc ED3F3E20 )
 )
 
 game (
 	comment "Street Fighter II' - Special Champion Edition (USA) (Virtual Console)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc A81527B7 )
 )
 
 game (
 	comment "Street Fighter II' - Special Champion Edition (Europe)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 56D41136 )
 )
 
 game (
 	comment "Street Fighter II' - Special Champion Edition (USA)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 13FE08A1 )
 )
 
 game (
 	comment "Street Fighter II' Plus - Champion Edition (Japan, Korea) (Ja)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 2E487EE3 )
 )
 
 game (
 	comment "Street Fighter II' Plus - Champion Edition (Japan) (Virtual Console)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 95A351F5 )
 )
 
 game (
 	comment "Street Racer (Europe) (Beta) (1995-03-21)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc A439A96E )
 )
 
@@ -12101,7 +12101,7 @@ game (
 
 game (
 	comment "Street Racer (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 1A58D5FE )
 )
 
@@ -12419,31 +12419,31 @@ game (
 
 game (
 	comment "Super H.Q. (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc AB2C52B0 )
 )
 
 game (
 	comment "Super Hang-On (Japan, USA) (En,Ja)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc CB2201A3 )
 )
 
 game (
 	comment "Super Hang-On (Europe) (En,Ja) (Rev A)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 3877D107 )
 )
 
 game (
 	comment "Super Hang-On (World) (Sega Smash Pack 2)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 7E892199 )
 )
 
 game (
 	comment "Super Hang-On (World) (En,Ja) (Beta) (1989-08-18) (Sega Channel)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc B6EAE5C4 )
 )
 
@@ -12455,25 +12455,25 @@ game (
 
 game (
 	comment "Super Hydlide (Europe)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 1FE2D90B )
 )
 
 game (
 	comment "Super Hydlide (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 599BE386 )
 )
 
 game (
 	comment "Super Hydlide (USA)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 1335DDAA )
 )
 
 game (
 	comment "Super Hydlide (USA) (Beta) (1989-10-16)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 52E717AC )
 )
 
@@ -12515,31 +12515,31 @@ game (
 
 game (
 	comment "Super Monaco GP (USA) (En,Ja)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 725018EE )
 )
 
 game (
 	comment "Super Monaco GP (Japan, USA) (En,Ja)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 90F9BAB3 )
 )
 
 game (
 	comment "Super Monaco GP (World) (En,Ja)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc B1823595 )
 )
 
 game (
 	comment "Super Monaco GP (World) (En,Ja) (Rev A)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc BE91B28A )
 )
 
 game (
 	comment "Super Off Road (USA, Europe) (Unl)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 8F2FDADA )
 )
 
@@ -12593,13 +12593,13 @@ game (
 
 game (
 	comment "Super Skidmarks (Europe) (J-Cart)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 4A9C62F9 )
 )
 
 game (
 	comment "Super Skidmarks (Europe) (Beta) (1995-09-22)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 720CC7CB )
 )
 
@@ -12611,37 +12611,37 @@ game (
 
 game (
 	comment "Super Street Fighter II (Europe)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 682C192F )
 )
 
 game (
 	comment "Super Street Fighter II (USA)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 165DEFBF )
 )
 
 game (
 	comment "Super Street Fighter II (Europe) (Virtual Console)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc BFDE41C8 )
 )
 
 game (
 	comment "Super Street Fighter II (USA) (Virtual Console)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 0BDCCC83 )
 )
 
 game (
 	comment "Super Street Fighter II - The New Challengers (Japan) (Virtual Console)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc EA6E8AFC )
 )
 
 game (
 	comment "Super Street Fighter II - The New Challengers (Japan)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc D8EEB2BD )
 )
 
@@ -12689,7 +12689,7 @@ game (
 
 game (
 	comment "Surging Aura (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 65AC1D2B )
 )
 
@@ -12725,13 +12725,13 @@ game (
 
 game (
 	comment "Sword of Vermilion (USA, Europe)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc EA1BC9AB )
 )
 
 game (
 	comment "Sword of Vermilion (USA, Europe) (1993-11-18) (Sega Channel)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F38C50BF )
 )
 
@@ -12791,7 +12791,7 @@ game (
 
 game (
 	comment "Taikou Risshiden (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F96FE15B )
 )
 
@@ -12941,7 +12941,7 @@ game (
 
 game (
 	comment "TC 2000 (Argentina) (Pirate)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc CEF91BDB )
 )
 
@@ -13067,7 +13067,7 @@ game (
 
 game (
 	comment "Teenage Mutant Hero Turtles - Tournament Fighters (Europe)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 3CD2B7E6 )
 )
 
@@ -13091,7 +13091,7 @@ game (
 
 game (
 	comment "Teenage Mutant Ninja Turtles - Tournament Fighters (Japan)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 8843F2C9 )
 )
 
@@ -13103,7 +13103,7 @@ game (
 
 game (
 	comment "Teenage Mutant Ninja Turtles - Tournament Fighters (USA)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 95B5484D )
 )
 
@@ -13121,7 +13121,7 @@ game (
 
 game (
 	comment "Tel-Tel Mahjong (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 44817E92 )
 )
 
@@ -13151,25 +13151,25 @@ game (
 
 game (
 	comment "Tetris (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 4CE90DB0 )
 )
 
 game (
 	comment "Test Drive II - The Duel (USA, Europe) (Unl)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc F9BDF8C5 )
 )
 
 game (
 	comment "Tetris (USA) (Genesis Mini)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc C8DD8841 )
 )
 
 game (
 	comment "Tetris (Japan) (Mega Drive Mini)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc B6FB7A7D )
 )
 
@@ -13181,7 +13181,7 @@ game (
 
 game (
 	comment "Thomas the Tank Engine & Friends (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 1A406299 )
 )
 
@@ -13415,7 +13415,7 @@ game (
 
 game (
 	comment "Toki no Keishousha - Phantasy Star III (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 6C48C06F )
 )
 
@@ -13499,7 +13499,7 @@ game (
 
 game (
 	comment "Top Gear 2 (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc BD3074D2 )
 )
 
@@ -13529,7 +13529,7 @@ game (
 
 game (
 	comment "Tougiou King Colossus (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc FFE7B3C7 )
 )
 
@@ -13571,13 +13571,13 @@ game (
 
 game (
 	comment "Traysia (USA)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 96184F4F )
 )
 
 game (
 	comment "Traysia (USA) (Beta) (1992-01-22)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc DAA83CB5 )
 )
 
@@ -13619,25 +13619,25 @@ game (
 
 game (
 	comment "Tun Shi Tian Di III (Taiwan) (Unl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc B23C4166 )
 )
 
 game (
 	comment "Tun Shi Tian Di III (Taiwan) (Simple Chinese) (Unl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc EA57B668 )
 )
 
 game (
 	comment "Turbo OutRun (Japan, Europe) (En)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 0C661369 )
 )
 
 game (
 	comment "Turbo OutRun (Japan, Europe) (En) (Beta) (1991-12-09)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 2A7F2B36 )
 )
 
@@ -13775,7 +13775,7 @@ game (
 
 game (
 	comment "Uncharted Waters (USA)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 4EDAEC59 )
 )
 
@@ -13835,13 +13835,13 @@ game (
 
 game (
 	comment "Valis (USA)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 13BC5B72 )
 )
 
 game (
 	comment "Valis (USA) (Beta) (1991-10-25)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 74A133A8 )
 )
 
@@ -13973,7 +13973,7 @@ game (
 
 game (
 	comment "Vermilion (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc E400DFC3 )
 )
 
@@ -13985,7 +13985,7 @@ game (
 
 game (
 	comment "Vermilion (Japan) (Mega Drive Mini)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 5AF97A22 )
 )
 
@@ -14057,31 +14057,31 @@ game (
 
 game (
 	comment "Virtua Fighter 2 VS Tekken 2 (Taiwan) (En) (Unl)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 2CDB499D )
 )
 
 game (
 	comment "Virtua Racing (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 9624D4EF )
 )
 
 game (
 	comment "Virtua Racing (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 53A293B5 )
 )
 
 game (
 	comment "Virtua Racing (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 7E1A324A )
 )
 
 game (
 	comment "Virtua Racing (Europe) (Beta)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 79CADF6E )
 )
 
@@ -14099,7 +14099,7 @@ game (
 
 game (
 	comment "Vixen 357 (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 3AFA2D7B )
 )
 
@@ -14111,13 +14111,13 @@ game (
 
 game (
 	comment "Wacky Races (USA) (Proto)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 1B173F09 )
 )
 
 game (
 	comment "VR Troopers (USA, Europe)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 2F35516E )
 )
 
@@ -14291,7 +14291,7 @@ game (
 
 game (
 	comment "Wild Snake (USA) (Proto)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 0C1A49E5 )
 )
 
@@ -14999,7 +14999,7 @@ game (
 
 game (
 	comment "Wu Kong Wai Zhuan (Taiwan) (Unl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 880A916E )
 )
 
@@ -15011,7 +15011,7 @@ game (
 
 game (
 	comment "Wu Kong Wai Zhuan (Taiwan) (Unl) (Alt)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 0BD70E54 )
 )
 
@@ -15209,31 +15209,31 @@ game (
 
 game (
 	comment "Xin Qi Gai Wang Zi (Taiwan) (Unl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc DD2F38B5 )
 )
 
 game (
 	comment "Xin Qi Gai Wang Zi (Taiwan) (Unl) (Alt)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc DA5A4BFE )
 )
 
 game (
 	comment "Xin Qi Gai Wang Zi (Taiwan) (Beta) (Unl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 703704A0 )
 )
 
 game (
 	comment "Ya Se Chuan Shuo (Taiwan) (Unl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 095B9A15 )
 )
 
 game (
 	comment "Ya Se Chuan Shuo (Taiwan) (Unl) (Alt)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 6C097CB1 )
 )
 
@@ -15293,13 +15293,13 @@ game (
 
 game (
 	comment "Yu Yu Hakusho - Makyou Toitsusen (Japan)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 71CEAC6F )
 )
 
 game (
 	comment "Yu Yu Hakusho - Makyou Toitsusen (Japan) (Beta) (June, 1994) (Sega Channel)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 742EA744 )
 )
 
@@ -15311,7 +15311,7 @@ game (
 
 game (
 	comment "YuYu Hakusho - Sunset Fighters (Brazil)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc FE3FB8EE )
 )
 
@@ -15383,13 +15383,13 @@ game (
 
 game (
 	comment "Zhong Guo Xiang Qi (Taiwan) (Unl)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 475215A0 )
 )
 
 game (
 	comment "Zhuo Gui Da Shi - Ghost Hunter (Taiwan) (Unl)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 76C62A8B )
 )
 
@@ -15431,7 +15431,7 @@ game (
 
 game (
 	comment "Zoom! (World)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 724D6965 )
 )
 

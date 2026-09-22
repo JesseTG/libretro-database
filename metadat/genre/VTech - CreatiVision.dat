@@ -21,7 +21,7 @@ game (
 
 game (
 	comment "Auto Chase (Asia, Europe)"
-	genre "Racing / Driving"
+	genre "Racing"
 	rom (
 		crc BD091EE0
 	)

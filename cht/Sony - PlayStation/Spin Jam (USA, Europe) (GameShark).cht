@@ -1,4 +1,4 @@
-cheats = 25 
+cheats = 23 
 
 cheat0_desc = "Infinite Credits"
 cheat0_code = "8007307E+040B"

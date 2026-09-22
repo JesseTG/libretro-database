@@ -1,7 +1,7 @@
 clrmamepro (
 	name "Nintendo - Game Boy Advance"
 	description "Nintendo - Game Boy Advance"
-	version "2025.11.10"
+	version "2026.08.01"
 	homepage "http://github.com/robloach/libretro-dats"
 )
 
@@ -997,12 +997,9 @@ game (
 )
 game (
 	name "Aero the Acro-Bat - Rascal Rival Revenge (USA) (Beta 2)"
-	releaseyear "2002"
-	releasemonth "03"
-	releaseday "27"
 	region "USA"
 	serial "XXXX"
-	rom ( name "Aero the Acro-Bat - Rascal Rival Revenge (USA) (Beta 2) (2002-03-27).gba" size 4194304 crc 6F3EA564 md5 A7763D58C7FD18307CEFD9BCB6391D89 sha1 3F88084C501FB15820F6AD9A9C87AC21AF3B59EB serial "XXXX" )
+	rom ( name "Aero the Acro-Bat - Rascal Rival Revenge (USA) (Beta 2).gba" size 4194304 crc 6F3EA564 md5 A7763D58C7FD18307CEFD9BCB6391D89 sha1 3F88084C501FB15820F6AD9A9C87AC21AF3B59EB serial "XXXX" )
 )
 game (
 	name "Agassi Tennis Generation (Europe) (En,Fr,De,Es,It)"
@@ -1203,58 +1200,40 @@ game (
 	rom ( name "American Bass Challenge (USA).gba" size 4194304 crc D76AD62D md5 61D4355A0731C3150C36B5A704173C70 sha1 1FC03CCA393DDBC633D309AAE95B42C89E4D0E96 serial "AABE" )
 )
 game (
-	name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta)"
-	releaseyear "2005"
-	releasemonth "10"
-	releaseday "04"
+	name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta 1)"
 	region "USA"
 	serial "BJWE"
-	rom ( name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta) (2005-10-04).gba" size 8388608 crc 8DF1B63B md5 847B141AADA46A0AC4818FE05210177A sha1 3FFC0108D6B09C5B06C37C835F318A2DB2A7C85E serial "BJWE" )
+	rom ( name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta 1).gba" size 8388608 crc 8DF1B63B md5 847B141AADA46A0AC4818FE05210177A sha1 3FFC0108D6B09C5B06C37C835F318A2DB2A7C85E serial "BJWE" )
 )
 game (
-	name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta)"
-	releaseyear "2005"
-	releasemonth "11"
-	releaseday "03"
+	name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta 2)"
 	region "USA"
 	serial "BJWE"
-	rom ( name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta) (2005-11-03).gba" size 8388608 crc A9384458 md5 6C1359C2F5C4386C41B93EAF5534119B sha1 BEB9C0F8BE393A425640CA5B561DAE79A4646511 serial "BJWE" )
+	rom ( name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta 2).gba" size 8388608 crc A9384458 md5 6C1359C2F5C4386C41B93EAF5534119B sha1 BEB9C0F8BE393A425640CA5B561DAE79A4646511 serial "BJWE" )
 )
 game (
-	name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta)"
-	releaseyear "2005"
-	releasemonth "11"
-	releaseday "28"
+	name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta 3)"
 	region "USA"
 	serial "BJWE"
-	rom ( name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta) (2005-11-28).gba" size 8388608 crc DA9D458F md5 81D2DA1095B485CE783FE1ACC144CEFE sha1 D6DE45ED929EA2A162691B0DA0FB4C4FB870523B serial "BJWE" )
+	rom ( name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta 3).gba" size 8388608 crc DA9D458F md5 81D2DA1095B485CE783FE1ACC144CEFE sha1 D6DE45ED929EA2A162691B0DA0FB4C4FB870523B serial "BJWE" )
 )
 game (
-	name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta)"
-	releaseyear "2005"
-	releasemonth "12"
-	releaseday "10"
+	name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta 4)"
 	region "USA"
 	serial "BJWE"
-	rom ( name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta) (2005-12-10).gba" size 8388608 crc 29AFE447 md5 E664054A365F69F673E88FBB84985DB7 sha1 AF18E424A5B1B2BAB61A3EE4EAB309982AC2A7C2 serial "BJWE" )
+	rom ( name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta 4).gba" size 8388608 crc 29AFE447 md5 E664054A365F69F673E88FBB84985DB7 sha1 AF18E424A5B1B2BAB61A3EE4EAB309982AC2A7C2 serial "BJWE" )
 )
 game (
-	name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta)"
-	releaseyear "2005"
-	releasemonth "12"
-	releaseday "27"
+	name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta 5)"
 	region "USA"
 	serial "BJWE"
-	rom ( name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta) (2005-12-27).gba" size 8388608 crc 8F9253BB md5 69FC21C7CEBB4E81D0C9068FDDD7B309 sha1 7CB9A96EC864810D67935FC21DB045433432563B serial "BJWE" )
+	rom ( name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta 5).gba" size 8388608 crc 8F9253BB md5 69FC21C7CEBB4E81D0C9068FDDD7B309 sha1 7CB9A96EC864810D67935FC21DB045433432563B serial "BJWE" )
 )
 game (
-	name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta)"
-	releaseyear "2006"
-	releasemonth "02"
-	releaseday "07"
+	name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta 6)"
 	region "USA"
 	serial "BJWE"
-	rom ( name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta) (2006-02-07).gba" size 4469328 crc B96C5A0B md5 8FC1DFAD1CCD02C8563BC2767E73276E sha1 9F1C6F855B66CF297CFC19393422B409563DA3F2 serial "BJWE" )
+	rom ( name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (Beta 6).gba" size 4469328 crc B96C5A0B md5 8FC1DFAD1CCD02C8563BC2767E73276E sha1 9F1C6F855B66CF297CFC19393422B409563DA3F2 serial "BJWE" )
 )
 game (
 	name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (En,Fr,De,Es,It)"
@@ -1263,13 +1242,10 @@ game (
 	rom ( name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (En,Fr,De,Es,It).gba" size 8388608 crc 698377D2 md5 8A46B929F0DC1522FC0CC378685D8337 sha1 4701C8D26CC608109BC01D0EE189AB1FB646EAD8 serial "BAPE" )
 )
 game (
-	name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (En,Fr,De,Es,It) (Beta)"
-	releaseyear "2006"
-	releasemonth "04"
-	releaseday "25"
+	name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (En,Fr,De,Es,It) (Beta 7)"
 	region "USA"
 	serial "BAPE"
-	rom ( name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (En,Fr,De,Es,It) (Beta) (2006-04-25).gba" size 7551852 crc BDCC074A md5 7032AFEC42057EC6F0C8850D5D7531A9 sha1 0B922D09A8662D119EAC9F4C39BEDE425A3A84FF serial "BAPE" )
+	rom ( name "American Dragon - Jake Long - Rise of the Huntsclan (USA, Europe) (En,Fr,De,Es,It) (Beta 7).gba" size 7551852 crc BDCC074A md5 7032AFEC42057EC6F0C8850D5D7531A9 sha1 0B922D09A8662D119EAC9F4C39BEDE425A3A84FF serial "BAPE" )
 )
 game (
 	name "American Idol (USA)"
@@ -1308,15 +1284,20 @@ game (
 	rom ( name "Angelique (Japan).gba" size 4194304 crc C9D41F35 md5 978F10569B0A00B023016FB5F287C0B6 sha1 CF01DFC9F25C805B9A72524903F742F11570A8EB serial "AAGJ" )
 )
 game (
-	name "Anguna - Warriors of Virtue (World) (Patreon)"
-	releaseyear "2021"
-	releasemonth "02"
-	releaseday "28"
-	rom ( name "Anguna - Warriors of Virtue (World) (2021-02-28) (Patreon) (Aftermarket) (Unl).gba" size 1729120 crc A354D555 md5 4638C9C0C1234D70AEB4F75099B46E47 sha1 D7CD0AB9D622187D4CE55BF0C7F14A24EE781710 )
+	name "Anguna - Warriors of Virtue (World) (Demo 1)"
+	rom ( name "Anguna - Warriors of Virtue (World) (Demo 1) (Aftermarket) (Unl).gba" size 597104 crc 0A9098B4 md5 10242132AA289781C1857954E832C0BE sha1 0992FB6F38E49426ADC834FB3831748A1CAA1BC0 )
+)
+game (
+	name "Anguna - Warriors of Virtue (World) (Demo 2)"
+	rom ( name "Anguna - Warriors of Virtue (World) (Demo 2) (Aftermarket) (Unl).gba" size 811840 crc 63C1CC2C md5 EB80B79637B5FB3C71DD55A47AC20A2E sha1 FACA8225EE20B8E5EDB14E005AF77B63C6F51446 )
 )
 game (
 	name "Anguna - Warriors of Virtue (World) (Evercade)"
 	rom ( name "Anguna - Warriors of Virtue (World) (Evercade) (Aftermarket) (Unl).gba" size 1693656 crc 7D8C00D3 md5 53148C6E8C9F06AD9B576D5B6014DCC8 sha1 9FFFD28C933AC88A441A2E262156C66A3A763829 )
+)
+game (
+	name "Anguna - Warriors of Virtue (World) (Patreon)"
+	rom ( name "Anguna - Warriors of Virtue (World) (Patreon) (Aftermarket) (Unl).gba" size 1729120 crc A354D555 md5 4638C9C0C1234D70AEB4F75099B46E47 sha1 D7CD0AB9D622187D4CE55BF0C7F14A24EE781710 )
 )
 game (
 	name "Anguna - Warriors of Virtue (World) (Retro-Bit Generations)"
@@ -1461,46 +1442,39 @@ game (
 	rom ( name "Army Men - Operation Green (USA) (En,Fr,De,Es,It).gba" size 4194304 crc 6D174E28 md5 60EB386E45D38B41FA10CD2535F681D8 sha1 B0FA4769CDDBC66BC333AD45658524A4AEEEC755 serial "AMEE" )
 )
 game (
-	name "Army Men - Sarge's Heroes (USA, Europe) (Proto)"
-	releaseyear "2000"
-	releasemonth "08"
-	releaseday "22"
+	name "Army Men - Sarge's Heroes (USA, Europe) (Proto 1)"
 	region "USA"
-	rom ( name "Army Men - Sarge's Heroes (USA, Europe) (Proto) (2000-08-22).gba" size 291556 crc F5CD5C7C md5 0E4BA41493F33CF33F6F29541ED82B9A sha1 995FF270D82F7F43411D03F1B73E09285448FB60 )
+	rom ( name "Army Men - Sarge's Heroes (USA, Europe) (Proto 1).gba" size 291556 crc F5CD5C7C md5 0E4BA41493F33CF33F6F29541ED82B9A sha1 995FF270D82F7F43411D03F1B73E09285448FB60 )
 )
 game (
-	name "Army Men - Sarge's Heroes (USA, Europe) (Proto)"
-	releaseyear "2000"
-	releasemonth "08"
-	releaseday "31"
+	name "Army Men - Sarge's Heroes (USA, Europe) (Proto 2)"
 	region "USA"
-	rom ( name "Army Men - Sarge's Heroes (USA, Europe) (Proto) (2000-08-31).gba" size 1450612 crc 26DEE7B7 md5 76418E6AAFECFDF46400A6582ED1CD9B sha1 9E04D9B9082E4AFFC8CC28EE92F6044A6C6C1A68 )
+	rom ( name "Army Men - Sarge's Heroes (USA, Europe) (Proto 2).gba" size 1450612 crc 26DEE7B7 md5 76418E6AAFECFDF46400A6582ED1CD9B sha1 9E04D9B9082E4AFFC8CC28EE92F6044A6C6C1A68 )
 )
 game (
-	name "Army Men - Sarge's Heroes (USA, Europe) (Proto)"
-	releaseyear "2000"
-	releasemonth "09"
-	releaseday "06"
+	name "Army Men - Sarge's Heroes (USA, Europe) (Proto 3)"
 	region "USA"
-	rom ( name "Army Men - Sarge's Heroes (USA, Europe) (Proto) (2000-09-06).gba" size 1495960 crc 4863F99E md5 DE5C59A357E791D5B7E2775C538EA172 sha1 BCF2F45329264B22BAFFD950325CFAE6E3BC454F )
+	rom ( name "Army Men - Sarge's Heroes (USA, Europe) (Proto 3).gba" size 1464936 crc D8295E43 md5 F38A2757E2BE77413BDBEDDF8FF07E2A sha1 70B33AFE56BD57AD1F6CCE34CA25806B88B2551A )
 )
 game (
-	name "Army Men - Sarge's Heroes (USA, Europe) (Proto)"
-	releaseyear "2000"
-	releasemonth "09"
-	releaseday "08"
+	name "Army Men - Sarge's Heroes (USA, Europe) (Proto 4)"
 	region "USA"
-	rom ( name "Army Men - Sarge's Heroes (USA, Europe) (Proto) (2000-09-08).gba" size 1485124 crc E57FFF8A md5 49C7089C334873020CAF17DA6579FADB sha1 DFCFA729AD6A42194F0FAA484DB277F0B7426E79 )
+	rom ( name "Army Men - Sarge's Heroes (USA, Europe) (Proto 4).gba" size 1495960 crc 4863F99E md5 DE5C59A357E791D5B7E2775C538EA172 sha1 BCF2F45329264B22BAFFD950325CFAE6E3BC454F )
 )
 game (
-	name "Army Men - Sarge's Heroes (USA, Europe) (Proto) (2000-09-14T121024)"
+	name "Army Men - Sarge's Heroes (USA, Europe) (Proto 5)"
 	region "USA"
-	rom ( name "Army Men - Sarge's Heroes (USA, Europe) (Proto) (2000-09-14T121024).gba" size 1539924 crc F10D532A md5 06BFFD302BB341EF623D4CD53C4418C4 sha1 BB95AAA5174C74810D780A3BFB27D7741C8ADD50 )
+	rom ( name "Army Men - Sarge's Heroes (USA, Europe) (Proto 5).gba" size 1485124 crc E57FFF8A md5 49C7089C334873020CAF17DA6579FADB sha1 DFCFA729AD6A42194F0FAA484DB277F0B7426E79 )
 )
 game (
-	name "Army Men - Sarge's Heroes (USA, Europe) (Proto) (2000-09-14T125538)"
+	name "Army Men - Sarge's Heroes (USA, Europe) (Proto 6)"
 	region "USA"
-	rom ( name "Army Men - Sarge's Heroes (USA, Europe) (Proto) (2000-09-14T125538).gba" size 1539888 crc 4E6E3E92 md5 181D31B59E0B1C5402C145AFEDCAD316 sha1 C499FCAB9BE58C2FB65F41FD03BE3D3BFF54C402 )
+	rom ( name "Army Men - Sarge's Heroes (USA, Europe) (Proto 6).gba" size 1539924 crc F10D532A md5 06BFFD302BB341EF623D4CD53C4418C4 sha1 BB95AAA5174C74810D780A3BFB27D7741C8ADD50 )
+)
+game (
+	name "Army Men - Sarge's Heroes (USA, Europe) (Proto 7)"
+	region "USA"
+	rom ( name "Army Men - Sarge's Heroes (USA, Europe) (Proto 7).gba" size 1539888 crc 4E6E3E92 md5 181D31B59E0B1C5402C145AFEDCAD316 sha1 C499FCAB9BE58C2FB65F41FD03BE3D3BFF54C402 )
 )
 game (
 	name "Army Men - Turf Wars (USA)"
@@ -1878,11 +1852,8 @@ game (
 )
 game (
 	name "Banjo-Pilot (Europe) (En,Fr,De,Es,It) (Beta 2)"
-	releaseyear "2004"
-	releasemonth "09"
-	releaseday "29"
 	region "Europe"
-	rom ( name "Banjo-Pilot (Europe) (En,Fr,De,Es,It) (Beta 2) (2004-09-29).gba" size 16777216 crc 3168A9A4 md5 A8285FD50DDE50DC2C37FC0375DC03CF sha1 D0D26E986F73300B52F2A91B0BD57F92D05DDA31 )
+	rom ( name "Banjo-Pilot (Europe) (En,Fr,De,Es,It) (Beta 2).gba" size 16777216 crc 3168A9A4 md5 A8285FD50DDE50DC2C37FC0375DC03CF sha1 D0D26E986F73300B52F2A91B0BD57F92D05DDA31 )
 )
 game (
 	name "Banjo-Pilot (USA)"
@@ -1891,20 +1862,14 @@ game (
 	rom ( name "Banjo-Pilot (USA).gba" size 16777216 crc 6E4030A1 md5 1D55A0E331301A7D36AC326F3D8DC007 sha1 58551D404C46B14CE3611DBFB70848E05BEC2DAC serial "BAJE" )
 )
 game (
-	name "Barbarian (USA, Europe) (En,Fr) (Proto)"
-	releaseyear "2001"
-	releasemonth "04"
-	releaseday "13"
+	name "Barbarian (USA, Europe) (En,Fr) (Proto 1)"
 	region "USA"
-	rom ( name "Barbarian (USA, Europe) (En,Fr) (Proto) (2001-04-13).gba" size 2229076 crc 20FB4537 md5 85299EDC639A2D1A158455E92AF573CA sha1 E96D08A3FC3D4EF083DC02644EB52086550317DC )
+	rom ( name "Barbarian (USA, Europe) (En,Fr) (Proto 1).gba" size 2229076 crc 20FB4537 md5 85299EDC639A2D1A158455E92AF573CA sha1 E96D08A3FC3D4EF083DC02644EB52086550317DC )
 )
 game (
-	name "Barbarian (USA, Europe) (En,Fr) (Proto)"
-	releaseyear "2001"
-	releasemonth "06"
-	releaseday "20"
+	name "Barbarian (USA, Europe) (En,Fr) (Proto 2)"
 	region "USA"
-	rom ( name "Barbarian (USA, Europe) (En,Fr) (Proto) (2001-06-20).gba" size 2987996 crc 5D162F27 md5 A601F5DCF364CCED8EBA00F68B8D3938 sha1 EE6CD98941036016194BCD9E84732F4F1A90ABDF )
+	rom ( name "Barbarian (USA, Europe) (En,Fr) (Proto 2).gba" size 2987996 crc 5D162F27 md5 A601F5DCF364CCED8EBA00F68B8D3938 sha1 EE6CD98941036016194BCD9E84732F4F1A90ABDF )
 )
 game (
 	name "Barbie - The Princess and the Pauper (Europe) (En,Fr,De,Es,It,Nl)"
@@ -1979,36 +1944,24 @@ game (
 	rom ( name "Barbie and the Magic of Pegasus (USA).gba" size 4194304 crc 29D23835 md5 C0F3E785F1D4A48FCB2B945291A033EF sha1 36E312ABFAF7B9401E9F3D5B796F4AE07A10A09A serial "BE5E" )
 )
 game (
-	name "Barbie and the Magic of Pegasus (USA) (Beta)"
-	releaseyear "2005"
-	releasemonth "01"
-	releaseday "21"
+	name "Barbie and the Magic of Pegasus (USA) (Beta 1)"
 	region "USA"
-	rom ( name "Barbie and the Magic of Pegasus (USA) (Beta) (2005-01-21).gba" size 136680 crc AE6CF631 md5 CD002D8E070CE14CAE9866F987FC4F69 sha1 FB0548D72EFF99B7DABDD34112E55F8BEA6326EC )
+	rom ( name "Barbie and the Magic of Pegasus (USA) (Beta 1).gba" size 136680 crc AE6CF631 md5 CD002D8E070CE14CAE9866F987FC4F69 sha1 FB0548D72EFF99B7DABDD34112E55F8BEA6326EC )
 )
 game (
-	name "Barbie and the Magic of Pegasus (USA) (Beta)"
-	releaseyear "2005"
-	releasemonth "02"
-	releaseday "18"
+	name "Barbie and the Magic of Pegasus (USA) (Beta 2)"
 	region "USA"
-	rom ( name "Barbie and the Magic of Pegasus (USA) (Beta) (2005-02-18).gba" size 360672 crc BD807770 md5 5C155E99F04ED8EB1F76F1597967064A sha1 84A5686F5C5DEE770E6B1BBBC1A60648387CF255 )
+	rom ( name "Barbie and the Magic of Pegasus (USA) (Beta 2).gba" size 360672 crc BD807770 md5 5C155E99F04ED8EB1F76F1597967064A sha1 84A5686F5C5DEE770E6B1BBBC1A60648387CF255 )
 )
 game (
-	name "Barbie and the Magic of Pegasus (USA) (Beta)"
-	releaseyear "2005"
-	releasemonth "03"
-	releaseday "18"
+	name "Barbie and the Magic of Pegasus (USA) (Beta 3)"
 	region "USA"
-	rom ( name "Barbie and the Magic of Pegasus (USA) (Beta) (2005-03-18).gba" size 1502628 crc 4B58B5D6 md5 DDB830FCFAC817A2D2DBD83AF2B0950E sha1 E822173E315138443E9FEC509621DC88AFCBCC0B )
+	rom ( name "Barbie and the Magic of Pegasus (USA) (Beta 3).gba" size 1502628 crc 4B58B5D6 md5 DDB830FCFAC817A2D2DBD83AF2B0950E sha1 E822173E315138443E9FEC509621DC88AFCBCC0B )
 )
 game (
-	name "Barbie and the Magic of Pegasus (USA) (Beta)"
-	releaseyear "2005"
-	releasemonth "04"
-	releaseday "15"
+	name "Barbie and the Magic of Pegasus (USA) (Beta 4)"
 	region "USA"
-	rom ( name "Barbie and the Magic of Pegasus (USA) (Beta) (2005-04-15).gba" size 2837392 crc 46F21E41 md5 F197A596C8626F8F0CF996BD5F68DC40 sha1 74E261C56123806B8CBD31ED907FE25A5AD99B62 )
+	rom ( name "Barbie and the Magic of Pegasus (USA) (Beta 4).gba" size 2837392 crc 46F21E41 md5 F197A596C8626F8F0CF996BD5F68DC40 sha1 74E261C56123806B8CBD31ED907FE25A5AD99B62 )
 )
 game (
 	name "Barbie as The Island Princess (USA)"
@@ -2376,11 +2329,8 @@ game (
 )
 game (
 	name "Black Sigil - Blade of the Exiled (USA) (Proto)"
-	releaseyear "2007"
-	releasemonth "02"
-	releaseday "10"
 	region "USA"
-	rom ( name "Black Sigil - Blade of the Exiled (USA) (Proto) (2007-02-10).gba" size 12478504 crc 010035A8 md5 78DECB6A1CBED75CD7939884D2C52101 sha1 567E4EFA496EABBF1DB285E0EC02A8DA8A8C07A3 )
+	rom ( name "Black Sigil - Blade of the Exiled (USA) (Proto).gba" size 12478504 crc 010035A8 md5 78DECB6A1CBED75CD7939884D2C52101 sha1 567E4EFA496EABBF1DB285E0EC02A8DA8A8C07A3 )
 )
 game (
 	name "Blackthorne (Europe)"
@@ -2418,12 +2368,16 @@ game (
 	rom ( name "Blender Bros. (World) (Aftermarket) (Unl).gba" size 8388608 crc 440F2F06 md5 9F6E382BC3600B9A27BA31FABCD78AC3 sha1 8F9CA62306B7AB56D8DA45673D7B7D0EB4C349C5 serial "ABRE" )
 )
 game (
-	name "Blind Jump (World) (En,Ja,Fr,It,Ru) (v2021.11.20.0) (Proto)"
-	rom ( name "Blind Jump (World) (En,Ja,Fr,It,Ru) (v2021.11.20.0) (Proto) (Aftermarket) (Unl).gba" size 16565008 crc 2342E91E md5 CCDD724BACF3F395E7B52B008D57B915 sha1 2E5758789F7E109839EA302424C385C1247EAB38 )
+	name "Blind Jump (World) (En,Fr,It,Zh,Ru) (Proto)"
+	rom ( name "Blind Jump (World) (En,Fr,It,Zh,Ru) (Proto) (Aftermarket) (Unl).gba" size 16565008 crc 2342E91E md5 CCDD724BACF3F395E7B52B008D57B915 sha1 2E5758789F7E109839EA302424C385C1247EAB38 )
 )
 game (
 	name "Blood Drive (World) (GBA Jam Week)"
 	rom ( name "Blood Drive (World) (GBA Jam Week) (Aftermarket) (Unl).gba" size 1523780 crc 3444A7AE md5 1C937C4F43A60A60066C9A2BCE690E31 sha1 12A3C114563684FDCA4A4EE1B3FEA43CEAF226C0 )
+)
+game (
+	name "Bloxorz (World) (v1.1)"
+	rom ( name "Bloxorz (World) (v1.1) (Aftermarket) (Unl).gba" size 1595012 crc 6FBBBEEC md5 D5EFC4F3CF51F68DC41A2199D610C930 sha1 671E0272701EEE6265EC1323746ADBA9BC290121 )
 )
 game (
 	name "Blue Angelo - Angels from the Shrine (Europe) (Proto 1)"
@@ -2927,6 +2881,10 @@ game (
 	rom ( name "Butt-Ugly Martians - B.K.M. Battles (USA).gba" size 4194304 crc 74BE9148 md5 37B681295390EF9F55EE3222C761C4C3 sha1 24962220F242B49231969F6D313E325148886106 serial "ABWE" )
 )
 game (
+	name "Bygone Snow (World)"
+	rom ( name "Bygone Snow (World) (Aftermarket) (Unl).gba" size 16377484 crc 7AE83ACF md5 7AD159F68970462DC7596F2E9AAA6C17 sha1 87658F9AC830701DB747E4878289610B3C5FD551 )
+)
+game (
 	name "CCCP (World)"
 	rom ( name "CCCP (World) (Aftermarket) (Unl).gba" size 499440 crc AD634C54 md5 3744DFEA6F6E089C1D5128CA2467A705 sha1 324F0375E3F4F89455122E2663B831917013BFC3 )
 )
@@ -3171,12 +3129,9 @@ game (
 )
 game (
 	name "Cartoon Network Block Party (USA) (Beta)"
-	releaseyear "2003"
-	releasemonth "06"
-	releaseday "17"
 	region "USA"
 	serial "AHYE"
-	rom ( name "Cartoon Network Block Party (USA) (Beta) (2003-06-17).gba" size 4900420 crc 5CFAC364 md5 C16680E895CC3C11907361BFD158F6BB sha1 9933DB873FA7C7ED8A5FADA443ABA2D97C81C3B5 serial "AHYE" )
+	rom ( name "Cartoon Network Block Party (USA) (Beta).gba" size 4900420 crc 5CFAC364 md5 C16680E895CC3C11907361BFD158F6BB sha1 9933DB873FA7C7ED8A5FADA443ABA2D97C81C3B5 serial "AHYE" )
 )
 game (
 	name "Cartoon Network Speedway (USA)"
@@ -3399,6 +3354,10 @@ game (
 	rom ( name "Celeste Classic (World) (v1.2) (Aftermarket) (Unl).gba" size 5418424 crc FF0E8ADA md5 9BCD687293600451ABDD0F181B2427E8 sha1 08512605E5C02E81A72E24C2C8D4959D8E84E1F4 )
 )
 game (
+	name "Celeste Classic 2 (World)"
+	rom ( name "Celeste Classic 2 (World) (Aftermarket) (Unl).gba" size 4506328 crc 069607D0 md5 C54284810931820A1B3E9E86B7AAC6F1 sha1 19DC1DD4E53722DC64CD1E7F97847B4CABF2F658 )
+)
+game (
 	name "Chaoji Maliou 2 (China)"
 	region "China"
 	serial "AMAC"
@@ -3572,6 +3531,14 @@ game (
 	region "Japan"
 	serial "ACJJ"
 	rom ( name "Chou Makaimura R (Japan) (Virtual Console).gba" size 4194304 crc 24840E7C md5 B56902772665713F80AC9FCF28975913 sha1 860EE58C8B1403084C336B3ED05A2A8BBFEDDD89 serial "ACJJ" )
+)
+game (
+	name "Chrismas Challenge (World) (Beta)"
+	rom ( name "Chrismas Challenge (World) (Beta) (Aftermarket) (Unl).gba" size 4093084 crc 24AE8BC8 md5 1E3E1D0307B350DC1AF049EA85D18C06 sha1 F1655418D98683485C1BD3AC66266DE25FB3FA5C )
+)
+game (
+	name "Christmas Game, The (World)"
+	rom ( name "Christmas Game, The (World) (Aftermarket) (Unl).gba" size 2552924 crc B2431BAD md5 F477BD518E5CBF64BF22FE4545909033 sha1 7EAAA9378354FEC41CE942AA49DE51C3B98066E6 )
 )
 game (
 	name "Chronicles of Narnia, The - The Lion, the Witch and the Wardrobe (USA, Europe) (En,Fr,De,Es,It,Nl,Sv,Da)"
@@ -3790,11 +3757,8 @@ game (
 )
 game (
 	name "Commandos 2 (Japan) (Proto)"
-	releaseyear "2002"
-	releasemonth "11"
-	releaseday "28"
 	region "Japan"
-	rom ( name "Commandos 2 (Japan) (Proto) (2002-11-28).gba" size 2644724 crc DD58AECD md5 03C4C5409D77C03A5E35A8ADAFF70158 sha1 3750E5704AE5EE240C273A68D36001F36348BB48 )
+	rom ( name "Commandos 2 (Japan) (Proto).gba" size 2644724 crc DD58AECD md5 03C4C5409D77C03A5E35A8ADAFF70158 sha1 3750E5704AE5EE240C273A68D36001F36348BB48 )
 )
 game (
 	name "Contra Advance (USA) (Beta)"
@@ -4117,7 +4081,12 @@ game (
 game (
 	name "Crouching Tiger, Hidden Dragon (USA) (Beta 2)"
 	region "USA"
-	rom ( name "Crouching Tiger, Hidden Dragon (USA) (Beta 2).gba" size 8388608 crc 204FF8D5 md5 6CB4DC8B610A4238A159A7037185540D sha1 AF24D128B28758A8A1BDA45B5A24A299E1E14B90 )
+	rom ( name "Crouching Tiger, Hidden Dragon (USA) (Beta 2).gba" size 8388608 crc 1EF6F82E md5 C0200AAFCC6B7A822D05D256840DE4AB sha1 BB1D794E7E6BB229F6A88EE7F81EBCFD3F94EFC8 )
+)
+game (
+	name "Crouching Tiger, Hidden Dragon (USA) (Beta 3)"
+	region "USA"
+	rom ( name "Crouching Tiger, Hidden Dragon (USA) (Beta 3).gba" size 8388608 crc 204FF8D5 md5 6CB4DC8B610A4238A159A7037185540D sha1 AF24D128B28758A8A1BDA45B5A24A299E1E14B90 )
 )
 game (
 	name "Crouching Tiger, Hidden Dragon (USA) (En,Fr,Es)"
@@ -4398,6 +4367,10 @@ game (
 	rom ( name "Deflektor (World) (v1.1) (Unl).gba" size 386508 crc 5EC91001 md5 D97206A549D0B7B3CB49D32B249EDC25 sha1 92682B2404BE3B2FD48F96CAD0C51F51D07C8159 )
 )
 game (
+	name "Deimos Defender (World)"
+	rom ( name "Deimos Defender (World) (Aftermarket) (Unl).gba" size 141744 crc 5D69858B md5 4A3C15896B47654DF012594784B97A3F sha1 6E18B29ED5112BDE5CC5FBDD5CA797BFE9F2A7B5 )
+)
+game (
 	name "DemiKids - Dark Version (USA)"
 	region "USA"
 	serial "AC5E"
@@ -4540,15 +4513,15 @@ game (
 	rom ( name "Diadroids World - Evil Teikoku no Yabou (Japan).gba" size 8388608 crc A2D6CEA6 md5 B2436C0B6E02D17771B48CDCF24BEE66 sha1 4FC0E2240DDD11D4A1F9A80EAFF3B945C8F27C8A serial "ADDJ" )
 )
 game (
-	name "Diddy Kong Pilot (Unknown) (Proto)"
-	releaseyear "2001"
-	rom ( name "Diddy Kong Pilot (Unknown) (Proto) (2001).gba" size 5080644 crc 5C206101 md5 6ABB6F0CAE01053F54F2015BFF2F3C0D sha1 6A76DEF610829AC1502AFB58740E38B5E6926B3D )
+	name "Diddy Kong Pilot (USA) (Beta 1)"
+	region "USA"
+	rom ( name "Diddy Kong Pilot (USA) (Beta 1).gba" size 5080644 crc 5C206101 md5 6ABB6F0CAE01053F54F2015BFF2F3C0D sha1 6A76DEF610829AC1502AFB58740E38B5E6926B3D )
 )
 game (
-	name "Diddy Kong Pilot (Unknown) (Proto)"
-	releaseyear "2003"
+	name "Diddy Kong Pilot (USA) (Beta 2)"
+	region "USA"
 	serial "RARE"
-	rom ( name "Diddy Kong Pilot (Unknown) (Proto) (2003).gba" size 12277472 crc 057DC388 md5 E56DA89876F44184900EE955D5864742 sha1 0CB385781742C25BF9D4CBEAE8E83F7750AF48DB serial "RARE" )
+	rom ( name "Diddy Kong Pilot (USA) (Beta 2).gba" size 12277472 crc 057DC388 md5 E56DA89876F44184900EE955D5864742 sha1 0CB385781742C25BF9D4CBEAE8E83F7750AF48DB serial "RARE" )
 )
 game (
 	name "DigiCommunication Nyo - Datou! Black Gemagema Dan (Japan)"
@@ -4625,12 +4598,16 @@ game (
 	rom ( name "Dinotopia - The Timestone Pirates (USA, Europe) (En,Fr,De,Es,It,Nl).gba" size 8388608 crc 7BD01B31 md5 BAB43E61606514080129A179E931B2B6 sha1 939F52824D6598DE9C3CA5F1F33787E1EE01D442 serial "AD3E" )
 )
 game (
-	name "Discrete Orange (World) (v0.1) (GBA Jam 2024)"
-	rom ( name "Discrete Orange (World) (v0.1) (GBA Jam 2024) (Aftermarket) (Unl).gba" size 2059172 crc 8515069C md5 0F424C61285BFEE9A940BC9AA47C61BF sha1 D2546BE26C1E902E09CBB288FF9E4F654AE5194B )
+	name "Discrete Orange (World) (Demo 1) (GBA Jam 2024)"
+	rom ( name "Discrete Orange (World) (Demo 1) (GBA Jam 2024) (Aftermarket) (Unl).gba" size 2059172 crc 8515069C md5 0F424C61285BFEE9A940BC9AA47C61BF sha1 D2546BE26C1E902E09CBB288FF9E4F654AE5194B )
 )
 game (
-	name "Discrete Orange (World) (v0.1b)"
-	rom ( name "Discrete Orange (World) (v0.1b) (Aftermarket) (Unl).gba" size 1571216 crc D5275F91 md5 D6D8A53C94A7AA27583312C66974EDF9 sha1 DEBDADFFA17C554559EDC9AB0DB766EA26EE9363 )
+	name "Discrete Orange (World) (Demo 2)"
+	rom ( name "Discrete Orange (World) (Demo 2) (Aftermarket) (Unl).gba" size 1571216 crc D5275F91 md5 D6D8A53C94A7AA27583312C66974EDF9 sha1 DEBDADFFA17C554559EDC9AB0DB766EA26EE9363 )
+)
+game (
+	name "Discrete Orange (World) (Demo 3)"
+	rom ( name "Discrete Orange (World) (Demo 3) (Aftermarket) (Unl).gba" size 859244 crc 83DCA48C md5 B1755C0764390FA90A9823FC27B43195 sha1 FB3E959473DD88A580EFC747941DF7A997146743 )
 )
 game (
 	name "Disney Princesas (Spain)"
@@ -4975,12 +4952,9 @@ game (
 )
 game (
 	name "Donkey Kong Country 3 (USA) (Beta)"
-	releaseyear "2005"
-	releasemonth "05"
-	releaseday "06"
 	region "USA"
 	serial "A5NE"
-	rom ( name "Donkey Kong Country 3 (USA) (Beta) (2005-05-06).gba" size 16777216 crc 8DD750EF md5 132AC906D53969643A2A117425A7BCB5 sha1 6E4855197B7DEFFD089DFDE46875BEBDC4739FA2 serial "A5NE" )
+	rom ( name "Donkey Kong Country 3 (USA) (Beta).gba" size 16777216 crc 8DD750EF md5 132AC906D53969643A2A117425A7BCB5 sha1 6E4855197B7DEFFD089DFDE46875BEBDC4739FA2 serial "A5NE" )
 )
 game (
 	name "Donsol (World)"
@@ -5186,11 +5160,8 @@ game (
 )
 game (
 	name "Dragon Ball - Advanced Adventure (Europe) (En,Fr,De,Es,It) (Beta)"
-	releaseyear "2005"
-	releasemonth "02"
-	releaseday "25"
 	region "Europe"
-	rom ( name "Dragon Ball - Advanced Adventure (Europe) (En,Fr,De,Es,It) (Beta) (2005-02-25).gba" size 16777216 crc 2B136906 md5 A340D5D4D96A0F49D66112AD25820118 sha1 FE190755F05994F1C796286AD767D7DA49C36385 )
+	rom ( name "Dragon Ball - Advanced Adventure (Europe) (En,Fr,De,Es,It) (Beta).gba" size 16777216 crc 2B136906 md5 A340D5D4D96A0F49D66112AD25820118 sha1 FE190755F05994F1C796286AD767D7DA49C36385 )
 )
 game (
 	name "Dragon Ball - Advanced Adventure (USA)"
@@ -5206,11 +5177,8 @@ game (
 )
 game (
 	name "Dragon Ball GT - Transformation (USA) (Beta)"
-	releaseyear "2005"
-	releasemonth "04"
-	releaseday "27"
 	region "USA"
-	rom ( name "Dragon Ball GT - Transformation (USA) (Beta) (2005-04-27).gba" size 8388608 crc 431BC807 md5 C3E17A3C48D7396C08D7EC7738BFD126 sha1 58875496C9AB89BA3B769DC47D89AC2839B7CB7F )
+	rom ( name "Dragon Ball GT - Transformation (USA) (Beta).gba" size 8388608 crc 431BC807 md5 C3E17A3C48D7396C08D7EC7738BFD126 sha1 58875496C9AB89BA3B769DC47D89AC2839B7CB7F )
 )
 game (
 	name "Dragon Ball Z - Bukuu Tougeki (Japan)"
@@ -5223,6 +5191,16 @@ game (
 	region "USA"
 	serial "BG3E"
 	rom ( name "Dragon Ball Z - Buu's Fury (USA).gba" size 8388608 crc 01C1707F md5 3A74FCE97F1EA2B28C2A50EC3DF0ACEE sha1 F1C4B07554D2A3B1AD2F325307051E775CE68087 serial "BG3E" )
+)
+game (
+	name "Dragon Ball Z - Buu's Fury (USA) (Beta 1)"
+	region "USA"
+	rom ( name "Dragon Ball Z - Buu's Fury (USA) (Beta 1).gba" size 8388608 crc C35BBC5D md5 897FBE03B12147F9DAF55519D90402CD sha1 2C4EC7176E58DAE08B1F52206C7CBFE68EE94C75 )
+)
+game (
+	name "Dragon Ball Z - Buu's Fury (USA) (Beta 2)"
+	region "USA"
+	rom ( name "Dragon Ball Z - Buu's Fury (USA) (Beta 2).gba" size 8388608 crc E8CCD531 md5 1EC7FBC18C78D747D1505FE0ABACBEC0 sha1 8F1D0DC00A06E943F06F10F88174C775FF437874 )
 )
 game (
 	name "Dragon Ball Z - Collectible Card Game (USA)"
@@ -5300,26 +5278,35 @@ game (
 	rom ( name "Dragon Ball Z - The Legacy of Goku II (USA).gba" size 8388608 crc 204142E1 md5 4E1565AA1F0627C2BF5E51019440CB70 sha1 18E0715DEC419F3501C301511530D2EDCD590F8B serial "ALFE" )
 )
 game (
-	name "Dragon Ball Z - The Legacy of Goku II (USA) (Beta)"
-	releaseyear "2003"
-	releasemonth "01"
-	releaseday "23"
+	name "Dragon Ball Z - The Legacy of Goku II (USA) (Beta 1)"
 	region "USA"
-	rom ( name "Dragon Ball Z - The Legacy of Goku II (USA) (Beta) (2003-01-23).gba" size 7282372 crc 3C30F5B3 md5 7C3DDA9B4E34C5551E6413458792B9B3 sha1 16F4C593A0AB0E243FBECA7CC1033AC88501E387 )
+	rom ( name "Dragon Ball Z - The Legacy of Goku II (USA) (Beta 1).gba" size 7282372 crc 3C30F5B3 md5 7C3DDA9B4E34C5551E6413458792B9B3 sha1 16F4C593A0AB0E243FBECA7CC1033AC88501E387 )
 )
 game (
-	name "Dragon Ball Z - The Legacy of Goku II (USA) (Beta)"
-	releaseyear "2003"
-	releasemonth "01"
-	releaseday "31"
+	name "Dragon Ball Z - The Legacy of Goku II (USA) (Beta 2)"
 	region "USA"
-	rom ( name "Dragon Ball Z - The Legacy of Goku II (USA) (Beta) (2003-01-31).gba" size 7279012 crc 25F34DBC md5 4891433BAA0335DDFB0753D453EE65AB sha1 FC76F3477F19AF7415A42A6F38BD5BDA43C640D2 )
+	rom ( name "Dragon Ball Z - The Legacy of Goku II (USA) (Beta 2).gba" size 7279012 crc 25F34DBC md5 4891433BAA0335DDFB0753D453EE65AB sha1 FC76F3477F19AF7415A42A6F38BD5BDA43C640D2 )
 )
 game (
 	name "Dragon Ball Z - The Legacy of Goku II International (Japan)"
 	region "Japan"
 	serial "ALFJ"
 	rom ( name "Dragon Ball Z - The Legacy of Goku II International (Japan).gba" size 8388608 crc B3297D59 md5 EAEC6E4F1192AD24C484B05056E3AA76 sha1 4E18F54B8BACE6ED32B6315B159E903F61D69339 serial "ALFJ" )
+)
+game (
+	name "Dragon Ball Z - The Legacy of Goku III (USA) (Beta)"
+	region "USA"
+	rom ( name "Dragon Ball Z - The Legacy of Goku III (USA) (Beta).gba" size 8388608 crc 865B15BA md5 8547CFD31103F0E855E2D6267E230C06 sha1 F299C638B50A98A3B222BB213169D4CA3F9A191B )
+)
+game (
+	name "Dragon Ball Z Fusion - The Legacy of Goku III (USA) (Beta 1)"
+	region "USA"
+	rom ( name "Dragon Ball Z Fusion - The Legacy of Goku III (USA) (Beta 1).gba" size 8388608 crc 2BEBD716 md5 6C46A8915417F065ED1E209A02A4B1F5 sha1 572B535BB62137F6875CC970A554CD282111EB91 )
+)
+game (
+	name "Dragon Ball Z Fusion - The Legacy of Goku III (USA) (Beta 2)"
+	region "USA"
+	rom ( name "Dragon Ball Z Fusion - The Legacy of Goku III (USA) (Beta 2).gba" size 8388608 crc 4783C8EB md5 5835092510D600F89B0A9D17C0543099 sha1 A622D9011CE7B72A6A9E19F321E03E7B4842B140 )
 )
 game (
 	name "Dragon Drive - World D Break (Japan)"
@@ -5400,9 +5387,9 @@ game (
 	rom ( name "Driv3r (Europe) (En,Fr,De,Es,It).gba" size 8388608 crc B617B354 md5 48D7F169A879773BAB490C4C1A9DFD5B sha1 3E4DA1CD2A5915D2218CD59E061BAEB3A08BE1C6 serial "B3RP" )
 )
 game (
-	name "Driv3r (Europe) (Es) (Beta 2)"
+	name "Driv3r (Europe) (En,Fr,De,Es,It) (Beta 2)"
 	region "Europe"
-	rom ( name "Driv3r (Europe) (Es) (Beta 2).gba" size 8388608 crc 58E1F5A6 md5 7154C6DBD189D69598D1F50B533A3019 sha1 0451521254325271E7EC13276FC25C9B7DCC47B0 )
+	rom ( name "Driv3r (Europe) (En,Fr,De,Es,It) (Beta 2).gba" size 8388608 crc 58E1F5A6 md5 7154C6DBD189D69598D1F50B533A3019 sha1 0451521254325271E7EC13276FC25C9B7DCC47B0 )
 )
 game (
 	name "Driv3r (USA)"
@@ -5429,18 +5416,15 @@ game (
 	rom ( name "Driver 2 Advance (Europe) (En,Fr,De,Es,It).gba" size 8388608 crc 69EE551C md5 DC99BCCA77EC59C109576B867AB2B3EA sha1 A3B755E1D5820A2E094A2C0C47BFAF526A8D7E5A serial "ADUP" )
 )
 game (
-	name "Driver 2 Advance (Europe) (En,Fr,De,Es,It) (Beta)"
+	name "Driver 2 Advance (Europe) (En,Fr,De,Es,It) (Beta 1)"
 	region "Europe"
-	serial "ADUP"
-	rom ( name "Driver 2 Advance (Europe) (En,Fr,De,Es,It) (Beta).gba" size 8388608 crc B24FA448 md5 E07AB5A02CD7C2F503CEF587890AFB54 sha1 0135A92F0043DF0D0EBAC7F45C53C44D8B095AE2 serial "ADUP" )
+	rom ( name "Driver 2 Advance (Europe) (En,Fr,De,Es,It) (Beta 1).gba" size 8388608 crc 2A18850C md5 F310C0A374D8C59320C2F8B9FC6AABA3 sha1 0123A99E61E5004B37EBAC40E04B6723F5D0A8E4 )
 )
 game (
-	name "Driver 2 Advance (Europe) (En,Fr,De,Es,It) (Beta)"
-	releaseyear "2002"
-	releasemonth "06"
-	releaseday "06"
+	name "Driver 2 Advance (Europe) (En,Fr,De,Es,It) (Beta 2)"
 	region "Europe"
-	rom ( name "Driver 2 Advance (Europe) (En,Fr,De,Es,It) (Beta) (2002-06-06).gba" size 8388608 crc 2A18850C md5 F310C0A374D8C59320C2F8B9FC6AABA3 sha1 0123A99E61E5004B37EBAC40E04B6723F5D0A8E4 )
+	serial "ADUP"
+	rom ( name "Driver 2 Advance (Europe) (En,Fr,De,Es,It) (Beta 2).gba" size 8388608 crc B24FA448 md5 E07AB5A02CD7C2F503CEF587890AFB54 sha1 0135A92F0043DF0D0EBAC7F45C53C44D8B095AE2 serial "ADUP" )
 )
 game (
 	name "Driver 2 Advance (USA)"
@@ -5764,6 +5748,10 @@ game (
 	rom ( name "Earthworm Jim 2 (USA).gba" size 8388608 crc 7496555C md5 41C45028C30A5F0241F5B479A954C745 sha1 E500950377B64ECFF541B92DDE99DF5F717ABD0E serial "AJ4E" )
 )
 game (
+	name "Ebobo (World)"
+	rom ( name "Ebobo (World) (Aftermarket) (Unl).gba" size 4194304 crc ADA914C3 md5 07920B07F68E3AE05FF7775D8B2CFA33 sha1 76B0297B3DEDA6C481BA0474643724AE1670C520 )
+)
+game (
 	name "Ecks V Sever (Europe) (En,Fr,De,Es,It)"
 	region "Europe"
 	serial "AESP"
@@ -5866,16 +5854,16 @@ game (
 	rom ( name "Elf Bowling 1 & 2 (USA).gba" size 4194304 crc 68FEFF40 md5 25CDCF14F0FCE47D9C6C8155774948FA sha1 013F128C8D67F1165196B4F29297BCD4616C5033 serial "BEBE" )
 )
 game (
-	name "Eliminator GBA (World) (v0.91) (Proto)"
-	rom ( name "Eliminator GBA (World) (v0.91) (Proto) (Aftermarket) (Unl).gba" size 747872 crc 637DC1AA md5 215E630068500F4C4F52BBE9AD5172A1 sha1 13A4D5C2C647945CBBF17423AFD45A25C4057527 )
+	name "Eliminator GBA (World) (Proto)"
+	rom ( name "Eliminator GBA (World) (Proto) (Aftermarket) (Unl).gba" size 747872 crc 637DC1AA md5 215E630068500F4C4F52BBE9AD5172A1 sha1 13A4D5C2C647945CBBF17423AFD45A25C4057527 )
 )
 game (
 	name "Elite - The New Kind (World) (v1.7.1)"
 	rom ( name "Elite - The New Kind (World) (v1.7.1) (Unl).gba" size 546392 crc 5F9B4211 md5 7D630C14F3B2C59E3A956BE2ED1BC05A sha1 D3E6C12E6475FFB21617E3BE7158D60AC535E74B )
 )
 game (
-	name "Elite AGB (World) (v0.5.2) (Beta)"
-	rom ( name "Elite AGB (World) (v0.5.2) (Beta) (Aftermarket) (Unl).gba" size 327360 crc F00C939F md5 EC863E849B429999FF389DF40D29F921 sha1 CE5A236608C629C99D4EC7B35E3CCAF211E6BB60 )
+	name "Elite AGB (World) (Beta)"
+	rom ( name "Elite AGB (World) (Beta) (Aftermarket) (Unl).gba" size 327360 crc F00C939F md5 EC863E849B429999FF389DF40D29F921 sha1 CE5A236608C629C99D4EC7B35E3CCAF211E6BB60 )
 )
 game (
 	name "Elite AGB (World) (v1.4.1)"
@@ -6014,102 +6002,88 @@ game (
 	rom ( name "F-Zero - GP Legend (USA).gba" size 16777216 crc 781AAB58 md5 B6984CA369145367AB79EB33F2F3480E sha1 977588D9D27B7115E0BB309FB019AE81B9F413FF serial "BFZE" )
 )
 game (
+	name "F-Zero - GP Legend (USA) (Proto 1) (Netcard)"
+	region "USA"
+	serial "BFZE"
+	rom ( name "F-Zero - GP Legend (USA) (Proto 1) (Netcard).gba" size 16777216 crc C46FD22A md5 3F78D5830CD83C8C77406CF1D5B26462 sha1 2319499D453179763FC607FFBFE2D24A272237F3 serial "BFZE" )
+)
+game (
+	name "F-Zero - GP Legend (USA) (Proto 10) (Netcard)"
+	region "USA"
+	serial "BFZE"
+	rom ( name "F-Zero - GP Legend (USA) (Proto 10) (Netcard).gba" size 16777216 crc C77188B6 md5 F5DF46466B504E0EACA6065F4780A2B6 sha1 377F0F17CE3CEA637DFDF9021F04AA56971DB6A6 serial "BFZE" )
+)
+game (
+	name "F-Zero - GP Legend (USA) (Proto 11) (Netcard)"
+	region "USA"
+	serial "BFZE"
+	rom ( name "F-Zero - GP Legend (USA) (Proto 11) (Netcard).gba" size 16777216 crc D329DF50 md5 50C93EB8F7C477A5D5EF65C6842E5EEB sha1 71B626B355813E80F9CC3D6AE3765552B5E09009 serial "BFZE" )
+)
+game (
+	name "F-Zero - GP Legend (USA) (Proto 12) (Netcard)"
+	region "USA"
+	serial "BFZE"
+	rom ( name "F-Zero - GP Legend (USA) (Proto 12) (Netcard).gba" size 16777216 crc 61F9DC0E md5 8B6236AAD7BA63E05547146528CEA8A9 sha1 A9C26C71373BFA19C578591FD774F66644C0BDF2 serial "BFZE" )
+)
+game (
+	name "F-Zero - GP Legend (USA) (Proto 13) (Netcard)"
+	region "USA"
+	serial "BFZE"
+	rom ( name "F-Zero - GP Legend (USA) (Proto 13) (Netcard).gba" size 16777216 crc 26358B01 md5 21D8748D4D072F90C6319D6BD6EE1781 sha1 32D0B25C339F814C2840E289B232F38678B88193 serial "BFZE" )
+)
+game (
+	name "F-Zero - GP Legend (USA) (Proto 2) (Netcard)"
+	region "USA"
+	serial "BFZE"
+	rom ( name "F-Zero - GP Legend (USA) (Proto 2) (Netcard).gba" size 16777216 crc DEBC0ACB md5 9372681CE36402ACC4D131245E13E3D5 sha1 2D46237C002846B3A5CD1ED3DAA173EBCF8E35F2 serial "BFZE" )
+)
+game (
+	name "F-Zero - GP Legend (USA) (Proto 3) (Netcard)"
+	region "USA"
+	serial "BFZE"
+	rom ( name "F-Zero - GP Legend (USA) (Proto 3) (Netcard).gba" size 16777216 crc 7EC47244 md5 5BE55D42DE4290BABD1F2B0E0126E1D7 sha1 C8CA3281E9B329D967E96516F98744226F18974A serial "BFZE" )
+)
+game (
+	name "F-Zero - GP Legend (USA) (Proto 4) (Netcard)"
+	region "USA"
+	serial "BFZE"
+	rom ( name "F-Zero - GP Legend (USA) (Proto 4) (Netcard).gba" size 16777216 crc AA522F27 md5 5B62667BED44C033A2848FC1BD00271E sha1 D8D9035E5672CB95FCD49499D5E4E7B6D6DAAD67 serial "BFZE" )
+)
+game (
+	name "F-Zero - GP Legend (USA) (Proto 5) (Netcard)"
+	region "USA"
+	serial "BFZE"
+	rom ( name "F-Zero - GP Legend (USA) (Proto 5) (Netcard).gba" size 16777216 crc E73C5F4A md5 0BF5DF84C040F7BD352BB87A352EE6B0 sha1 8397FB78936DD667D0EF45B055613795DF4A1C0E serial "BFZE" )
+)
+game (
+	name "F-Zero - GP Legend (USA) (Proto 6) (Netcard)"
+	region "USA"
+	serial "BFZE"
+	rom ( name "F-Zero - GP Legend (USA) (Proto 6) (Netcard).gba" size 16777216 crc 27C8A067 md5 73F3CD746BCA7763FA0452FFE04556F5 sha1 54FA13E875C899DAB0DE270F334C283D3F5BB05C serial "BFZE" )
+)
+game (
+	name "F-Zero - GP Legend (USA) (Proto 7) (Netcard)"
+	region "USA"
+	serial "BFZE"
+	rom ( name "F-Zero - GP Legend (USA) (Proto 7) (Netcard).gba" size 16777216 crc 6F7486D7 md5 C3F126DF8AC8A3CB0D73EFAAD7896800 sha1 3633A74B5FBED1A129F2FF37F7FD000C70B23A4D serial "BFZE" )
+)
+game (
+	name "F-Zero - GP Legend (USA) (Proto 8) (Netcard)"
+	region "USA"
+	serial "BFZE"
+	rom ( name "F-Zero - GP Legend (USA) (Proto 8) (Netcard).gba" size 16777216 crc 4D224E17 md5 C1278FFBCFAEDA9E01E076F4EB88E52E sha1 685753AA1BFF5ED077EAA01AB058FA800B9C50C7 serial "BFZE" )
+)
+game (
+	name "F-Zero - GP Legend (USA) (Proto 9) (Netcard)"
+	region "USA"
+	serial "BFZE"
+	rom ( name "F-Zero - GP Legend (USA) (Proto 9) (Netcard).gba" size 16777216 crc 77C0C615 md5 E831D36A270F0DDC942FA2909607F2BB sha1 BFE6B7F099998EDF6E35BC47DFD86C1E88152CB4 serial "BFZE" )
+)
+game (
 	name "F-Zero - GP Legend (USA) (Virtual Console)"
 	region "USA"
 	serial "BFZE"
 	rom ( name "F-Zero - GP Legend (USA) (Virtual Console).gba" size 16777216 crc 9075C6FD md5 1DBF1B5255A3FC4B9A412F79F83A77FB sha1 6EF9BD0D816FBE347E72CAB07068C939C9F3D9B6 serial "BFZE" )
-)
-game (
-	name "F-Zero - GP Legend (Unknown) (Proto) (Netcard)"
-	releaseyear "2005"
-	releasemonth "08"
-	releaseday "09"
-	serial "BFZE"
-	rom ( name "F-Zero - GP Legend (Unknown) (Proto) (2005-08-09) (Netcard).gba" size 16777216 crc C46FD22A md5 3F78D5830CD83C8C77406CF1D5B26462 sha1 2319499D453179763FC607FFBFE2D24A272237F3 serial "BFZE" )
-)
-game (
-	name "F-Zero - GP Legend (Unknown) (Proto) (Netcard)"
-	releaseyear "2005"
-	releasemonth "08"
-	releaseday "11"
-	serial "BFZE"
-	rom ( name "F-Zero - GP Legend (Unknown) (Proto) (2005-08-11) (Netcard).gba" size 16777216 crc DEBC0ACB md5 9372681CE36402ACC4D131245E13E3D5 sha1 2D46237C002846B3A5CD1ED3DAA173EBCF8E35F2 serial "BFZE" )
-)
-game (
-	name "F-Zero - GP Legend (Unknown) (Proto) (Netcard)"
-	releaseyear "2005"
-	releasemonth "08"
-	releaseday "15"
-	serial "BFZE"
-	rom ( name "F-Zero - GP Legend (Unknown) (Proto) (2005-08-15) (Netcard).gba" size 16777216 crc 7EC47244 md5 5BE55D42DE4290BABD1F2B0E0126E1D7 sha1 C8CA3281E9B329D967E96516F98744226F18974A serial "BFZE" )
-)
-game (
-	name "F-Zero - GP Legend (Unknown) (Proto) (Netcard)"
-	releaseyear "2005"
-	releasemonth "08"
-	releaseday "16"
-	serial "BFZE"
-	rom ( name "F-Zero - GP Legend (Unknown) (Proto) (2005-08-16) (Netcard).gba" size 16777216 crc AA522F27 md5 5B62667BED44C033A2848FC1BD00271E sha1 D8D9035E5672CB95FCD49499D5E4E7B6D6DAAD67 serial "BFZE" )
-)
-game (
-	name "F-Zero - GP Legend (Unknown) (Proto) (Netcard)"
-	releaseyear "2005"
-	releasemonth "08"
-	releaseday "17"
-	serial "BFZE"
-	rom ( name "F-Zero - GP Legend (Unknown) (Proto) (2005-08-17) (Netcard).gba" size 16777216 crc E73C5F4A md5 0BF5DF84C040F7BD352BB87A352EE6B0 sha1 8397FB78936DD667D0EF45B055613795DF4A1C0E serial "BFZE" )
-)
-game (
-	name "F-Zero - GP Legend (Unknown) (Proto) (2005-08-18 02.40.54) (Netcard)"
-	serial "BFZE"
-	rom ( name "F-Zero - GP Legend (Unknown) (Proto) (2005-08-18 02.40.54) (Netcard).gba" size 16777216 crc 27C8A067 md5 73F3CD746BCA7763FA0452FFE04556F5 sha1 54FA13E875C899DAB0DE270F334C283D3F5BB05C serial "BFZE" )
-)
-game (
-	name "F-Zero - GP Legend (Unknown) (Proto) (2005-08-18 23.00.14) (Netcard)"
-	serial "BFZE"
-	rom ( name "F-Zero - GP Legend (Unknown) (Proto) (2005-08-18 23.00.14) (Netcard).gba" size 16777216 crc 6F7486D7 md5 C3F126DF8AC8A3CB0D73EFAAD7896800 sha1 3633A74B5FBED1A129F2FF37F7FD000C70B23A4D serial "BFZE" )
-)
-game (
-	name "F-Zero - GP Legend (Unknown) (Proto) (Netcard)"
-	releaseyear "2005"
-	releasemonth "08"
-	releaseday "23"
-	serial "BFZE"
-	rom ( name "F-Zero - GP Legend (Unknown) (Proto) (2005-08-23) (Netcard).gba" size 16777216 crc 4D224E17 md5 C1278FFBCFAEDA9E01E076F4EB88E52E sha1 685753AA1BFF5ED077EAA01AB058FA800B9C50C7 serial "BFZE" )
-)
-game (
-	name "F-Zero - GP Legend (Unknown) (Proto) (Netcard)"
-	releaseyear "2005"
-	releasemonth "08"
-	releaseday "24"
-	serial "BFZE"
-	rom ( name "F-Zero - GP Legend (Unknown) (Proto) (2005-08-24) (Netcard).gba" size 16777216 crc 77C0C615 md5 E831D36A270F0DDC942FA2909607F2BB sha1 BFE6B7F099998EDF6E35BC47DFD86C1E88152CB4 serial "BFZE" )
-)
-game (
-	name "F-Zero - GP Legend (Unknown) (Proto) (Netcard)"
-	releaseyear "2005"
-	releasemonth "08"
-	releaseday "26"
-	serial "BFZE"
-	rom ( name "F-Zero - GP Legend (Unknown) (Proto) (2005-08-26) (Netcard).gba" size 16777216 crc C77188B6 md5 F5DF46466B504E0EACA6065F4780A2B6 sha1 377F0F17CE3CEA637DFDF9021F04AA56971DB6A6 serial "BFZE" )
-)
-game (
-	name "F-Zero - GP Legend (Unknown) (Proto) (Netcard)"
-	releaseyear "2005"
-	releasemonth "08"
-	releaseday "29"
-	serial "BFZE"
-	rom ( name "F-Zero - GP Legend (Unknown) (Proto) (2005-08-29) (Netcard).gba" size 16777216 crc D329DF50 md5 50C93EB8F7C477A5D5EF65C6842E5EEB sha1 71B626B355813E80F9CC3D6AE3765552B5E09009 serial "BFZE" )
-)
-game (
-	name "F-Zero - GP Legend (Unknown) (Proto) (2005-09-02 00.17.57) (Netcard)"
-	serial "BFZE"
-	rom ( name "F-Zero - GP Legend (Unknown) (Proto) (2005-09-02 00.17.57) (Netcard).gba" size 16777216 crc 61F9DC0E md5 8B6236AAD7BA63E05547146528CEA8A9 sha1 A9C26C71373BFA19C578591FD774F66644C0BDF2 serial "BFZE" )
-)
-game (
-	name "F-Zero - GP Legend (Unknown) (Proto) (2005-09-02 01.21.24) (Netcard)"
-	serial "BFZE"
-	rom ( name "F-Zero - GP Legend (Unknown) (Proto) (2005-09-02 01.21.24) (Netcard).gba" size 16777216 crc 26358B01 md5 21D8748D4D072F90C6319D6BD6EE1781 sha1 32D0B25C339F814C2840E289B232F38678B88193 serial "BFZE" )
 )
 game (
 	name "F-Zero - Maximum Velocity (USA, Europe)"
@@ -6841,22 +6815,16 @@ game (
 	rom ( name "Fire Emblem - Rekka no Ken (Japan).gba" size 16777216 crc F0C10E72 md5 9485F273F4E97E9E8F21966407F2E782 sha1 037702B1FEBD5C9535262165BF030551D153DE81 serial "AE7J" )
 )
 game (
-	name "Fire Emblem - Rekka no Ken (Japan) (Beta)"
-	releaseyear "2003"
-	releasemonth "02"
-	releaseday "06"
+	name "Fire Emblem - Rekka no Ken (Japan) (Beta 1)"
 	region "Japan"
 	serial "AFEJ"
-	rom ( name "Fire Emblem - Rekka no Ken (Japan) (Beta) (2003-02-06).gba" size 16777216 crc B40D6854 md5 D9449BC62CC7CFFFE5CA75DE8BEB27F4 sha1 A408D29A9B80829A0864F531E04213F585192CED serial "AFEJ" )
+	rom ( name "Fire Emblem - Rekka no Ken (Japan) (Beta 1).gba" size 16777216 crc B40D6854 md5 D9449BC62CC7CFFFE5CA75DE8BEB27F4 sha1 A408D29A9B80829A0864F531E04213F585192CED serial "AFEJ" )
 )
 game (
-	name "Fire Emblem - Rekka no Ken (Japan) (Beta)"
-	releaseyear "2003"
-	releasemonth "02"
-	releaseday "19"
+	name "Fire Emblem - Rekka no Ken (Japan) (Beta 2)"
 	region "Japan"
 	serial "AFEJ"
-	rom ( name "Fire Emblem - Rekka no Ken (Japan) (Beta) (2003-02-19).gba" size 16777216 crc 8146A270 md5 7FEE20A09C485433F51A97BFB468446C sha1 3B987BD15A3958901F38686C54A6250AB3398703 serial "AFEJ" )
+	rom ( name "Fire Emblem - Rekka no Ken (Japan) (Beta 2).gba" size 16777216 crc 8146A270 md5 7FEE20A09C485433F51A97BFB468446C sha1 3B987BD15A3958901F38686C54A6250AB3398703 serial "AFEJ" )
 )
 game (
 	name "Fire Emblem - Rekka no Ken (Japan) (Virtual Console)"
@@ -6946,8 +6914,8 @@ game (
 	rom ( name "Flintstones, The - Big Trouble in Bedrock (USA).gba" size 4194304 crc 3B09694B md5 A73253D79628D92C2FEE1E9D2BBD6FF5 sha1 7621AE8D6110D8C7D41CDE336D67E0E44CDBF48B serial "AFSE" )
 )
 game (
-	name "Flood (World) (v0.9) (Proto)"
-	rom ( name "Flood (World) (v0.9) (Proto) (Unl).gba" size 485108 crc 46AD658A md5 942F5468A3D6EA6613674A1DE3040A3E sha1 C3E6DFACA1570FB7D2AF45A25FD93E94E11BEB1E )
+	name "Flood (World) (Proto)"
+	rom ( name "Flood (World) (Proto) (Unl).gba" size 485108 crc 46AD658A md5 942F5468A3D6EA6613674A1DE3040A3E sha1 C3E6DFACA1570FB7D2AF45A25FD93E94E11BEB1E )
 )
 game (
 	name "Flushed Away (Europe) (En,Fr,De,Es,It)"
@@ -7041,6 +7009,10 @@ game (
 	region "USA"
 	serial "BFLE"
 	rom ( name "Franklin's Great Adventures (USA) (En,Fr,Es).gba" size 4194304 crc 7FBF8E98 md5 36EAF4FEC9E81F3EA44869033996CEDD sha1 2DA756BED887DBD33FC0EFDD3DCD01FBB92AE0DC serial "BFLE" )
+)
+game (
+	name "Franko 2 - No Mercy (World) (Proto)"
+	rom ( name "Franko 2 - No Mercy (World) (Proto).gba" size 553380 crc 685524D6 md5 5073FCB788018A0DA434845E112DB34D sha1 7CE11C72D315BEFCEAC68921D1EFCA30E8618EAF )
 )
 game (
 	name "Freekstyle (Europe) (En,Fr,De,Es,It)"
@@ -7166,6 +7138,14 @@ game (
 	rom ( name "Fruits Mura no Doubutsu-tachi (Japan) (Rev 2).gba" size 8388608 crc 195D7EA7 md5 A80A447EBDE7C4BAC73CAF9D6910F9EE sha1 21BA1D85C204F58F2867B9FDE8498318C8423BE7 serial "BFDJ" )
 )
 game (
+	name "Funkin GBA (World) (Proto 1)"
+	rom ( name "Funkin GBA (World) (Proto 1) (Aftermarket) (Unl).gba" size 10766643 crc 39D6AEF6 md5 B9385A785F271791D7A66BF0F9AA64BD sha1 F6C01D831439E6C7DD5BA498493C12EEA09FEEBE )
+)
+game (
+	name "Funkin GBA (World) (Proto 2)"
+	rom ( name "Funkin GBA (World) (Proto 2) (Aftermarket) (Unl).gba" size 17688511 crc 47811E8B md5 2EEA980E20982DCF6655FC510E8D9281 sha1 2B855D889B2A95BBA28B6647EC58361F5F6CCF6F )
+)
+game (
 	name "Fushigi no Kuni no Alice (Japan)"
 	region "Japan"
 	serial "AF4J"
@@ -7191,11 +7171,8 @@ game (
 )
 game (
 	name "Fuzz & Rocket (USA) (Proto)"
-	releaseyear "2005"
-	releasemonth "01"
-	releaseday "18"
 	region "USA"
-	rom ( name "Fuzz & Rocket (USA) (Proto) (2005-01-18).gba" size 4124984 crc FD239437 md5 7692B7D8C05131BE5A632B043497B1D3 sha1 E6DAB28AA3E9A5B1417BBF3929C45FF7260803B0 )
+	rom ( name "Fuzz & Rocket (USA) (Proto).gba" size 4124984 crc FD239437 md5 7692B7D8C05131BE5A632B043497B1D3 sha1 E6DAB28AA3E9A5B1417BBF3929C45FF7260803B0 )
 )
 game (
 	name "GB-A TV Tuner PAL (China) (v1.3)"
@@ -7243,6 +7220,10 @@ game (
 	rom ( name "GBA Tactics (World) (Proto) (NEO Coding Compo 2006) (Aftermarket) (Unl).gba" size 251816 crc 81B449A6 md5 5179F3AE5FFB874CFBBD91A8940328E2 sha1 803834D8843A6689FE43C77921EAAEA6BDAF6ED4 )
 )
 game (
+	name "GBADoom (World) (v2.7)"
+	rom ( name "GBADoom (World) (v2.7) (Aftermarket) (Unl).gba" size 8003704 crc EEF19C92 md5 A5AE01EDA1B2FF6C16C9F69DBBDAE488 sha1 72A04C0C126B62B78AFA9ED3ACA227014EAD21EF )
+)
+game (
 	name "GP-1 Racing (USA) (Proto)"
 	region "USA"
 	serial "ARCE"
@@ -7285,22 +7266,16 @@ game (
 	rom ( name "GT Championship (Europe).gba" size 4194304 crc E92EC7AA md5 09306558743C945883527D6C75FAEDA8 sha1 B49953EE8C7296205CBB5AC60DA298C9D7B3C4A2 serial "ATCX" )
 )
 game (
-	name "GT Racers (Europe) (Beta)"
-	releaseyear "2005"
-	releasemonth "07"
-	releaseday "13"
+	name "GT Racers (Europe) (Beta 1)"
 	region "Europe"
 	serial "AGBJ"
-	rom ( name "GT Racers (Europe) (Beta) (2005-07-13).gba" size 362512 crc E027657A md5 8EF186D8565C1408E653BFE5341A5FFB sha1 79E5600C34424BCEB6458CE579B8485D5F478578 serial "AGBJ" )
+	rom ( name "GT Racers (Europe) (Beta 1).gba" size 362512 crc E027657A md5 8EF186D8565C1408E653BFE5341A5FFB sha1 79E5600C34424BCEB6458CE579B8485D5F478578 serial "AGBJ" )
 )
 game (
-	name "GT Racers (Europe) (Beta)"
-	releaseyear "2005"
-	releasemonth "10"
-	releaseday "14"
+	name "GT Racers (Europe) (Beta 2)"
 	region "Europe"
 	serial "AGBJ"
-	rom ( name "GT Racers (Europe) (Beta) (2005-10-14).gba" size 2619992 crc A0F745A0 md5 CCAA6814BCB83EC7FFF309616A2F6D40 sha1 FB10FDEB8C853CC13FDEC789B710E3B0847E8680 serial "AGBJ" )
+	rom ( name "GT Racers (Europe) (Beta 2).gba" size 2619992 crc A0F745A0 md5 CCAA6814BCB83EC7FFF309616A2F6D40 sha1 FB10FDEB8C853CC13FDEC789B710E3B0847E8680 serial "AGBJ" )
 )
 game (
 	name "GT Racers (Europe) (En,Fr,De,Es,It)"
@@ -7602,7 +7577,7 @@ game (
 	name "Get's!! Loto Club (Japan) (Proto)"
 	region "Japan"
 	serial "ABMP"
-	rom ( name "Get's!! Loto Club (Japan) (Proto).gba" size 8388608 crc 93F2E51E md5 84F7CE8B55D5501CFD2B19C6758801AD sha1 C8FE7A4C0A3C126B073B9D107413C172FE1420BB serial "ABMP" )
+	rom ( name "Get's!! Loto Club (Japan) (Proto).gba" size 4194304 crc BA81CB8E md5 69E2667DB46CC5249BB26B6741B22519 sha1 E347EC8E483C18CEC22E32283951DC62685E17C0 serial "ABMP" )
 )
 game (
 	name "GetBackers Dakkanya - Jagan Fuuin! (Japan)"
@@ -7643,6 +7618,10 @@ game (
 	rom ( name "Glacia Dungeon (World) (En,Es,Ru,Ro) (v1.5.2) (Aftermarket) (Unl).gba" size 1210608 crc AB5AE65B md5 81421240B15B1299416FE431074B571E sha1 E35037FF9CC24F8A7043D9A9D378E86D2EF80F9B )
 )
 game (
+	name "Glass Eyes (World)"
+	rom ( name "Glass Eyes (World) (Aftermarket) (Unl).gba" size 16576376 crc E2BB929E md5 90C904A00956852E52D5BEEE0BE5E96E sha1 35C00BDA1F43C920CC17ABA9D21023985EF618CB )
+)
+game (
 	name "Global Star - Sudoku Fever (Europe) (En,Fr,De,Es,It)"
 	region "Europe"
 	serial "B3ZP"
@@ -7655,12 +7634,12 @@ game (
 	rom ( name "Global Star - Sudoku Fever (USA).gba" size 4194304 crc 51A42F19 md5 836D614BE32CD350DE5E05A175DB6DA7 sha1 02BBF5ADAD90B431DA981785DBE10B273599153E serial "B3ZE" )
 )
 game (
-	name "Globlins (World) (Demo 1) (GBA Jam 2024)"
-	rom ( name "Globlins (World) (Demo 1) (GBA Jam 2024) (Aftermarket) (Unl).gba" size 1442016 crc 57106DBC md5 88D46CDF27D866F82A26BB2A1A98588C sha1 C067B23C4ED3A3444792485647EA67C314F25626 )
+	name "Globlins! (World) (Demo 1) (GBA Jam 2024)"
+	rom ( name "Globlins! (World) (Demo 1) (GBA Jam 2024) (Aftermarket) (Unl).gba" size 1442016 crc 57106DBC md5 88D46CDF27D866F82A26BB2A1A98588C sha1 C067B23C4ED3A3444792485647EA67C314F25626 )
 )
 game (
-	name "Globlins (World) (Demo 2) (MAGFest 2025)"
-	rom ( name "Globlins (World) (Demo 2) (MAGFest 2025) (Aftermarket) (Unl).gba" size 1933188 crc 55CCD78C md5 52B14FB6F8D3D311BC708813E742F6E8 sha1 726324985FAC62DA2C13C964625BAF1E1CEBA42C )
+	name "Globlins! (World) (Demo 2) (MAGFest 2025)"
+	rom ( name "Globlins! (World) (Demo 2) (MAGFest 2025) (Aftermarket) (Unl).gba" size 1933188 crc 55CCD78C md5 52B14FB6F8D3D311BC708813E742F6E8 sha1 726324985FAC62DA2C13C964625BAF1E1CEBA42C )
 )
 game (
 	name "Glucoboy (Australia)"
@@ -7783,6 +7762,10 @@ game (
 	rom ( name "Google Dino Advance (World) (v1.0.1) (Aftermarket) (Unl).gba" size 109072 crc 6534185E md5 0F8ED17D661F50FD1C09D07E54F88F31 sha1 33CC0AFC7FBAC8948DEB75C66B8E097C1D05B2E3 )
 )
 game (
+	name "Google Dino Advance (World) (v1.1)"
+	rom ( name "Google Dino Advance (World) (v1.1) (Aftermarket) (Unl).gba" size 109084 crc FDACA282 md5 DAAB9C49F67D0064317799027D537CA9 sha1 3EAD8D090B9D53C8BB4537357629DE7644CF922A )
+)
+game (
 	name "Gradius Advance (Europe)"
 	region "Europe"
 	serial "AGAP"
@@ -7811,6 +7794,10 @@ game (
 	region "USA"
 	serial "BGTE"
 	rom ( name "Grand Theft Auto (USA).gba" size 16777216 crc 1FA131E8 md5 2C8EF9CCE9F46B55247468EA449AEADE sha1 742FC0062AD930253FFEA449953061381577649E serial "BGTE" )
+)
+game (
+	name "Gravity (World)"
+	rom ( name "Gravity (World) (Aftermarket) (Unl).gba" size 4194304 crc 15E60FB1 md5 FB51B0C651FE2F11C12B5E837A0DAD6F sha1 8EC0A9845CC9FBC4B748CB52F804B26079FF3841 )
 )
 game (
 	name "Greatest Nine (Japan)"
@@ -7843,6 +7830,18 @@ game (
 game (
 	name "Green Memories (World) (v1.4.8)"
 	rom ( name "Green Memories (World) (v1.4.8) (Aftermarket) (Unl).gba" size 7662780 crc 7E8C875C md5 276B4EF1D42518E99859B31D4EE1B843 sha1 5EEB845888746530088978A8929CAAD59C1F4DA2 )
+)
+game (
+	name "Green Memories (World) (v1.5.0)"
+	rom ( name "Green Memories (World) (v1.5.0) (Aftermarket) (Unl).gba" size 8616724 crc AE3FA4B1 md5 B13461236228954F67B1966682D91164 sha1 952A40153D1858B3DAC618629D630F6082D2F848 )
+)
+game (
+	name "Green Memories (World) (v1.5.0) (Flash64)"
+	rom ( name "Green Memories (World) (v1.5.0) (Flash64) (Aftermarket) (Unl).gba" size 8618976 crc 42346D49 md5 415C6141AB8EAB3F4853AFE40635F206 sha1 E9B598C68BBB7E1D3D9289E02CECC39747A3933E )
+)
+game (
+	name "Green Memories (World) (v1.5.0) (SRAM)"
+	rom ( name "Green Memories (World) (v1.5.0) (SRAM) (Aftermarket) (Unl).gba" size 8615652 crc C3AA5BB0 md5 35D1250BA3DEC253A2975B33D7A6C6D5 sha1 99E8259F917AC1F745825E8BC04A7885100AA9F9 )
 )
 game (
 	name "Greg Hastings' Tournament Paintball Max'd (USA)"
@@ -8372,8 +8371,8 @@ game (
 	rom ( name "Hero Core (World) (v0.1.2) (Beta) (GBA Jam 2022) (Aftermarket) (Unl).gba" size 22209300 crc 0A3FCAD6 md5 4FED5F79CEBFED5FDD67285074C8DF3D sha1 3B7B91C474A225D96118C4A4263007218A8EE2DE )
 )
 game (
-	name "Hex Advance (World) (v0.3) (Proto)"
-	rom ( name "Hex Advance (World) (v0.3) (Proto) (Aftermarket) (Unl).gba" size 673964 crc 8DBE63B7 md5 C6CB9B88AD6C256EB1C1C4DF8F6BE63E sha1 9E5F41E62DCA7A5BC8D8999BF1651105E031AD76 )
+	name "Hex Advance (World) (Proto)"
+	rom ( name "Hex Advance (World) (Proto) (Aftermarket) (Unl).gba" size 673964 crc 8DBE63B7 md5 C6CB9B88AD6C256EB1C1C4DF8F6BE63E sha1 9E5F41E62DCA7A5BC8D8999BF1651105E031AD76 )
 )
 game (
 	name "Hexa Virus (World)"
@@ -8943,9 +8942,9 @@ game (
 	rom ( name "Iridion 3D (USA, Europe).gba" size 4194304 crc 34189E74 md5 F88DF40FEDB9D31A6E59DBA4A9BE1B2A sha1 4C9E0F52078D73D5843487DE9EAB4462C5C153F7 serial "AI3E" )
 )
 game (
-	name "Iridion 3D (World)"
+	name "Iridion 3D (World) (Steam, GOG)"
 	serial "AI3E"
-	rom ( name "Iridion 3D (World) (Aftermarket) (Unl).gba" size 4194304 crc 4C7EBE42 md5 C68975D3D2CF8AAFB150A3B97D020A80 sha1 6F1C77AB88351D2D50DA412E4788FC7CA8A6714D serial "AI3E" )
+	rom ( name "Iridion 3D (World) (Steam, GOG).gba" size 4194304 crc 4C7EBE42 md5 C68975D3D2CF8AAFB150A3B97D020A80 sha1 6F1C77AB88351D2D50DA412E4788FC7CA8A6714D serial "AI3E" )
 )
 game (
 	name "Iridion II (Europe) (En,Fr,De)"
@@ -9242,21 +9241,9 @@ game (
 )
 game (
 	name "Justice League - Chronicles (USA) (Beta)"
-	releaseyear "2003"
-	releasemonth "03"
-	releaseday "03"
 	region "USA"
 	serial "AGBJ"
-	rom ( name "Justice League - Chronicles (USA) (Beta) (2003-03-03).gba" size 3768320 crc FDBD4BD0 md5 C31CC0664C7152DBE4CE3E41C764850D sha1 7B90EF5B885FD85F639833ADB52750381BC9B928 serial "AGBJ" )
-)
-game (
-	name "Justice League - Chronicles (USA) (Tech Demo)"
-	releaseyear "2003"
-	releasemonth "03"
-	releaseday "03"
-	region "USA"
-	serial "AGBJ"
-	rom ( name "Justice League - Chronicles (USA) (Tech Demo) (2003-03-03).gba" size 425984 crc 4861F9A6 md5 05F058CA3A04D54CF6B3B0F3E779F318 sha1 76B2A1D6E1437EE8DBB9C10AD1C483B6051FF36A serial "AGBJ" )
+	rom ( name "Justice League - Chronicles (USA) (Beta).gba" size 3768320 crc FDBD4BD0 md5 C31CC0664C7152DBE4CE3E41C764850D sha1 7B90EF5B885FD85F639833ADB52750381BC9B928 serial "AGBJ" )
 )
 game (
 	name "Justice League - Injustice for All (Europe) (En,Fr,De,Es,It)"
@@ -9446,19 +9433,13 @@ game (
 )
 game (
 	name "Kid Paddle (Europe) (Fr,Nl) (Beta 1)"
-	releaseyear "2005"
-	releasemonth "06"
-	releaseday "28"
 	region "Europe"
-	rom ( name "Kid Paddle (Europe) (Fr,Nl) (Beta 1) (2005-06-28).gba" size 8388608 crc 46648F66 md5 6468BCA90AACF0B1490C9F6D85DE96FF sha1 E2D3FDB1421B6D6826CD716FCC122C691DC9CB86 )
+	rom ( name "Kid Paddle (Europe) (Fr,Nl) (Beta 1).gba" size 8388608 crc 46648F66 md5 6468BCA90AACF0B1490C9F6D85DE96FF sha1 E2D3FDB1421B6D6826CD716FCC122C691DC9CB86 )
 )
 game (
 	name "Kid Paddle (Europe) (Fr,Nl) (Beta 2)"
-	releaseyear "2005"
-	releasemonth "07"
-	releaseday "08"
 	region "Europe"
-	rom ( name "Kid Paddle (Europe) (Fr,Nl) (Beta 2) (2005-07-08).gba" size 8388608 crc 44AAD1CB md5 5DCEC1E7F6E1CBF5283D8B245FD8E1B7 sha1 306FBBAA3D0C420683628E37C25494FDCCD0ECFD )
+	rom ( name "Kid Paddle (Europe) (Fr,Nl) (Beta 2).gba" size 8388608 crc 44AAD1CB md5 5DCEC1E7F6E1CBF5283D8B245FD8E1B7 sha1 306FBBAA3D0C420683628E37C25494FDCCD0ECFD )
 )
 game (
 	name "Kid Paddle (Europe) (Fr,Nl) (Beta 3)"
@@ -9478,16 +9459,16 @@ game (
 	rom ( name "Kidou Gekidan Haro Ichiza - Haro no Puyo Puyo (Japan).gba" size 8388608 crc A7825224 md5 EA29CC92D44B5217B9810A77ECCADA2D sha1 3507A5C4DF0290B1D1935E47C2EE342D07C3DBDC serial "BH6J" )
 )
 game (
-	name "Kidou Senshi Gundam - Seed Destiny (Japan)"
-	region "Japan"
-	serial "B42J"
-	rom ( name "Kidou Senshi Gundam - Seed Destiny (Japan).gba" size 8388608 crc AA250CCA md5 FA72EB309A2C87D0CC50A00D0775950C sha1 64EEA52CD909669A972C091869C5F47865863BC0 serial "B42J" )
-)
-game (
-	name "Kidou Senshi Gundam Seed - Tomo to Kimi to Koko de. (Japan)"
+	name "Kidou Senshi Gundam SEED - Tomo to Kimi to Koko de. (Japan)"
 	region "Japan"
 	serial "BGNJ"
-	rom ( name "Kidou Senshi Gundam Seed - Tomo to Kimi to Koko de. (Japan).gba" size 8388608 crc 73BF384B md5 449832ADA23C6BC79D1CD3978C5D9420 sha1 9F6B694A159A3D4E3DEFAAA17E58410D4228CB26 serial "BGNJ" )
+	rom ( name "Kidou Senshi Gundam SEED - Tomo to Kimi to Koko de. (Japan).gba" size 8388608 crc 73BF384B md5 449832ADA23C6BC79D1CD3978C5D9420 sha1 9F6B694A159A3D4E3DEFAAA17E58410D4228CB26 serial "BGNJ" )
+)
+game (
+	name "Kidou Senshi Gundam SEED Destiny (Japan)"
+	region "Japan"
+	serial "B42J"
+	rom ( name "Kidou Senshi Gundam SEED Destiny (Japan).gba" size 8388608 crc AA250CCA md5 FA72EB309A2C87D0CC50A00D0775950C sha1 64EEA52CD909669A972C091869C5F47865863BC0 serial "B42J" )
 )
 game (
 	name "Kidou Tenshi Angelic Layer - Misaki to Yume no Tenshi-tachi (Japan)"
@@ -9502,8 +9483,8 @@ game (
 	rom ( name "Kien (USA) (Proto).gba" size 8388608 crc 185C2ECA md5 FE8F2D7B6B58CB78CA51F8BCEAA0F254 sha1 DA1673EC5EC35F8ECECA3F04CB6A92D61237CE72 serial "XXXE" )
 )
 game (
-	name "Kien (World) (Incub8 Games)"
-	rom ( name "Kien (World) (Incub8 Games) (Unl).gba" size 8350032 crc 5A64B473 md5 A509C1B5FA74F70550EE81386C7FE4B9 sha1 3CF07CD95E5A83B65C773111051A50D9BEF367EB )
+	name "Kien (World) (Incube8 Games)"
+	rom ( name "Kien (World) (Incube8 Games) (Unl).gba" size 8350032 crc 5A64B473 md5 A509C1B5FA74F70550EE81386C7FE4B9 sha1 3CF07CD95E5A83B65C773111051A50D9BEF367EB )
 )
 game (
 	name "Kikaika Guntai - Mech Platoon (Japan)"
@@ -9615,12 +9596,9 @@ game (
 )
 game (
 	name "King of Fighters EX 2, The - Howling Blood (USA) (Beta)"
-	releaseyear "2003"
-	releasemonth "04"
-	releaseday "03"
 	region "USA"
 	serial "AEXE"
-	rom ( name "King of Fighters EX 2, The - Howling Blood (USA) (Beta) (2003-04-03).gba" size 8388608 crc 7704FF39 md5 579B17924207E422490E5A1FE4A52AAA sha1 B859122C1813A5EC9FB565DCCA815A9F0A52BF18 serial "AEXE" )
+	rom ( name "King of Fighters EX 2, The - Howling Blood (USA) (Beta).gba" size 8388608 crc 7704FF39 md5 579B17924207E422490E5A1FE4A52AAA sha1 B859122C1813A5EC9FB565DCCA815A9F0A52BF18 serial "AEXE" )
 )
 game (
 	name "King of Fighters EX, The - NeoBlood (Europe)"
@@ -9733,6 +9711,10 @@ game (
 	region "USA"
 	serial "A7KE"
 	rom ( name "Kirby - Nightmare in Dream Land (USA) (Virtual Console).gba" size 8388608 crc 1AF07AC8 md5 C702F8DA946F5A50DF244151DD7F9E6A sha1 3D142008D50A64C315FD2D7CBD86BA94DFFA2E12 serial "A7KE" )
+)
+game (
+	name "Kirby Slide + (World)"
+	rom ( name "Kirby Slide + (World) (Aftermarket) (Unl).gba" size 31810136 crc 8AEB0A4B md5 D26892854C4FDFE2CC69FAD0CC630A53 sha1 7139B362D62430EAC9915C183A1F9485DA3A5E8C )
 )
 game (
 	name "Kisekko Gurumii - Chesty to Nuigurumi-tachi no Mahou no Bouken (Japan)"
@@ -10193,6 +10175,14 @@ game (
 	region "USA"
 	serial "AL9E"
 	rom ( name "Lara Croft Tomb Raider - The Prophecy (USA) (En,Fr,De,Es,It).gba" size 8388608 crc 556F40FA md5 BA38712AD91C6C0287298D4C53AD48B1 sha1 25D1C4C412ADA421B88A88DBA89A0FFD23F6F75D serial "AL9E" )
+)
+game (
+	name "Lau Gurpil (World) (Demo 1)"
+	rom ( name "Lau Gurpil (World) (Demo 1) (Aftermarket) (Unl).gba" size 105428 crc B2D4EEB3 md5 8BA0F025AA7ACBFA1376AB140685B234 sha1 93EDB219297DCAB3DFB8D28F26381139C346FB17 )
+)
+game (
+	name "Lau Gurpil (World) (Demo 2)"
+	rom ( name "Lau Gurpil (World) (Demo 2) (Aftermarket) (Unl).gba" size 184676 crc 80283AEC md5 7875568EABAB6210267BEA6215306B22 sha1 0DC59B681E47400894FBC3DCFD19306455727C15 )
 )
 game (
 	name "Lea - Passion Veterinaire (France) (En,Fr)"
@@ -10832,6 +10822,10 @@ game (
 	rom ( name "Mahou no Pumpkin - Ann to Greg no Daibouken (Japan).gba" size 4194304 crc F9652B4D md5 8DAEE9FE02459C2084D461D4F2E8E481 sha1 A42D4104E0D0D8D9B2B2196D745237D640795215 serial "AWNJ" )
 )
 game (
+	name "Mai Nurse (World) (v1.02)"
+	rom ( name "Mai Nurse (World) (v1.02) (Aftermarket) (Unl).gba" size 205756 crc 08A20DC9 md5 42E4723A061129B558230A6EC6503EA9 sha1 8B2F382B1A5415A5F87A05709209C4B264FC3E56 )
+)
+game (
 	name "Mail de Cute (Japan)"
 	region "Japan"
 	serial "AMCJ"
@@ -10911,6 +10905,10 @@ game (
 	region "Europe"
 	serial "A4MP"
 	rom ( name "Manic Miner (Europe) (En,Fr,De,Es,It).gba" size 8388608 crc 138439F4 md5 786FC5AFF6A10EFD3E3585BA10EBC863 sha1 C9F2AF2BF740A42065C585798507D925543AA512 serial "A4MP" )
+)
+game (
+	name "Manolo & Benito (World)"
+	rom ( name "Manolo & Benito (World) (Aftermarket) (Unl).gba" size 524288 crc 52957C3A md5 9BA4640F1CB91AF6A7C98786529F2263 sha1 8D6F8E080E88A0AB5CF0603D6AD09551C1FDCB0E )
 )
 game (
 	name "March of the Penguins (Europe) (En,Fr,De,Es,It)"
@@ -11038,15 +11036,6 @@ game (
 	rom ( name "Mario Golf - GBA Tour (Japan) (Virtual Console).gba" size 16777216 crc 78C8140F md5 71B728433530FD17F4A7F86E15309734 sha1 EB096694F094CA3BC6D75555C757DC98FD9A7CEA serial "BMGJ" )
 )
 game (
-	name "Mario Kart - Super Circuit (China) (En) (Proto) (Netcard)"
-	releaseyear "2006"
-	releasemonth "06"
-	releaseday "06"
-	region "China"
-	serial "AMKE"
-	rom ( name "Mario Kart - Super Circuit (China) (En) (Proto) (2006-06-06) (Netcard).gba" size 16777216 crc 31AC3BD3 md5 D838C57B19062D67A408244B33E1CFA9 sha1 D02282021DF90037F3D9858202C1B59011B4101E serial "AMKE" )
-)
-game (
 	name "Mario Kart - Super Circuit (Europe)"
 	region "Europe"
 	serial "AMKP"
@@ -11063,6 +11052,12 @@ game (
 	region "USA"
 	serial "AMKE"
 	rom ( name "Mario Kart - Super Circuit (USA).gba" size 4194304 crc ED316E37 md5 784A036FF1AAE709E90167186639B75E sha1 9D327C030C3E2D9007990518594F70C3340AC56F serial "AMKE" )
+)
+game (
+	name "Mario Kart - Super Circuit (USA) (Proto) (Netcard)"
+	region "USA"
+	serial "AMKE"
+	rom ( name "Mario Kart - Super Circuit (USA) (Proto) (Netcard).gba" size 16777216 crc 31AC3BD3 md5 D838C57B19062D67A408244B33E1CFA9 sha1 D02282021DF90037F3D9858202C1B59011B4101E serial "AMKE" )
 )
 game (
 	name "Mario Kart - Super Circuit (USA) (Virtual Console)"
@@ -11252,6 +11247,12 @@ game (
 	region "Japan"
 	serial "BMRJ"
 	rom ( name "Matantei Loki Ragnarok - Gensou no Labyrinth (Japan).gba" size 8388608 crc 4EBDAD86 md5 4C083F328ED63A20CD865F3B942E52E7 sha1 9E1D0D5D5454D544AB85B34AD0E50FAD7B54487C serial "BMRJ" )
+)
+game (
+	name "Matantei Loki Ragnarok - Gensou no Labyrinth (Japan) (Beta) (Debug)"
+	region "Japan"
+	serial "A63J"
+	rom ( name "Matantei Loki Ragnarok - Gensou no Labyrinth (Japan) (Beta) (Debug).gba" size 4194304 crc 225E2FB3 md5 D3FD1646A46E5077A59B44E00FDFEE90 sha1 C4E4F20CE87D8B33DAA7892160FFAC262BC2199E serial "A63J" )
 )
 game (
 	name "Matantei Loki Ragnarok - Gensou no Labyrinth (Japan) (Rev 1)"
@@ -11556,28 +11557,212 @@ game (
 	rom ( name "Meet the Robinsons (USA).gba" size 8388608 crc 3787C93C md5 CFBF47949426A8F44ECDC832D06D09A9 sha1 58AD2756F1985430E1EF605BDCBA82564099A030 serial "BRHE" )
 )
 game (
-	name "Megaman & Bass (Europe)"
+	name "Mega Man & Bass (Europe)"
 	region "Europe"
 	serial "A6MP"
-	rom ( name "Megaman & Bass (Europe).gba" size 8388608 crc 01B4D95E md5 1FF9F0809C7766F72E67378CB14A430A sha1 5D6F8FB1F52803A54E9857E53D0B88173CF8F48A serial "A6MP" )
+	rom ( name "Mega Man & Bass (Europe).gba" size 8388608 crc 01B4D95E md5 1FF9F0809C7766F72E67378CB14A430A sha1 5D6F8FB1F52803A54E9857E53D0B88173CF8F48A serial "A6MP" )
 )
 game (
-	name "Megaman & Bass (Europe) (Virtual Console)"
+	name "Mega Man & Bass (Europe) (Virtual Console)"
 	region "Europe"
 	serial "A6MP"
-	rom ( name "Megaman & Bass (Europe) (Virtual Console).gba" size 8388608 crc 6E140BFA md5 E6D2B51EBE0420817D16ACAD4F89BF7A sha1 37A188A250FF553A71144F8BBE92098C85C8006D serial "A6MP" )
+	rom ( name "Mega Man & Bass (Europe) (Virtual Console).gba" size 8388608 crc 6E140BFA md5 E6D2B51EBE0420817D16ACAD4F89BF7A sha1 37A188A250FF553A71144F8BBE92098C85C8006D serial "A6MP" )
 )
 game (
-	name "Megaman & Bass (USA)"
+	name "Mega Man & Bass (USA)"
 	region "USA"
 	serial "A6ME"
-	rom ( name "Megaman & Bass (USA).gba" size 8388608 crc EEA68C2E md5 88792AE1FBC74F4A5425D0C6F0482023 sha1 7610847B331870D4338E5AC894B36E55E2BEC5A0 serial "A6ME" )
+	rom ( name "Mega Man & Bass (USA).gba" size 8388608 crc EEA68C2E md5 88792AE1FBC74F4A5425D0C6F0482023 sha1 7610847B331870D4338E5AC894B36E55E2BEC5A0 serial "A6ME" )
 )
 game (
-	name "Megaman & Bass (USA) (Virtual Console)"
+	name "Mega Man & Bass (USA) (Virtual Console)"
 	region "USA"
 	serial "A6ME"
-	rom ( name "Megaman & Bass (USA) (Virtual Console).gba" size 8388608 crc B61F99D4 md5 89C23BAD78A30D9D1065262DA512594F sha1 37DB963A52AECEC8018057CEF3811860C3E889ED serial "A6ME" )
+	rom ( name "Mega Man & Bass (USA) (Virtual Console).gba" size 8388608 crc B61F99D4 md5 89C23BAD78A30D9D1065262DA512594F sha1 37DB963A52AECEC8018057CEF3811860C3E889ED serial "A6ME" )
+)
+game (
+	name "Mega Man - Battle Chip Challenge (USA)"
+	region "USA"
+	serial "A89E"
+	rom ( name "Mega Man - Battle Chip Challenge (USA).gba" size 8388608 crc 26BE44FD md5 D996F6CBB36EB15063B290D8F00AD654 sha1 72309736F3820470C6F372D6A05AD1F16BC5A946 serial "A89E" )
+)
+game (
+	name "Mega Man - Battle Chip Challenge (USA) (Virtual Console)"
+	region "USA"
+	serial "A89E"
+	rom ( name "Mega Man - Battle Chip Challenge (USA) (Virtual Console).gba" size 8388608 crc 59FC1EF6 md5 55E2EE8DD7A4A6574A1C8545B7D53FB8 sha1 E936DB20E9CF923DC10C6C1DC14BC7ED6B220080 serial "A89E" )
+)
+game (
+	name "Mega Man - Battle Network (USA)"
+	region "USA"
+	serial "AREE"
+	rom ( name "Mega Man - Battle Network (USA).gba" size 8388608 crc 1D347971 md5 9FF40CF640575211202B7BDA5487ABBB sha1 A4FBAE389654A6611D0597B1E9109CBBD32A132F serial "AREE" )
+)
+game (
+	name "Mega Man - Battle Network (USA) (Virtual Console)"
+	region "USA"
+	serial "AREE"
+	rom ( name "Mega Man - Battle Network (USA) (Virtual Console).gba" size 8388608 crc 1D5D0CB6 md5 DBE975F9DD8B09D76C73A6D18BDAA6FC sha1 A371765E107C30DC4AC37C2F114A785305F47A4C serial "AREE" )
+)
+game (
+	name "Mega Man - Battle Network 2 (USA)"
+	region "USA"
+	serial "AE2E"
+	rom ( name "Mega Man - Battle Network 2 (USA).gba" size 8388608 crc 6D961F82 md5 39F8A42133DF444EEB7BF0B2194D6286 sha1 601B5012F77001D2C5C11B31304AFAFC45A70D0B serial "AE2E" )
+)
+game (
+	name "Mega Man - Battle Network 2 (USA) (Beta) (Debug)"
+	region "USA"
+	serial "AE2E"
+	rom ( name "Mega Man - Battle Network 2 (USA) (Beta) (Debug).gba" size 8388608 crc C3AABD70 md5 62F96DEEBE82B3B3FDDF29F0D433B006 sha1 D8968AC6C33F376D8F6CE6205B53756434A8D2AC serial "AE2E" )
+)
+game (
+	name "Mega Man - Battle Network 2 (USA, Europe) (Virtual Console)"
+	region "USA"
+	serial "AE2E"
+	rom ( name "Mega Man - Battle Network 2 (USA, Europe) (Virtual Console).gba" size 8388608 crc 5E88C34B md5 54D7F45EF822D7485B623D46A636F2E7 sha1 D6B574203CC393F292A9825FCEC64E72B3B2A11B serial "AE2E" )
+)
+game (
+	name "Mega Man - Battle Network 3 - Blue Version (USA)"
+	region "USA"
+	serial "A3XE"
+	rom ( name "Mega Man - Battle Network 3 - Blue Version (USA).gba" size 8388608 crc C0C780F9 md5 6FE31DF0144759B34AD666BADAACC442 sha1 3D21905B6E860D39A00BA643779776DE4C73C411 serial "A3XE" )
+)
+game (
+	name "Mega Man - Battle Network 3 - Blue Version (USA) (Virtual Console)"
+	region "USA"
+	serial "A3XE"
+	rom ( name "Mega Man - Battle Network 3 - Blue Version (USA) (Virtual Console).gba" size 8388608 crc EDD7106E md5 41FABD164C0E4102C0187329E9F52C5C sha1 6E30310F3994803E56170F6D67C5F154A5D91CCB serial "A3XE" )
+)
+game (
+	name "Mega Man - Battle Network 3 - White Version (USA)"
+	region "USA"
+	serial "A6BE"
+	rom ( name "Mega Man - Battle Network 3 - White Version (USA).gba" size 8388608 crc 0BE4410A md5 68817204A691449E655CBA739DBB0165 sha1 FF45038AE6D01CDE4EAE25A02DCB8BED29E07A6F serial "A6BE" )
+)
+game (
+	name "Mega Man - Battle Network 3 - White Version (USA) (Virtual Console)"
+	region "USA"
+	serial "A6BE"
+	rom ( name "Mega Man - Battle Network 3 - White Version (USA) (Virtual Console).gba" size 8388608 crc F1C5AC80 md5 3BB6B3F488281C23460A717B71FAA366 sha1 1F0762B7C817211E855F4F50C2B11585D0893BE9 serial "A6BE" )
+)
+game (
+	name "Mega Man - Battle Network 4 - Blue Moon (USA)"
+	region "USA"
+	serial "B4BE"
+	rom ( name "Mega Man - Battle Network 4 - Blue Moon (USA).gba" size 8388608 crc 758A46E9 md5 E9DFE02B283E29D67C224AB6F86C3B9C sha1 5E017C803DDC768EFB8010314B46BC17E9757F71 serial "B4BE" )
+)
+game (
+	name "Mega Man - Battle Network 4 - Blue Moon (USA) (Virtual Console)"
+	region "USA"
+	serial "B4BE"
+	rom ( name "Mega Man - Battle Network 4 - Blue Moon (USA) (Virtual Console).gba" size 8388608 crc 739B7EC4 md5 333C21725D933D2BC0CC2209F70AFD48 sha1 62A0169F0FE00E5F8184475A20A36877D1063F63 serial "B4BE" )
+)
+game (
+	name "Mega Man - Battle Network 4 - Red Sun (USA)"
+	region "USA"
+	serial "B4WE"
+	rom ( name "Mega Man - Battle Network 4 - Red Sun (USA).gba" size 8388608 crc 2120695C md5 D0DEE5C06972CB072391CD968A248D52 sha1 A97E96A7DA03ABD70F7953328E511B9FA29179F1 serial "B4WE" )
+)
+game (
+	name "Mega Man - Battle Network 4 - Red Sun (USA) (Virtual Console)"
+	region "USA"
+	serial "B4WE"
+	rom ( name "Mega Man - Battle Network 4 - Red Sun (USA) (Virtual Console).gba" size 8388608 crc 12E7AB52 md5 C055AE4F347BF3DFE626979C06133057 sha1 07426328DBB4A3AEA763E75C8FFE6DE482FF69D0 serial "B4WE" )
+)
+game (
+	name "Mega Man - Battle Network 5 - Team Colonel (USA)"
+	region "USA"
+	serial "BRKE"
+	rom ( name "Mega Man - Battle Network 5 - Team Colonel (USA).gba" size 8388608 crc A552F683 md5 68D79F7C8F41F7C8009F3B85119CB1C6 sha1 5F472F78D8DE2DF01D5039E045C043CB40969A39 serial "BRKE" )
+)
+game (
+	name "Mega Man - Battle Network 5 - Team Colonel (USA) (Virtual Console)"
+	region "USA"
+	rom ( name "Mega Man - Battle Network 5 - Team Colonel (USA) (Virtual Console).gba" size 8388608 crc 78DD4EDC md5 759281BEED4BFA975262FD49028EFEBB sha1 C715F1D01E016AD6890EBC8EC90120BC3B146A7E )
+)
+game (
+	name "Mega Man - Battle Network 5 - Team Protoman (USA)"
+	region "USA"
+	serial "BRBE"
+	rom ( name "Mega Man - Battle Network 5 - Team Protoman (USA).gba" size 8388608 crc A73E83A4 md5 71B00BA406C522D3CEC48311BD7BC760 sha1 B3774E96B1F107BB8B1DB79B216BE41B9BC5BAC0 serial "BRBE" )
+)
+game (
+	name "Mega Man - Battle Network 5 - Team Protoman (USA) (Virtual Console)"
+	region "USA"
+	rom ( name "Mega Man - Battle Network 5 - Team Protoman (USA) (Virtual Console).gba" size 8388608 crc A0911541 md5 B03E618D511A7ED9EC3ADC43BD58AA96 sha1 70EE16615F7D9D6BB13382D70DD2F213B918063B )
+)
+game (
+	name "Mega Man - Battle Network 6 - Cybeast Falzar (USA)"
+	region "USA"
+	serial "BR6E"
+	rom ( name "Mega Man - Battle Network 6 - Cybeast Falzar (USA).gba" size 8388608 crc DEE6F2A9 md5 1E8C774BA210D1C55113531C7360C737 sha1 0676ECD4D58A976AF3346CAEBB44B9B6489AD099 serial "BR6E" )
+)
+game (
+	name "Mega Man - Battle Network 6 - Cybeast Falzar (USA) (Virtual Console)"
+	region "USA"
+	serial "BR6E"
+	rom ( name "Mega Man - Battle Network 6 - Cybeast Falzar (USA) (Virtual Console).gba" size 16777216 crc C2A21BE3 md5 CE943B2FC1539A9D069B6A6746616D66 sha1 C477367C5C9B81CBCA2F3BA0CF6A820D489A3B7E serial "BR6E" )
+)
+game (
+	name "Mega Man - Battle Network 6 - Cybeast Gregar (USA)"
+	region "USA"
+	serial "BR5E"
+	rom ( name "Mega Man - Battle Network 6 - Cybeast Gregar (USA).gba" size 8388608 crc 79452182 md5 5ACC75848BB1FFD3D6D8705554EE333D sha1 89FE0BAC4FD3D2AB1D2CA35E87EF8B1294A84CD6 serial "BR5E" )
+)
+game (
+	name "Mega Man - Battle Network 6 - Cybeast Gregar (USA) (Virtual Console)"
+	region "USA"
+	serial "BR5E"
+	rom ( name "Mega Man - Battle Network 6 - Cybeast Gregar (USA) (Virtual Console).gba" size 8388608 crc E7E546FE md5 65295E47FA2BC35407211C331D8F6B7C sha1 0A8DE8417B9939573DAA04F95CDECDEAAF58A79E serial "BR5E" )
+)
+game (
+	name "Mega Man Zero (USA) (Virtual Console)"
+	region "USA"
+	serial "AZCE"
+	rom ( name "Mega Man Zero (USA) (Virtual Console).gba" size 8388608 crc 9C77209C md5 C75988E7042168414E341C102DC7776C sha1 7279705E24D32895DADA7F5476F68BBC33DD643B serial "AZCE" )
+)
+game (
+	name "Mega Man Zero (USA, Europe)"
+	region "USA"
+	serial "AZCE"
+	rom ( name "Mega Man Zero (USA, Europe).gba" size 8388608 crc 9707D2A1 md5 B24A17D080A01A404CBF018BA42B9803 sha1 193B14120119162518A73C70876F0B8BFFDBD96E serial "AZCE" )
+)
+game (
+	name "Mega Man Zero 2 (USA)"
+	region "USA"
+	serial "A62E"
+	rom ( name "Mega Man Zero 2 (USA).gba" size 8388608 crc CE1E37BB md5 182363B0698322E1864CED6E9EED7EAD sha1 C4D93A58F0F82C526DEC8A3FDBDA170336303689 serial "A62E" )
+)
+game (
+	name "Mega Man Zero 2 (USA) (Virtual Console)"
+	region "USA"
+	serial "A62E"
+	rom ( name "Mega Man Zero 2 (USA) (Virtual Console).gba" size 8388608 crc 30D051FE md5 C0D76FD7A2B656FDEC1802D62309C4A7 sha1 D7A1EDD912F8E01BC442809B922BCEAF5A1F0176 serial "A62E" )
+)
+game (
+	name "Mega Man Zero 3 (USA)"
+	region "USA"
+	serial "BZ3E"
+	rom ( name "Mega Man Zero 3 (USA).gba" size 8388608 crc 2784F3F2 md5 AA1D5EEFFCD5E4577DB9EE6D9B1100F9 sha1 403A78F2CAD93D41E4B0F2E520CE08026531664B serial "BZ3E" )
+)
+game (
+	name "Mega Man Zero 3 (USA) (Virtual Console)"
+	region "USA"
+	serial "BZ3E"
+	rom ( name "Mega Man Zero 3 (USA) (Virtual Console).gba" size 16777216 crc CBD24AC4 md5 D67692814D313E0F70637FB2157AB6CC sha1 DE5413481D823C53973CB29507567EF3DC6AF399 serial "BZ3E" )
+)
+game (
+	name "Mega Man Zero 4 (USA)"
+	region "USA"
+	serial "B4ZE"
+	rom ( name "Mega Man Zero 4 (USA).gba" size 16777216 crc 7EE24793 md5 0D1E88BDB09FF68ADF9877A121325F9C sha1 596993205A1895A6F51E80749407FB069B907628 serial "B4ZE" )
+)
+game (
+	name "Mega Man Zero 4 (USA) (Virtual Console)"
+	region "USA"
+	serial "B4ZE"
+	rom ( name "Mega Man Zero 4 (USA) (Virtual Console).gba" size 16777216 crc C4838CFA md5 FA34FC711555C60249603A4EBB718C8E sha1 24A774446C8F652C78BB4BD938FC57C612DB3D6C serial "B4ZE" )
 )
 game (
 	name "Megaman - Battle Chip Challenge (Europe)"
@@ -11592,18 +11777,6 @@ game (
 	rom ( name "Megaman - Battle Chip Challenge (Europe) (Virtual Console).gba" size 8388608 crc 24046BF2 md5 D2B0CAB71D1C40AA38E94EEB2D1C8718 sha1 F0776AD33EB01A47207A076D95B534145223371D serial "A89P" )
 )
 game (
-	name "Megaman - Battle Chip Challenge (USA)"
-	region "USA"
-	serial "A89E"
-	rom ( name "Megaman - Battle Chip Challenge (USA).gba" size 8388608 crc 26BE44FD md5 D996F6CBB36EB15063B290D8F00AD654 sha1 72309736F3820470C6F372D6A05AD1F16BC5A946 serial "A89E" )
-)
-game (
-	name "Megaman - Battle Chip Challenge (USA) (Virtual Console)"
-	region "USA"
-	serial "A89E"
-	rom ( name "Megaman - Battle Chip Challenge (USA) (Virtual Console).gba" size 8388608 crc 59FC1EF6 md5 55E2EE8DD7A4A6574A1C8545B7D53FB8 sha1 E936DB20E9CF923DC10C6C1DC14BC7ED6B220080 serial "A89E" )
-)
-game (
 	name "Megaman - Battle Network (Europe)"
 	region "Europe"
 	serial "AREP"
@@ -11616,40 +11789,10 @@ game (
 	rom ( name "Megaman - Battle Network (Europe) (Virtual Console).gba" size 8388608 crc 1A16C13D md5 FD80C3AD287CA570CE26C425237D1902 sha1 0DCBC43D5D50401C0EAB8BB5989055523CE90B10 serial "AREP" )
 )
 game (
-	name "Megaman - Battle Network (USA)"
-	region "USA"
-	serial "AREE"
-	rom ( name "Megaman - Battle Network (USA).gba" size 8388608 crc 1D347971 md5 9FF40CF640575211202B7BDA5487ABBB sha1 A4FBAE389654A6611D0597B1E9109CBBD32A132F serial "AREE" )
-)
-game (
-	name "Megaman - Battle Network (USA) (Virtual Console)"
-	region "USA"
-	serial "AREE"
-	rom ( name "Megaman - Battle Network (USA) (Virtual Console).gba" size 8388608 crc 1D5D0CB6 md5 DBE975F9DD8B09D76C73A6D18BDAA6FC sha1 A371765E107C30DC4AC37C2F114A785305F47A4C serial "AREE" )
-)
-game (
 	name "Megaman - Battle Network 2 (Europe)"
 	region "Europe"
 	serial "AM2P"
 	rom ( name "Megaman - Battle Network 2 (Europe).gba" size 8388608 crc 66341F3B md5 833E55B181AC9B4DA56B6341C1F4E09A sha1 13D8C1978CBCD9CA2A127168544FDA176E0A4D6C serial "AM2P" )
-)
-game (
-	name "Megaman - Battle Network 2 (USA)"
-	region "USA"
-	serial "AE2E"
-	rom ( name "Megaman - Battle Network 2 (USA).gba" size 8388608 crc 6D961F82 md5 39F8A42133DF444EEB7BF0B2194D6286 sha1 601B5012F77001D2C5C11B31304AFAFC45A70D0B serial "AE2E" )
-)
-game (
-	name "Megaman - Battle Network 2 (USA) (Debug Version)"
-	region "USA"
-	serial "AE2E"
-	rom ( name "Megaman - Battle Network 2 (USA) (Debug Version).gba" size 8388608 crc C3AABD70 md5 62F96DEEBE82B3B3FDDF29F0D433B006 sha1 D8968AC6C33F376D8F6CE6205B53756434A8D2AC serial "AE2E" )
-)
-game (
-	name "Megaman - Battle Network 2 (USA, Europe) (Virtual Console)"
-	region "USA"
-	serial "AE2E"
-	rom ( name "Megaman - Battle Network 2 (USA, Europe) (Virtual Console).gba" size 8388608 crc 5E88C34B md5 54D7F45EF822D7485B623D46A636F2E7 sha1 D6B574203CC393F292A9825FCEC64E72B3B2A11B serial "AE2E" )
 )
 game (
 	name "Megaman - Battle Network 3 - Blue Version (Europe)"
@@ -11664,18 +11807,6 @@ game (
 	rom ( name "Megaman - Battle Network 3 - Blue Version (Europe) (Virtual Console).gba" size 8388608 crc 3213FC2D md5 E23C4D809417568BCBFB93172609C77E sha1 A9FE51D3FFD7488739821B895B45CF91C10A3108 serial "A3XP" )
 )
 game (
-	name "Megaman - Battle Network 3 - Blue Version (USA)"
-	region "USA"
-	serial "A3XE"
-	rom ( name "Megaman - Battle Network 3 - Blue Version (USA).gba" size 8388608 crc C0C780F9 md5 6FE31DF0144759B34AD666BADAACC442 sha1 3D21905B6E860D39A00BA643779776DE4C73C411 serial "A3XE" )
-)
-game (
-	name "Megaman - Battle Network 3 - Blue Version (USA) (Virtual Console)"
-	region "USA"
-	serial "A3XE"
-	rom ( name "Megaman - Battle Network 3 - Blue Version (USA) (Virtual Console).gba" size 8388608 crc EDD7106E md5 41FABD164C0E4102C0187329E9F52C5C sha1 6E30310F3994803E56170F6D67C5F154A5D91CCB serial "A3XE" )
-)
-game (
 	name "Megaman - Battle Network 3 - White Version (Europe)"
 	region "Europe"
 	serial "A6BP"
@@ -11686,18 +11817,6 @@ game (
 	region "Europe"
 	serial "A6BP"
 	rom ( name "Megaman - Battle Network 3 - White Version (Europe) (Virtual Console).gba" size 8388608 crc D9F1440B md5 5D9223837DC976E6756616324C5CD2CB sha1 E0BD967C2296CA5A515E8B6231D4959336C1278D serial "A6BP" )
-)
-game (
-	name "Megaman - Battle Network 3 - White Version (USA)"
-	region "USA"
-	serial "A6BE"
-	rom ( name "Megaman - Battle Network 3 - White Version (USA).gba" size 8388608 crc 0BE4410A md5 68817204A691449E655CBA739DBB0165 sha1 FF45038AE6D01CDE4EAE25A02DCB8BED29E07A6F serial "A6BE" )
-)
-game (
-	name "Megaman - Battle Network 3 - White Version (USA) (Virtual Console)"
-	region "USA"
-	serial "A6BE"
-	rom ( name "Megaman - Battle Network 3 - White Version (USA) (Virtual Console).gba" size 8388608 crc F1C5AC80 md5 3BB6B3F488281C23460A717B71FAA366 sha1 1F0762B7C817211E855F4F50C2B11585D0893BE9 serial "A6BE" )
 )
 game (
 	name "Megaman - Battle Network 4 - Blue Moon (Europe)"
@@ -11712,18 +11831,6 @@ game (
 	rom ( name "Megaman - Battle Network 4 - Blue Moon (Europe) (Virtual Console).gba" size 8388608 crc AD89F27D md5 CD06FCA8F11C9FBF1C89D067719CC7F6 sha1 0FBF2B2F53F0A32E893E2593E2D7C542B5FCAC99 serial "B4BP" )
 )
 game (
-	name "Megaman - Battle Network 4 - Blue Moon (USA)"
-	region "USA"
-	serial "B4BE"
-	rom ( name "Megaman - Battle Network 4 - Blue Moon (USA).gba" size 8388608 crc 758A46E9 md5 E9DFE02B283E29D67C224AB6F86C3B9C sha1 5E017C803DDC768EFB8010314B46BC17E9757F71 serial "B4BE" )
-)
-game (
-	name "Megaman - Battle Network 4 - Blue Moon (USA) (Virtual Console)"
-	region "USA"
-	serial "B4BE"
-	rom ( name "Megaman - Battle Network 4 - Blue Moon (USA) (Virtual Console).gba" size 8388608 crc 739B7EC4 md5 333C21725D933D2BC0CC2209F70AFD48 sha1 62A0169F0FE00E5F8184475A20A36877D1063F63 serial "B4BE" )
-)
-game (
 	name "Megaman - Battle Network 4 - Red Sun (Europe)"
 	region "Europe"
 	serial "B4WP"
@@ -11734,18 +11841,6 @@ game (
 	region "Europe"
 	serial "B4WP"
 	rom ( name "Megaman - Battle Network 4 - Red Sun (Europe) (Virtual Console).gba" size 8388608 crc CB3BBF74 md5 5137FDF04021DC7817CB1BE34B590ADF sha1 36D83A1509D28B0C09365466CC1481C919D84CB0 serial "B4WP" )
-)
-game (
-	name "Megaman - Battle Network 4 - Red Sun (USA)"
-	region "USA"
-	serial "B4WE"
-	rom ( name "Megaman - Battle Network 4 - Red Sun (USA).gba" size 8388608 crc 2120695C md5 D0DEE5C06972CB072391CD968A248D52 sha1 A97E96A7DA03ABD70F7953328E511B9FA29179F1 serial "B4WE" )
-)
-game (
-	name "Megaman - Battle Network 4 - Red Sun (USA) (Virtual Console)"
-	region "USA"
-	serial "B4WE"
-	rom ( name "Megaman - Battle Network 4 - Red Sun (USA) (Virtual Console).gba" size 8388608 crc 12E7AB52 md5 C055AE4F347BF3DFE626979C06133057 sha1 07426328DBB4A3AEA763E75C8FFE6DE482FF69D0 serial "B4WE" )
 )
 game (
 	name "Megaman - Battle Network 5 - Team Colonel (Europe)"
@@ -11759,17 +11854,6 @@ game (
 	rom ( name "Megaman - Battle Network 5 - Team Colonel (Europe) (Virtual Console).gba" size 8388608 crc 5247772C md5 A32D78CB1D76EB097760417F232B4B76 sha1 061C291B29629D5CE44011D2D83931F2E35044ED )
 )
 game (
-	name "Megaman - Battle Network 5 - Team Colonel (USA)"
-	region "USA"
-	serial "BRKE"
-	rom ( name "Megaman - Battle Network 5 - Team Colonel (USA).gba" size 8388608 crc A552F683 md5 68D79F7C8F41F7C8009F3B85119CB1C6 sha1 5F472F78D8DE2DF01D5039E045C043CB40969A39 serial "BRKE" )
-)
-game (
-	name "Megaman - Battle Network 5 - Team Colonel (USA) (Virtual Console)"
-	region "USA"
-	rom ( name "Megaman - Battle Network 5 - Team Colonel (USA) (Virtual Console).gba" size 8388608 crc 78DD4EDC md5 759281BEED4BFA975262FD49028EFEBB sha1 C715F1D01E016AD6890EBC8EC90120BC3B146A7E )
-)
-game (
 	name "Megaman - Battle Network 5 - Team Protoman (Europe)"
 	region "Europe"
 	serial "BRBP"
@@ -11779,17 +11863,6 @@ game (
 	name "Megaman - Battle Network 5 - Team Protoman (Europe) (Virtual Console)"
 	region "Europe"
 	rom ( name "Megaman - Battle Network 5 - Team Protoman (Europe) (Virtual Console).gba" size 8388608 crc 7E5BC83D md5 5405A66D7B053281E4D48AFB1E31C270 sha1 B68B310E3106E7FA6A47D4155239BE2E43959DA4 )
-)
-game (
-	name "Megaman - Battle Network 5 - Team Protoman (USA)"
-	region "USA"
-	serial "BRBE"
-	rom ( name "Megaman - Battle Network 5 - Team Protoman (USA).gba" size 8388608 crc A73E83A4 md5 71B00BA406C522D3CEC48311BD7BC760 sha1 B3774E96B1F107BB8B1DB79B216BE41B9BC5BAC0 serial "BRBE" )
-)
-game (
-	name "Megaman - Battle Network 5 - Team Protoman (USA) (Virtual Console)"
-	region "USA"
-	rom ( name "Megaman - Battle Network 5 - Team Protoman (USA) (Virtual Console).gba" size 8388608 crc A0911541 md5 B03E618D511A7ED9EC3ADC43BD58AA96 sha1 70EE16615F7D9D6BB13382D70DD2F213B918063B )
 )
 game (
 	name "Megaman - Battle Network 6 - Cybeast Falzar (Europe)"
@@ -11804,18 +11877,6 @@ game (
 	rom ( name "Megaman - Battle Network 6 - Cybeast Falzar (Europe) (Virtual Console).gba" size 16777216 crc 8104E85A md5 0C1A0844349B59FCA1DE85B1992ABDF5 sha1 E2DBEC1CB65065ED716FA9851237677EFE27AE1C serial "BR6P" )
 )
 game (
-	name "Megaman - Battle Network 6 - Cybeast Falzar (USA)"
-	region "USA"
-	serial "BR6E"
-	rom ( name "Megaman - Battle Network 6 - Cybeast Falzar (USA).gba" size 8388608 crc DEE6F2A9 md5 1E8C774BA210D1C55113531C7360C737 sha1 0676ECD4D58A976AF3346CAEBB44B9B6489AD099 serial "BR6E" )
-)
-game (
-	name "Megaman - Battle Network 6 - Cybeast Falzar (USA) (Virtual Console)"
-	region "USA"
-	serial "BR6E"
-	rom ( name "Megaman - Battle Network 6 - Cybeast Falzar (USA) (Virtual Console).gba" size 16777216 crc C2A21BE3 md5 CE943B2FC1539A9D069B6A6746616D66 sha1 C477367C5C9B81CBCA2F3BA0CF6A820D489A3B7E serial "BR6E" )
-)
-game (
 	name "Megaman - Battle Network 6 - Cybeast Gregar (Europe)"
 	region "Europe"
 	serial "BR5P"
@@ -11826,30 +11887,6 @@ game (
 	region "Europe"
 	serial "BR5P"
 	rom ( name "Megaman - Battle Network 6 - Cybeast Gregar (Europe) (Virtual Console).gba" size 8388608 crc BB62F987 md5 28587F7914842E2104C48DA646CA0FD8 sha1 7106DC0469898CB5768EC76C99029B24039D7605 serial "BR5P" )
-)
-game (
-	name "Megaman - Battle Network 6 - Cybeast Gregar (USA)"
-	region "USA"
-	serial "BR5E"
-	rom ( name "Megaman - Battle Network 6 - Cybeast Gregar (USA).gba" size 8388608 crc 79452182 md5 5ACC75848BB1FFD3D6D8705554EE333D sha1 89FE0BAC4FD3D2AB1D2CA35E87EF8B1294A84CD6 serial "BR5E" )
-)
-game (
-	name "Megaman - Battle Network 6 - Cybeast Gregar (USA) (Virtual Console)"
-	region "USA"
-	serial "BR5E"
-	rom ( name "Megaman - Battle Network 6 - Cybeast Gregar (USA) (Virtual Console).gba" size 8388608 crc E7E546FE md5 65295E47FA2BC35407211C331D8F6B7C sha1 0A8DE8417B9939573DAA04F95CDECDEAAF58A79E serial "BR5E" )
-)
-game (
-	name "Megaman Zero (USA) (Virtual Console)"
-	region "USA"
-	serial "AZCE"
-	rom ( name "Megaman Zero (USA) (Virtual Console).gba" size 8388608 crc 9C77209C md5 C75988E7042168414E341C102DC7776C sha1 7279705E24D32895DADA7F5476F68BBC33DD643B serial "AZCE" )
-)
-game (
-	name "Megaman Zero (USA, Europe)"
-	region "USA"
-	serial "AZCE"
-	rom ( name "Megaman Zero (USA, Europe).gba" size 8388608 crc 9707D2A1 md5 B24A17D080A01A404CBF018BA42B9803 sha1 193B14120119162518A73C70876F0B8BFFDBD96E serial "AZCE" )
 )
 game (
 	name "Megaman Zero 2 (Europe)"
@@ -11864,18 +11901,6 @@ game (
 	rom ( name "Megaman Zero 2 (Europe) (Virtual Console).gba" size 8388608 crc D76F2D1C md5 EFB231CCA7699E588D9E9C3977A04B17 sha1 4AE9CD23F80D190F21002D2FDF4B8847C9452592 serial "A62P" )
 )
 game (
-	name "Megaman Zero 2 (USA)"
-	region "USA"
-	serial "A62E"
-	rom ( name "Megaman Zero 2 (USA).gba" size 8388608 crc CE1E37BB md5 182363B0698322E1864CED6E9EED7EAD sha1 C4D93A58F0F82C526DEC8A3FDBDA170336303689 serial "A62E" )
-)
-game (
-	name "Megaman Zero 2 (USA) (Virtual Console)"
-	region "USA"
-	serial "A62E"
-	rom ( name "Megaman Zero 2 (USA) (Virtual Console).gba" size 8388608 crc 30D051FE md5 C0D76FD7A2B656FDEC1802D62309C4A7 sha1 D7A1EDD912F8E01BC442809B922BCEAF5A1F0176 serial "A62E" )
-)
-game (
 	name "Megaman Zero 3 (Europe)"
 	region "Europe"
 	serial "BZ3P"
@@ -11888,18 +11913,6 @@ game (
 	rom ( name "Megaman Zero 3 (Europe) (Virtual Console).gba" size 8388608 crc 87E8656E md5 CAD17987AF79A57E44FF18A892D1AA70 sha1 8245ECB895CAF0E0A2914F46BB79E4C9C5BA8C4A serial "BZ3P" )
 )
 game (
-	name "Megaman Zero 3 (USA)"
-	region "USA"
-	serial "BZ3E"
-	rom ( name "Megaman Zero 3 (USA).gba" size 8388608 crc 2784F3F2 md5 AA1D5EEFFCD5E4577DB9EE6D9B1100F9 sha1 403A78F2CAD93D41E4B0F2E520CE08026531664B serial "BZ3E" )
-)
-game (
-	name "Megaman Zero 3 (USA) (Virtual Console)"
-	region "USA"
-	serial "BZ3E"
-	rom ( name "Megaman Zero 3 (USA) (Virtual Console).gba" size 16777216 crc CBD24AC4 md5 D67692814D313E0F70637FB2157AB6CC sha1 DE5413481D823C53973CB29507567EF3DC6AF399 serial "BZ3E" )
-)
-game (
 	name "Megaman Zero 4 (Europe)"
 	region "Europe"
 	serial "B4ZP"
@@ -11910,18 +11923,6 @@ game (
 	region "Europe"
 	serial "B4ZP"
 	rom ( name "Megaman Zero 4 (Europe) (Virtual Console).gba" size 16777216 crc FFDA95BE md5 0D221D3AD421C62DA3FE6AF1ECD67381 sha1 4424F9E08381A447192D87BBAD20DAB3C77740DB serial "B4ZP" )
-)
-game (
-	name "Megaman Zero 4 (USA)"
-	region "USA"
-	serial "B4ZE"
-	rom ( name "Megaman Zero 4 (USA).gba" size 16777216 crc 7EE24793 md5 0D1E88BDB09FF68ADF9877A121325F9C sha1 596993205A1895A6F51E80749407FB069B907628 serial "B4ZE" )
-)
-game (
-	name "Megaman Zero 4 (USA) (Virtual Console)"
-	region "USA"
-	serial "B4ZE"
-	rom ( name "Megaman Zero 4 (USA) (Virtual Console).gba" size 16777216 crc C4838CFA md5 FA34FC711555C60249603A4EBB718C8E sha1 24A774446C8F652C78BB4BD938FC57C612DB3D6C serial "B4ZE" )
 )
 game (
 	name "Meine Tierarztpraxis (Germany) (En,De)"
@@ -12062,12 +12063,6 @@ game (
 	rom ( name "Metroid - Zero Mission (Japan) (Virtual Console).gba" size 8388608 crc 220B68F5 md5 C1B472A4AD0D7CD85AE92C7495198573 sha1 24D99F32875464DBCEF5CA8EC231EC42073FF1E8 serial "BMXJ" )
 )
 game (
-	name "Metroid - Zero Mission (USA)"
-	region "USA"
-	serial "BMXE"
-	rom ( name "Metroid - Zero Mission (USA).gba" size 8388608 crc 5C61A844 md5 EBBCE58109988B6DA61EBB06C7A432D5 sha1 5DE8536AFE1F0078EE6FE1089F890E8C7AA0A6E8 serial "BMXE" )
-)
-game (
 	name "Metroid - Zero Mission (USA) (Beta)"
 	region "USA"
 	serial "BMXE"
@@ -12080,28 +12075,28 @@ game (
 	rom ( name "Metroid - Zero Mission (USA) (Virtual Console).gba" size 8388608 crc 8825294A md5 E23C14997C2EA4F11E5996908E577125 sha1 2EA5E30681DC7AAB3258535DEBBDDFB9AA245A8A serial "BMXE" )
 )
 game (
+	name "Metroid - Zero Mission (USA, Australia)"
+	region "USA"
+	serial "BMXE"
+	rom ( name "Metroid - Zero Mission (USA, Australia).gba" size 8388608 crc 5C61A844 md5 EBBCE58109988B6DA61EBB06C7A432D5 sha1 5DE8536AFE1F0078EE6FE1089F890E8C7AA0A6E8 serial "BMXE" )
+)
+game (
 	name "Metroid Fusion (Europe) (En,Fr,De,Es,It)"
 	region "Europe"
 	serial "AMTP"
 	rom ( name "Metroid Fusion (Europe) (En,Fr,De,Es,It).gba" size 8388608 crc 974E46AB md5 EB462F708C715309D08FD7968825AE9E sha1 CC46D54B70C1EE38C856EE6E58EC712136763389 serial "AMTP" )
 )
 game (
-	name "Metroid Fusion (Europe) (En,Fr,De,Es,It) (Beta)"
-	releaseyear "2002"
-	releasemonth "09"
-	releaseday "11"
+	name "Metroid Fusion (Europe) (En,Fr,De,Es,It) (Beta 1)"
 	region "Europe"
 	serial "METJ"
-	rom ( name "Metroid Fusion (Europe) (En,Fr,De,Es,It) (Beta) (2002-09-11).gba" size 16777216 crc 3ACBD239 md5 37477683A1E646431C5396164DF388F3 sha1 A45B539BECBF10F3913255D6D624EE954DCC5593 serial "METJ" )
+	rom ( name "Metroid Fusion (Europe) (En,Fr,De,Es,It) (Beta 1).gba" size 16777216 crc 3ACBD239 md5 37477683A1E646431C5396164DF388F3 sha1 A45B539BECBF10F3913255D6D624EE954DCC5593 serial "METJ" )
 )
 game (
-	name "Metroid Fusion (Europe) (En,Fr,De,Es,It) (Beta)"
-	releaseyear "2002"
-	releasemonth "09"
-	releaseday "16"
+	name "Metroid Fusion (Europe) (En,Fr,De,Es,It) (Beta 2)"
 	region "Europe"
 	serial "METJ"
-	rom ( name "Metroid Fusion (Europe) (En,Fr,De,Es,It) (Beta) (2002-09-16).gba" size 8388608 crc 1605E4F7 md5 305060AA2E1F0A854B772FA23988C2B9 sha1 F688F2D3186A0A90040ABB214EFD1E8E93A424CD serial "METJ" )
+	rom ( name "Metroid Fusion (Europe) (En,Fr,De,Es,It) (Beta 2).gba" size 8388608 crc 1605E4F7 md5 305060AA2E1F0A854B772FA23988C2B9 sha1 F688F2D3186A0A90040ABB214EFD1E8E93A424CD serial "METJ" )
 )
 game (
 	name "Metroid Fusion (Europe) (En,Fr,De,Es,It) (Virtual Console)"
@@ -12394,10 +12389,10 @@ game (
 	rom ( name "Mobile Pro Yakyuu - Kantoku no Saihai (Japan).gba" size 8388608 crc 8DF8A0C0 md5 85FA9B30552BCF2B5CFFA86F669DA0A1 sha1 9766AF7B47E5B63C922304D46362D1B374BDF0A0 serial "AMBJ" )
 )
 game (
-	name "Mobile Suit Gundam Seed - Battle Assault (USA)"
+	name "Mobile Suit Gundam SEED - Battle Assault (USA)"
 	region "USA"
 	serial "BGNE"
-	rom ( name "Mobile Suit Gundam Seed - Battle Assault (USA).gba" size 4194304 crc 180D1491 md5 20BB7717258C3BD2E87B9B7617E95DF2 sha1 8287D3D336D94A85C5CB22DA0FD84918199197E1 serial "BGNE" )
+	rom ( name "Mobile Suit Gundam SEED - Battle Assault (USA).gba" size 4194304 crc 180D1491 md5 20BB7717258C3BD2E87B9B7617E95DF2 sha1 8287D3D336D94A85C5CB22DA0FD84918199197E1 serial "BGNE" )
 )
 game (
 	name "Moero!! Jaleco Collection (Japan)"
@@ -12616,6 +12611,14 @@ game (
 game (
 	name "Mooncat's Trio (World) (Beta)"
 	rom ( name "Mooncat's Trio (World) (Beta) (Aftermarket) (Unl).gba" size 504220 crc CD3328EE md5 53AF7B05F0EC9C4770BE9F74B8A232AC sha1 C3EA5247F32C428BBCFD5C087218FC56779E3106 )
+)
+game (
+	name "Mooncat's Trio (World) (v1.1)"
+	rom ( name "Mooncat's Trio (World) (v1.1) (Aftermarket) (Unl).gba" size 1123908 crc 8C9A56C4 md5 ACF293978ED129B02591BBCBF3FC0F07 sha1 8D4E8280F44F2D3ED727D1F210DE30E1F6081ADF )
+)
+game (
+	name "Mooncat's Trio (World) (v1.2)"
+	rom ( name "Mooncat's Trio (World) (v1.2) (Aftermarket) (Unl).gba" size 1125492 crc 53437BD0 md5 52591860CCFEFCBFA46F152417D9C004 sha1 7C04CB57E44B02EA80014D6DA8B430D360F813C3 )
 )
 game (
 	name "Moorhen 3 - The Chicken Chase! (Europe) (En,Fr,De,Es,It)"
@@ -13220,7 +13223,7 @@ game (
 game (
 	name "Ninja Cop (Europe) (Limited Run Games)"
 	region "Europe"
-	rom ( name "Ninja Cop (Europe) (Limited Run Games).gba" size 8388608 crc 5935D29A md5 A4A45873932EC855D0A96FCA52FE81EA sha1 74B66B4B9F5D44E8DF8E9763A387F635EDE64489 )
+	rom ( name "Ninja Cop (Europe) (Limited Run Games).gba" size 4194304 crc 82FD50CB md5 3F561DD14404F605FB7D3117F216C44C sha1 001D50A80791EF4F73F79D7E217CDDBB9C5896C0 )
 )
 game (
 	name "Ninja Five-O (USA)"
@@ -13231,7 +13234,7 @@ game (
 game (
 	name "Ninja Five-O (USA) (Limited Run Games)"
 	region "USA"
-	rom ( name "Ninja Five-O (USA) (Limited Run Games).gba" size 8388608 crc 5AF43420 md5 A1AC9FF0AB98C1A85204A73FCC750F79 sha1 50D074995F307422E6ADCD126FC387A68F002133 )
+	rom ( name "Ninja Five-O (USA) (Limited Run Games).gba" size 4194304 crc A0F5CDE4 md5 18D2087395473D38C083F4C49CA7AFAD sha1 A4509556F75C0FE922B5EEE2A4C6DDD35B9FFE7A )
 )
 game (
 	name "Ninja Tower (World) (Proto) (GBA Jam 2024)"
@@ -13636,12 +13639,9 @@ game (
 )
 game (
 	name "Pac-Man World 2 (USA) (Beta)"
-	releaseyear "2005"
-	releasemonth "04"
-	releaseday "15"
 	region "USA"
 	serial "AGBJ"
-	rom ( name "Pac-Man World 2 (USA) (Beta) (2005-04-15).gba" size 4194304 crc B645B5EF md5 F6C0C5A3CA383EC7769979AA69F551E1 sha1 82FE986F205F733C29BC00CD96DDF3EC46098FC6 serial "AGBJ" )
+	rom ( name "Pac-Man World 2 (USA) (Beta).gba" size 4194304 crc B645B5EF md5 F6C0C5A3CA383EC7769979AA69F551E1 sha1 82FE986F205F733C29BC00CD96DDF3EC46098FC6 serial "AGBJ" )
 )
 game (
 	name "Paws & Claws - Best Friends - Dogs & Cats (USA)"
@@ -13680,8 +13680,9 @@ game (
 	rom ( name "Penny Racers (Europe).gba" size 4194304 crc 8FDDD48B md5 B48F441DC1D55A69A325AD812AEF764F sha1 7C097634FADC6270873A4A5CF2EB0A8BEB3C9E6E serial "AQAP" )
 )
 game (
-	name "Perplexus Diodomin (World) (Proto)"
-	rom ( name "Perplexus Diodomin (World) (Proto).gba" size 1681812 crc 3442F9CF md5 7A91B281A98EABF2150C0CEE965A3066 sha1 F3C7093E9770632DE618C7931F287EBC7B5E0AA2 )
+	name "Perplexus Diodomin (Europe) (Proto)"
+	region "Europe"
+	rom ( name "Perplexus Diodomin (Europe) (Proto).gba" size 1681812 crc 3442F9CF md5 7A91B281A98EABF2150C0CEE965A3066 sha1 F3C7093E9770632DE618C7931F287EBC7B5E0AA2 )
 )
 game (
 	name "Peter Pan - Return to Neverland (Europe) (En,Fr,De,Es,It,Nl)"
@@ -14271,6 +14272,12 @@ game (
 	rom ( name "Pokemon - FireRed Version (USA, Europe) (Rev 1).gba" size 16777216 crc 84EE4776 md5 51901A6E40661B3914AA333C802E24E8 sha1 DD5945DB9B930750CB39D00C84DA8571FEEBF417 serial "BPRE" )
 )
 game (
+	name "Pokemon - FireRed Version (USA, Europe) (Rev 10) (Switch)"
+	region "USA"
+	serial "BPRE"
+	rom ( name "Pokemon - FireRed Version (USA, Europe) (Rev 10) (Switch).gba" size 16777216 crc 31554C22 md5 2B61D8A2C5EC26452868083CC6689E5B sha1 BAA452D0B24629DD7782CFC07A8984085DDE1311 serial "BPRE" )
+)
+game (
 	name "Pokemon - Leaf Green (USA) (Pirate)"
 	region "USA"
 	rom ( name "Pokemon - Leaf Green (USA) (Pirate).gba" size 33554432 crc 11870BD9 md5 F12AC2C645C7984621E573A37D76C446 sha1 B5C0C40AC5DC25BEF289973080366D29359BB81B )
@@ -14286,6 +14293,12 @@ game (
 	region "USA"
 	serial "BPGE"
 	rom ( name "Pokemon - LeafGreen Version (USA, Europe) (Rev 1).gba" size 16777216 crc DAFFECEC md5 9D33A02159E018D09073E700E1FD10FD sha1 7862C67BDECBE21D1D69CE082CE34327E1C6ED5E serial "BPGE" )
+)
+game (
+	name "Pokemon - LeafGreen Version (USA, Europe) (Rev 10) (Switch)"
+	region "USA"
+	serial "BPGE"
+	rom ( name "Pokemon - LeafGreen Version (USA, Europe) (Rev 10) (Switch).gba" size 16777216 crc 49DDF652 md5 B9F589A9454A8552202B062BEE27F32F sha1 62B9FC77549DBC67032EB6CBD0EA6AD3B825690F serial "BPGE" )
 )
 game (
 	name "Pokemon - Liechi Berry Glitch Fix & Shiny Zigzagoon Distribution (Europe) (Kiosk)"
@@ -15011,6 +15024,10 @@ game (
 	rom ( name "Racing Gears Advance (USA) (Beta).gba" size 8388608 crc 7A3820B3 md5 21837DBFE88EC42E35CDDAF7585D1FE1 sha1 FF18DFE7D75A8154C0DCC3970E5D0D4CB75C3568 )
 )
 game (
+	name "Radicorn (World) (Proto)"
+	rom ( name "Radicorn (World) (Proto) (Aftermarket) (Unl).gba" size 88704 crc C176FC59 md5 09698B7F688A00A7AC4A67A225C2181F sha1 42E722987387BDA61F2FA34C22E1789DF9D5C0D4 )
+)
+game (
 	name "Rampage - Puzzle Attack (USA, Europe)"
 	region "USA"
 	serial "ARXE"
@@ -15265,11 +15282,8 @@ game (
 )
 game (
 	name "Revenge of the Smurfs, The (Europe) (Beta)"
-	releaseyear "2002"
-	releasemonth "03"
-	releaseday "22"
 	region "Europe"
-	rom ( name "Revenge of the Smurfs, The (Europe) (Beta) (2002-03-22).gba" size 4194304 crc A5EF2D7E md5 04786992D22B58A168D6EF2FB0FFB830 sha1 CA8C54943CE6C10D6D2FCB9E85492F8DD16D5DF9 )
+	rom ( name "Revenge of the Smurfs, The (Europe) (Beta).gba" size 4194304 crc A5EF2D7E md5 04786992D22B58A168D6EF2FB0FFB830 sha1 CA8C54943CE6C10D6D2FCB9E85492F8DD16D5DF9 )
 )
 game (
 	name "Revenge of the Smurfs, The (Europe) (En,Fr,De,Es,It,Nl)"
@@ -15398,11 +15412,8 @@ game (
 )
 game (
 	name "Robot Wars - Advanced Destruction (USA) (Beta)"
-	releaseyear "2001"
-	releasemonth "03"
-	releaseday "20"
 	region "USA"
-	rom ( name "Robot Wars - Advanced Destruction (USA) (Beta) (2001-03-20).gba" size 585104 crc CE95BBD6 md5 49CBBFD3E38A5A7162E9B2AAE5D56695 sha1 E045C21B0FEF1959C1207BB46E509089B03FD6DB )
+	rom ( name "Robot Wars - Advanced Destruction (USA) (Beta).gba" size 585104 crc CE95BBD6 md5 49CBBFD3E38A5A7162E9B2AAE5D56695 sha1 E045C21B0FEF1959C1207BB46E509089B03FD6DB )
 )
 game (
 	name "Robot Wars - Extreme Destruction (Europe) (En,Fr,De,Es,It,Nl)"
@@ -15465,9 +15476,9 @@ game (
 	rom ( name "Rocket Power - Beach Bandits (USA, Europe).gba" size 4194304 crc 13695669 md5 6C1DE42661CA9CA859620753D8E12083 sha1 7D2D12E7F85793FE787A342B00D63685A56230B6 serial "AR4E" )
 )
 game (
-	name "Rocket Power - Beach Bandits (USA, Europe) (v0.14) (Beta)"
+	name "Rocket Power - Beach Bandits (USA, Europe) (Beta)"
 	region "USA"
-	rom ( name "Rocket Power - Beach Bandits (USA, Europe) (v0.14) (Beta).gba" size 4101616 crc D3755452 md5 A9CB22CD3729B8116C00DE9881BB9CAE sha1 E69CEE154B563358952DCAA6731B5D76F43EA8A7 )
+	rom ( name "Rocket Power - Beach Bandits (USA, Europe) (Beta).gba" size 4101616 crc D3755452 md5 A9CB22CD3729B8116C00DE9881BB9CAE sha1 E69CEE154B563358952DCAA6731B5D76F43EA8A7 )
 )
 game (
 	name "Rocket Power - Dream Scheme (USA, Europe)"
@@ -15676,6 +15687,11 @@ game (
 	region "USA"
 	serial "ARGE"
 	rom ( name "Rugrats - Castle Capers (USA, Europe).gba" size 4194304 crc 8AABD86A md5 01529E7A20314AB1479AB2B91CCFCF49 sha1 A9D37415567B3D441C9C9312C75FD8ECAEB9ECE1 serial "ARGE" )
+)
+game (
+	name "Rugrats - Castle Capers (World) (Retro Rewind Collection)"
+	serial "ARGE"
+	rom ( name "Rugrats - Castle Capers (World) (Retro Rewind Collection).gba" size 8388608 crc 41D4137F md5 E8733C4DB3B7CC3CD85DB3183859723D sha1 4F0BA185C5EDEFDF348E76CB58E86AACC664DE67 serial "ARGE" )
 )
 game (
 	name "Rugrats - Go Wild (USA, Europe)"
@@ -15939,6 +15955,10 @@ game (
 	region "USA"
 	serial "B33E"
 	rom ( name "Santa Clause 3, The - The Escape Clause (USA).gba" size 8388608 crc 206933F5 md5 B3A719F647A84F5496C0AD97D5DE6370 sha1 2163907F0A197F4164C9B9041FB1175D3C608750 serial "B33E" )
+)
+game (
+	name "Santa's Chimney Challenge (World)"
+	rom ( name "Santa's Chimney Challenge (World) (Aftermarket) (Unl).gba" size 239728 crc BFE9CADC md5 33DE6E01F5D9C920FDEFF251FEB4D61E sha1 FF742D3158A9BC16F1AE33FEEE55E2EB7CC86313 )
 )
 game (
 	name "Scan Hunter - Sennen Kaigyo o Oe! (Japan)"
@@ -16612,6 +16632,10 @@ game (
 	rom ( name "Sigma Star Saga (USA, Europe).gba" size 8388608 crc A8B80A7C md5 29B048B4B36B3FDA168850003F2EE844 sha1 132222E0C0DDACB6281CC2EB4489ED6C8719DAC2 serial "B3GE" )
 )
 game (
+	name "Sigma Star Saga DX (World) (Limited Run Games)"
+	rom ( name "Sigma Star Saga DX (World) (Limited Run Games).gba" size 16777216 crc FF797AC9 md5 5A2DC24D450D9733CBF1D755EBC40AF4 sha1 9310AA93AEDBF2394E848FC56339A22A71BC81A1 )
+)
+game (
 	name "Silent Scope (Europe) (En,Fr,De,Es,It)"
 	region "Europe"
 	serial "AIPP"
@@ -16790,24 +16814,28 @@ game (
 	rom ( name "Sky Dancers - They Magically Fly! (USA).gba" size 4194304 crc CADD57DD md5 FEDF94E93A79D35F70EA85A78FDEE5AA sha1 A757F4A0586081C1058F7E82BBBB5CEDE2819036 serial "B4DE" )
 )
 game (
-	name "Skyland (World) (v2023.5.15.0) (Proto)"
-	rom ( name "Skyland (World) (v2023.5.15.0) (Proto) (Aftermarket) (Unl).gba" size 15894868 crc AF572DE8 md5 5EB3415A5410A167B8E83DE86D0495C0 sha1 997BF192369D48433A7C35187C7E1D0B5FCC16E0 )
+	name "Skyland (World) (Proto 1)"
+	rom ( name "Skyland (World) (Proto 1) (Aftermarket) (Unl).gba" size 15887876 crc C798529D md5 02C8B1B57F3DE3F9D96C4C917A5A8F28 sha1 EA4A6494BCEC25757F657C69550C91190E46CEBD )
 )
 game (
-	name "Skyland (World) (v2023.5.26.0) (Proto)"
-	rom ( name "Skyland (World) (v2023.5.26.0) (Proto) (Aftermarket) (Unl).gba" size 15900084 crc DF05EDFF md5 C765079B0C8EBC53454C711CBA2CC949 sha1 1328D17668480B4E9BEA338662532ACE332C74A9 )
+	name "Skyland (World) (Proto 2)"
+	rom ( name "Skyland (World) (Proto 2) (Aftermarket) (Unl).gba" size 15894868 crc AF572DE8 md5 5EB3415A5410A167B8E83DE86D0495C0 sha1 997BF192369D48433A7C35187C7E1D0B5FCC16E0 )
 )
 game (
-	name "Skyland (World) (v2023.5.5.0) (Proto)"
-	rom ( name "Skyland (World) (v2023.5.5.0) (Proto) (Aftermarket) (Unl).gba" size 15887876 crc C798529D md5 02C8B1B57F3DE3F9D96C4C917A5A8F28 sha1 EA4A6494BCEC25757F657C69550C91190E46CEBD )
+	name "Skyland (World) (Proto 3)"
+	rom ( name "Skyland (World) (Proto 3) (Aftermarket) (Unl).gba" size 15900084 crc DF05EDFF md5 C765079B0C8EBC53454C711CBA2CC949 sha1 1328D17668480B4E9BEA338662532ACE332C74A9 )
 )
 game (
-	name "Skyland (World) (v2023.8.1.1) (Proto)"
-	rom ( name "Skyland (World) (v2023.8.1.1) (Proto) (Aftermarket) (Unl).gba" size 16075456 crc D271C516 md5 76A7EA795F7797923016E348972195E7 sha1 0DBDF16B23AFB70229EFF2DE269FD5D73659D745 )
+	name "Skyland (World) (Proto 4)"
+	rom ( name "Skyland (World) (Proto 4) (Aftermarket) (Unl).gba" size 16075456 crc D271C516 md5 76A7EA795F7797923016E348972195E7 sha1 0DBDF16B23AFB70229EFF2DE269FD5D73659D745 )
 )
 game (
-	name "Skyland (World) (v2024.5.24.0) (Proto)"
-	rom ( name "Skyland (World) (v2024.5.24.0) (Proto) (Aftermarket) (Unl).gba" size 16250380 crc 4CFB40D2 md5 A491402DD313A7C2CDD06F9EF072C0F3 sha1 D9936C4A776CE61EDE6241A018683E3EFC0FE12B )
+	name "Skyland (World) (Proto 5)"
+	rom ( name "Skyland (World) (Proto 5) (Aftermarket) (Unl).gba" size 16250380 crc 4CFB40D2 md5 A491402DD313A7C2CDD06F9EF072C0F3 sha1 D9936C4A776CE61EDE6241A018683E3EFC0FE12B )
+)
+game (
+	name "Skyland (World) (Proto 6)"
+	rom ( name "Skyland (World) (Proto 6) (Aftermarket) (Unl).gba" size 25336100 crc A36C0258 md5 FE475F28DA72F4141803847DF8EC786F sha1 132472BA360BDCB397C6CA39C73249B431454824 )
 )
 game (
 	name "Sleep Paradox (World) (GBA Jam 2024)"
@@ -16938,11 +16966,8 @@ game (
 )
 game (
 	name "Sonic Advance (USA) (En,Ja) (Beta)"
-	releaseyear "2001"
-	releasemonth "10"
-	releaseday "31"
 	region "USA"
-	rom ( name "Sonic Advance (USA) (En,Ja) (Beta) (2001-10-31).gba" size 8388608 crc A80DE3B2 md5 FCA4C485F41412A4DDC05FBE105C3219 sha1 AAE6516F72309920ACD9FAFD03A9D09E35CF755F )
+	rom ( name "Sonic Advance (USA) (En,Ja) (Beta).gba" size 8388608 crc A80DE3B2 md5 FCA4C485F41412A4DDC05FBE105C3219 sha1 AAE6516F72309920ACD9FAFD03A9D09E35CF755F )
 )
 game (
 	name "Sonic Advance 2 (Europe) (En,Ja,Fr,De,Es,It)"
@@ -16964,12 +16989,9 @@ game (
 )
 game (
 	name "Sonic Advance 2 (USA) (Beta)"
-	releaseyear "2002"
-	releasemonth "10"
-	releaseday "25"
 	region "USA"
 	serial "A2NE"
-	rom ( name "Sonic Advance 2 (USA) (Beta) (2002-10-25).gba" size 16777216 crc 95AB3867 md5 F957455DAD9133D9EF41AF092A353973 sha1 3368642FC4157824AF63367E2A685B7D6EE9B09D serial "A2NE" )
+	rom ( name "Sonic Advance 2 (USA) (Beta).gba" size 16777216 crc 95AB3867 md5 F957455DAD9133D9EF41AF092A353973 sha1 3368642FC4157824AF63367E2A685B7D6EE9B09D serial "A2NE" )
 )
 game (
 	name "Sonic Advance 2 (USA) (En,Ja,Fr,De,Es,It)"
@@ -17284,22 +17306,16 @@ game (
 	rom ( name "SpongeBob SquarePants - Lights, Camera, Pants! (USA).gba" size 4194304 crc 23297579 md5 9A5A6C940BBF141D8C2838CF7C818080 sha1 4C3C7AE6D1BF3D46BAB640911AA2BB9094CC31F2 serial "BQQE" )
 )
 game (
-	name "SpongeBob SquarePants - Lights, Camera, Pants! (USA) (Beta)"
-	releaseyear "2005"
-	releasemonth "08"
-	releaseday "03"
+	name "SpongeBob SquarePants - Lights, Camera, Pants! (USA) (Beta 1)"
 	region "USA"
 	serial "BQQE"
-	rom ( name "SpongeBob SquarePants - Lights, Camera, Pants! (USA) (Beta) (2005-08-03).gba" size 4291500 crc 52FD3771 md5 1D3084DE02B0BB709EBF0070B4802AEE sha1 72D84F52C796CBB06C2CD9291CA7952093D9B7DC serial "BQQE" )
+	rom ( name "SpongeBob SquarePants - Lights, Camera, Pants! (USA) (Beta 1).gba" size 4291500 crc 52FD3771 md5 1D3084DE02B0BB709EBF0070B4802AEE sha1 72D84F52C796CBB06C2CD9291CA7952093D9B7DC serial "BQQE" )
 )
 game (
-	name "SpongeBob SquarePants - Lights, Camera, Pants! (USA) (Beta)"
-	releaseyear "2005"
-	releasemonth "08"
-	releaseday "05"
+	name "SpongeBob SquarePants - Lights, Camera, Pants! (USA) (Beta 2)"
 	region "USA"
 	serial "BQQE"
-	rom ( name "SpongeBob SquarePants - Lights, Camera, Pants! (USA) (Beta) (2005-08-05).gba" size 4519932 crc E1461B58 md5 F3F2885CBF6D0476A8D2A786D4AA22E8 sha1 B30DC120107A70796250B831E7174FC4C03AE58A serial "BQQE" )
+	rom ( name "SpongeBob SquarePants - Lights, Camera, Pants! (USA) (Beta 2).gba" size 4519932 crc E1461B58 md5 F3F2885CBF6D0476A8D2A786D4AA22E8 sha1 B30DC120107A70796250B831E7174FC4C03AE58A serial "BQQE" )
 )
 game (
 	name "SpongeBob SquarePants - Revenge of the Flying Dutchman (USA) (Beta)"
@@ -17319,121 +17335,85 @@ game (
 	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe).gba" size 4194304 crc 98AD67E6 md5 C2BFA5C822F33EAED02AD2F94A0414B4 sha1 B67CAAB6316A8478129F43672572277F411F211D serial "ASPE" )
 )
 game (
-	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta)"
-	releaseyear "2000"
-	releasemonth "11"
-	releaseday "28"
+	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 1)"
 	region "USA"
-	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta) (2000-11-28).gba" size 364500 crc 22F37CFD md5 1F7D87CD45E6105577670CAB74961993 sha1 B8DC30177EB1CEFDBE7BF93023F70E73EE51F9D7 )
+	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 1).gba" size 364500 crc 22F37CFD md5 1F7D87CD45E6105577670CAB74961993 sha1 B8DC30177EB1CEFDBE7BF93023F70E73EE51F9D7 )
 )
 game (
-	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta) (2001-01-08T051624)"
+	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 10)"
 	region "USA"
-	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta) (2001-01-08T051624).gba" size 315572 crc 49754EE4 md5 64A2D8DD1CFB869D4AD52C506819576F sha1 D14787D2AF88AF2907F71744D4B4A933B38EE31A )
+	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 10).gba" size 4268504 crc FFEA9FEC md5 B5826EA94A5B01AB8362EB5B50AAEC2C sha1 50916C543C4AE5F59C9C7F4062B9103228B0EAA4 )
 )
 game (
-	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta) (2001-01-08T074756)"
+	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 11)"
 	region "USA"
-	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta) (2001-01-08T074756).gba" size 342160 crc B83D7E0D md5 510747757A8D81422637656652BE1C29 sha1 BC0833743E90B6CFF8F51906E12F15748FED4ED6 )
+	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 11).gba" size 4646712 crc 1407D86E md5 7844309A174E721757F6149FC7DE3AF0 sha1 2608C985C8AB5BFFEAE0687421BB21A46E34B681 )
 )
 game (
-	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta)"
-	releaseyear "2001"
-	releasemonth "02"
-	releaseday "05"
+	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 12)"
 	region "USA"
-	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta) (2001-02-05).gba" size 5840568 crc DFA0465F md5 1E04D15E21960028153DD09609103C63 sha1 B39363D72DC36BC066646EF71AEB4BE8C871708C )
+	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 12).gba" size 5477108 crc 0BC6DFAF md5 26711D7758259E9637B79FB3625B1A0C sha1 C617321D405F4A5BB07C4FA769321DF46A944BB8 )
 )
 game (
-	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta)"
-	releaseyear "2001"
-	releasemonth "02"
-	releaseday "15"
+	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 13)"
 	region "USA"
-	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta) (2001-02-15).gba" size 2094168 crc 9DD49688 md5 B85B495DA78F807409DD55907D25D220 sha1 7DA06AD1153F930F89EF590FDE202D3DE5D874CA )
+	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 13).gba" size 5477244 crc 23D7BA77 md5 04507C08F149756E262017EFD3DF4BEE sha1 0177808F1BCD65738C10FD0FBA477ECDD46A791F )
 )
 game (
-	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta)"
-	releaseyear "2001"
-	releasemonth "02"
-	releaseday "23"
+	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 14)"
 	region "USA"
-	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta) (2001-02-23).gba" size 2142316 crc 78D0D354 md5 57EE08BDF1400798318D5CFA699D6AED sha1 61F7280E5E397F08F7D055B37F9ADCCB9ABFF41E )
+	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 14).gba" size 2470464 crc 40CC2E8A md5 6EA76FBFA326B0B7FD31C5F6050F23FF sha1 071E9A6C09CCD6E52D1D6CC40A0EBEA3E8DD80C3 )
 )
 game (
-	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta)"
-	releaseyear "2001"
-	releasemonth "02"
-	releaseday "26"
+	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 15)"
 	region "USA"
-	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta) (2001-02-26).gba" size 2132508 crc D0FB4BD2 md5 000D041C067EFEA777A6608FB4EC2B7A sha1 CC059A9B3DA31B66824F57214B7AFFC2A074F136 )
+	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 15).gba" size 3011936 crc FF4F1EE7 md5 C6BADB88A556C59DD89B16809A2529B3 sha1 909A6CC0930818DE20489CFCDD967280B403272B )
 )
 game (
-	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta)"
-	releaseyear "2001"
-	releasemonth "03"
-	releaseday "01"
-	region "USA"
-	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta) (2001-03-01).gba" size 2471940 crc 6B458C53 md5 AD5BC8554AD143698F62BE566789C519 sha1 1599A3E273337F7C235CE118FFBFF7E316D677B9 )
-)
-game (
-	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta)"
-	releaseyear "2001"
-	releasemonth "03"
-	releaseday "12"
-	region "USA"
-	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta) (2001-03-12).gba" size 2598340 crc 70456F6E md5 26CC5DF15901F42782974643505E5159 sha1 1F0E72C487FA405B017528A36781F16C6625B1C2 )
-)
-game (
-	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta)"
-	releaseyear "2001"
-	releasemonth "03"
-	releaseday "14"
-	region "USA"
-	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta) (2001-03-14).gba" size 4268504 crc FFEA9FEC md5 B5826EA94A5B01AB8362EB5B50AAEC2C sha1 50916C543C4AE5F59C9C7F4062B9103228B0EAA4 )
-)
-game (
-	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta)"
-	releaseyear "2001"
-	releasemonth "03"
-	releaseday "28"
-	region "USA"
-	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta) (2001-03-28).gba" size 4646712 crc 1407D86E md5 7844309A174E721757F6149FC7DE3AF0 sha1 2608C985C8AB5BFFEAE0687421BB21A46E34B681 )
-)
-game (
-	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta)"
-	releaseyear "2001"
-	releasemonth "04"
-	releaseday "03"
-	region "USA"
-	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta) (2001-04-03).gba" size 5477108 crc 0BC6DFAF md5 26711D7758259E9637B79FB3625B1A0C sha1 C617321D405F4A5BB07C4FA769321DF46A944BB8 )
-)
-game (
-	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta)"
-	releaseyear "2001"
-	releasemonth "04"
-	releaseday "04"
-	region "USA"
-	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta) (2001-04-04).gba" size 5477244 crc 23D7BA77 md5 04507C08F149756E262017EFD3DF4BEE sha1 0177808F1BCD65738C10FD0FBA477ECDD46A791F )
-)
-game (
-	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta) (2001-06-06T113400)"
-	region "USA"
-	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta) (2001-06-06T113400).gba" size 2470464 crc 40CC2E8A md5 6EA76FBFA326B0B7FD31C5F6050F23FF sha1 071E9A6C09CCD6E52D1D6CC40A0EBEA3E8DD80C3 )
-)
-game (
-	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta) (2001-06-06T113900)"
-	region "USA"
-	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta) (2001-06-06T113900).gba" size 3011936 crc FF4F1EE7 md5 C6BADB88A556C59DD89B16809A2529B3 sha1 909A6CC0930818DE20489CFCDD967280B403272B )
-)
-game (
-	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta)"
-	releaseyear "2001"
-	releasemonth "07"
-	releaseday "31"
+	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 16)"
 	region "USA"
 	serial "SBSP"
-	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta) (2001-07-31).gba" size 4194304 crc F2F67F40 md5 6745D2318412926B3E1118E83B8B1990 sha1 BB298D490EC9D8657CBD2FC402AE1E0A5792D406 serial "SBSP" )
+	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 16).gba" size 4194304 crc F2F67F40 md5 6745D2318412926B3E1118E83B8B1990 sha1 BB298D490EC9D8657CBD2FC402AE1E0A5792D406 serial "SBSP" )
+)
+game (
+	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 2)"
+	region "USA"
+	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 2).gba" size 315572 crc 49754EE4 md5 64A2D8DD1CFB869D4AD52C506819576F sha1 D14787D2AF88AF2907F71744D4B4A933B38EE31A )
+)
+game (
+	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 3)"
+	region "USA"
+	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 3).gba" size 342160 crc B83D7E0D md5 510747757A8D81422637656652BE1C29 sha1 BC0833743E90B6CFF8F51906E12F15748FED4ED6 )
+)
+game (
+	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 4)"
+	region "USA"
+	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 4).gba" size 5840568 crc DFA0465F md5 1E04D15E21960028153DD09609103C63 sha1 B39363D72DC36BC066646EF71AEB4BE8C871708C )
+)
+game (
+	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 5)"
+	region "USA"
+	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 5).gba" size 2094168 crc 9DD49688 md5 B85B495DA78F807409DD55907D25D220 sha1 7DA06AD1153F930F89EF590FDE202D3DE5D874CA )
+)
+game (
+	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 6)"
+	region "USA"
+	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 6).gba" size 2142316 crc 78D0D354 md5 57EE08BDF1400798318D5CFA699D6AED sha1 61F7280E5E397F08F7D055B37F9ADCCB9ABFF41E )
+)
+game (
+	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 7)"
+	region "USA"
+	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 7).gba" size 2132508 crc D0FB4BD2 md5 000D041C067EFEA777A6608FB4EC2B7A sha1 CC059A9B3DA31B66824F57214B7AFFC2A074F136 )
+)
+game (
+	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 8)"
+	region "USA"
+	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 8).gba" size 2471940 crc 6B458C53 md5 AD5BC8554AD143698F62BE566789C519 sha1 1599A3E273337F7C235CE118FFBFF7E316D677B9 )
+)
+game (
+	name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 9)"
+	region "USA"
+	rom ( name "SpongeBob SquarePants - SuperSponge (USA, Europe) (Beta 9).gba" size 2598340 crc 70456F6E md5 26CC5DF15901F42782974643505E5159 sha1 1F0E72C487FA405B017528A36781F16C6625B1C2 )
 )
 game (
 	name "SpongeBob SquarePants Movie, The (Europe) (En,Fr,De,Es,It,Nl)"
@@ -17731,6 +17711,10 @@ game (
 	rom ( name "Star X (USA) (En,Fr,De,Es,It,Nl).gba" size 8388608 crc 8B02B2B1 md5 2C18D1FA4D943439CA17CEEF984EA7D4 sha1 EDAC3E0A09DD6A501C923A6B01017B48B1CBE7EE serial "AS8E" )
 )
 game (
+	name "Star X (World) (En,Fr,De,Es,It,Nl) (Evercade)"
+	rom ( name "Star X (World) (En,Fr,De,Es,It,Nl) (Evercade).gba" size 8388608 crc FCB3BBB2 md5 33C533902477B6DF496F0FB4B85CE94B sha1 B9FD72CEEE7D12FABA79041B23189C722ECED325 )
+)
+game (
 	name "Starsky & Hutch (Europe) (En,Fr,De,Es,It)"
 	region "Europe"
 	serial "AYHP"
@@ -17756,6 +17740,22 @@ game (
 	region "Europe"
 	serial "BKTP"
 	rom ( name "Steel Empire (Europe).gba" size 4194304 crc CB91922E md5 F39B607DC13C4D8C4353B7981F5F6CB6 sha1 B280937636A533020BF42591CC246B221A16F94E serial "BKTP" )
+)
+game (
+	name "Stepper (World) (v1.7)"
+	rom ( name "Stepper (World) (v1.7) (Aftermarket) (Unl).gba" size 86964 crc 48FA3B75 md5 A8EFEF99521A3267779262AA1249D3C8 sha1 FF2AAE3E4CFDA226A6516C5DC38E7F2EC82BCA69 )
+)
+game (
+	name "Stepper (World) (v1.8) (3DS)"
+	rom ( name "Stepper (World) (v1.8) (3DS) (Aftermarket) (Unl).gba" size 93080 crc EA2BE132 md5 C52001C1BDFE486F73C4A6D79800387C sha1 65B49111122D144B6FF3DBDB93DC668E76F9068B )
+)
+game (
+	name "Stepper (World) (v1.8)"
+	rom ( name "Stepper (World) (v1.8) (Aftermarket) (Unl).gba" size 92616 crc 44E603A2 md5 C708DDEC270ECA031AD03DBA93F358B6 sha1 C2A48D8CC24CE5719937F4FB8D47D7E0B384F580 )
+)
+game (
+	name "Stepper (World) (v1.9)"
+	rom ( name "Stepper (World) (v1.9) (Aftermarket) (Unl).gba" size 94580 crc 0D5B3101 md5 3D0E221788AD9A43BA96C8B429E2CFC4 sha1 8326F3DAD29D9F4BADD0B0DFCA2D3A5B9A0BB2BA )
 )
 game (
 	name "Strawberry Shortcake - Ice Cream Island - Riding Camp (Europe) (En,Fr,De,Es,It,Nl,Pt,Da)"
@@ -18255,11 +18255,8 @@ game (
 )
 game (
 	name "Super Monkey Ball Jr. (USA) (Beta)"
-	releaseyear "2002"
-	releasemonth "08"
-	releaseday "06"
 	region "USA"
-	rom ( name "Super Monkey Ball Jr. (USA) (Beta) (2002-08-06).gba" size 4194304 crc 0D72F2CC md5 D491342C918651DFE04090CA82CA3439 sha1 80D5A688EF345783CC4C6C3A19F23019238B86E9 )
+	rom ( name "Super Monkey Ball Jr. (USA) (Beta).gba" size 4194304 crc 0D72F2CC md5 D491342C918651DFE04090CA82CA3439 sha1 80D5A688EF345783CC4C6C3A19F23019238B86E9 )
 )
 game (
 	name "Super Panda (USA)"
@@ -19085,11 +19082,8 @@ game (
 )
 game (
 	name "Tom Clancy's Rainbow Six - Rogue Spear (USA, Europe) (En,Fr,De,Es,It) (Beta)"
-	releaseyear "2001"
-	releasemonth "10"
-	releaseday "25"
 	region "USA"
-	rom ( name "Tom Clancy's Rainbow Six - Rogue Spear (USA, Europe) (En,Fr,De,Es,It) (Beta) (2001-10-25).gba" size 7963152 crc 666E31B5 md5 29151401CF5F8F500EC2E1CD311F6EBC sha1 D8426022537149670871817FF9336261B31172B5 )
+	rom ( name "Tom Clancy's Rainbow Six - Rogue Spear (USA, Europe) (En,Fr,De,Es,It) (Beta).gba" size 7963152 crc 666E31B5 md5 29151401CF5F8F500EC2E1CD311F6EBC sha1 D8426022537149670871817FF9336261B31172B5 )
 )
 game (
 	name "Tom Clancy's Splinter Cell (Europe) (En,Fr,De,Es,It,Nl)"
@@ -19326,6 +19320,11 @@ game (
 	rom ( name "Top Spin 2 (USA) (En,Fr,De,Es,It).gba" size 16777216 crc A960D63B md5 94C6EC2DAD53EF7D7EC44B7E438833B8 sha1 16B9FD8CCDDB9853B35138621AB3B7DBC2695089 serial "B27E" )
 )
 game (
+	name "Tork (USA) (Proto)"
+	region "USA"
+	rom ( name "Tork (USA) (Proto).gba" size 3657544 crc 0D53158E md5 F3B1C7FC2AE57728F8D9F6967D2285BE sha1 CEA90FC7797CFFCFFB5CE25D18851DF855751D94 )
+)
+game (
 	name "Total Soccer 2002 (Europe) (En,Fr,De,Es,It,Nl)"
 	region "Europe"
 	serial "ATUP"
@@ -19380,11 +19379,8 @@ game (
 )
 game (
 	name "Tottoko Hamutarou 3 - Love Love Daibouken Dechu (Japan) (Beta)"
-	releaseyear "2002"
-	releasemonth "05"
-	releaseday "29"
 	region "Japan"
-	rom ( name "Tottoko Hamutarou 3 - Love Love Daibouken Dechu (Japan) (Beta) (2002-05-29).gba" size 8388608 crc 782E25AE md5 A3EE8987D717A94353C05462639B1946 sha1 3F1A1448DB7A48FE99428BB94B7B04382FD67AAD )
+	rom ( name "Tottoko Hamutarou 3 - Love Love Daibouken Dechu (Japan) (Beta).gba" size 8388608 crc 782E25AE md5 A3EE8987D717A94353C05462639B1946 sha1 3F1A1448DB7A48FE99428BB94B7B04382FD67AAD )
 )
 game (
 	name "Tottoko Hamutarou 4 - Nijiiro Daikoushin Dechu (Japan)"
@@ -19497,6 +19493,10 @@ game (
 game (
 	name "Tristam Island (World) (v9) (Digital)"
 	rom ( name "Tristam Island (World) (v9) (Digital) (Aftermarket) (Unl).gba" size 286184 crc 4BAA947C md5 68E4AA0650D2BEC28C9ECC5BCE7202BF sha1 4A90A81991D38CE08DED5DA017D0567ECD00C1DF )
+)
+game (
+	name "Trogdor! (World) (v3.1)"
+	rom ( name "Trogdor! (World) (v3.1) (Aftermarket) (Unl).gba" size 5732592 crc 91768D65 md5 1625473F5BC984DE7590193576CD3B77 sha1 41CC88F39AA8D0334560601CFC485FF93C57DD03 )
 )
 game (
 	name "Trollz - Hair Affair! (Europe)"
@@ -19784,106 +19784,76 @@ game (
 	rom ( name "Unfabulous (USA).gba" size 4194304 crc 2547F3A1 md5 74EA809AEA3E45D9638C2997BB5D0A3D sha1 A56E96A46ED7264BDDBFC132925D291E3E8F0E38 serial "BU4E" )
 )
 game (
-	name "Unfabulous (USA) (Beta)"
-	releaseyear "2006"
-	releasemonth "01"
-	releaseday "10"
+	name "Unfabulous (USA) (Beta 1)"
 	region "USA"
 	serial "BU4E"
-	rom ( name "Unfabulous (USA) (Beta) (2006-01-10).gba" size 1077252 crc CBBE4A57 md5 82794E16EF8DA4FE070D06B6ACA248F8 sha1 F84D89631ECA069E2E88B9CC03EF17D6CB1EE544 serial "BU4E" )
+	rom ( name "Unfabulous (USA) (Beta 1).gba" size 1077252 crc CBBE4A57 md5 82794E16EF8DA4FE070D06B6ACA248F8 sha1 F84D89631ECA069E2E88B9CC03EF17D6CB1EE544 serial "BU4E" )
 )
 game (
-	name "Unfabulous (USA) (Beta)"
-	releaseyear "2006"
-	releasemonth "03"
-	releaseday "03"
+	name "Unfabulous (USA) (Beta 10)"
 	region "USA"
 	serial "BU4E"
-	rom ( name "Unfabulous (USA) (Beta) (2006-03-03).gba" size 1419168 crc BC86EEC8 md5 AC2B848B30E70D73FA2695F9AED54624 sha1 CBE7503C62F14B1085412B537955119E99F45F8E serial "BU4E" )
+	rom ( name "Unfabulous (USA) (Beta 10).gba" size 4154388 crc 1C85D06E md5 2E5497B73AEE7FB5FE0A82738D084814 sha1 2765E775E8B599191E3A1D9484FB6C5C51B31C70 serial "BU4E" )
 )
 game (
-	name "Unfabulous (USA) (Beta) (2006-03-24T1132)"
+	name "Unfabulous (USA) (Beta 11)"
 	region "USA"
 	serial "BU4E"
-	rom ( name "Unfabulous (USA) (Beta) (2006-03-24T1132).gba" size 1551692 crc 0845BE78 md5 0F6FD5C281DC18E32045E79306587170 sha1 C85148EB7BC1F133B097E3E4D76CE602BDCEF7A8 serial "BU4E" )
+	rom ( name "Unfabulous (USA) (Beta 11).gba" size 4171048 crc 77A0663D md5 0B1290911E143CE7CE4F39472AC8B5AB sha1 08058775A176F07D2074146005EF4CDEFF2CF2B3 serial "BU4E" )
 )
 game (
-	name "Unfabulous (USA) (Beta) (2006-03-24T1206)"
+	name "Unfabulous (USA) (Beta 12)"
 	region "USA"
 	serial "BU4E"
-	rom ( name "Unfabulous (USA) (Beta) (2006-03-24T1206).gba" size 1551740 crc 662F11D0 md5 509D45B60C2A974C508C428994338705 sha1 6886093DF944A323B52827D98D0B0A97E841122D serial "BU4E" )
+	rom ( name "Unfabulous (USA) (Beta 12).gba" size 4402956 crc D3E36338 md5 7BF03505899917879800ED8A4A6768B9 sha1 FE149AB00165AAD7F343436969C9AF337974C5D8 serial "BU4E" )
 )
 game (
-	name "Unfabulous (USA) (Beta)"
-	releaseyear "2006"
-	releasemonth "04"
-	releaseday "21"
+	name "Unfabulous (USA) (Beta 2)"
 	region "USA"
 	serial "BU4E"
-	rom ( name "Unfabulous (USA) (Beta) (2006-04-21).gba" size 2708408 crc 057E4BBC md5 88C5A2CCAA61459B21715255220B87DD sha1 7937806ABDF3FDB25F5DEE6994705A50B2D716FA serial "BU4E" )
+	rom ( name "Unfabulous (USA) (Beta 2).gba" size 1419168 crc BC86EEC8 md5 AC2B848B30E70D73FA2695F9AED54624 sha1 CBE7503C62F14B1085412B537955119E99F45F8E serial "BU4E" )
 )
 game (
-	name "Unfabulous (USA) (Beta)"
-	releaseyear "2006"
-	releasemonth "05"
-	releaseday "12"
+	name "Unfabulous (USA) (Beta 3)"
 	region "USA"
 	serial "BU4E"
-	rom ( name "Unfabulous (USA) (Beta) (2006-05-12).gba" size 3406884 crc F52E65E2 md5 756D21329F1F1F6D64001AF203FF42B4 sha1 80566D8EDBBD067A4D327C78DCD68DD82D5D4EA6 serial "BU4E" )
+	rom ( name "Unfabulous (USA) (Beta 3).gba" size 1551692 crc 0845BE78 md5 0F6FD5C281DC18E32045E79306587170 sha1 C85148EB7BC1F133B097E3E4D76CE602BDCEF7A8 serial "BU4E" )
 )
 game (
-	name "Unfabulous (USA) (Beta)"
-	releaseyear "2006"
-	releasemonth "06"
-	releaseday "09"
+	name "Unfabulous (USA) (Beta 4)"
 	region "USA"
 	serial "BU4E"
-	rom ( name "Unfabulous (USA) (Beta) (2006-06-09).gba" size 4809124 crc D4EA1AF8 md5 F3BEA8B094971B2BADE114AD11F693AF sha1 CF48CD5BF82BC963AE4F0601ECF05BEC0B92912E serial "BU4E" )
+	rom ( name "Unfabulous (USA) (Beta 4).gba" size 1551740 crc 662F11D0 md5 509D45B60C2A974C508C428994338705 sha1 6886093DF944A323B52827D98D0B0A97E841122D serial "BU4E" )
 )
 game (
-	name "Unfabulous (USA) (Beta)"
-	releaseyear "2006"
-	releasemonth "07"
-	releaseday "13"
+	name "Unfabulous (USA) (Beta 5)"
 	region "USA"
 	serial "BU4E"
-	rom ( name "Unfabulous (USA) (Beta) (2006-07-13).gba" size 4247508 crc 76589323 md5 83F6AF032B753B0BC5FC287FCA6B3B3B sha1 642696C8421EC05ABBA99A248B9B3DA6F3B0DBE0 serial "BU4E" )
+	rom ( name "Unfabulous (USA) (Beta 5).gba" size 2708408 crc 057E4BBC md5 88C5A2CCAA61459B21715255220B87DD sha1 7937806ABDF3FDB25F5DEE6994705A50B2D716FA serial "BU4E" )
 )
 game (
-	name "Unfabulous (USA) (Beta)"
-	releaseyear "2006"
-	releasemonth "07"
-	releaseday "14"
+	name "Unfabulous (USA) (Beta 6)"
 	region "USA"
 	serial "BU4E"
-	rom ( name "Unfabulous (USA) (Beta) (2006-07-14).gba" size 4204052 crc E0C3E150 md5 C41958BBF3D218B83CC663F28DB866F3 sha1 22FEA1033236401E3C5D37D99FED34E4CADE94D3 serial "BU4E" )
+	rom ( name "Unfabulous (USA) (Beta 6).gba" size 3406884 crc F52E65E2 md5 756D21329F1F1F6D64001AF203FF42B4 sha1 80566D8EDBBD067A4D327C78DCD68DD82D5D4EA6 serial "BU4E" )
 )
 game (
-	name "Unfabulous (USA) (Beta)"
-	releaseyear "2006"
-	releasemonth "07"
-	releaseday "15"
+	name "Unfabulous (USA) (Beta 7)"
 	region "USA"
 	serial "BU4E"
-	rom ( name "Unfabulous (USA) (Beta) (2006-07-15).gba" size 4154388 crc 1C85D06E md5 2E5497B73AEE7FB5FE0A82738D084814 sha1 2765E775E8B599191E3A1D9484FB6C5C51B31C70 serial "BU4E" )
+	rom ( name "Unfabulous (USA) (Beta 7).gba" size 4809124 crc D4EA1AF8 md5 F3BEA8B094971B2BADE114AD11F693AF sha1 CF48CD5BF82BC963AE4F0601ECF05BEC0B92912E serial "BU4E" )
 )
 game (
-	name "Unfabulous (USA) (Beta)"
-	releaseyear "2006"
-	releasemonth "07"
-	releaseday "17"
+	name "Unfabulous (USA) (Beta 8)"
 	region "USA"
 	serial "BU4E"
-	rom ( name "Unfabulous (USA) (Beta) (2006-07-17).gba" size 4171048 crc 77A0663D md5 0B1290911E143CE7CE4F39472AC8B5AB sha1 08058775A176F07D2074146005EF4CDEFF2CF2B3 serial "BU4E" )
+	rom ( name "Unfabulous (USA) (Beta 8).gba" size 4247508 crc 76589323 md5 83F6AF032B753B0BC5FC287FCA6B3B3B sha1 642696C8421EC05ABBA99A248B9B3DA6F3B0DBE0 serial "BU4E" )
 )
 game (
-	name "Unfabulous (USA) (Beta)"
-	releaseyear "2006"
-	releasemonth "07"
-	releaseday "20"
+	name "Unfabulous (USA) (Beta 9)"
 	region "USA"
 	serial "BU4E"
-	rom ( name "Unfabulous (USA) (Beta) (2006-07-20).gba" size 4402956 crc D3E36338 md5 7BF03505899917879800ED8A4A6768B9 sha1 FE149AB00165AAD7F343436969C9AF337974C5D8 serial "BU4E" )
+	rom ( name "Unfabulous (USA) (Beta 9).gba" size 4204052 crc E0C3E150 md5 C41958BBF3D218B83CC663F28DB866F3 sha1 22FEA1033236401E3C5D37D99FED34E4CADE94D3 serial "BU4E" )
 )
 game (
 	name "Unglaublichen, Die (Germany)"
@@ -19978,6 +19948,11 @@ game (
 	rom ( name "V-Rally 3 (USA) (En,Fr,Es).gba" size 4194304 crc D3AE3D37 md5 CF1673C920EF1D24C4F4B21EFFCC03F0 sha1 00A44C715AADD4AD3674F8D108271CDCB791CC16 serial "AVRE" )
 )
 game (
+	name "V.I.P. (Europe) (Beta)"
+	region "Europe"
+	rom ( name "V.I.P. (Europe) (Beta).gba" size 1835120 crc 756D4EDA md5 6DF85F8BA6ED3A3EE003032C38680D5A sha1 27F3B873240F08F523A50B9C85A70CCD15E8E1FA )
+)
+game (
 	name "V.I.P. (Europe) (En,Fr,De,Es,It,Nl)"
 	region "Europe"
 	serial "AVPP"
@@ -20040,6 +20015,10 @@ game (
 	region "USA"
 	serial "AVKE"
 	rom ( name "Virtual Kasparov (USA) (En,Fr,De,Es,It).gba" size 4194304 crc 815B722F md5 68D45D576023082A099526D5B384DD1C sha1 F3B416A921B650CFD5C6A7F9CC6060DF0F6B82ED serial "AVKE" )
+)
+game (
+	name "Voltorb's Escape (World)"
+	rom ( name "Voltorb's Escape (World) (Aftermarket) (Unl).gba" size 4324964 crc C7C36B7C md5 5C578C7385F9E206AFBC58EF7FE4DF21 sha1 895ED21B4E8281F1755993D1C07C11381193C567 )
 )
 game (
 	name "W.i.t.c.h. (Europe) (En,Fr,De,Es,It)"
@@ -20632,6 +20611,10 @@ game (
 	rom ( name "Xploder Advance (Europe) (Unl) (Alt).gba" size 131072 crc 4F3E7427 md5 FDBD4E62E01BA4A570188B201427D3A4 sha1 4F2252F61E80EB2A27646FD4BFB159DA8EA70CA6 )
 )
 game (
+	name "YakOnTaks (World)"
+	rom ( name "YakOnTaks (World) (Aftermarket) (Unl).gba" size 42360 crc 2517EF1E md5 496193FE01E13AF369B170497129E2A9 sha1 670E47A5E9B8350F7182500541D7B4C5B0E486C5 )
+)
+game (
 	name "Yaobai Senxigang (China) (Proto)"
 	region "China"
 	serial "BBKC"
@@ -20723,10 +20706,20 @@ game (
 	rom ( name "Yu-Gi-Oh! - 7 Trials to Glory - World Championship Tournament 2005 (USA) (En,Ja,Fr,De,Es,It).gba" size 16777216 crc 584DB6A6 md5 27F9F0E73752CC2DF3B73BC46048E8A2 sha1 E7A2FB1901A691B3FDD0A39FB574E6DD536B165E serial "BY7E" )
 )
 game (
+	name "Yu-Gi-Oh! - 7 Trials to Glory - World Championship Tournament 2005 (USA) (En,Ja,Fr,De,Es,It) (Early Days Collection)"
+	region "USA"
+	rom ( name "Yu-Gi-Oh! - 7 Trials to Glory - World Championship Tournament 2005 (USA) (En,Ja,Fr,De,Es,It) (Early Days Collection).gba" size 16777216 crc 6F749A70 md5 5CDF70B8EB82B52F18BE9B496D6DDBC1 sha1 8FA2C60E5CE03FECF537931CEE2DF89DB75FFF00 )
+)
+game (
 	name "Yu-Gi-Oh! - Day of the Duelist - World Championship Tournament 2005 (Europe) (En,Ja,Fr,De,Es,It)"
 	region "Europe"
 	serial "BYOP"
 	rom ( name "Yu-Gi-Oh! - Day of the Duelist - World Championship Tournament 2005 (Europe) (En,Ja,Fr,De,Es,It).gba" size 16777216 crc 17988E9B md5 DDAFCDB5A0D7F0D44B861A7700E187BC sha1 81069765961B6B1A79FDA15D45332BEF43F91118 serial "BYOP" )
+)
+game (
+	name "Yu-Gi-Oh! - Day of the Duelist - World Championship Tournament 2005 (Europe) (En,Ja,Fr,De,Es,It) (Early Days Collection)"
+	region "Europe"
+	rom ( name "Yu-Gi-Oh! - Day of the Duelist - World Championship Tournament 2005 (Europe) (En,Ja,Fr,De,Es,It) (Early Days Collection).gba" size 16777216 crc 3E276294 md5 E2EF84F13C9BE7389686CEC97C99C567 sha1 44CBD13738AFA9767F9ACD6F03B2A6AF9C82E620 )
 )
 game (
 	name "Yu-Gi-Oh! - Destiny Board Traveler (Europe) (En,Fr,De,Es,It)"
@@ -20739,6 +20732,11 @@ game (
 	region "USA"
 	serial "BYDE"
 	rom ( name "Yu-Gi-Oh! - Destiny Board Traveler (USA).gba" size 8388608 crc 611E7BBD md5 875524C19ADA69A0C9F3E585E6BEDAA2 sha1 DF001A60B7AB52E9735906FCD80F6C8B834ED684 serial "BYDE" )
+)
+game (
+	name "Yu-Gi-Oh! - Destiny Board Traveler (USA) (Early Days Collection)"
+	region "USA"
+	rom ( name "Yu-Gi-Oh! - Destiny Board Traveler (USA) (Early Days Collection).gba" size 8388608 crc 297DCB65 md5 DB4ECA15664F70E935595A9FD810A417 sha1 8C69DB661AA3ADF660AA6DAB9E3AD217B0B1297C )
 )
 game (
 	name "Yu-Gi-Oh! - Dungeon Dice Monsters (Europe) (En,Fr,De,Es,It)"
@@ -20765,10 +20763,25 @@ game (
 	rom ( name "Yu-Gi-Oh! - Reshef of Destruction (Europe) (En,Fr,De,Es,It).gba" size 16777216 crc 460E073F md5 4F71A4E021F4B9319C9D4443DD710666 sha1 1D33877DCC5EC94CC0D68460163208C7EBFB6AD3 serial "AY8P" )
 )
 game (
+	name "Yu-Gi-Oh! - Reshef of Destruction (Europe) (En,Fr,De,Es,It) (Early Days Collection)"
+	region "Europe"
+	rom ( name "Yu-Gi-Oh! - Reshef of Destruction (Europe) (En,Fr,De,Es,It) (Early Days Collection).gba" size 16777216 crc 6821C1F3 md5 38FD9BCD89D2599C5F4A530009932B54 sha1 A52E3B0989FDCDF4728D4A4BAECD5923FB02153E )
+)
+game (
+	name "Yu-Gi-Oh! - Reshef of Destruction (Europe) (En,Fr,De,Es,It) (v1.1) (Early Days Collection)"
+	region "Europe"
+	rom ( name "Yu-Gi-Oh! - Reshef of Destruction (Europe) (En,Fr,De,Es,It) (v1.1) (Early Days Collection).gba" size 16777216 crc CBC37F5A md5 3437AAD1A5E92AA032BB7D00D304DAF6 sha1 FB350D4AF1D78422D0744D5B28E1BDD72360E58B )
+)
+game (
 	name "Yu-Gi-Oh! - Reshef of Destruction (USA)"
 	region "USA"
 	serial "AY8E"
 	rom ( name "Yu-Gi-Oh! - Reshef of Destruction (USA).gba" size 16777216 crc 09E0C559 md5 C06DECDF51468503434DCB5E7BBDCCA5 sha1 DAD3AA7DD470C9B475236FED2EA867B04AB1B089 serial "AY8E" )
+)
+game (
+	name "Yu-Gi-Oh! - Reshef of Destruction (USA) (Early Days Collection)"
+	region "USA"
+	rom ( name "Yu-Gi-Oh! - Reshef of Destruction (USA) (Early Days Collection).gba" size 16777216 crc B23339CE md5 1D49BE8C72BC513EFC4445A1D45BCC15 sha1 1CCBFA7B14E448908B7F05BDC6E845AC2E8C747C )
 )
 game (
 	name "Yu-Gi-Oh! - Sugoroku no Sugoroku (Japan)"
@@ -20783,16 +20796,36 @@ game (
 	rom ( name "Yu-Gi-Oh! - The Eternal Duelist Soul (USA).gba" size 8388608 crc DFD07A36 md5 EC3F000FFDE5754CB164A05D2D6F9053 sha1 510FBBA212ACA9BAB95EA12F8FD933E62EE34DEA serial "AY5E" )
 )
 game (
+	name "Yu-Gi-Oh! - The Eternal Duelist Soul (USA) (Early Days Collection)"
+	region "USA"
+	rom ( name "Yu-Gi-Oh! - The Eternal Duelist Soul (USA) (Early Days Collection).gba" size 8388608 crc 27A52EA7 md5 B7FAE231EA1950FDA67F8DAA481DEBCA sha1 AD9B45744B40FDA69DA96C40861E8F5059C11C87 )
+)
+game (
 	name "Yu-Gi-Oh! - The Sacred Cards (Europe) (En,Fr,De,Es,It)"
 	region "Europe"
 	serial "AY7P"
 	rom ( name "Yu-Gi-Oh! - The Sacred Cards (Europe) (En,Fr,De,Es,It).gba" size 16777216 crc D19DB37C md5 C43587FCA1F7E02F611BAAB02D26716D sha1 9A23AD34F67AC1F1343B7009F11AC95C77B782EF serial "AY7P" )
 )
 game (
+	name "Yu-Gi-Oh! - The Sacred Cards (Europe) (En,Fr,De,Es,It) (Early Days Collection)"
+	region "Europe"
+	rom ( name "Yu-Gi-Oh! - The Sacred Cards (Europe) (En,Fr,De,Es,It) (Early Days Collection).gba" size 16777216 crc CE6ADACF md5 35F01CFCBAF371F8580321C246255AC4 sha1 0DC0B509C24A62FF551DFC1C88901B57AA860EC0 )
+)
+game (
+	name "Yu-Gi-Oh! - The Sacred Cards (Europe) (En,Fr,De,Es,It) (v1.1) (Early Days Collection)"
+	region "Europe"
+	rom ( name "Yu-Gi-Oh! - The Sacred Cards (Europe) (En,Fr,De,Es,It) (v1.1) (Early Days Collection).gba" size 16777216 crc 227D2581 md5 69E4678C7B7876B841CB4A6F1409213F sha1 0D19963942F8CDC1900FB94F323282A3E47CA0BF )
+)
+game (
 	name "Yu-Gi-Oh! - The Sacred Cards (USA)"
 	region "USA"
 	serial "AY7E"
 	rom ( name "Yu-Gi-Oh! - The Sacred Cards (USA).gba" size 16777216 crc 141FB1CC md5 0A7C58069D5390165482E88A22158BD2 sha1 A06735F9C3D10BE9339657026981AEF77AF34B27 serial "AY7E" )
+)
+game (
+	name "Yu-Gi-Oh! - The Sacred Cards (USA) (Early Days Collection)"
+	region "USA"
+	rom ( name "Yu-Gi-Oh! - The Sacred Cards (USA) (Early Days Collection).gba" size 16777216 crc BF7FBD2E md5 5DAE2D0218E07534E0744043780EEC90 sha1 D3710031520D9CDAE70D870C60B1667285FE5230 )
 )
 game (
 	name "Yu-Gi-Oh! - Ultimate Masters - World Championship Tournament 2006 (USA) (En,Ja,Fr,De,Es,It)"
@@ -20813,10 +20846,20 @@ game (
 	rom ( name "Yu-Gi-Oh! - World Championship Tournament 2004 (Europe) (En,Ja,Fr,De,Es,It).gba" size 16777216 crc 3C42E84C md5 B21129CB55D887D0EF4481C699FEED99 sha1 B791EE3241CAEF0566BCA56BB70C6D37AD3B8621 serial "BYWP" )
 )
 game (
+	name "Yu-Gi-Oh! - World Championship Tournament 2004 (Europe) (En,Ja,Fr,De,Es,It) (Early Days Collection)"
+	region "Europe"
+	rom ( name "Yu-Gi-Oh! - World Championship Tournament 2004 (Europe) (En,Ja,Fr,De,Es,It) (Early Days Collection).gba" size 16777216 crc 88AAE191 md5 0978660E09081BE5F982B30557707685 sha1 945775D714DD31B4198E3721754140D8B5ED5803 )
+)
+game (
 	name "Yu-Gi-Oh! - World Championship Tournament 2004 (USA) (En,Ja,Fr,De,Es,It)"
 	region "USA"
 	serial "BYWE"
 	rom ( name "Yu-Gi-Oh! - World Championship Tournament 2004 (USA) (En,Ja,Fr,De,Es,It).gba" size 16777216 crc 69B6F229 md5 8517049CE498D84530C953D6A8B3112E sha1 3A7FCEFFA1405640FE4606E006D272D1AF542F2B serial "BYWE" )
+)
+game (
+	name "Yu-Gi-Oh! - World Championship Tournament 2004 (USA) (En,Ja,Fr,De,Es,It) (Early Days Collection)"
+	region "USA"
+	rom ( name "Yu-Gi-Oh! - World Championship Tournament 2004 (USA) (En,Ja,Fr,De,Es,It) (Early Days Collection).gba" size 16777216 crc DD5EFBF4 md5 22E3F8A1CCDEBFB89777D371F7A57DB3 sha1 B8285E2E5C934B167767485DC3DD0C80C5CFF555 )
 )
 game (
 	name "Yu-Gi-Oh! - Worldwide Edition - Stairway to the Destined Duel (Europe) (En,Ja,Fr,De,Es,It)"
@@ -20825,10 +20868,20 @@ game (
 	rom ( name "Yu-Gi-Oh! - Worldwide Edition - Stairway to the Destined Duel (Europe) (En,Ja,Fr,De,Es,It).gba" size 16777216 crc ACA5FFC6 md5 15DBDE22EF467C503E09F75B233DA539 sha1 96A490F9152ACFF2D0F6B2486382F1906B3BAEE8 serial "AYWP" )
 )
 game (
+	name "Yu-Gi-Oh! - Worldwide Edition - Stairway to the Destined Duel (Europe) (En,Ja,Fr,De,Es,It) (Early Days Collection)"
+	region "Europe"
+	rom ( name "Yu-Gi-Oh! - Worldwide Edition - Stairway to the Destined Duel (Europe) (En,Ja,Fr,De,Es,It) (Early Days Collection).gba" size 16777216 crc C25BCCC6 md5 1983020E5999263BE318352FEB5921B5 sha1 DE180978E6EC56EC72C1A3A49912A9087903CB68 )
+)
+game (
 	name "Yu-Gi-Oh! - Worldwide Edition - Stairway to the Destined Duel (USA) (En,Ja,Fr,De,Es,It)"
 	region "USA"
 	serial "AYWE"
 	rom ( name "Yu-Gi-Oh! - Worldwide Edition - Stairway to the Destined Duel (USA) (En,Ja,Fr,De,Es,It).gba" size 16777216 crc 39B5E771 md5 1E52D66F5F8A7C4F207D80BA4FCCF55E sha1 53D4AE06D1B605F8925C53D6C585478D73FF55C0 serial "AYWE" )
+)
+game (
+	name "Yu-Gi-Oh! - Worldwide Edition - Stairway to the Destined Duel (USA) (En,Ja,Fr,De,Es,It) (Early Days Collection)"
+	region "USA"
+	rom ( name "Yu-Gi-Oh! - Worldwide Edition - Stairway to the Destined Duel (USA) (En,Ja,Fr,De,Es,It) (Early Days Collection).gba" size 16777216 crc 9F64379C md5 1DF9E439464C27C5DA6DF24D66BD7D35 sha1 69A258F99C06DB3673FA7FA701B3ADEEE1197404 )
 )
 game (
 	name "Yu-Gi-Oh! Double Pack (Europe) (En,Fr,De,Es,It)"
@@ -20855,10 +20908,26 @@ game (
 	rom ( name "Yu-Gi-Oh! Duel Monsters 5 Expert 1 (Japan).gba" size 8388608 crc F3041E7E md5 31DD0E7EFD461E004CFA6BAD8E7B0E57 sha1 DC25F733CEE913AFDF187EC03DF30909FE28B03C serial "AY5J" )
 )
 game (
+	name "Yu-Gi-Oh! Duel Monsters 5 Expert 1 (Japan) (Early Days Collection)"
+	region "Japan"
+	rom ( name "Yu-Gi-Oh! Duel Monsters 5 Expert 1 (Japan) (Early Days Collection).gba" size 8388608 crc 2E809F33 md5 7673372484E39CBC94C07B9D8578F579 sha1 D8289FF1BFB6F99716EEA32DDE511A5D2296B57D )
+)
+game (
+	name "Yu-Gi-Oh! Duel Monsters 5 Expert 1 - Taikenban (Japan)"
+	region "Japan"
+	serial "AYTJ"
+	rom ( name "Yu-Gi-Oh! Duel Monsters 5 Expert 1 - Taikenban (Japan).gba" size 4194304 crc 8D93E52D md5 716368D2062BB02136B7DED6A8DB687E sha1 0807B14C08CECBBF95A2707FB6293EA5D53A7C65 serial "AYTJ" )
+)
+game (
 	name "Yu-Gi-Oh! Duel Monsters 6 Expert 2 (Japan)"
 	region "Japan"
 	serial "AY6J"
 	rom ( name "Yu-Gi-Oh! Duel Monsters 6 Expert 2 (Japan).gba" size 16777216 crc A7054D60 md5 2820981C97087B1181FC44E722C64DC3 sha1 E5EE6FB7A6A4EB0E33197549FD30F8FE402B595F serial "AY6J" )
+)
+game (
+	name "Yu-Gi-Oh! Duel Monsters 6 Expert 2 (Japan) (Early Days Collection)"
+	region "Japan"
+	rom ( name "Yu-Gi-Oh! Duel Monsters 6 Expert 2 (Japan) (Early Days Collection).gba" size 16777216 crc C65253CC md5 F1319DC593397341A307FBED618B631A sha1 945B0D99CAE62C63170B7A310FB39028D787A397 )
 )
 game (
 	name "Yu-Gi-Oh! Duel Monsters 7 - Kettou Toshi Densetsu (Japan)"
@@ -20867,10 +20936,30 @@ game (
 	rom ( name "Yu-Gi-Oh! Duel Monsters 7 - Kettou Toshi Densetsu (Japan).gba" size 16777216 crc B9BE9B91 md5 38BE3F2FF554732E3B84003ABE79E2BF sha1 C28F5C0103E3D0E5919C2023044199409375E0CD serial "AY7J" )
 )
 game (
+	name "Yu-Gi-Oh! Duel Monsters 7 - Kettou Toshi Densetsu (Japan) (Early Days Collection)"
+	region "Japan"
+	rom ( name "Yu-Gi-Oh! Duel Monsters 7 - Kettou Toshi Densetsu (Japan) (Early Days Collection).gba" size 16777216 crc E96149F8 md5 E93B0F1CCE9695701A28AB8E1FD3331B sha1 9DE3C09BAA32D59C68C402692413EB60A1D0A9C3 )
+)
+game (
+	name "Yu-Gi-Oh! Duel Monsters 7 - Kettou Toshi Densetsu (Japan) (v1.1) (Early Days Collection)"
+	region "Japan"
+	rom ( name "Yu-Gi-Oh! Duel Monsters 7 - Kettou Toshi Densetsu (Japan) (v1.1) (Early Days Collection).gba" size 16777216 crc 8040B20C md5 1B4E6D6D5D2E416A600C2E105258CF27 sha1 5E44FAAA4B1C4CB25B2F825BDAF788E46CE76F83 )
+)
+game (
 	name "Yu-Gi-Oh! Duel Monsters 8 - Hametsu no Daijashin (Japan)"
 	region "Japan"
 	serial "AY8J"
 	rom ( name "Yu-Gi-Oh! Duel Monsters 8 - Hametsu no Daijashin (Japan).gba" size 16777216 crc 681DAF1F md5 1AF27A924734E9F9E30569633204269C sha1 0C1D5CC4989BC9B5BECC8C1ED962F6CAA55AF342 serial "AY8J" )
+)
+game (
+	name "Yu-Gi-Oh! Duel Monsters 8 - Hametsu no Daijashin (Japan) (Early Days Collection)"
+	region "Japan"
+	rom ( name "Yu-Gi-Oh! Duel Monsters 8 - Hametsu no Daijashin (Japan) (Early Days Collection).gba" size 16777216 crc BDAC8C98 md5 A843967D8D63F49D47A75F3437038645 sha1 851FC4C46E5E50E2ED3FA1EF755D843D2DF3E550 )
+)
+game (
+	name "Yu-Gi-Oh! Duel Monsters 8 - Hametsu no Daijashin (Japan) (v1.1) (Early Days Collection)"
+	region "Japan"
+	rom ( name "Yu-Gi-Oh! Duel Monsters 8 - Hametsu no Daijashin (Japan) (v1.1) (Early Days Collection).gba" size 16777216 crc DD14D6E4 md5 6A8B727441BCE1835FBEDEB50CDAA010 sha1 37E8F7BC37ADBAD52BE63C01E9535AACB013F81C )
 )
 game (
 	name "Yu-Gi-Oh! Duel Monsters Expert 2006 (Japan) (En,Ja,Fr,De,Es,It)"
@@ -20885,6 +20974,11 @@ game (
 	rom ( name "Yu-Gi-Oh! Duel Monsters Expert 3 (Japan) (En,Ja,Fr,De,Es,It).gba" size 16777216 crc 7AB1EC04 md5 AC0311B3923D45B89A2DB746280C7915 sha1 1E321DF0DDF6DADE3622624BBC4A1164D5CB8ADD serial "BY3J" )
 )
 game (
+	name "Yu-Gi-Oh! Duel Monsters Expert 3 EX (Japan) (En,Ja,Fr,De,Es,It) (Early Days Collection)"
+	region "Japan"
+	rom ( name "Yu-Gi-Oh! Duel Monsters Expert 3 EX (Japan) (En,Ja,Fr,De,Es,It) (Early Days Collection).gba" size 16777216 crc 1C82463D md5 81AE1CABE6D3BB7CDF4EE538A2E483A2 sha1 CB4197E0F0AAB5B31C581CAA11FB9BC33B040D66 )
+)
+game (
 	name "Yu-Gi-Oh! Duel Monsters GX - Mezase Duel King! (Japan)"
 	region "Japan"
 	serial "BYGJ"
@@ -20897,6 +20991,11 @@ game (
 	rom ( name "Yu-Gi-Oh! Duel Monsters International - Worldwide Edition (Japan) (En,Ja,Fr,De,Es,It).gba" size 16777216 crc 98507497 md5 9A8ABBB9E95AD1EAD235E3ADE9B7B429 sha1 A6EDDD916EFF82FA7841366BAC1932B88201E548 serial "AYWJ" )
 )
 game (
+	name "Yu-Gi-Oh! Duel Monsters International - Worldwide Edition (Japan) (En,Ja,Fr,De,Es,It) (Early Days Collection)"
+	region "Japan"
+	rom ( name "Yu-Gi-Oh! Duel Monsters International - Worldwide Edition (Japan) (En,Ja,Fr,De,Es,It) (Early Days Collection).gba" size 16777216 crc DD6A43F9 md5 13E17B996A773D6D161E1D64A4C41436 sha1 C4981E9DF360165E05A97E58FDFBDAFBFCAA077C )
+)
+game (
 	name "Yu-Gi-Oh! Duel Monsters International - Worldwide Edition (Japan) (En,Ja,Fr,De,Es,It) (Rev 1)"
 	region "Japan"
 	serial "AYWJ"
@@ -20907,6 +21006,11 @@ game (
 	region "Japan"
 	serial "BYIJ"
 	rom ( name "Yu-Gi-Oh! Duel Monsters International 2 (Japan) (En,Ja).gba" size 16777216 crc 6DCFB879 md5 026FBEE1949B8508F7EF3F9F92CB1F74 sha1 4E9C134910D43F245AFD648B633A12DFFF2120B6 serial "BYIJ" )
+)
+game (
+	name "Yu-Gi-Oh! Duel Monsters International 2 (Japan) (En,Ja) (Early Days Collection)"
+	region "Japan"
+	rom ( name "Yu-Gi-Oh! Duel Monsters International 2 (Japan) (En,Ja) (Early Days Collection).gba" size 16777216 crc 88EC163B md5 89E81C6A30D524FCE703EEA4E3EE1E61 sha1 032073CC5E014112C004F94B0E5031159B577FF7 )
 )
 game (
 	name "Yu-Gi-Oh! GX - Duel Academy (Europe)"
@@ -21071,6 +21175,78 @@ game (
 	rom ( name "Zoids - Legacy (USA).gba" size 8388608 crc 302E75F3 md5 220A6F1B9D8D63E7638248F24DBFA709 sha1 460FA2158606097F6E6F63CE966D2D6ECDD58D70 serial "AZ2E" )
 )
 game (
+	name "Zoids - Legacy (USA) (Beta 1)"
+	region "USA"
+	serial "AZ2E"
+	rom ( name "Zoids - Legacy (USA) (Beta 1).gba" size 8142980 crc 54D097B5 md5 9A8FFD8345F88CA90683691AA1456C87 sha1 FDB0ABCD5FA2C496C9E80BDC26A4D246BABD8DD7 serial "AZ2E" )
+)
+game (
+	name "Zoids - Legacy (USA) (Beta 10)"
+	region "USA"
+	serial "AZ2E"
+	rom ( name "Zoids - Legacy (USA) (Beta 10).gba" size 8343308 crc ADFD62D3 md5 0A6666FE761D4EE8421500C24ABB7B20 sha1 355BFA176F70DC34C44444F09E07AC53C5F63854 serial "AZ2E" )
+)
+game (
+	name "Zoids - Legacy (USA) (Beta 11)"
+	region "USA"
+	serial "AZ2E"
+	rom ( name "Zoids - Legacy (USA) (Beta 11).gba" size 8343792 crc D0E62A12 md5 0950578BCD454402624FA3A78A7CA76E sha1 3F421B447E4380F403C284BAA6FE4F4FDE3AB305 serial "AZ2E" )
+)
+game (
+	name "Zoids - Legacy (USA) (Beta 12)"
+	region "USA"
+	serial "AZ2E"
+	rom ( name "Zoids - Legacy (USA) (Beta 12).gba" size 8343792 crc D553D143 md5 66211735E6762BDAA1213C9275877DAB sha1 7BAE58F9D704EF48AF01D6A1CA46F69F91C6E073 serial "AZ2E" )
+)
+game (
+	name "Zoids - Legacy (USA) (Beta 2)"
+	region "USA"
+	serial "AZ2E"
+	rom ( name "Zoids - Legacy (USA) (Beta 2).gba" size 8160864 crc 65399713 md5 F1321648A333354C64CC402FB79487AD sha1 6A183045252BE4BDBA1C2E1C2EACC3F5159F049C serial "AZ2E" )
+)
+game (
+	name "Zoids - Legacy (USA) (Beta 3)"
+	region "USA"
+	serial "AZ2E"
+	rom ( name "Zoids - Legacy (USA) (Beta 3).gba" size 8170340 crc D1FEC822 md5 3F5048EA5102F72AA65AC307F1CF8B8A sha1 D807F3BC046660E0E264F4F62A8BF7EA6A858530 serial "AZ2E" )
+)
+game (
+	name "Zoids - Legacy (USA) (Beta 4)"
+	region "USA"
+	serial "AZ2E"
+	rom ( name "Zoids - Legacy (USA) (Beta 4).gba" size 8196708 crc 4906A9E8 md5 120FE8F60008ED371A40843DFAD39CF6 sha1 B524A730F345F5CFEBF6DD0C1171C2FC1E0C415B serial "AZ2E" )
+)
+game (
+	name "Zoids - Legacy (USA) (Beta 5)"
+	region "USA"
+	serial "AZ2E"
+	rom ( name "Zoids - Legacy (USA) (Beta 5).gba" size 8328616 crc B16A7B9D md5 56ADF74CF74D987FD2A66C608026269F sha1 50EB8B39ED9C0F84DFE3DA1D76A125F365B38953 serial "AZ2E" )
+)
+game (
+	name "Zoids - Legacy (USA) (Beta 6)"
+	region "USA"
+	serial "AZ2E"
+	rom ( name "Zoids - Legacy (USA) (Beta 6).gba" size 8364740 crc B9E49F54 md5 0B2EC6AC765CD16C2D080D02C7D51D54 sha1 1DFC3707085C746C2912F89D3E15E2361C31A065 serial "AZ2E" )
+)
+game (
+	name "Zoids - Legacy (USA) (Beta 7)"
+	region "USA"
+	serial "AZ2E"
+	rom ( name "Zoids - Legacy (USA) (Beta 7).gba" size 8367460 crc C3D7609D md5 37A7507F1BEE2BAEED44ADBFF1B9C6C0 sha1 EA29F87BA2D2B1CDBF5D3D92EC390E2EF9B1F463 serial "AZ2E" )
+)
+game (
+	name "Zoids - Legacy (USA) (Beta 8)"
+	region "USA"
+	serial "AZ2E"
+	rom ( name "Zoids - Legacy (USA) (Beta 8).gba" size 8367548 crc BB2A91C4 md5 5ACB3E54E801C0619092593DBF2D3EED sha1 F3C26929FD58138566EA50DDCD14003565AA4EB0 serial "AZ2E" )
+)
+game (
+	name "Zoids - Legacy (USA) (Beta 9)"
+	region "USA"
+	serial "AZ2E"
+	rom ( name "Zoids - Legacy (USA) (Beta 9).gba" size 8343144 crc 3F3FF5A6 md5 9B699EC2EC65F4153ADDA3EA55522BB2 sha1 B2B508135AD6551A71A48C03BEA7225FDB1A0CE9 serial "AZ2E" )
+)
+game (
 	name "Zoids Saga (Japan)"
 	region "Japan"
 	serial "ATZJ"
@@ -21093,6 +21269,12 @@ game (
 	region "Japan"
 	serial "AZ2J"
 	rom ( name "Zoids Saga II (Japan).gba" size 8388608 crc 0C039503 md5 F7BDD0EB9CD94D4C3BF924654998C514 sha1 6014CA7C7AF931D62634BE4BAA992A2FE187413F serial "AZ2J" )
+)
+game (
+	name "Zoids Saga II (Japan) (Rev 1) (Proto)"
+	region "Japan"
+	serial "AZ2J"
+	rom ( name "Zoids Saga II (Japan) (Rev 1) (Proto).gba" size 8388608 crc 515D9E38 md5 14BC45C78E1D2325654C0CDAC25873BB sha1 1B2CAA037E4085554065DC1FC386296AABBCDD0E serial "AZ2J" )
 )
 game (
 	name "Zoku Bokura no Taiyou - Taiyou Shounen Django (Japan)"
@@ -21230,6 +21412,10 @@ game (
 game (
 	name "uCity Advance (World) (v1.0.2)"
 	rom ( name "uCity Advance (World) (v1.0.2) (Aftermarket) (Unl).gba" size 1930492 crc 534A0F4D md5 5EF96047CA7D55F0FC3AB581D0B12D4D sha1 262AE7904B78B57AD1BD514B2A46CA5854F70E0C )
+)
+game (
+	name "uCity Advance (World) (v1.0.3)"
+	rom ( name "uCity Advance (World) (v1.0.3) (Aftermarket) (Unl).gba" size 1933560 crc F4EC1AD4 md5 F823AC82A8FFCFB2CDED9BF9EE56E96B sha1 041A34BA081F8D2B01E4B0EE7EF0DF651D7B7C6F )
 )
 game (
 	name "xXx (France)"

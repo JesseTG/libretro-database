@@ -1,15 +1,15 @@
 cheats = 19 
 
 cheat0_desc = "Start With 2 Lives"
-cheat0_code = "027+3CF+E66"
+cheat0_code = "027-3CF-E66"
 cheat0_enable = false 
 
 cheat1_desc = "Start With 5 Lives"
-cheat1_code = "057+3CF+E66"
+cheat1_code = "057-3CF-E66"
 cheat1_enable = false 
 
 cheat2_desc = "Start With 8 Lives"
-cheat2_code = "087+3CF+E66"
+cheat2_code = "087-3CF-E66"
 cheat2_enable = false 
 
 cheat3_desc = "Infinite Time"

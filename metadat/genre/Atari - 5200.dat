@@ -71,7 +71,7 @@ game (
 
 game (
 	comment "Black Belt (USA) (Proto)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc ED47B0D8 )
 )
 
@@ -371,7 +371,7 @@ game (
 
 game (
 	comment "Pole Position (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc ABC2D1E4 )
 )
 
@@ -383,7 +383,7 @@ game (
 
 game (
 	comment "Pole Position (USA) (Proto)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 6252143C )
 )
 
@@ -395,7 +395,7 @@ game (
 
 game (
 	comment "QIX (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc AEA6D2C2 )
 )
 

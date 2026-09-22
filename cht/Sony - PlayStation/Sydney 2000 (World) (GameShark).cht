@@ -1,4 +1,4 @@
-cheats = 7 
+cheats = 4 
 
 cheat0_desc = "Unlock Arcade Legend Difficulty"
 cheat0_code = "300A0ADC+0003"

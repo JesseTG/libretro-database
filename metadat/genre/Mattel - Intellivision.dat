@@ -23,13 +23,13 @@ game (
 
 game (
 	comment "Advanced Dungeons & Dragons - Treasure of Tarmin (USA, Europe)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 16C3B62F )
 )
 
 game (
 	comment "Armor Battle (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 6F91FBC1 )
 )
 
@@ -41,7 +41,7 @@ game (
 
 game (
 	comment "Armor Battle (USA, Europe) (Intellivision Lives!) (Gamecube)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 152D9383 )
 )
 
@@ -77,7 +77,7 @@ game (
 
 game (
 	comment "Auto Racing (World)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc B35C1101 )
 )
 
@@ -119,7 +119,7 @@ game (
 
 game (
 	comment "Bump 'n' Jump (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 999CCEED )
 )
 
@@ -341,7 +341,7 @@ game (
 
 game (
 	comment "Hypnotic Lights (USA) (Proto)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 4307262D )
 )
 
@@ -449,7 +449,7 @@ game (
 
 game (
 	comment "Melody Blaster (USA, Europe)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc FF68AA22 )
 )
 
@@ -485,7 +485,7 @@ game (
 
 game (
 	comment "Motocross (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 5F6E1AF6 )
 )
 
@@ -605,7 +605,7 @@ game (
 
 game (
 	comment "Pole Position (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc BB939881 )
 )
 
@@ -659,7 +659,7 @@ game (
 
 game (
 	comment "Royal Dealer (USA, Europe)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc DCF4B15D )
 )
 
@@ -749,7 +749,7 @@ game (
 
 game (
 	comment "Stadium Mud Buggies (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc B745C1CA )
 )
 
@@ -857,7 +857,7 @@ game (
 
 game (
 	comment "Triple Action (World)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 1AC989E2 )
 )
 
@@ -887,7 +887,7 @@ game (
 
 game (
 	comment "Truckin' (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 734F3260 )
 )
 
@@ -899,7 +899,7 @@ game (
 
 game (
 	comment "Turbo (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 275F3512 )
 )
 

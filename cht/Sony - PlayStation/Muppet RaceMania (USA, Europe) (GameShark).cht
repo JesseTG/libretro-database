@@ -1,4 +1,4 @@
-cheats = 16 
+cheats = 13 
 
 cheat0_desc = "Infinite Boost"
 cheat0_code = "800C3532+01A4"

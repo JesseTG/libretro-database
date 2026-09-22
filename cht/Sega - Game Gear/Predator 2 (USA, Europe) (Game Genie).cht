@@ -1,11 +1,11 @@
 cheats = 9 
 
 cheat0_desc = "Infinite Lives"
-cheat0_code = "00F+D2E+3BE"
+cheat0_code = "00F-D2E-3BE"
 cheat0_enable = false 
 
 cheat1_desc = "Infinite Ammo (All Weapons)"
-cheat1_code = "001+8EE+19E"
+cheat1_code = "001-8EE-19E"
 cheat1_enable = false 
 
 cheat2_desc = "Start On Level 2"

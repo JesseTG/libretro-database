@@ -89,66 +89,66 @@ cheat21_code = "81D-2AA-5D2"
 cheat21_enable = false 
 
 cheat22_desc = "Turbo Doesn't Recharge Until End Of Quarter"
-cheat22_code = "C9D+5DA+91D"
+cheat22_code = "C9D-5DA-91D"
 cheat22_enable = false 
 
 cheat23_desc = "Infinite Shot Clock Time"
-cheat23_code = "001+4CD+19E"
+cheat23_code = "001-4CD-19E"
 cheat23_enable = false 
 
 cheat24_desc = "3-Second Shot Clock For Computer"
-cheat24_code = "031+25A+80A"
+cheat24_code = "031-25A-80A"
 cheat24_enable = false 
 
 cheat25_desc = "5-Second Shot Clock For Computer"
-cheat25_code = "051+25A+80A"
+cheat25_code = "051-25A-80A"
 cheat25_enable = false 
 
 cheat26_desc = "15-Second Shot Clock For Computer"
-cheat26_code = "0F1+25A+80A"
+cheat26_code = "0F1-25A-80A"
 cheat26_enable = false 
 
 cheat27_desc = "Gravity Mode 1"
-cheat27_code = "007+D09+E62"
+cheat27_code = "007-D09-E62"
 cheat27_enable = false 
 
 cheat28_desc = "Gravity Mode 2"
-cheat28_code = "017+D09+E62"
+cheat28_code = "017-D09-E62"
 cheat28_enable = false 
 
 cheat29_desc = "Infinite Time"
-cheat29_code = "3A5+D9E+2A2"
+cheat29_code = "3A5-D9E-2A2"
 cheat29_enable = false 
 
 cheat30_desc = "1-Minute Quarters"
-cheat30_code = "018+C7F+E66+01A+C6F+E66"
+cheat30_code = "018-C7F-E66+01A-C6F-E66"
 cheat30_enable = false 
 
 cheat31_desc = "1-Shot Game"
-cheat31_code = "008+C7F+E66+00A+C6F+E66"
+cheat31_code = "008-C7F-E66+00A-C6F-E66"
 cheat31_enable = false 
 
 cheat32_desc = "9-Minute Quarters"
-cheat32_code = "098+C7F+E66+09A+C6F+E66"
+cheat32_code = "098-C7F-E66+09A-C6F-E66"
 cheat32_enable = false 
 
 cheat33_desc = "1-Minute Quarters"
-cheat33_code = "018+C7F+E66+01A+C6F+E66"
+cheat33_code = "018-C7F-E66+01A-C6F-E66"
 cheat33_enable = false 
 
 cheat34_desc = "Computer Can't Score"
-cheat34_code = "3AA+5F9+2A2"
+cheat34_code = "3AA-5F9-2A2"
 cheat34_enable = false 
 
 cheat35_desc = "Games Last 3 Quarters"
-cheat35_code = "028+8CF+E6E"
+cheat35_code = "028-8CF-E6E"
 cheat35_enable = false 
 
 cheat36_desc = "Games Last 2 Quarters"
-cheat36_code = "038+8CF+E6E"
+cheat36_code = "038-8CF-E6E"
 cheat36_enable = false 
 
 cheat37_desc = "Shot Clock Always Displayed"
-cheat37_code = "200+CFD+C46"
+cheat37_code = "200-CFD-C46"
 cheat37_enable = false 
 

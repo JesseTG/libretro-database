@@ -1,4 +1,4 @@
-cheats = 15 
+cheats = 12 
 
 cheat0_desc = "P1 Infinite Health"
 cheat0_code = "8007187C+0000+8007187E+0001"

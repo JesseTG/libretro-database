@@ -11,7 +11,7 @@ game (
 
 game (
 	comment "Checkers (USA)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc FDAE7044 )
 )
 
@@ -23,7 +23,7 @@ game (
 
 game (
 	comment "Casino Poker (USA)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 5AA30C12 )
 )
 
@@ -41,7 +41,7 @@ game (
 
 game (
 	comment "Backgammon, Acey-Deucey (USA)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc A1731B52 )
 )
 
@@ -53,7 +53,7 @@ game (
 
 game (
 	comment "Drag Race (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 6A64DDA3 )
 )
 
@@ -83,7 +83,7 @@ game (
 
 game (
 	comment "Magic Numbers - Mind Reader + Nim (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 24DA0529 )
 )
 
@@ -107,7 +107,7 @@ game (
 
 game (
 	comment "Hangman (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 9238D6CE )
 )
 
@@ -125,7 +125,7 @@ game (
 
 game (
 	comment "Memory Match 1 & 2 (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 104B5E18 )
 )
 
@@ -137,7 +137,7 @@ game (
 
 game (
 	comment "Slot Machine (USA)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc B7EABD08 )
 )
 
@@ -149,19 +149,19 @@ game (
 
 game (
 	comment "Rat' Mal (Germany)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 87752425 )
 )
 
 game (
 	comment "Ordtaevling (Sweden)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 3A386E79 )
 )
 
 game (
 	comment "Schach (Germany)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 04FB6DCE )
 )
 
@@ -197,7 +197,7 @@ game (
 
 game (
 	comment "Video Blackjack (USA)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc E98D4456 )
 )
 

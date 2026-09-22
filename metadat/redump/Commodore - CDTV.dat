@@ -1,7 +1,7 @@
 clrmamepro (
 	name "Commodore - CDTV"
 	description "Commodore - CDTV"
-	version "2025.11.10"
+	version "2026.08.01"
 	homepage "http://github.com/robloach/libretro-dats"
 )
 
@@ -108,9 +108,9 @@ game (
 	rom ( name "Classic Board Games (Europe) (En,Ja,Fr,De,Es,It).bin" size 113926176 crc 5540A1D9 md5 343851D323C2D708CEB39208F98D712D sha1 3080A6870E2F574672D8349562DF52B4014B8427 )
 )
 game (
-	name "Curse of RA, The (Germany)"
+	name "Curse of Ra, The (Germany)"
 	region "Germany"
-	rom ( name "Curse of RA, The (Germany).bin" size 20815200 crc 2AD9B4DB md5 CC713D8F30095F05172C5C4C19AC43FA sha1 17CF59F01EE8A58A165498674B76DAD13D6B265C )
+	rom ( name "Curse of Ra, The (Germany).bin" size 20815200 crc 2AD9B4DB md5 CC713D8F30095F05172C5C4C19AC43FA sha1 17CF59F01EE8A58A165498674B76DAD13D6B265C )
 )
 game (
 	name "Defender of the Crown (Europe)"
@@ -145,9 +145,19 @@ game (
 	rom ( name "Deutschland Kompakt (Germany).bin" size 435531600 crc A68713AB md5 1003357013AF7251E5704F7CC15487DA sha1 922A86DE11FD54FDF153E5F2CC808CB6198D1356 )
 )
 game (
+	name "Electric Crayon - All Dogs Go to Heaven (USA)"
+	region "USA"
+	rom ( name "Electric Crayon - All Dogs Go to Heaven (USA).bin" size 33092640 crc 1B7263ED md5 ACA6B8360EED8618DB3665F11FAD707B sha1 B7507EDC8EF7C0E7041DECBFADA558EE0445E2FC )
+)
+game (
 	name "Fantastic Voyage (USA)"
 	region "USA"
 	rom ( name "Fantastic Voyage (USA).bin" size 5244960 crc 019D4FCB md5 EEE20CAF9B36A2F8830F7AEB9584D57C sha1 E32AEBDAC017A3F19CDBAA746C829FC3C817DCFA )
+)
+game (
+	name "Fractal Universe (Europe)"
+	region "Europe"
+	rom ( name "Fractal Universe (Europe).bin" size 128948400 crc 88FACD9F md5 798F75337C5E0D9A4039A79AC566CBE6 sha1 F848CE3FFFC199F684C125C5C71997DFB7C6998C )
 )
 game (
 	name "Games & Goodies (UK)"

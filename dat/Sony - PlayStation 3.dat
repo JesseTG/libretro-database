@@ -3406,7 +3406,7 @@ game (
 game (
 	name "All About PlayStation Game Hits Vol. 1"
 	serial "BCAS20226"
-	publisher "Sony Computer Entertainment Inc."
+	publisher "Sony Computer Entertainment"
 	users 1
 	rom (
 		name "All About PlayStation Game Hits Vol. 1.iso"
@@ -15332,7 +15332,7 @@ game (
 	name "Brunswick Pro Bowling"
 	serial "BCAS20138"
 	developer "Farsight Studios"
-	publisher "Crave"
+	publisher "Crave Entertainment"
 	releaseyear 2010
 	releasemonth 9
 	releaseday 28
@@ -15362,7 +15362,7 @@ game (
 	name "Brunswick Pro Bowling (USA)"
 	serial "BLUS30532"
 	developer "Farsight Studios"
-	publisher "Crave"
+	publisher "Crave Entertainment"
 	releaseyear 2010
 	releasemonth 9
 	releaseday 22
@@ -21502,7 +21502,7 @@ game (
 	name "Condemned 2"
 	serial "BCKS10047"
 	developer "Monolith Productions"
-	publisher "SCEI"
+	publisher "Sony Computer Entertainment"
 	releaseyear 2008
 	releasemonth 5
 	releaseday 23
@@ -44190,7 +44190,7 @@ game (
 game (
 	name "Get Up and Dance (Europe)"
 	serial "BLES01338"
-	developer "Crave"
+	developer "Crave Entertainment"
 	publisher "O-Games"
 	releaseyear 2011
 	releasemonth 11
@@ -46215,7 +46215,7 @@ game (
 	name "Gran Turismo 6 (USA)"
 	serial "BCUS99247"
 	developer "Poliphony Digital"
-	publisher "Sony Computer Entertainment Inc."
+	publisher "Sony Computer Entertainment"
 	releaseyear 2013
 	releasemonth 12
 	releaseday 6
@@ -65163,7 +65163,7 @@ game (
 	name "Man vs. Wild with Bear Grylls"
 	serial "BCAS20174"
 	developer "Scientifically Proven"
-	publisher "Crave"
+	publisher "Crave Entertainment"
 	releaseyear 2011
 	releasemonth 4
 	releaseday 18
@@ -65178,7 +65178,7 @@ game (
 	name "Man vs. Wild with Bear Grylls (USA)"
 	serial "BLUS30545"
 	developer "Scientifically Proven"
-	publisher "Crave"
+	publisher "Crave Entertainment"
 	releaseyear 2011
 	releasemonth 4
 	releaseday 26
@@ -67906,7 +67906,7 @@ game (
 	name "Metal Gear Solid V: Ground Zeroes (USA)"
 	serial "BLUS31369"
 	developer "Kojima Productions"
-	publisher "Konami Computer Entertaiment America"
+	publisher "Konami Computer Entertainment America"
 	releaseyear 2014
 	releasemonth 3
 	releaseday 18
@@ -71522,7 +71522,7 @@ game (
 	name "Move Fitness"
 	serial "BCAS20219"
 	developer "Coldwood Interactive"
-	publisher "Sony Computer Entertainment Inc."
+	publisher "Sony Computer Entertainment"
 	releaseyear 2011
 	releasemonth 11
 	releaseday 23
@@ -90410,7 +90410,7 @@ game (
 	name "Resistance - Fall of Man (Re-Release)"
 	serial "NPEA00430"
 	developer "Insomniac Games, Inc."
-	publisher "SONY Computer Entertainment Europe, Ltd."
+	publisher "Sony Computer Entertainment Europe"
 	releaseyear 2014
 	releasemonth 6
 	releaseday 14
@@ -95544,7 +95544,7 @@ game (
 	name "Saru! Get You!"
 	serial "NPJI00032"
 	developer "SCE Japan Studio"
-	publisher "SCEI"
+	publisher "Sony Computer Entertainment"
 	releaseyear 2007
 	releasemonth 8
 	releaseday 30
@@ -95559,7 +95559,7 @@ game (
 	name "Saru! Get You! 3"
 	serial "NPJC00012"
 	developer "SCE Japan Studio"
-	publisher "SCEI"
+	publisher "Sony Computer Entertainment"
 	releaseyear 2014
 	releasemonth 11
 	releaseday 19
@@ -96198,7 +96198,7 @@ game (
 	name "Sega Superstars Tennis"
 	serial "BCKS10046"
 	developer "Sumo Digital"
-	publisher "SCEI"
+	publisher "Sony Computer Entertainment"
 	releaseyear 2008
 	releasemonth 5
 	releaseday 9
@@ -105829,7 +105829,7 @@ game (
 game (
 	name "Starhawk (USA)"
 	serial "BCUS98181"
-	developer "LightBox Interactive / SCEA"
+	developer "LightBox Interactive / Sony Computer Entertainment America"
 	publisher "sony"
 	releaseyear 2012
 	users 1
@@ -105900,7 +105900,7 @@ game (
 	name "Start the Party 2! Save the World"
 	serial "BCAS20213"
 	developer "Supermassive Games Ltd."
-	publisher "Sony Computer Entertainment Inc."
+	publisher "Sony Computer Entertainment"
 	releaseyear 2011
 	releasemonth 11
 	releaseday 23
@@ -106020,7 +106020,7 @@ game (
 	name "Start the Party! Save the World (Europe)"
 	serial "BCES01273"
 	developer "Supermassive Games Ltd."
-	publisher "Sony Computer Entertainment Inc."
+	publisher "Sony Computer Entertainment"
 	releaseyear 2011
 	releasemonth 11
 	releaseday 23
@@ -121673,7 +121673,7 @@ game (
 	name "Viking: Battle for Asgard"
 	serial "BCKS10048"
 	developer "Creative Assembly"
-	publisher "SCEI"
+	publisher "Sony Computer Entertainment"
 	releaseyear 2008
 	releasemonth 5
 	releaseday 16

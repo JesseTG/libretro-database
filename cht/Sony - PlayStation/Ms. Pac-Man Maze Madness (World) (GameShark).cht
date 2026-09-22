@@ -1,4 +1,4 @@
-cheats = 24 
+cheats = 23 
 
 cheat0_desc = "Infinite Health"
 cheat0_code = "801F81C8+00FF"

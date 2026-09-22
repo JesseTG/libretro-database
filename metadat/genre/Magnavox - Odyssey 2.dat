@@ -71,7 +71,7 @@ game (
 
 game (
 	comment "Blackjack (France)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 6381E402 )
 )
 
@@ -101,7 +101,7 @@ game (
 
 game (
 	comment "Casino Slot Machine (USA, Europe)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc BB6E7135 )
 )
 
@@ -119,7 +119,7 @@ game (
 
 game (
 	comment "Chess (Europe)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 77066338 )
 )
 
@@ -347,13 +347,13 @@ game (
 
 game (
 	comment "Las Vegas (France)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc A0620082 )
 )
 
 game (
 	comment "Las Vegas Blackjack (USA, Europe)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 6F66B1F7 )
 )
 

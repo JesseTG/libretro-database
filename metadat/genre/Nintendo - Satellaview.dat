@@ -35,7 +35,7 @@ game (
 
 game (
 	comment "Albert Odyssey (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 0E89FA41 )
 )
 
@@ -89,7 +89,7 @@ game (
 
 game (
 	comment "BS Dragon Quest I (Japan) (SoundLink)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 812AF559 )
 )
 
@@ -107,79 +107,79 @@ game (
 
 game (
 	comment "BS F-Zero Grand Prix - Dai-1-shuu - Knight League (Japan) (11-3) (SoundLink)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 83034D82 )
 )
 
 game (
 	comment "BS F-Zero Grand Prix - Dai-1-shuu - Knight League (Japan) (11-1) (SoundLink)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 64A67AD5 )
 )
 
 game (
 	comment "BS F-Zero Grand Prix - Dai-2-shuu - Queen League (Japan) (SoundLink)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc D81B85D7 )
 )
 
 game (
 	comment "BS F-Zero Grand Prix - Dai-3-shuu - King League (Japan) (SoundLink)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 8FCC8355 )
 )
 
 game (
 	comment "BS F-Zero Grand Prix 2 - Practice (Japan) (12-6)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 57B1C3ED )
 )
 
 game (
 	comment "BS F-Zero Grand Prix 2 - Practice (Japan) (10-23)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 14756B56 )
 )
 
 game (
 	comment "BS F-Zero Grand Prix - Dai-4-shuu - Ace League (Japan) (SoundLink)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 7442AD93 )
 )
 
 game (
 	comment "BS Fire Emblem - Akaneia Senki Hen - Dai-1-wa - Palace Kanraku (Japan) (9-29) (SoundLink)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 2BCDF855 )
 )
 
 game (
 	comment "BS Fire Emblem - Akaneia Senki Hen - Dai-3-wa - Seigi no Touzokudan (Japan) (SoundLink)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 3D3EB686 )
 )
 
 game (
 	comment "BS Fire Emblem - Akaneia Senki Hen - Dai-2-wa - Akai Ryuu Kishi (Japan) (SoundLink)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc FCAAFE47 )
 )
 
 game (
 	comment "BS Fire Emblem - Akaneia Senki Hen - Dai-1-wa - Palace Kanraku (Japan) (4-4) (SoundLink)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc D42EA2E0 )
 )
 
 game (
 	comment "BS Fire Emblem - Akaneia Senki Hen - Dai-4-wa - Hajimari no Toki (Japan) (4-29) (SoundLink)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 6CA61C7B )
 )
 
 game (
 	comment "BS Fire Emblem - Akaneia Senki Hen - Dai-4-wa - Hajimari no Toki (Japan) (4-28) (SoundLink)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F5C19C84 )
 )
 
@@ -203,73 +203,73 @@ game (
 
 game (
 	comment "BS Marvelous - Camp Arnold Course - Dai-2-shuu (Japan) (SoundLink) [b]"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F5357704 )
 )
 
 game (
 	comment "BS Marvelous - Camp Arnold Course - Dai-1-shuu (Japan) (SoundLink) [b]"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 6B90C767 )
 )
 
 game (
 	comment "BS Marvelous - Camp Arnold Course - Dai-3-shuu (Japan) (SoundLink) [b]"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 2B87DBAA )
 )
 
 game (
 	comment "BS Marvelous - Time Athletic Course - Dai-1-shuu (Japan) (SoundLink) [b]"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 1639DB9D )
 )
 
 game (
 	comment "BS Marvelous - Camp Arnold Course - Dai-4-shuu (Japan) (SoundLink) [b]"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 6986937E )
 )
 
 game (
 	comment "BS Marvelous - Time Athletic Course - Dai-2-shuu (Japan) (SoundLink) [b]"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 27D62709 )
 )
 
 game (
 	comment "BS Marvelous - Time Athletic Course - Dai-3-shuu (Japan) (SoundLink) [b]"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 5A88E3FB )
 )
 
 game (
 	comment "BS Marvelous - Time Athletic Course - Dai-4-shuu (Japan) (SoundLink) [b]"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc FBA7789E )
 )
 
 game (
 	comment "BS Nichibutsu Mahjong - Mahjong Taikai (Japan) (10-17)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 3B12AF9A )
 )
 
 game (
 	comment "BS Nichibutsu Mahjong - Renshuu Mahjong - Ichimantou (Japan) (SoundLink)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 9CDE21D5 )
 )
 
 game (
 	comment "BS Nichibutsu Mahjong - Mahjong Taikai (Japan) (10-27)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc C2B6BA5B )
 )
 
 game (
 	comment "BS Nichibutsu Mahjong - Renshuu Mahjong - Nimantou (Japan) (SoundLink)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc C56B108E )
 )
 
@@ -287,13 +287,13 @@ game (
 
 game (
 	comment "BS Parlor! Parlor! - Dai-2-shuu (Japan) (3-13) (SoundLink)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 661E61F9 )
 )
 
 game (
 	comment "BS Parlor! Parlor! - Dai-2-shuu (Japan) (5-13) (SoundLink)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc C0F38B87 )
 )
 
@@ -449,37 +449,37 @@ game (
 
 game (
 	comment "Chrono Trigger - Jet Bike Special (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 8E150196 )
 )
 
 game (
 	comment "Chrono Trigger - Character Zukan (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc D584AE5B )
 )
 
 game (
 	comment "Chrono Trigger - Music Library (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc F268DC1B )
 )
 
 game (
 	comment "Cock-A-Doodle-Do (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 2E831A4D )
 )
 
 game (
 	comment "Cu-On-Pa BS Ban (Japan) (6-25)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 563F9BF9 )
 )
 
 game (
 	comment "Daibakushou Jinsei Gekijou (Japan)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 5EB7A3E5 )
 )
 
@@ -503,91 +503,91 @@ game (
 
 game (
 	comment "Dr. Mario BS (Japan) (3-3)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc B5E1F82E )
 )
 
 game (
 	comment "Dr. Mario BS (Japan) (4-3)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc EF158E29 )
 )
 
 game (
 	comment "Dr. Mario BS (Japan) (6-3)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 597BAE1D )
 )
 
 game (
 	comment "Dragon Slayer - Eiyuu Densetsu (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc CACBEB09 )
 )
 
 game (
 	comment "Dynami Tracer (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc F8C2024A )
 )
 
 game (
 	comment "Excitebike - Bunbun Mario Battle - Stadium 1 (Japan) (6-30) (SoundLink)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 6E6D087C )
 )
 
 game (
 	comment "Excitebike - Bunbun Mario Battle - Stadium 1 (Japan) (6-29) (SoundLink)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 1EB48F3C )
 )
 
 game (
 	comment "Excitebike - Bunbun Mario Battle - Stadium 2 (Japan) (7-6) (SoundLink)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc FF355121 )
 )
 
 game (
 	comment "Excitebike - Bunbun Mario Battle - Stadium 2 (Japan) (5-18) (SoundLink)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 59D5E1C5 )
 )
 
 game (
 	comment "Excitebike - Bunbun Mario Battle - Stadium 3 (Japan) (1-11) (SoundLink) [b]"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 32D71227 )
 )
 
 game (
 	comment "Excitebike - Bunbun Mario Battle - Stadium 3 (Japan) (2-8) (SoundLink)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 3250DD13 )
 )
 
 game (
 	comment "Excitebike - Bunbun Mario Battle - Stadium 3 (Japan) (11-5) (SoundLink)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 84D46CA9 )
 )
 
 game (
 	comment "Excitebike - Bunbun Mario Battle - Stadium 4 (Japan) (2-18) (SoundLink)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc C747FC3B )
 )
 
 game (
 	comment "Excitebike - Bunbun Mario Battle - Stadium 4 (Japan) (2-17) (SoundLink)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc B79E7B7B )
 )
 
 game (
 	comment "F-Zero (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 689130B5 )
 )
 
@@ -599,13 +599,13 @@ game (
 
 game (
 	comment "Gambler Jiko Chuushinha 2 - Dorapon Quest (Japan) (12-20)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc F9E8A8EE )
 )
 
 game (
 	comment "Gambler Jiko Chuushinha 2 - Dorapon Quest (Japan) (12-19)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 11B8E93A )
 )
 
@@ -617,19 +617,19 @@ game (
 
 game (
 	comment "Heisei Gunjin Shougi (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc B8B4E75A )
 )
 
 game (
 	comment "Jissen Pachi-Slot Hisshouhou! Twin (Japan)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc FBE7D773 )
 )
 
 game (
 	comment "Kirby no Omochabako - Arrange Ball (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc BC49F827 )
 )
 
@@ -641,7 +641,7 @@ game (
 
 game (
 	comment "Kirby no Omochabako - Pachinko (Japan)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 264BB94B )
 )
 
@@ -653,91 +653,91 @@ game (
 
 game (
 	comment "Kodomo Chousadan Mighty Pockets - Chousa 1 - Junk-ya Black no Ie (Japan) (SoundLink) [b]"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 85EBB7CC )
 )
 
 game (
 	comment "Kodomo Chousadan Mighty Pockets - Chousa 2 - Hanzai Toshi Big Apple (Japan) (SoundLink) [b]"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 188C9ACB )
 )
 
 game (
 	comment "Kodomo Chousadan Mighty Pockets - Chousa 3 - Kyakusen Queen Patra no Nazo (Japan) (SoundLink)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 9910C393 )
 )
 
 game (
 	comment "Kouryaku Casino Bar Mokuyoubi - Poker (Japan)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 7663FC73 )
 )
 
 game (
 	comment "Kouryaku Casino Bar Nichiyoubi - Roulette + Game Tora no Ooana Special (2-24) (Japan) [b]"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 4B881535 )
 )
 
 game (
 	comment "Kouryaku Casino Bar Suiyoubi - Poker + Kouryaku Casino Bar Kinyoubi - Slots (Japan) [b]"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 390C560F )
 )
 
 game (
 	comment "Lemmings (Japan) (En)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 25E19B04 )
 )
 
 game (
 	comment "Let's Pachinko Nante Gindama 2 (Japan) (11-13)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 13493D79 )
 )
 
 game (
 	comment "Let's Pachinko Nante Gindama 1 (Japan)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 0472ABB6 )
 )
 
 game (
 	comment "Let's Pachinko Nante Gindama 2 (Japan) (11-8)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 8D201681 )
 )
 
 game (
 	comment "Let's Pachinko Nante Gindama 3 (Japan) (9-15)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc B7EA45DF )
 )
 
 game (
 	comment "Let's Pachinko Nante Gindama 3 (Japan) (11-18)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 5DB51404 )
 )
 
 game (
 	comment "Date: 11-24"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc AA934596 )
 )
 
 game (
 	comment "Let's Pachinko Nante Gindama 4 (Japan) (3-21)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc B34BBC5F )
 )
 
 game (
 	comment "Let's Pachinko Nante Gindama 4 (Japan) (11-25)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 4F79CB25 )
 )
 
@@ -767,19 +767,19 @@ game (
 
 game (
 	comment "Panel de Pon - Event '98 (Japan) (12-28)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 720A850C )
 )
 
 game (
 	comment "Panel de Pon - Event '98 (Japan) (1-11)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 725BF3AF )
 )
 
 game (
 	comment "Panel de Pon - Event Version 2 (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 40812CE4 )
 )
 
@@ -797,13 +797,13 @@ game (
 
 game (
 	comment "Same Game - Chara Cassette (Japan) (ROM)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 4C3439C2 )
 )
 
 game (
 	comment "Same Game - Chara Data Shuu (Japan) (ROM)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 12A80829 )
 )
 
@@ -821,7 +821,7 @@ game (
 
 game (
 	comment "Shanghai - Banri no Choujou (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc BD681869 )
 )
 
@@ -857,7 +857,7 @@ game (
 
 game (
 	comment "Super Mahjong Taikai (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 881A70FD )
 )
 
@@ -869,25 +869,25 @@ game (
 
 game (
 	comment "Super Soukoban (Japan) (2-8)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 99E0F046 )
 )
 
 game (
 	comment "Super Soukoban (Japan) (4-4)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 99E0F046 )
 )
 
 game (
 	comment "Super Tsumeshougi 1000 (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 66180ABE )
 )
 
 game (
 	comment "Table Game Daisyugo!! Shougi Mahjong Hanafuda (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 47E3047E )
 )
 
@@ -935,19 +935,19 @@ game (
 
 game (
 	comment "Wario no Mori - Event Version 2 (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 32E62D9C )
 )
 
 game (
 	comment "Wario no Mori - Futatabi (Japan) (5-26)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc AC096DE4 )
 )
 
 game (
 	comment "Wario no Mori - Futatabi (Japan) (8-11)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 7FA7A58E )
 )
 
@@ -959,37 +959,37 @@ game (
 
 game (
 	comment "Wizardry V - Saika no Chuushin (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc A04F1544 )
 )
 
 game (
 	comment "Yoshi no Panepon - BS Ban (Japan) (En,Ja) (1-2)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 6775B6CA )
 )
 
 game (
 	comment "Yoshi no Panepon - BS Ban (Japan) (En,Ja) (6-14)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 2B8DEB64 )
 )
 
 game (
 	comment "Yoshi no Panepon - BS Ban (Japan) (En,Ja) (7-3)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 214A438E )
 )
 
 game (
 	comment "Yoshi no Panepon - BS Ban (Japan) (En,Ja) (7-5)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc A35F7C27 )
 )
 
 game (
 	comment "Yoshi no Panepon - BS Ban (Japan) (En,Ja) (7-25)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 3B1E8466 )
 )
 
@@ -1007,13 +1007,13 @@ game (
 
 game (
 	comment "Zootto Mahjong! - Event Version (Japan) [b]"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 5D2C918D )
 )
 
 game (
 	comment "Zootto Mahjong! - Preview Ban (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 5185292F )
 )
 

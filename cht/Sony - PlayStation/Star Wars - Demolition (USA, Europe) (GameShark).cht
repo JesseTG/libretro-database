@@ -1,4 +1,4 @@
-cheats = 10 
+cheats = 9 
 
 cheat0_desc = "Max Cash"
 cheat0_code = "8006BAB0+423F+8006BAB2+000F"

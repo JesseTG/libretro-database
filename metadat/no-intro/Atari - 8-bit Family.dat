@@ -1,7 +1,7 @@
 clrmamepro (
 	name "Atari - 8-bit Family"
 	description "Atari - 8-bit Family"
-	version "2025.11.10"
+	version "2026.08.01"
 	homepage "http://github.com/robloach/libretro-dats"
 )
 
@@ -36,6 +36,11 @@ game (
 	rom ( name "Archon (USA, Europe).bin" size 32768 crc 2636829F md5 77ABA8E96975B4BB7A714591505CE38F sha1 BFB2782A117CF3EFD5B71E225052F737658864C4 )
 )
 game (
+	name "Ballblazer (USA)"
+	region "USA"
+	rom ( name "Ballblazer (USA).bin" size 65536 crc 820E5CE5 md5 06944F52BC52AE8F548BE5441DEE939E sha1 16820A57A10FD779ED160E8A25471882E23A719B )
+)
+game (
 	name "Barnyard Blaster (USA, Europe)"
 	region "USA"
 	rom ( name "Barnyard Blaster (USA, Europe).bin" size 131072 crc 13AE30ED md5 91098AD7A1049022505359ED68472DAB sha1 E4B22790FCE8E2E0F7C972960AEC692B7FD5E016 )
@@ -44,6 +49,11 @@ game (
 	name "Basketball (USA)"
 	region "USA"
 	rom ( name "Basketball (USA).bin" size 8192 crc 79934851 md5 DDD9F7E02145CA65B6CC2C5308D366F0 sha1 639E8F9BF907ED2C46D183F2CDBE33783F6DA2FA )
+)
+game (
+	name "Boulders and Bombs (USA)"
+	region "USA"
+	rom ( name "Boulders and Bombs (USA).bin" size 8192 crc D6D51D3E md5 24EDB74C29E76171A29D6944D464359B sha1 90901CD874F4ECE8E18D9FFF63E2368B4A315624 )
 )
 game (
 	name "Caverns of Mars (USA)"
@@ -76,6 +86,11 @@ game (
 	rom ( name "Final Legacy (USA).bin" size 16384 crc 6BD0D8E4 md5 61EC87B491EE82CC867F66AFAC7793D6 sha1 4BDFBAB83E336C58E4CC2E3DBB096F29976F5761 )
 )
 game (
+	name "Food Fight (USA)"
+	region "USA"
+	rom ( name "Food Fight (USA).bin" size 32768 crc 4236F0EA md5 1164097E2990778B0F99017FE118DE47 sha1 79AAFC04D41D5167502B4EA74C531F9C2E706580 )
+)
+game (
 	name "Frogger (USA)"
 	region "USA"
 	rom ( name "Frogger (USA).bin" size 8192 crc 40E9476C md5 9FBED199D8ED7D6AFF7E9F41930B4C68 sha1 A4863C26C9E6752211684C9EFE10B86C1650314A )
@@ -89,6 +104,11 @@ game (
 	name "Gato (USA, Europe)"
 	region "USA"
 	rom ( name "Gato (USA, Europe).bin" size 131072 crc AB06A3F5 md5 A14BC5FC0BF309C1BFC51EFDC495814B sha1 CABB1EFFA554D915521B2A49961D8E61B67EC9B3 )
+)
+game (
+	name "HardBall! (USA)"
+	region "USA"
+	rom ( name "HardBall! (USA).bin" size 65536 crc BF0C6DF2 md5 B6C4DE367B60EF35A7A778421C990E5D sha1 8A8556B2398168A557BC04E37F1F3A26BC066147 )
 )
 game (
 	name "Joust (USA)"
@@ -129,6 +149,11 @@ game (
 	name "Pac-Man (Europe)"
 	region "Europe"
 	rom ( name "Pac-Man (Europe).bin" size 8192 crc 61CF6167 md5 E66E9AF9AF01B019CD4E54ABA813FBAC sha1 BC600EF63F8D1BDD3911981C2752EA23DB959960 )
+)
+game (
+	name "Pengo (USA, Europe)"
+	region "USA"
+	rom ( name "Pengo (USA, Europe).bin" size 16384 crc D8A9FE0A md5 5761A63513222A5095650EE769644DD1 sha1 2C0CB48CAEB77B25551D27FADE419454FA2FD114 )
 )
 game (
 	name "Pole Position (Europe)"

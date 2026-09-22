@@ -1,4 +1,4 @@
-cheats = 46 
+cheats = 44 
 
 cheat0_desc = "Unlock All Tracks"
 cheat0_code = "50000302+0000+800C2FDA+0101+300C304D+0001+300C304E+0001+300C304A+0001"

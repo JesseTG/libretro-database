@@ -93,7 +93,7 @@ game (
 
 game (
 	comment "AshGuine Story II - Kokuu no Gajou (Japan)"
-	developer "T&E; Soft"
+	developer "T&E Soft"
 	rom (
 		crc 47A82D74
 	)
@@ -477,7 +477,7 @@ game (
 
 game (
 	comment "Hard Ball (Japan)"
-	developer "SCEI"
+	developer "Sony Computer Entertainment"
 	rom (
 		crc 1D7040AF
 	)
@@ -525,7 +525,7 @@ game (
 
 game (
 	comment "Hydlide 3 - The Space Memories (Japan)"
-	developer "T&E; Soft"
+	developer "T&E Soft"
 	rom (
 		crc 00DB86C8
 	)
@@ -581,7 +581,7 @@ game (
 
 game (
 	comment "Jansei (Japan)"
-	developer "SCEE"
+	developer "Sony Computer Entertainment Europe"
 	rom (
 		crc 00B8E82E
 	)
@@ -589,7 +589,7 @@ game (
 
 game (
 	comment "Jansei (Japan) (Alt 1)"
-	developer "SCEE"
+	developer "Sony Computer Entertainment Europe"
 	rom (
 		crc 2C2924ED
 	)
@@ -629,7 +629,7 @@ game (
 
 game (
 	comment "Kisei (Japan)"
-	developer "SCEI"
+	developer "Sony Computer Entertainment"
 	rom (
 		crc 167A53DA
 	)
@@ -1077,7 +1077,7 @@ game (
 
 game (
 	comment "Seikima II Special - Akuma no Gyakushuu (Japan)"
-	developer "SCEI"
+	developer "Sony Computer Entertainment"
 	rom (
 		crc E37B681E
 	)
@@ -1085,7 +1085,7 @@ game (
 
 game (
 	comment "Seikima II Special - Akuma no Gyakushuu (Japan) (Alt 1)"
-	developer "SCEI"
+	developer "Sony Computer Entertainment"
 	rom (
 		crc 816ACEB5
 	)

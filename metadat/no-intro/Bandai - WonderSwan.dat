@@ -1,7 +1,7 @@
 clrmamepro (
 	name "Bandai - WonderSwan"
 	description "Bandai - WonderSwan"
-	version "2025.11.10"
+	version "2026.08.01"
 	homepage "http://github.com/robloach/libretro-dats"
 )
 
@@ -214,7 +214,7 @@ game (
 game (
 	name "Digimon Adventure Campaign (Japan) (Limited Version)"
 	region "Japan"
-	rom ( name "Digimon Adventure Campaign (Japan) (Limited Version).wsc" size 2097152 crc 7E03E8DA md5 2FFAF9A41FB10D55FFB6479CCCBAC208 sha1 9E04575D7D8E2439489B48C426D9BF342339F955 )
+	rom ( name "Digimon Adventure Campaign (Japan) (Limited Version).ws" size 2097152 crc 7E03E8DA md5 2FFAF9A41FB10D55FFB6479CCCBAC208 sha1 9E04575D7D8E2439489B48C426D9BF342339F955 )
 )
 game (
 	name "Digital Monster - Ver. WonderSwan (Japan) (Rev 1)"

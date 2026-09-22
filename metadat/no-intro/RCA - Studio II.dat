@@ -1,7 +1,7 @@
 clrmamepro (
 	name "RCA - Studio II"
 	description "RCA - Studio II"
-	version "2025.11.10"
+	version "2026.08.01"
 	homepage "http://github.com/robloach/libretro-dats"
 )
 
@@ -24,6 +24,11 @@ game (
 	name "Pinball (Europe)"
 	region "Europe"
 	rom ( name "Pinball (Europe).bin" size 1024 crc 9F7F692E md5 BC8DF39E000C0DD0EFEF4916701151BE sha1 6AFD1252D72DF39482699C1EE76FA28669C7DB80 )
+)
+game (
+	name "Space Explorer (USA) (Proto)"
+	region "USA"
+	rom ( name "Space Explorer (USA) (Proto).bin" size 2048 crc 24B3812B md5 E8323D070BDEABB61563DAAE23055B3E sha1 FB58C782D7F0501B2C01A8C53429AABADA8B43D0 )
 )
 game (
 	name "Speedway + Tag (Europe)"

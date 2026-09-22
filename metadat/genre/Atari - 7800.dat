@@ -221,7 +221,7 @@ game (
 
 game (
 	comment "Fatal Run (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 2A0A93BE )
 )
 
@@ -233,7 +233,7 @@ game (
 
 game (
 	comment "Fatal Run (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc A44DF354 )
 )
 
@@ -371,7 +371,7 @@ game (
 
 game (
 	comment "Klax (USA) (Proto)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc F26621E3 )
 )
 
@@ -443,13 +443,13 @@ game (
 
 game (
 	comment "Motor Psycho (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 1E219482 )
 )
 
 game (
 	comment "Motor Psycho (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 38BB45BA )
 )
 
@@ -497,7 +497,7 @@ game (
 
 game (
 	comment "Pit Fighter (USA) (Proto)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc A5E75537 )
 )
 
@@ -521,13 +521,13 @@ game (
 
 game (
 	comment "Pole Position II (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc A85FB962 )
 )
 
 game (
 	comment "Pole Position II (USA) (Beta)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc FD40B838 )
 )
 
@@ -539,7 +539,7 @@ game (
 
 game (
 	comment "Pole Position II (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc D751C7A6 )
 )
 

@@ -53,7 +53,7 @@ game (
 
 game (
 	comment "Acid Drop (Europe)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 14CDDAC7 )
 )
 
@@ -335,13 +335,13 @@ game (
 
 game (
 	comment "Atari Video Cube (USA, Europe) (Atari Anthology)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 8172299E )
 )
 
 game (
 	comment "Atari Video Cube (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 272AE37F )
 )
 
@@ -383,7 +383,7 @@ game (
 
 game (
 	comment "Backgammon (USA)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc E2A7FFA6 )
 )
 
@@ -395,7 +395,7 @@ game (
 
 game (
 	comment "Backgammon (Europe)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc A3D119C6 )
 )
 
@@ -611,13 +611,13 @@ game (
 
 game (
 	comment "Black Jack (USA)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 4B0EE010 )
 )
 
 game (
 	comment "Black Jack (Europe)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 7125A8B9 )
 )
 
@@ -695,7 +695,7 @@ game (
 
 game (
 	comment "Boggle (USA) (Proto) (1978-08-07)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 26B6BFEF )
 )
 
@@ -773,19 +773,19 @@ game (
 
 game (
 	comment "Bridge (USA) (v1.1)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 8DB95D1E )
 )
 
 game (
 	comment "Bridge (Europe)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 63CEEB81 )
 )
 
 game (
 	comment "Bridge (USA)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 9C71D175 )
 )
 
@@ -821,7 +821,7 @@ game (
 
 game (
 	comment "Bump 'n' Jump (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 0209C0E5 )
 )
 
@@ -833,7 +833,7 @@ game (
 
 game (
 	comment "Bump 'n' Jump (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 194F3576 )
 )
 
@@ -917,7 +917,7 @@ game (
 
 game (
 	comment "Casino (Europe)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 675C7F84 )
 )
 
@@ -929,7 +929,7 @@ game (
 
 game (
 	comment "Casino ~ Poker Plus (USA)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 420B8248 )
 )
 
@@ -1055,7 +1055,7 @@ game (
 
 game (
 	comment "Codebreaker (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 947EDB18 )
 )
 
@@ -1067,7 +1067,7 @@ game (
 
 game (
 	comment "Codebreaker (Europe)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc B1CB7CDC )
 )
 
@@ -1151,7 +1151,7 @@ game (
 
 game (
 	comment "Computer Chess (USA) (Proto)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 0C44D49A )
 )
 
@@ -1331,7 +1331,7 @@ game (
 
 game (
 	comment "Dice Puzzle (Europe)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc F691B853 )
 )
 
@@ -1343,7 +1343,7 @@ game (
 
 game (
 	comment "Dice Puzzle (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 8D05D61B )
 )
 
@@ -1355,13 +1355,13 @@ game (
 
 game (
 	comment "Dodge 'Em ~ Dodger Cars (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 0C74479B )
 )
 
 game (
 	comment "Dodge 'Em (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 10CFC6C0 )
 )
 
@@ -1415,19 +1415,19 @@ game (
 
 game (
 	comment "Dragonstomper (USA)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 291F7F92 )
 )
 
 game (
 	comment "Dukes of Hazzard (USA) (Proto)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 2DB406DC )
 )
 
 game (
 	comment "Dragster (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 4042D3AB )
 )
 
@@ -1493,7 +1493,7 @@ game (
 
 game (
 	comment "Entity, The (USA) (Proto)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 3366CCB7 )
 )
 
@@ -1505,7 +1505,7 @@ game (
 
 game (
 	comment "Enduro (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 2EF17B2E )
 )
 
@@ -1553,13 +1553,13 @@ game (
 
 game (
 	comment "Fatal Run (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 991D2348 )
 )
 
 game (
 	comment "Fatal Run (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 60B08497 )
 )
 
@@ -1799,7 +1799,7 @@ game (
 
 game (
 	comment "Grand Prix (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc E855273D )
 )
 
@@ -1871,7 +1871,7 @@ game (
 
 game (
 	comment "Hell Driver (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 18954066 )
 )
 
@@ -1901,13 +1901,13 @@ game (
 
 game (
 	comment "I.Q. 180 (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 4DC2A674 )
 )
 
 game (
 	comment "I.Q. Memory Teaser (Europe)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 75AB6BA8 )
 )
 
@@ -1943,7 +1943,7 @@ game (
 
 game (
 	comment "Indy 500 ~ Race (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc B43DA2A3 )
 )
 
@@ -1973,7 +1973,7 @@ game (
 
 game (
 	comment "IQ 180 (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 5EA5D7E3 )
 )
 
@@ -2255,7 +2255,7 @@ game (
 
 game (
 	comment "Math Gran Prix (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc CCC90C98 )
 )
 
@@ -2285,7 +2285,7 @@ game (
 
 game (
 	comment "Meltdown (USA) (Proto)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 7955B3BE )
 )
 
@@ -2411,19 +2411,19 @@ game (
 
 game (
 	comment "Motocross Racer (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 0D1BC1CB )
 )
 
 game (
 	comment "Motocross (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 36FEB44C )
 )
 
 game (
 	comment "MotoRodeo (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 89998E29 )
 )
 
@@ -2501,7 +2501,7 @@ game (
 
 game (
 	comment "Night Driver (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 600D8A96 )
 )
 
@@ -2585,13 +2585,13 @@ game (
 
 game (
 	comment "Oscar's Trash Race (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 34721D7B )
 )
 
 game (
 	comment "Out of Control (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc CA4D03FB )
 )
 
@@ -2603,7 +2603,7 @@ game (
 
 game (
 	comment "Othello (USA)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 171AE72F )
 )
 
@@ -2633,7 +2633,7 @@ game (
 
 game (
 	comment "Parachute (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 40E4BC6A )
 )
 
@@ -2705,7 +2705,7 @@ game (
 
 game (
 	comment "Pick 'n' Pile (Europe)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc CB76A9D4 )
 )
 
@@ -2789,7 +2789,7 @@ game (
 
 game (
 	comment "Pole Position (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc BD822518 )
 )
 
@@ -2879,7 +2879,7 @@ game (
 
 game (
 	comment "Racing Car (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc F78489B0 )
 )
 
@@ -3023,7 +3023,7 @@ game (
 
 game (
 	comment "Road Runner (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc CB79C061 )
 )
 
@@ -3053,19 +3053,19 @@ game (
 
 game (
 	comment "Rubik's Cube (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 37F23CB8 )
 )
 
 game (
 	comment "Rubik's Cube 3-D (USA) (Proto)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 47BFD42C )
 )
 
 game (
 	comment "Rush Hour (USA) (Proto)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc E681F62E )
 )
 
@@ -3257,7 +3257,7 @@ game (
 
 game (
 	comment "Sky Jinks (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 96F8CF59 )
 )
 
@@ -3275,7 +3275,7 @@ game (
 
 game (
 	comment "Slot Machine ~ Slots (USA)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc CB378D95 )
 )
 
@@ -3311,7 +3311,7 @@ game (
 
 game (
 	comment "Sneak 'n Peek (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 93B17C39 )
 )
 
@@ -3449,7 +3449,7 @@ game (
 
 game (
 	comment "Sprint Master (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc C495904E )
 )
 
@@ -3461,7 +3461,7 @@ game (
 
 game (
 	comment "Spy Hunter (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 4F804E49 )
 )
 
@@ -3617,13 +3617,13 @@ game (
 
 game (
 	comment "Stunt Cycle (USA) (Proto)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 6354FF4C )
 )
 
 game (
 	comment "Street Racer ~ Speedway II (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 47592880 )
 )
 
@@ -4001,7 +4001,7 @@ game (
 
 game (
 	comment "Up 'n Down (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc C04C2B58 )
 )
 
@@ -4031,13 +4031,13 @@ game (
 
 game (
 	comment "Video Checkers ~ Checkers (USA)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 3DF33335 )
 )
 
 game (
 	comment "Video Chess (USA)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc B6226A54 )
 )
 

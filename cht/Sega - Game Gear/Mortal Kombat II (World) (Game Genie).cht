@@ -1,75 +1,75 @@
 cheats = 35 
 
 cheat0_desc = "Infinite Energy"
-cheat0_code = "00B+B19+F79"
+cheat0_code = "00B-B19-F79"
 cheat0_enable = false 
 
 cheat1_desc = "View Ending"
-cheat1_code = "001+30A+082+3E1+31A+C42+001+32A+F7A"
+cheat1_code = "001-30A-082+3E1-31A-C42+001-32A-F7A"
 cheat1_enable = false 
 
 cheat2_desc = "Infinite Credits"
-cheat2_code = "3A4+026+2A2"
+cheat2_code = "3A4-026-2A2"
 cheat2_enable = false 
 
 cheat3_desc = "Start With 0 Credits"
-cheat3_code = "001+2CA+F76"
+cheat3_code = "001-2CA-F76"
 cheat3_enable = false 
 
 cheat4_desc = "Start With 10 Credits"
-cheat4_code = "0B1+2CA+F76"
+cheat4_code = "0B1-2CA-F76"
 cheat4_enable = false 
 
 cheat5_desc = "Start With 15 Credits"
-cheat5_code = "101+2CA+F76"
+cheat5_code = "101-2CA-F76"
 cheat5_enable = false 
 
 cheat6_desc = "Start With 49 Seconds"
-cheat6_code = "04B+7C6+C4E"
+cheat6_code = "04B-7C6-C4E"
 cheat6_enable = false 
 
 cheat7_desc = "Start With 79 Seconds"
-cheat7_code = "07B+7C6+C4E"
+cheat7_code = "07B-7C6-C4E"
 cheat7_enable = false 
 
 cheat8_desc = "Start With 9 Seconds"
-cheat8_code = "00B+7C6+C4E"
+cheat8_code = "00B-7C6-C4E"
 cheat8_enable = false 
 
 cheat9_desc = "Infinite Time"
-cheat9_code = "005+3F5+3BE"
+cheat9_code = "005-3F5-3BE"
 cheat9_enable = false 
 
 cheat10_desc = "Start With 3/4 Energy - Player 1"
-cheat10_code = "32B+A3E+F77"
+cheat10_code = "32B-A3E-F77"
 cheat10_enable = false 
 
 cheat11_desc = "Start With 1/2 Energy - Player 1"
-cheat11_code = "22B+A3E+F77"
+cheat11_code = "22B-A3E-F77"
 cheat11_enable = false 
 
 cheat12_desc = "Start With 1/4 Energy - Player 1"
-cheat12_code = "12B+A3E+F77"
+cheat12_code = "12B-A3E-F77"
 cheat12_enable = false 
 
 cheat13_desc = "Start With Very Little Energy - Player 1"
-cheat13_code = "02B+A3E+F77"
+cheat13_code = "02B-A3E-F77"
 cheat13_enable = false 
 
 cheat14_desc = "Start With 3/4 Energy - Player 2"
-cheat14_code = "32B+A6E+F77"
+cheat14_code = "32B-A6E-F77"
 cheat14_enable = false 
 
 cheat15_desc = "Start With 1/2 Energy - Player 2"
-cheat15_code = "22B+A6E+F77"
+cheat15_code = "22B-A6E-F77"
 cheat15_enable = false 
 
 cheat16_desc = "Start With 1/4 Energy - Player 2"
-cheat16_code = "12B+A6E+F77"
+cheat16_code = "12B-A6E-F77"
 cheat16_enable = false 
 
 cheat17_desc = "Start With Very Little Energy - Player 2"
-cheat17_code = "02B+A6E+F77"
+cheat17_code = "02B-A6E-F77"
 cheat17_enable = false 
 
 cheat18_desc = "Flying Kick Does No Damage"
@@ -113,15 +113,15 @@ cheat27_code = "996-AEF-C42"
 cheat27_enable = false 
 
 cheat28_desc = "CPU Dead At Start"
-cheat28_code = "00B+A9E+F77"
+cheat28_code = "00B-A9E-F77"
 cheat28_enable = false 
 
 cheat29_desc = "Both Invisible"
-cheat29_code = "990+567+470"
+cheat29_code = "990-567-470"
 cheat29_enable = false 
 
 cheat30_desc = "Wacky Mode"
-cheat30_code = "B45+45C+321"
+cheat30_code = "B45-45C-321"
 cheat30_enable = false 
 
 cheat31_desc = "Character Select"

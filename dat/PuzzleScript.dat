@@ -1,7 +1,7 @@
 clrmamepro (
     name "PuzzleScript"
     description "PuzzleScript"
-    version "2022.9.25"
+    version "2026.2.22"
     homepage "https://github.com/RobLoach/libretro-database-puzzlescript#readme"
 )
 
@@ -1982,6 +1982,14 @@ game (
 )
 
 game (
+    name "Worms and Holes"
+    developer "galactical"
+    homepage "galacticalgames.com"
+    id "worms-and-holes"
+    rom ( name "worms-and-holes.pz" size 14292 crc E7B4894E md5 C6100A6F81399B433BC4370893E411C7 sha1 2BAE702AD5228D4B3C8A91761D3A1943671977CA )
+)
+
+game (
     name "Yin Yang"
     developer "Le Slo"
     homepage "www.puzzlescript.net"
@@ -1995,4 +2003,10 @@ game (
     homepage "john.m.dubs@gmail.com"
     id "zzz-swapbot-scratchwork"
     rom ( name "zzz-swapbot-scratchwork.pz" size 8730 crc 5C1B855B md5 FCCDEAE55BC69FD7D05B0C274FD15CB0 sha1 8AFD412DE7ED41F0BB8887C3AEFF09936FA8E086 )
+)
+
+game (
+    name "Simple Block Pushing Game"
+    developer "David Skinner"
+    rom ( name "Simple Block Pushing Game.pz" size 871 crc eb5326b4 md5 7ef259d791efa2e64361a5b5a1e31cd1 sha1 79e3946b5b897400dc4b1fa988fb40dc9d3e6990 )
 )

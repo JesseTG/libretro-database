@@ -65,7 +65,7 @@ game (
 
 game (
 	comment "Brunilda (World) (v1.1) (Aftermarket) (Homebrew)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 9EB9BAD0 )
 )
 
@@ -95,7 +95,7 @@ game (
 
 game (
 	comment "Crimson (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 8528A795 )
 )
 
@@ -125,37 +125,37 @@ game (
 
 game (
 	comment "Deep Forest (Japan) (Alt)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 3615E623 )
 )
 
 game (
 	comment "Deep Forest (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F221B845 )
 )
 
 game (
 	comment "Dragon Buster (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 49252882 )
 )
 
 game (
 	comment "Dragon Quest II (Japan) (Alt)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc E012EE7A )
 )
 
 game (
 	comment "Dragon Quest (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 7729E7A9 )
 )
 
 game (
 	comment "Dragon Quest II (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 0BF0C3F5 )
 )
 
@@ -203,7 +203,7 @@ game (
 
 game (
 	comment "Elthlead (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc A8E9AC9B )
 )
 
@@ -311,7 +311,7 @@ game (
 
 game (
 	comment "Heroes of the Lance (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 95F2EB6D )
 )
 
@@ -353,13 +353,13 @@ game (
 
 game (
 	comment "Hydlide 3 - The Space Memories (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 00DB86C8 )
 )
 
 game (
 	comment "Inindou - Datou Nobunaga (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 881B3849 )
 )
 
@@ -383,7 +383,7 @@ game (
 
 game (
 	comment "Kitahei (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 0767AF40 )
 )
 
@@ -401,13 +401,13 @@ game (
 
 game (
 	comment "Mad Rider (Japan) (Alt)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc DFC2A720 )
 )
 
 game (
 	comment "Mad Rider (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc F87BD172 )
 )
 
@@ -449,7 +449,7 @@ game (
 
 game (
 	comment "Mirai (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 70AA93CF )
 )
 
@@ -461,13 +461,13 @@ game (
 
 game (
 	comment "Nekketsu Juudou (Japan) (Alt)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc FDA1977A )
 )
 
 game (
 	comment "Nekketsu Juudou (Japan)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 758C6087 )
 )
 
@@ -521,7 +521,7 @@ game (
 
 game (
 	comment "Out Run (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 0A9F8D6C )
 )
 
@@ -557,25 +557,25 @@ game (
 
 game (
 	comment "Professional Mahjong Gokuu (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 2ABB1EC4 )
 )
 
 game (
 	comment "Quarth (Korea)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 6681D322 )
 )
 
 game (
 	comment "Quarth (Japan) (Demo)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc C4CCB75F )
 )
 
 game (
 	comment "Quarth (Japan) (Wii U Virtual Console)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc A0014E7F )
 )
 
@@ -611,7 +611,7 @@ game (
 
 game (
 	comment "Shanghai (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 3B815DC6 )
 )
 
@@ -659,13 +659,13 @@ game (
 
 game (
 	comment "Super Runner (Japan)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 5A5BE701 )
 )
 
 game (
 	comment "Super Tritorn (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc CBB00EF1 )
 )
 
@@ -689,7 +689,7 @@ game (
 
 game (
 	comment "Tetris (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc AA598DFD )
 )
 
@@ -725,7 +725,7 @@ game (
 
 game (
 	comment "Ultima Exodus (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 37B9E10F )
 )
 
@@ -761,7 +761,7 @@ game (
 
 game (
 	comment "Wizardry (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 08A5CA60 )
 )
 

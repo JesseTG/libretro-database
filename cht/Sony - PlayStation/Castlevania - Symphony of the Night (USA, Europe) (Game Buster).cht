@@ -68,12 +68,12 @@ cheat16_desc = "All Familiars at Level 99"
 cheat16_code = "80097C54+0063+80097C60+0063+80097C6C+0063+80097C78+0063+80097C84+0063"
 cheat16_enable = false 
 
-cheat17_desc = "Sudden Death Dracula I
+cheat17_desc = "Sudden Death Dracula I"
 (Press L1+L2)"
 cheat17_code = "E0072EF0+0005+80076EDE+0000"
 cheat17_enable = false 
 
-cheat18_desc = "Sudden Death Dracula II
+cheat18_desc = "Sudden Death Dracula II"
 (Press R1+R2)"
 cheat18_code = "E0072EF0+000A+8007728A+0000"
 cheat18_enable = false 

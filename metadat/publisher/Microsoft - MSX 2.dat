@@ -93,7 +93,7 @@ game (
 
 game (
 	comment "AshGuine Story II - Kokuu no Gajou (Japan)"
-	publisher "T&E; Soft"
+	publisher "T&E Soft"
 	rom (
 		crc 47A82D74
 	)
@@ -469,7 +469,7 @@ game (
 
 game (
 	comment "Hard Ball (Japan)"
-	publisher "SCEI"
+	publisher "Sony Computer Entertainment"
 	rom (
 		crc 1D7040AF
 	)
@@ -517,7 +517,7 @@ game (
 
 game (
 	comment "Hydlide 3 - The Space Memories (Japan)"
-	publisher "T&E; Soft"
+	publisher "T&E Soft"
 	rom (
 		crc 00DB86C8
 	)
@@ -573,7 +573,7 @@ game (
 
 game (
 	comment "Jansei (Japan)"
-	publisher "SCEI"
+	publisher "Sony Computer Entertainment"
 	rom (
 		crc 00B8E82E
 	)
@@ -581,7 +581,7 @@ game (
 
 game (
 	comment "Jansei (Japan) (Alt 1)"
-	publisher "SCEI"
+	publisher "Sony Computer Entertainment"
 	rom (
 		crc 2C2924ED
 	)
@@ -605,7 +605,7 @@ game (
 
 game (
 	comment "Kikikai-kai (Japan)"
-	publisher "SCEI"
+	publisher "Sony Computer Entertainment"
 	rom (
 		crc 5C859406
 	)
@@ -621,7 +621,7 @@ game (
 
 game (
 	comment "Kisei (Japan)"
-	publisher "SCEI"
+	publisher "Sony Computer Entertainment"
 	rom (
 		crc 167A53DA
 	)
@@ -957,7 +957,7 @@ game (
 
 game (
 	comment "Replicart (Japan)"
-	publisher "SCEI"
+	publisher "Sony Computer Entertainment"
 	rom (
 		crc 6EEE12C4
 	)
@@ -1021,7 +1021,7 @@ game (
 
 game (
 	comment "Seikima II Special - Akuma no Gyakushuu (Japan)"
-	publisher "SCEI"
+	publisher "Sony Computer Entertainment"
 	rom (
 		crc E37B681E
 	)
@@ -1029,7 +1029,7 @@ game (
 
 game (
 	comment "Seikima II Special - Akuma no Gyakushuu (Japan) (Alt 1)"
-	publisher "SCEI"
+	publisher "Sony Computer Entertainment"
 	rom (
 		crc 816ACEB5
 	)

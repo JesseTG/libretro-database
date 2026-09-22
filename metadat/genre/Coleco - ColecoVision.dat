@@ -95,7 +95,7 @@ game (
 
 game (
 	comment "Boulder Dash (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 9B547BA8 )
 )
 
@@ -113,7 +113,7 @@ game (
 
 game (
 	comment "Boulder Dash (USA) (Beta)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 1796DE5E )
 )
 
@@ -125,19 +125,19 @@ game (
 
 game (
 	comment "Bump 'n' Jump (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 9E1FAB59 )
 )
 
 game (
 	comment "Brain Strainers (USA)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc 829C967D )
 )
 
 game (
 	comment "Bump 'n' Jump (USA, Europe) (Beta)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc EB498F97 )
 )
 
@@ -251,7 +251,7 @@ game (
 
 game (
 	comment "Dance Fantasy (USA)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc BFF86A98 )
 )
 
@@ -269,7 +269,7 @@ game (
 
 game (
 	comment "Destructor (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 56C358A6 )
 )
 
@@ -299,13 +299,13 @@ game (
 
 game (
 	comment "Dr. Seuss - Fix-Up the Mix-Up Puzzler (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 109699E2 )
 )
 
 game (
 	comment "Dukes of Hazzard, The (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 4025AC94 )
 )
 
@@ -353,7 +353,7 @@ game (
 
 game (
 	comment "Fall Guy (USA) (Proto)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 8A731B38 )
 )
 
@@ -407,7 +407,7 @@ game (
 
 game (
 	comment "Gateway to Apshai (USA, Europe)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc FDB75BE6 )
 )
 
@@ -449,7 +449,7 @@ game (
 
 game (
 	comment "Illusions (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 2787516D )
 )
 
@@ -509,7 +509,7 @@ game (
 
 game (
 	comment "Linking Logic (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 918F12C0 )
 )
 
@@ -593,7 +593,7 @@ game (
 
 game (
 	comment "Motocross Racer (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 0F4D800A )
 )
 
@@ -833,13 +833,13 @@ game (
 
 game (
 	comment "Spy Hunter (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 36478923 )
 )
 
 game (
 	comment "Spy Hunter (USA) (Beta)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 1969B9B7 )
 )
 
@@ -971,13 +971,13 @@ game (
 
 game (
 	comment "Turbo (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc BD6AB02A )
 )
 
 game (
 	comment "Up 'n Down (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc FDD52CA0 )
 )
 

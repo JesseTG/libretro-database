@@ -1,4 +1,4 @@
-cheats = 22 
+cheats = 20 
 
 cheat0_desc = "Start A New Game With 19 Webshooters"
 cheat0_code = "801DC038+0013"

@@ -1,7 +1,7 @@
 clrmamepro (
 	name "LeapFrog - Leapster Learning Game System"
 	description "LeapFrog - Leapster Learning Game System"
-	version "2025.11.10"
+	version "2026.08.01"
 	homepage "http://github.com/robloach/libretro-dats"
 )
 
@@ -130,6 +130,11 @@ game (
 	name "Demo - Herbst 2004 II (Germany)"
 	region "Germany"
 	rom ( name "Demo - Herbst 2004 II (Germany).bin" size 8388608 crc 71062CD7 md5 707A056024348A835D8C915A8FE8788E sha1 EAF0656D29F61D89B97C6D66E73A2FA7021A92E3 )
+)
+game (
+	name "Didou - Dessine-Moi une Aventure ! (France)"
+	region "France"
+	rom ( name "Didou - Dessine-Moi une Aventure ! (France).bin" size 8388608 crc 5A66A307 md5 9A80BF94273B9E0848A9292D1D7BAFE9 sha1 AC880E02C5EF164A9DE918BDD76BC74886B35DAF )
 )
 game (
 	name "Digging for Dinosaurs (USA)"
@@ -296,6 +301,11 @@ game (
 	releaseday "13"
 	region "USA"
 	rom ( name "Incredibles Animation Sample (USA) (Proto) (2004-04-13).bin" size 8388608 crc FF6F07F1 md5 8C6F51338348ADA4172AD8A7D514D06B sha1 81F13D34B58987A048E0C14D90413887349A208D )
+)
+game (
+	name "Incredibles, The (USA)"
+	region "USA"
+	rom ( name "Incredibles, The (USA).bin" size 8388608 crc EA5C15B1 md5 40CF2F6F1DE91B2843B25C636ED77CCC sha1 2AB154153481802593D9004DAE8FC5FCBA0B6E88 )
 )
 game (
 	name "Kindergarten (USA)"
@@ -592,6 +602,11 @@ game (
 	name "Thomas & Friends - Calling All Engines! (USA)"
 	region "USA"
 	rom ( name "Thomas & Friends - Calling All Engines! (USA).bin" size 8388608 crc 5303D366 md5 5DF6C5EC641FB5CDA621419945F4664E sha1 A7A65B5027D742634DD0860D3DB44981C2351A05 )
+)
+game (
+	name "Toy Story 3 (France)"
+	region "France"
+	rom ( name "Toy Story 3 (France).bin" size 8388608 crc DB3522EB md5 E49CB0278F2AF5EBFF45CC1F275E3A7A sha1 5D546AB6D1F576D917D2D637ACA877B8DDD131BD )
 )
 game (
 	name "Toy Story 3 (USA)"

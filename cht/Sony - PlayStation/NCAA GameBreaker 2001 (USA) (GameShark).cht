@@ -1,4 +1,4 @@
-cheats = 26 
+cheats = 23 
 
 cheat0_desc = "Enable Code (Must Be On-Version 1)"
 cheat0_code = "D0100AE0+023A+80100AE2+1000"

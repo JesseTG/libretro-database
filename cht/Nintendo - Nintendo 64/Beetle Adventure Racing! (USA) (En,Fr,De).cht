@@ -1,4 +1,4 @@
-cheats = 300
+cheats = 301
 
 cheat0_desc = "Unlock All Cars"
 cheat0_code = "8002CFF7 000B"
@@ -1199,3 +1199,7 @@ cheat298_enable = false
 cheat299_desc = "Dual Control Stick Activator P4 #2"
 cheat299_code = "D10A1F84 0000"
 cheat299_enable = false
+
+cheat300_desc = "Widescreen 16-9"
+cheat300_code = "D1178BF6 3F00+81178BF6 3F1B+D1178C16 3F00+81178C16 3F1B"
+cheat300_enable = false

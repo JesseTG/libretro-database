@@ -47,7 +47,7 @@ game (
 
 game (
 	comment "64 Oozumou (Japan)"
-	publisher "Bottom Up Interactive"
+	publisher "Bottom Up Interactive"
 	rom ( crc A6DBF8AE )
 )
 
@@ -77,13 +77,13 @@ game (
 
 game (
 	comment "64 Oozumou 2 (Japan)"
-	publisher "Bottom Up Interactive"
+	publisher "Bottom Up Interactive"
 	rom ( crc 3CD5E271 )
 )
 
 game (
 	comment "64 Trump Collection - Alice no Wakuwaku Trump World (Japan)"
-	publisher "Bottom Up Interactive"
+	publisher "Bottom Up Interactive"
 	rom ( crc 34BBB95D )
 )
 
@@ -245,7 +245,7 @@ game (
 
 game (
 	comment "Army Men - Air Combat (USA)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 2355E4F3 )
 )
 
@@ -269,19 +269,19 @@ game (
 
 game (
 	comment "Army Men - Sarge's Heroes (Europe) (En,Fr,De)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc B2B54CC1 )
 )
 
 game (
 	comment "Army Men - Sarge's Heroes (USA)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 97BF6DB2 )
 )
 
 game (
 	comment "Army Men - Sarge's Heroes 2 (USA)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 3E9D1C51 )
 )
 
@@ -407,13 +407,13 @@ game (
 
 game (
 	comment "BattleTanx (USA)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 66123C8B )
 )
 
 game (
 	comment "BattleTanx - Global Assault (USA)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 5819D423 )
 )
 
@@ -425,7 +425,7 @@ game (
 
 game (
 	comment "BattleTanx - Global Assault (Europe) (En,Fr,De)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc EC02C5AD )
 )
 
@@ -1097,7 +1097,7 @@ game (
 
 game (
 	comment "Die Hard 64 (USA) (Proto) (Level 1)"
-	publisher "Bits Studios"
+	publisher "Bits Studios"
 	rom ( crc 5E826037 )
 )
 
@@ -1109,13 +1109,13 @@ game (
 
 game (
 	comment "Die Hard 64 (USA) (Proto) (Level 2)"
-	publisher "Bits Studios"
+	publisher "Bits Studios"
 	rom ( crc D1D593CF )
 )
 
 game (
 	comment "Die Hard 64 (USA) (Proto) (Level 3)"
-	publisher "Bits Studios"
+	publisher "Bits Studios"
 	rom ( crc 70943925 )
 )
 
@@ -3695,7 +3695,7 @@ game (
 
 game (
 	comment "Onegai Monsters (Japan)"
-	publisher "Bottom Up Interactive"
+	publisher "Bottom Up Interactive"
 	rom ( crc FF03EC8A )
 )
 
@@ -5267,7 +5267,7 @@ game (
 
 game (
 	comment "Toon Panic (Japan) (Proto)"
-	publisher "Bottom Up Interactive"
+	publisher "Bottom Up Interactive"
 	rom ( crc 55C88F04 )
 )
 
@@ -6275,19 +6275,19 @@ game (
 
 game (
 	comment "64 Oozumou (Japan)"
-	publisher "Bottom Up Interactive"
+	publisher "Bottom Up Interactive"
 	rom ( crc 742E31FB )
 )
 
 game (
 	comment "64 Oozumou 2 (Japan)"
-	publisher "Bottom Up Interactive"
+	publisher "Bottom Up Interactive"
 	rom ( crc C1BC6FD8 )
 )
 
 game (
 	comment "64 Trump Collection - Alice no Wakuwaku Trump World (Japan)"
-	publisher "Bottom Up Interactive"
+	publisher "Bottom Up Interactive"
 	rom ( crc DCA7F4EB )
 )
 
@@ -6461,13 +6461,13 @@ game (
 
 game (
 	comment "Army Men - Air Combat (USA)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 1952CC87 )
 )
 
 game (
 	comment "Army Men - Sarge's Heroes (Europe) (En,Fr,De)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc E79048E2 )
 )
 
@@ -6479,7 +6479,7 @@ game (
 
 game (
 	comment "Army Men - Sarge's Heroes (USA)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 2FE786F6 )
 )
 
@@ -6491,7 +6491,7 @@ game (
 
 game (
 	comment "Army Men - Sarge's Heroes 2 (USA)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 79A71608 )
 )
 
@@ -6611,7 +6611,7 @@ game (
 
 game (
 	comment "BattleTanx (USA)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 6C230765 )
 )
 
@@ -6623,7 +6623,7 @@ game (
 
 game (
 	comment "BattleTanx - Global Assault (USA)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 31BEB053 )
 )
 
@@ -6635,7 +6635,7 @@ game (
 
 game (
 	comment "BattleTanx - Global Assault (Europe) (En,Fr,De)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc C99C6030 )
 )
 
@@ -7301,7 +7301,7 @@ game (
 
 game (
 	comment "Die Hard 64 (USA) (Proto) (Level 1)"
-	publisher "Bits Studios"
+	publisher "Bits Studios"
 	rom ( crc 5E826037 )
 )
 
@@ -7313,13 +7313,13 @@ game (
 
 game (
 	comment "Die Hard 64 (USA) (Proto) (Level 2)"
-	publisher "Bits Studios"
+	publisher "Bits Studios"
 	rom ( crc D1D593CF )
 )
 
 game (
 	comment "Die Hard 64 (USA) (Proto) (Level 3)"
-	publisher "Bits Studios"
+	publisher "Bits Studios"
 	rom ( crc 70943925 )
 )
 
@@ -9899,7 +9899,7 @@ game (
 
 game (
 	comment "Onegai Monsters (Japan)"
-	publisher "Bottom Up Interactive"
+	publisher "Bottom Up Interactive"
 	rom ( crc AC72A1C7 )
 )
 
@@ -11471,7 +11471,7 @@ game (
 
 game (
 	comment "Toon Panic (Japan) (Proto)"
-	publisher "Bottom Up Interactive"
+	publisher "Bottom Up Interactive"
 	rom ( crc CF396C4E )
 )
 

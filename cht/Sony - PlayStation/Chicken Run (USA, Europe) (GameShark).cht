@@ -1,4 +1,4 @@
-cheats = 16 
+cheats = 11 
 
 cheat0_desc = "Have All Map Pieces"
 cheat0_code = "50001001+0000+300AA1F0+0001"

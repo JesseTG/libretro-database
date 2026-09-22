@@ -1,7 +1,7 @@
 clrmamepro (
 	name "Sega - Saturn"
 	description "Sega - Saturn"
-	version "2025.11.10"
+	version "2026.08.01"
 	homepage "http://github.com/robloach/libretro-dats"
 )
 
@@ -148,6 +148,12 @@ game (
 	region "Japan"
 	serial "GS-9087"
 	rom ( name "Advanced World War - Sennen Teikoku no Koubou - Last of the Millennium (Japan) (2M) (Track 01).bin" size 610200528 crc 3C5065D3 md5 8E3A2B42352F5DE2B6788DB29902F247 sha1 72FAD25960EF1E1A874CAE3B739FA7BEE5DC3E06 serial "GS-9087" )
+)
+game (
+	name "Advanced World War - Sennen Teikoku no Koubou - Last of the Millennium (Japan) (Rev B) (22M)"
+	region "Japan"
+	serial "GS-9190"
+	rom ( name "Advanced World War - Sennen Teikoku no Koubou - Last of the Millennium (Japan) (Rev B) (22M) (Track 01).bin" size 610200528 crc F464829D md5 38B165ABBA4444CC4D8B0E922350AC33 sha1 ED85413BD508CD0B1710F36582BE6E4830769945 serial "GS-9190" )
 )
 game (
 	name "Ai Iijima Interactive Video Clip - Good Island Cafe (Japan)"
@@ -622,16 +628,16 @@ game (
 	rom ( name "Azel - Panzer Dragoon RPG (Japan) (Disc 1) (2M) (Track 1).bin" size 645414672 crc 708828EE md5 5D27593BABAC69E7CA03BD87C909DB4F sha1 24CD238DE0FB417680EEE7855F83D04663309740 serial "GS-9076-0" )
 )
 game (
-	name "Azel - Panzer Dragoon RPG (Japan) (Disc 2) (2M)"
+	name "Azel - Panzer Dragoon RPG (Japan) (Disc 2) (1M)"
 	region "Japan"
 	serial "GS-9076"
-	rom ( name "Azel - Panzer Dragoon RPG (Japan) (Disc 2) (2M) (Track 1).bin" size 559267968 crc DA1F95AC md5 E9D9F69FE1AED234B1D042F059866022 sha1 E442C82158484460660F99F5EF5776402163FD08 serial "GS-9076" )
+	rom ( name "Azel - Panzer Dragoon RPG (Japan) (Disc 2) (1M) (Track 1).bin" size 559267968 crc DA1F95AC md5 E9D9F69FE1AED234B1D042F059866022 sha1 E442C82158484460660F99F5EF5776402163FD08 serial "GS-9076" )
 )
 game (
-	name "Azel - Panzer Dragoon RPG (Japan) (Disc 2) (2M)"
+	name "Azel - Panzer Dragoon RPG (Japan) (Disc 2) (1M)"
 	region "Japan"
 	serial "GS-9076-1"
-	rom ( name "Azel - Panzer Dragoon RPG (Japan) (Disc 2) (2M) (Track 1).bin" size 559267968 crc DA1F95AC md5 E9D9F69FE1AED234B1D042F059866022 sha1 E442C82158484460660F99F5EF5776402163FD08 serial "GS-9076-1" )
+	rom ( name "Azel - Panzer Dragoon RPG (Japan) (Disc 2) (1M) (Track 1).bin" size 559267968 crc DA1F95AC md5 E9D9F69FE1AED234B1D042F059866022 sha1 E442C82158484460660F99F5EF5776402163FD08 serial "GS-9076-1" )
 )
 game (
 	name "Azel - Panzer Dragoon RPG (Japan) (Disc 3) (2M)"
@@ -646,64 +652,64 @@ game (
 	rom ( name "Azel - Panzer Dragoon RPG (Japan) (Disc 3) (2M) (Track 1).bin" size 632161152 crc 353C3A39 md5 F1E5658315DDD11C7D11783443AEA918 sha1 538555FAA5C358AF8D588EAE41EB37BB20F965C6 serial "GS-9076-2" )
 )
 game (
-	name "Azel - Panzer Dragoon RPG (Japan) (Disc 4) (2M, 3M)"
+	name "Azel - Panzer Dragoon RPG (Japan) (Disc 4) (4M)"
 	region "Japan"
 	serial "GS-9076"
-	rom ( name "Azel - Panzer Dragoon RPG (Japan) (Disc 4) (2M, 3M) (Track 1).bin" size 582493968 crc AE25113E md5 955FFF0B1B00A24E8C7E2713E8AAB90E sha1 D039B53491DCEAC55A7133BAF1DEEA2F6A3F3E37 serial "GS-9076" )
+	rom ( name "Azel - Panzer Dragoon RPG (Japan) (Disc 4) (4M) (Track 1).bin" size 582493968 crc AE25113E md5 955FFF0B1B00A24E8C7E2713E8AAB90E sha1 D039B53491DCEAC55A7133BAF1DEEA2F6A3F3E37 serial "GS-9076" )
 )
 game (
-	name "Azel - Panzer Dragoon RPG (Japan) (Disc 4) (2M, 3M)"
+	name "Azel - Panzer Dragoon RPG (Japan) (Disc 4) (4M)"
 	region "Japan"
 	serial "GS-9076-3"
-	rom ( name "Azel - Panzer Dragoon RPG (Japan) (Disc 4) (2M, 3M) (Track 1).bin" size 582493968 crc AE25113E md5 955FFF0B1B00A24E8C7E2713E8AAB90E sha1 D039B53491DCEAC55A7133BAF1DEEA2F6A3F3E37 serial "GS-9076-3" )
+	rom ( name "Azel - Panzer Dragoon RPG (Japan) (Disc 4) (4M) (Track 1).bin" size 582493968 crc AE25113E md5 955FFF0B1B00A24E8C7E2713E8AAB90E sha1 D039B53491DCEAC55A7133BAF1DEEA2F6A3F3E37 serial "GS-9076-3" )
 )
 game (
-	name "BackGuiner - Yomigaeru Yuusha-tachi - Hishou-hen - Uragiri no Senjou (Japan) (Disc 1)"
+	name "BackGuiner - Yomigaeru Yuushatachi - Hishou-hen - Uragiri no Senjou (Japan) (Disc 1)"
 	region "Japan"
 	serial "T-19907G"
-	rom ( name "BackGuiner - Yomigaeru Yuusha-tachi - Hishou-hen - Uragiri no Senjou (Japan) (Disc 1) (Track 1).bin" size 642839232 crc 4F60C120 md5 720FDD48962341E4C74EDBEA23FC4B7B sha1 5A6FA32BB2B5DB20F246F7E919ACF60BC76AD1A7 serial "T-19907G" )
+	rom ( name "BackGuiner - Yomigaeru Yuushatachi - Hishou-hen - Uragiri no Senjou (Japan) (Disc 1) (Track 1).bin" size 642839232 crc 4F60C120 md5 720FDD48962341E4C74EDBEA23FC4B7B sha1 5A6FA32BB2B5DB20F246F7E919ACF60BC76AD1A7 serial "T-19907G" )
 )
 game (
-	name "BackGuiner - Yomigaeru Yuusha-tachi - Hishou-hen - Uragiri no Senjou (Japan) (Disc 1)"
+	name "BackGuiner - Yomigaeru Yuushatachi - Hishou-hen - Uragiri no Senjou (Japan) (Disc 1)"
 	region "Japan"
 	serial "T-19907G-0"
-	rom ( name "BackGuiner - Yomigaeru Yuusha-tachi - Hishou-hen - Uragiri no Senjou (Japan) (Disc 1) (Track 1).bin" size 642839232 crc 4F60C120 md5 720FDD48962341E4C74EDBEA23FC4B7B sha1 5A6FA32BB2B5DB20F246F7E919ACF60BC76AD1A7 serial "T-19907G-0" )
+	rom ( name "BackGuiner - Yomigaeru Yuushatachi - Hishou-hen - Uragiri no Senjou (Japan) (Disc 1) (Track 1).bin" size 642839232 crc 4F60C120 md5 720FDD48962341E4C74EDBEA23FC4B7B sha1 5A6FA32BB2B5DB20F246F7E919ACF60BC76AD1A7 serial "T-19907G-0" )
 )
 game (
-	name "BackGuiner - Yomigaeru Yuusha-tachi - Hishou-hen - Uragiri no Senjou (Japan) (Disc 2)"
+	name "BackGuiner - Yomigaeru Yuushatachi - Hishou-hen - Uragiri no Senjou (Japan) (Disc 2)"
 	region "Japan"
 	serial "T-19907G"
-	rom ( name "BackGuiner - Yomigaeru Yuusha-tachi - Hishou-hen - Uragiri no Senjou (Japan) (Disc 2) (Track 1).bin" size 628456752 crc EBE072C6 md5 C002E226A990D3060FC5C1F224FF8F11 sha1 ABB62925FE0C66E821B2B8CA2C6774DB03516D13 serial "T-19907G" )
+	rom ( name "BackGuiner - Yomigaeru Yuushatachi - Hishou-hen - Uragiri no Senjou (Japan) (Disc 2) (Track 1).bin" size 628456752 crc EBE072C6 md5 C002E226A990D3060FC5C1F224FF8F11 sha1 ABB62925FE0C66E821B2B8CA2C6774DB03516D13 serial "T-19907G" )
 )
 game (
-	name "BackGuiner - Yomigaeru Yuusha-tachi - Hishou-hen - Uragiri no Senjou (Japan) (Disc 2)"
+	name "BackGuiner - Yomigaeru Yuushatachi - Hishou-hen - Uragiri no Senjou (Japan) (Disc 2)"
 	region "Japan"
 	serial "T-19907G-1"
-	rom ( name "BackGuiner - Yomigaeru Yuusha-tachi - Hishou-hen - Uragiri no Senjou (Japan) (Disc 2) (Track 1).bin" size 628456752 crc EBE072C6 md5 C002E226A990D3060FC5C1F224FF8F11 sha1 ABB62925FE0C66E821B2B8CA2C6774DB03516D13 serial "T-19907G-1" )
+	rom ( name "BackGuiner - Yomigaeru Yuushatachi - Hishou-hen - Uragiri no Senjou (Japan) (Disc 2) (Track 1).bin" size 628456752 crc EBE072C6 md5 C002E226A990D3060FC5C1F224FF8F11 sha1 ABB62925FE0C66E821B2B8CA2C6774DB03516D13 serial "T-19907G-1" )
 )
 game (
-	name "BackGuiner - Yomigaeru Yuusha-tachi - Kakusei-hen - Guiner Tensei (Japan) (Disc 1)"
+	name "BackGuiner - Yomigaeru Yuushatachi - Kakusei-hen - Guiner Tensei (Japan) (Disc 1)"
 	region "Japan"
 	serial "T-19906G"
-	rom ( name "BackGuiner - Yomigaeru Yuusha-tachi - Kakusei-hen - Guiner Tensei (Japan) (Disc 1) (Track 1).bin" size 463656816 crc CFA6AAC7 md5 693EB39541932BA5311CE838FEE2337D sha1 D161D13D9C1AB1A132D35E67714D0502E8AB0D8A serial "T-19906G" )
+	rom ( name "BackGuiner - Yomigaeru Yuushatachi - Kakusei-hen - Guiner Tensei (Japan) (Disc 1) (Track 1).bin" size 463656816 crc CFA6AAC7 md5 693EB39541932BA5311CE838FEE2337D sha1 D161D13D9C1AB1A132D35E67714D0502E8AB0D8A serial "T-19906G" )
 )
 game (
-	name "BackGuiner - Yomigaeru Yuusha-tachi - Kakusei-hen - Guiner Tensei (Japan) (Disc 1)"
+	name "BackGuiner - Yomigaeru Yuushatachi - Kakusei-hen - Guiner Tensei (Japan) (Disc 1)"
 	region "Japan"
 	serial "T-19906G-0"
-	rom ( name "BackGuiner - Yomigaeru Yuusha-tachi - Kakusei-hen - Guiner Tensei (Japan) (Disc 1) (Track 1).bin" size 463656816 crc CFA6AAC7 md5 693EB39541932BA5311CE838FEE2337D sha1 D161D13D9C1AB1A132D35E67714D0502E8AB0D8A serial "T-19906G-0" )
+	rom ( name "BackGuiner - Yomigaeru Yuushatachi - Kakusei-hen - Guiner Tensei (Japan) (Disc 1) (Track 1).bin" size 463656816 crc CFA6AAC7 md5 693EB39541932BA5311CE838FEE2337D sha1 D161D13D9C1AB1A132D35E67714D0502E8AB0D8A serial "T-19906G-0" )
 )
 game (
-	name "BackGuiner - Yomigaeru Yuusha-tachi - Kakusei-hen - Guiner Tensei (Japan) (Disc 2)"
+	name "BackGuiner - Yomigaeru Yuushatachi - Kakusei-hen - Guiner Tensei (Japan) (Disc 2)"
 	region "Japan"
 	serial "T-19906G"
-	rom ( name "BackGuiner - Yomigaeru Yuusha-tachi - Kakusei-hen - Guiner Tensei (Japan) (Disc 2) (Track 1).bin" size 460413408 crc 40B09ACC md5 860B6D6603D56BA04ABD1129F1AEC4D1 sha1 C907C459A05CABC897F84A34E3ED2790A432D689 serial "T-19906G" )
+	rom ( name "BackGuiner - Yomigaeru Yuushatachi - Kakusei-hen - Guiner Tensei (Japan) (Disc 2) (Track 1).bin" size 460413408 crc 40B09ACC md5 860B6D6603D56BA04ABD1129F1AEC4D1 sha1 C907C459A05CABC897F84A34E3ED2790A432D689 serial "T-19906G" )
 )
 game (
-	name "BackGuiner - Yomigaeru Yuusha-tachi - Kakusei-hen - Guiner Tensei (Japan) (Disc 2)"
+	name "BackGuiner - Yomigaeru Yuushatachi - Kakusei-hen - Guiner Tensei (Japan) (Disc 2)"
 	region "Japan"
 	serial "T-19906G-1"
-	rom ( name "BackGuiner - Yomigaeru Yuusha-tachi - Kakusei-hen - Guiner Tensei (Japan) (Disc 2) (Track 1).bin" size 460413408 crc 40B09ACC md5 860B6D6603D56BA04ABD1129F1AEC4D1 sha1 C907C459A05CABC897F84A34E3ED2790A432D689 serial "T-19906G-1" )
+	rom ( name "BackGuiner - Yomigaeru Yuushatachi - Kakusei-hen - Guiner Tensei (Japan) (Disc 2) (Track 1).bin" size 460413408 crc 40B09ACC md5 860B6D6603D56BA04ABD1129F1AEC4D1 sha1 C907C459A05CABC897F84A34E3ED2790A432D689 serial "T-19906G-1" )
 )
 game (
 	name "Baku Baku Animal - Sekai Shiiku Gakari Senshuken (Japan)"
@@ -736,28 +742,16 @@ game (
 	rom ( name "Baku Baku Animal - World Zookeeper Contest (USA) (Track 01).bin" size 177218496 crc 551394D1 md5 0602917C30E6EFB017FAF6575939AEB3 sha1 1DB5382FFF2891290B59EC238E7F7F37EAAFA29D serial "81501" )
 )
 game (
-	name "Bakuretsu Hunter (Japan) (Disc 1)"
+	name "Bakuretsu Hunter (Japan)"
 	region "Japan"
 	serial "T-22402G"
-	rom ( name "Bakuretsu Hunter (Japan) (Disc 1) (Track 1).bin" size 386640576 crc 083F4A02 md5 2AE2063DC74A2C4451D555820F940C60 sha1 770E7981BD541CE76B785552BCF3E001FE8BC8B0 serial "T-22402G" )
+	rom ( name "Bakuretsu Hunter (Japan) (Track 1).bin" size 386640576 crc 083F4A02 md5 2AE2063DC74A2C4451D555820F940C60 sha1 770E7981BD541CE76B785552BCF3E001FE8BC8B0 serial "T-22402G" )
 )
 game (
-	name "Bakuretsu Hunter (Japan) (Disc 1)"
-	region "Japan"
-	serial "T-22402G-0"
-	rom ( name "Bakuretsu Hunter (Japan) (Disc 1) (Track 1).bin" size 386640576 crc 083F4A02 md5 2AE2063DC74A2C4451D555820F940C60 sha1 770E7981BD541CE76B785552BCF3E001FE8BC8B0 serial "T-22402G-0" )
-)
-game (
-	name "Bakuretsu Hunter (Japan) (Disc 2) (Omake CD)"
+	name "Bakuretsu Hunter (Japan) (Omake CD)"
 	region "Japan"
 	serial "T-22402G"
-	rom ( name "Bakuretsu Hunter (Japan) (Disc 2) (Omake CD) (Track 1).bin" size 289444176 crc 8C5EA0A1 md5 48531CD6625946778ADC1F3905D01520 sha1 49E102328B5DE6CC0811407B3F21C1370DB45B2E serial "T-22402G" )
-)
-game (
-	name "Bakuretsu Hunter (Japan) (Disc 2) (Omake CD)"
-	region "Japan"
-	serial "T-22402G-1"
-	rom ( name "Bakuretsu Hunter (Japan) (Disc 2) (Omake CD) (Track 1).bin" size 289444176 crc 8C5EA0A1 md5 48531CD6625946778ADC1F3905D01520 sha1 49E102328B5DE6CC0811407B3F21C1370DB45B2E serial "T-22402G-1" )
+	rom ( name "Bakuretsu Hunter (Japan) (Omake CD) (Track 1).bin" size 289444176 crc 8C5EA0A1 md5 48531CD6625946778ADC1F3905D01520 sha1 49E102328B5DE6CC0811407B3F21C1370DB45B2E serial "T-22402G" )
 )
 game (
 	name "Bakuretsu Hunter R (Japan)"
@@ -766,10 +760,10 @@ game (
 	rom ( name "Bakuretsu Hunter R (Japan) (Track 1).bin" size 330644160 crc C0FDCFCE md5 7DEF9083CA6C8F6079B4FFF48932059F sha1 FDA4BBE40FBB24039F4DB1080067E1ACDD300796 serial "T-24903G" )
 )
 game (
-	name "Bakushou!! All Yoshimoto Quiz-ou Kettei-sen DX (Japan)"
+	name "Bakushou!! All Yoshimoto Quiz-ou Ketteisen DX (Japan)"
 	region "Japan"
 	serial "T-20001G"
-	rom ( name "Bakushou!! All Yoshimoto Quiz-ou Kettei-sen DX (Japan) (Track 1).bin" size 475574400 crc 5D722D5A md5 EF292E4E60DCBE21041494E12EF3925A sha1 DFEA9AED1E46F556707AA14BF3BFCBE09388FC62 serial "T-20001G" )
+	rom ( name "Bakushou!! All Yoshimoto Quiz-ou Ketteisen DX (Japan) (Track 1).bin" size 475574400 crc 5D722D5A md5 EF292E4E60DCBE21041494E12EF3925A sha1 DFEA9AED1E46F556707AA14BF3BFCBE09388FC62 serial "T-20001G" )
 )
 game (
 	name "Baldy Land (Japan)"
@@ -1322,16 +1316,10 @@ game (
 	rom ( name "Can Can Bunny Extra (Japan) (Track 1).bin" size 531636672 crc 568A9A59 md5 0560A0A70970FD6D493D52A795114C15 sha1 28DC444C104D3FF7FE8A23A1C163A974775122FA serial "T-19706G" )
 )
 game (
-	name "Can Can Bunny Premiere (Japan) (1M)"
-	region "Japan"
-	serial "T-19701G"
-	rom ( name "Can Can Bunny Premiere (Japan) (1M) (Track 01).bin" size 158219040 crc 2D17460A md5 3E815C1A7AC505C07AF95FCE622981C5 sha1 374B507CD390D4FCDD72A16BF2AB7E637F8E16E9 serial "T-19701G" )
-)
-game (
-	name "Can Can Bunny Premiere (Japan) (1M)"
+	name "Can Can Bunny Premiere (Japan) (2M)"
 	region "Japan"
 	serial "T-19704G"
-	rom ( name "Can Can Bunny Premiere (Japan) (1M) (Track 01).bin" size 158219040 crc 2D17460A md5 3E815C1A7AC505C07AF95FCE622981C5 sha1 374B507CD390D4FCDD72A16BF2AB7E637F8E16E9 serial "T-19704G" )
+	rom ( name "Can Can Bunny Premiere (Japan) (2M) (Track 01).bin" size 158219040 crc 2D17460A md5 3E815C1A7AC505C07AF95FCE622981C5 sha1 374B507CD390D4FCDD72A16BF2AB7E637F8E16E9 serial "T-19704G" )
 )
 game (
 	name "Can Can Bunny Premiere 2 (Japan) (Disc 1)"
@@ -1418,10 +1406,10 @@ game (
 	rom ( name "Capcom Generation - Dai-4-shuu Kokou no Eiyuu (Japan) (Track 01).bin" size 44582160 crc C6E0717A md5 F64A85D928F00E87CB6C6D716B4B1BA2 sha1 140DAE85A2B26155004C755DAE6BDCD0D3A49FE3 serial "T-1235G" )
 )
 game (
-	name "Capcom Generation - Dai-5-shuu Kakutouka-tachi (Japan)"
+	name "Capcom Generation - Dai-5-shuu Kakutoukatachi (Japan)"
 	region "Japan"
 	serial "T-1236G"
-	rom ( name "Capcom Generation - Dai-5-shuu Kakutouka-tachi (Japan) (Track 1).bin" size 536112528 crc F4C9B8FF md5 0F94159AB402AE26B3560E5BDBDE19F3 sha1 E6C2E44FF2F6F01C69B72460F803C32807ABEF0F serial "T-1236G" )
+	rom ( name "Capcom Generation - Dai-5-shuu Kakutoukatachi (Japan) (Track 1).bin" size 536112528 crc F4C9B8FF md5 0F94159AB402AE26B3560E5BDBDE19F3 sha1 E6C2E44FF2F6F01C69B72460F803C32807ABEF0F serial "T-1236G" )
 )
 game (
 	name "Casper (Europe) (En,Fr,De)"
@@ -1478,6 +1466,14 @@ game (
 	region "Japan"
 	serial "T-7006G"
 	rom ( name "Chaos Control Remix (Japan) (Track 1).bin" size 398367648 crc 765495DD md5 6EF51E2CF8BC1958D0900FF3BFD4998C sha1 F346A73865DF2182648F400F7274A06DF7D5C5C0 serial "T-7006G" )
+)
+game (
+	name "Chelnov (Japan) (Proto)"
+	releaseyear "1997"
+	releasemonth "07"
+	releaseday "23"
+	region "Japan"
+	rom ( name "Chelnov (Japan) (Proto) (1997-07-23) (Track 1).bin" size 3344544 crc D8172401 md5 5BF19025309A9BD710E48270477F6FB8 sha1 8187E47C828ABF428BD88E3A2D90F19525704CCE )
 )
 game (
 	name "Chibi Maruko-chan no Taisen Puzzle-dama (Japan)"
@@ -2139,6 +2135,12 @@ game (
 	rom ( name "Culdcept (Japan) (Rev A) (10M) (Track 1).bin" size 273264768 crc FA061F26 md5 46572A3F86329C0B58FBFAD0A5D12AE7 sha1 82003C2BF26D23F8824F8934CE5CA9AE403F0043 serial "T-31401G" )
 )
 game (
+	name "Culdcept (Japan) (Rev B) (20M)"
+	region "Japan"
+	serial "T-31402G"
+	rom ( name "Culdcept (Japan) (Rev B) (20M) (Track 1).bin" size 273264768 crc 37698DCF md5 2F88DD7320F65B9192BE8D4FC97558B3 sha1 B392ABFD1D5DB1782B7238D00A45551F5C2F656B serial "T-31402G" )
+)
+game (
 	name "Custom Web Browser (Version 2) (USA)"
 	region "USA"
 	serial "80118"
@@ -2541,6 +2543,14 @@ game (
 	rom ( name "Dark Savior (USA) (Track 1).bin" size 117952800 crc 58AA1325 md5 9CEB6C099A1747E0AC22AD45913FE3FC sha1 D386D2A925C66111910C13CF3A06CDE1274988D7 serial "81304" )
 )
 game (
+	name "Dark Savior (USA) (Beta)"
+	releaseyear "1996"
+	releasemonth "11"
+	releaseday "02"
+	region "USA"
+	rom ( name "Dark Savior (USA) (Beta) (1996-11-02) (Track 1).bin" size 118484352 crc DBBE0B1C md5 FC9A67706B8A72E690EA72AB13637C76 sha1 7C03AE14E2EB300ED620588128731DE32F48BC07 )
+)
+game (
 	name "Dark Seed II (Japan)"
 	region "Japan"
 	serial "T-36101G"
@@ -2599,6 +2609,18 @@ game (
 	region "Europe"
 	serial "MK81213-50"
 	rom ( name "Daytona USA - Championship Circuit Edition (Europe) (Rev A) (Track 01).bin" size 24155040 crc 8E7CCB4D md5 2F91BED777FDBC624DE6C4A18B990670 sha1 D5B98DEE62E334AC0DE754B72AF36066616786BA serial "MK81213-50" )
+)
+game (
+	name "Daytona USA - Championship Circuit Edition (Korea)"
+	region "Korea"
+	serial "GS-9614J"
+	rom ( name "Daytona USA - Championship Circuit Edition (Korea) (Track 01).bin" size 24394944 crc 4660FB13 md5 FB3BFD6EA398A09E00FBEBEE9859B75F sha1 93A47270EA6132B6AD30C94E823F2CCE2438D483 serial "GS-9614J" )
+)
+game (
+	name "Daytona USA - Championship Circuit Edition (Korea)"
+	region "Korea"
+	serial "MK-81213-08"
+	rom ( name "Daytona USA - Championship Circuit Edition (Korea) (Track 01).bin" size 24394944 crc 4660FB13 md5 FB3BFD6EA398A09E00FBEBEE9859B75F sha1 93A47270EA6132B6AD30C94E823F2CCE2438D483 serial "MK-81213-08" )
 )
 game (
 	name "Daytona USA - Championship Circuit Edition (USA)"
@@ -2727,6 +2749,12 @@ game (
 	rom ( name "DecAthlete (Japan) (Rev A) (10M) (Track 01).bin" size 34294512 crc 480AAA86 md5 A8A731EC01A1A39274C2821062107709 sha1 497C86A81EE325B38552005597F75874D23650B9 serial "GS-9096" )
 )
 game (
+	name "DecAthlete (Japan) (Rev B) (20M)"
+	region "Japan"
+	serial "GS-9150"
+	rom ( name "DecAthlete (Japan) (Rev B) (20M) (Track 01).bin" size 34294512 crc 85DB2F61 md5 17A18E75E8C9105A4E29548F0F80B823 sha1 D74B280066F42DCC664611E234425DE2E6057127 serial "GS-9150" )
+)
+game (
 	name "DecAthlete (USA)"
 	region "USA"
 	serial "81115"
@@ -2843,6 +2871,12 @@ game (
 	region "Korea"
 	serial "GS-9612J"
 	rom ( name "Dennou Senki - Virtual On - Cyber Troopers (Korea) (Track 01).bin" size 67405968 crc 4A33AD2B md5 725EB12AF27493B67231522F363B4F7C sha1 DCDF628DEA281F177502F72E0B92DD1605AFCC05 serial "GS-9612J" )
+)
+game (
+	name "Dennou Senki - Virtual On - Cyber Troopers (Korea)"
+	region "Korea"
+	serial "MK-81042-08"
+	rom ( name "Dennou Senki - Virtual On - Cyber Troopers (Korea) (Track 01).bin" size 67405968 crc 4A33AD2B md5 725EB12AF27493B67231522F363B4F7C sha1 DCDF628DEA281F177502F72E0B92DD1605AFCC05 serial "MK-81042-08" )
 )
 game (
 	name "Dennou Senki - Virtual On - Cyber Troopers for SegaNet (Japan)"
@@ -3217,6 +3251,14 @@ game (
 	rom ( name "Double Switch (USA) (Disc 1) (Track 1).bin" size 656537280 crc 8C003097 md5 81B2AB1C8FD87A4504F198A3E30A62B0 sha1 B4FBA93DB60908EC7D0A602A00D25B3A7002DB55 serial "T-16207H-0" )
 )
 game (
+	name "Double Switch (USA) (Disc 1) (Beta)"
+	releaseyear "1995"
+	releasemonth "10"
+	releaseday "03"
+	region "USA"
+	rom ( name "Double Switch (USA) (Disc 1) (Beta) (1995-10-03) (Track 1).bin" size 656537280 crc 47594DEC md5 52D9B80A3B099BAC4870D2D4A91DE219 sha1 0A4BC587BA1F424B831F96D01956692E840A8240 )
+)
+game (
 	name "Double Switch (USA) (Disc 2)"
 	region "USA"
 	serial "T-16207H"
@@ -3227,6 +3269,14 @@ game (
 	region "USA"
 	serial "T-16207H-1"
 	rom ( name "Double Switch (USA) (Disc 2) (Track 1).bin" size 546428400 crc 9BAE7209 md5 7132337F231439B7BB94F7F12497B737 sha1 DC6B9B5AFF6E88E41962F3D13DB1D8049CD473C6 serial "T-16207H-1" )
+)
+game (
+	name "Double Switch (USA) (Disc 2) (Beta)"
+	releaseyear "1995"
+	releasemonth "10"
+	releaseday "03"
+	region "USA"
+	rom ( name "Double Switch (USA) (Disc 2) (Beta) (1995-10-03) (Track 1).bin" size 546428400 crc 0E4E3478 md5 95363EC9680F829F542A9984C5F28CA4 sha1 EE6010BFFAAFF9D6736FDAA89D388CCBA4C52D00 )
 )
 game (
 	name "Doukoku Soshite... (Japan) (2M)"
@@ -3379,11 +3429,6 @@ game (
 	rom ( name "Druid - Yami e no Tsuisekisha (Japan) (Track 1).bin" size 72062928 crc E07C0EC7 md5 5DA55FB2543F83BBCA68D9234FBA436D sha1 CEBEFE501E5363E26836BE0BF0266103153F3182 serial "T-7670G" )
 )
 game (
-	name "Duck Video Tools - Sega Saturn Demonstration Disk (USA)"
-	region "USA"
-	rom ( name "Duck Video Tools - Sega Saturn Demonstration Disk (USA) (Unl).bin" size 240440256 crc 4F7C0F73 md5 F874B4D7AB870E1AE733F9FC504ABB05 sha1 FBB6293878403E17F2C219F192D8D1D2CE122F59 )
-)
-game (
 	name "Duke Nukem 3D (Europe)"
 	region "Europe"
 	serial "MK81071-50"
@@ -3394,6 +3439,14 @@ game (
 	region "USA"
 	serial "81071"
 	rom ( name "Duke Nukem 3D (USA) (Track 01).bin" size 70153104 crc 30735DF6 md5 653F4D65C053E2F5B44AB1BD09CEB69A sha1 060E08B4EBF474DEFAC585BC143A114F79E8A06C serial "81071" )
+)
+game (
+	name "Duke Nukem 3D (USA) (Beta)"
+	releaseyear "1997"
+	releasemonth "09"
+	releaseday "18"
+	region "USA"
+	rom ( name "Duke Nukem 3D (USA) (Beta) (1997-09-18) (Track 01).bin" size 70508256 crc 0871AE59 md5 DBAB441F449BAAB1B15622D4E97DD9B3 sha1 17ABB86D7888040831C5BF162F9B6022238ED480 )
 )
 game (
 	name "Dungeon Master Nexus (Japan)"
@@ -3786,6 +3839,14 @@ game (
 	rom ( name "Enemy Zero (USA) (Disc 3) (Track 1).bin" size 484316784 crc 9B630FE9 md5 FAAF0BE6E13DB28F4F940C189E287A86 sha1 8C77258C2BB2319762868F70ECD50DF47A0CCD84 serial "81076-2" )
 )
 game (
+	name "Enemy Zero (USA, Europe) (Disc 0) (Beta)"
+	releaseyear "1997"
+	releasemonth "09"
+	releaseday "16"
+	region "USA"
+	rom ( name "Enemy Zero (USA, Europe) (Disc 0) (Beta) (1997-09-16) (Track 1).bin" size 314015520 crc 77451798 md5 32B470991CD832D9492F61CF6AD273F8 sha1 BB8C221DB7A30A21B3C3B7EC53905887A98EEE3B )
+)
+game (
 	name "Eternal Melody (Japan)"
 	region "Japan"
 	serial "T-27802G"
@@ -3818,6 +3879,18 @@ game (
 game (
 	name "Eve - Burst Error (Japan) (Disc 1) (Kojiroh Disc)"
 	region "Japan"
+	serial "T-15022G"
+	rom ( name "Eve - Burst Error (Japan) (Disc 1) (Kojiroh Disc) (Track 1).bin" size 310209984 crc E2C4DC85 md5 EB244C152F24E3741A1A1FA4D2F31FA8 sha1 E16FF6F141B0958918A6C5EAD9663B570F877D89 serial "T-15022G" )
+)
+game (
+	name "Eve - Burst Error (Japan) (Disc 1) (Kojiroh Disc)"
+	region "Japan"
+	serial "T-15022G-0"
+	rom ( name "Eve - Burst Error (Japan) (Disc 1) (Kojiroh Disc) (Track 1).bin" size 310209984 crc E2C4DC85 md5 EB244C152F24E3741A1A1FA4D2F31FA8 sha1 E16FF6F141B0958918A6C5EAD9663B570F877D89 serial "T-15022G-0" )
+)
+game (
+	name "Eve - Burst Error (Japan) (Disc 1) (Kojiroh Disc)"
+	region "Japan"
 	serial "T-15037G"
 	rom ( name "Eve - Burst Error (Japan) (Disc 1) (Kojiroh Disc) (Track 1).bin" size 310209984 crc E2C4DC85 md5 EB244C152F24E3741A1A1FA4D2F31FA8 sha1 E16FF6F141B0958918A6C5EAD9663B570F877D89 serial "T-15037G" )
 )
@@ -3838,6 +3911,18 @@ game (
 	region "Japan"
 	serial "T-15011G-1"
 	rom ( name "Eve - Burst Error (Japan) (Disc 2) (Marina Disc) (Track 1).bin" size 292400640 crc 448107EF md5 A28BA5957484639389B82888D8615FDF sha1 9CFDD708BE03C99AFC641E154EFABAEE9BAB006B serial "T-15011G-1" )
+)
+game (
+	name "Eve - Burst Error (Japan) (Disc 2) (Marina Disc)"
+	region "Japan"
+	serial "T-15022G"
+	rom ( name "Eve - Burst Error (Japan) (Disc 2) (Marina Disc) (Track 1).bin" size 292400640 crc 448107EF md5 A28BA5957484639389B82888D8615FDF sha1 9CFDD708BE03C99AFC641E154EFABAEE9BAB006B serial "T-15022G" )
+)
+game (
+	name "Eve - Burst Error (Japan) (Disc 2) (Marina Disc)"
+	region "Japan"
+	serial "T-15022G-1"
+	rom ( name "Eve - Burst Error (Japan) (Disc 2) (Marina Disc) (Track 1).bin" size 292400640 crc 448107EF md5 A28BA5957484639389B82888D8615FDF sha1 9CFDD708BE03C99AFC641E154EFABAEE9BAB006B serial "T-15022G-1" )
 )
 game (
 	name "Eve - Burst Error (Japan) (Disc 2) (Marina Disc)"
@@ -3866,6 +3951,18 @@ game (
 game (
 	name "Eve - Burst Error (Japan) (Disc 3) (Terror Disc)"
 	region "Japan"
+	serial "T-15022G"
+	rom ( name "Eve - Burst Error (Japan) (Disc 3) (Terror Disc) (Track 1).bin" size 665712432 crc 5B6FC649 md5 2A0E5C6400C0499970CD7C8DFBCA0AF7 sha1 A1830D35C81718ED2D7179347D6B41C810807FED serial "T-15022G" )
+)
+game (
+	name "Eve - Burst Error (Japan) (Disc 3) (Terror Disc)"
+	region "Japan"
+	serial "T-15022G-2"
+	rom ( name "Eve - Burst Error (Japan) (Disc 3) (Terror Disc) (Track 1).bin" size 665712432 crc 5B6FC649 md5 2A0E5C6400C0499970CD7C8DFBCA0AF7 sha1 A1830D35C81718ED2D7179347D6B41C810807FED serial "T-15022G-2" )
+)
+game (
+	name "Eve - Burst Error (Japan) (Disc 3) (Terror Disc)"
+	region "Japan"
 	serial "T-15037G"
 	rom ( name "Eve - Burst Error (Japan) (Disc 3) (Terror Disc) (Track 1).bin" size 665712432 crc 5B6FC649 md5 2A0E5C6400C0499970CD7C8DFBCA0AF7 sha1 A1830D35C81718ED2D7179347D6B41C810807FED serial "T-15037G" )
 )
@@ -3886,6 +3983,18 @@ game (
 	region "Japan"
 	serial "T-15011G-3"
 	rom ( name "Eve - Burst Error (Japan) (Disc 4) (Making Disc) (Track 1).bin" size 470517600 crc CA58FCBF md5 9B9FBC8BF3BDFA5A7ED3D220C89A0ABA sha1 1683E34B0A07162B729F81189B5E26F5248AEFE1 serial "T-15011G-3" )
+)
+game (
+	name "Eve - Burst Error (Japan) (Disc 4) (Making Disc)"
+	region "Japan"
+	serial "T-15022G"
+	rom ( name "Eve - Burst Error (Japan) (Disc 4) (Making Disc) (Track 1).bin" size 470517600 crc CA58FCBF md5 9B9FBC8BF3BDFA5A7ED3D220C89A0ABA sha1 1683E34B0A07162B729F81189B5E26F5248AEFE1 serial "T-15022G" )
+)
+game (
+	name "Eve - Burst Error (Japan) (Disc 4) (Making Disc)"
+	region "Japan"
+	serial "T-15022G-3"
+	rom ( name "Eve - Burst Error (Japan) (Disc 4) (Making Disc) (Track 1).bin" size 470517600 crc CA58FCBF md5 9B9FBC8BF3BDFA5A7ED3D220C89A0ABA sha1 1683E34B0A07162B729F81189B5E26F5248AEFE1 serial "T-15022G-3" )
 )
 game (
 	name "Eve - Burst Error (Japan) (Disc 4) (Making Disc)"
@@ -4104,6 +4213,14 @@ game (
 	rom ( name "FIFA Soccer 96 (USA) (En,Fr,De,Es,It,Sv) (Track 01).bin" size 240614304 crc 3A71EEDF md5 2592CF324431884819B8C4D44A294FF7 sha1 B7056356657D8AD7330CA49C5AC3F9DADF098492 serial "T-5003H" )
 )
 game (
+	name "FIFA Soccer 97 (USA) (Beta)"
+	releaseyear "1997"
+	releasemonth "01"
+	releaseday "26"
+	region "USA"
+	rom ( name "FIFA Soccer 97 (USA) (Beta) (1997-01-26) (Track 1).bin" size 670369392 crc 1A8871BB md5 CD36BCD1275FD42E62DD51DFE50F64C4 sha1 995E621D8AA4280C6062A60152683105134AFDAC )
+)
+game (
 	name "FIFA Soccer 97 (USA) (En,Fr,De,Es,It,Sv)"
 	region "USA"
 	serial "T-5017H"
@@ -4192,6 +4309,14 @@ game (
 	region "Japan"
 	serial "T-5710G"
 	rom ( name "Fantastep (Japan) (Track 01).bin" size 306724320 crc 8753FC8A md5 006041AA8EA497961B8429ED903C303A sha1 0FABC5B95C164057C36616E4DEB51315D4307B3E serial "T-5710G" )
+)
+game (
+	name "Fantastep (Japan) (Beta)"
+	releaseyear "1996"
+	releasemonth "09"
+	releaseday "24"
+	region "Japan"
+	rom ( name "Fantastep (Japan) (Beta) (1996-09-24) (Track 01).bin" size 175115808 crc 356C48E0 md5 942D275AA461BD4FD4E3E361C7DAC230 sha1 48E2664BAE99DBDFBCA42761302BC7C0AC2E78C4 )
 )
 game (
 	name "Farland Saga (Japan)"
@@ -4284,6 +4409,12 @@ game (
 	rom ( name "Fighting Vipers (Korea) (Track 01).bin" size 80652432 crc D9217229 md5 AA0A032104645ED70A538451B68BC079 sha1 167BEC4833DAC3FF23C1EFB9E3BC22EBEB146F7D serial "GS-9610J" )
 )
 game (
+	name "Fighting Vipers (Korea)"
+	region "Korea"
+	serial "MK-81041-08"
+	rom ( name "Fighting Vipers (Korea) (Track 01).bin" size 80652432 crc D9217229 md5 AA0A032104645ED70A538451B68BC079 sha1 167BEC4833DAC3FF23C1EFB9E3BC22EBEB146F7D serial "MK-81041-08" )
+)
+game (
 	name "Fighting Vipers (USA) (5S, 6S)"
 	region "USA"
 	serial "81041"
@@ -4342,6 +4473,12 @@ game (
 	region "Japan"
 	serial "T-4308G"
 	rom ( name "Fire Prowrestling S - 6Men Scramble (Japan) (1M) (Track 1).bin" size 488802048 crc 18B025AE md5 737E83C03BB52F42A2D1E734CDA1117B sha1 CD78BD2D77C2DE30F640D38663E2111FBF576C2A serial "T-4308G" )
+)
+game (
+	name "Fire Prowrestling S - 6Men Scramble (Japan) (1M)"
+	region "Japan"
+	serial "T-4316G"
+	rom ( name "Fire Prowrestling S - 6Men Scramble (Japan) (1M) (Track 1).bin" size 488802048 crc 18B025AE md5 737E83C03BB52F42A2D1E734CDA1117B sha1 CD78BD2D77C2DE30F640D38663E2111FBF576C2A serial "T-4316G" )
 )
 game (
 	name "Firestorm - Thunderhawk 2 (Europe) (En,Fr)"
@@ -4548,10 +4685,10 @@ game (
 	rom ( name "Flash SegaSaturn Vol. 5 (Japan) (Track 1).bin" size 274337280 crc 4F81AF59 md5 894F116E8B1366AE526E50B4F8BD5FC9 sha1 71F05720F1CA1A6E52A920A195BDB455AA0CB6D6 serial "610-6166-05" )
 )
 game (
-	name "Flash SegaSaturn Vol. 6 (Japan)"
+	name "Flash SegaSaturn Vol. 6 (Japan) (2M)"
 	region "Japan"
 	serial "610-6166-06"
-	rom ( name "Flash SegaSaturn Vol. 6 (Japan) (Track 1).bin" size 224731248 crc 63F1A0BD md5 1DACCD1CCCA4301DA4142317D54E9F67 sha1 4E4912347A2D1DD83DB8E4AFDFA630CC4285E8EC serial "610-6166-06" )
+	rom ( name "Flash SegaSaturn Vol. 6 (Japan) (2M) (Track 1).bin" size 224731248 crc 63F1A0BD md5 1DACCD1CCCA4301DA4142317D54E9F67 sha1 4E4912347A2D1DD83DB8E4AFDFA630CC4285E8EC serial "610-6166-06" )
 )
 game (
 	name "Flash SegaSaturn Vol. 7 (Japan)"
@@ -4830,6 +4967,18 @@ game (
 	rom ( name "Game of Life, The - DX Jinsei Game (Japan) (Rev A) (Track 1).bin" size 93306192 crc D951DF10 md5 E9A8CCDF0FDECAD81D3094570F9C4CAF sha1 90F6FFE1CA2E21820320E20C6A0500962977794A serial "T-10302G" )
 )
 game (
+	name "Game of Life, The - DX Jinsei Game (Japan) (Rev B)"
+	region "Japan"
+	serial "T-10302G"
+	rom ( name "Game of Life, The - DX Jinsei Game (Japan) (Rev B) (Track 1).bin" size 93301488 crc 55890EB4 md5 F80BB45FBA42A8E56FDE6C0BB49F03C9 sha1 EF367003F34022FD51A98D66F91262289615D59D serial "T-10302G" )
+)
+game (
+	name "Game of Life, The - DX Jinsei Game (Japan) (Rev B)"
+	region "Japan"
+	serial "T-10308G"
+	rom ( name "Game of Life, The - DX Jinsei Game (Japan) (Rev B) (Track 1).bin" size 93301488 crc 55890EB4 md5 F80BB45FBA42A8E56FDE6C0BB49F03C9 sha1 EF367003F34022FD51A98D66F91262289615D59D serial "T-10308G" )
+)
+game (
 	name "Game of Life, The - DX Jinsei Game II (Japan) (2M)"
 	region "Japan"
 	serial "T-10310G"
@@ -4938,10 +5087,10 @@ game (
 	rom ( name "Gekka Mugentan Torico (Japan) (Disc B) (Houkai-hen) (2M) (Track 1).bin" size 665194992 crc 5F87215E md5 CB70BD0499A876CCA2D2DE849D100103 sha1 27E4393E0016409259443B79A5DEAC0C0A84274A serial "GS-9056" )
 )
 game (
-	name "Gekka no Kishi - Ouryuu-sen (Japan)"
+	name "Gekka no Kishi - Ouryuusen (Japan)"
 	region "Japan"
 	serial "T-20606G"
-	rom ( name "Gekka no Kishi - Ouryuu-sen (Japan) (Track 1).bin" size 19940256 crc 1BFF89F7 md5 68A10CEC7BE3A4A535291A12593D20B8 sha1 9B1D8253CF0D5B2BB72A83257B950FAED528CAE2 serial "T-20606G" )
+	rom ( name "Gekka no Kishi - Ouryuusen (Japan) (Track 1).bin" size 19940256 crc 1BFF89F7 md5 68A10CEC7BE3A4A535291A12593D20B8 sha1 9B1D8253CF0D5B2BB72A83257B950FAED528CAE2 serial "T-20606G" )
 )
 game (
 	name "Gensou Suikoden (Japan)"
@@ -4966,6 +5115,14 @@ game (
 	region "USA"
 	serial "T-15904H"
 	rom ( name "Gex (USA) (Track 1).bin" size 271465488 crc 60208339 md5 4B7EBF6D85A42A3476D7F30799FC8718 sha1 6709B72210B54DE74C4184757B4459A43E733612 serial "T-15904H" )
+)
+game (
+	name "Gex (USA) (Beta)"
+	releaseyear "1995"
+	releasemonth "11"
+	releaseday "18"
+	region "USA"
+	rom ( name "Gex (USA) (Beta) (1995-11-18) (Track 1).bin" size 271465488 crc 6711EAF5 md5 626522473AC8DF8FAD59DF665F2169E1 sha1 3F4648BFC8FD51BB59A465084FB2A932166A1B89 )
 )
 game (
 	name "Ghen War (Europe)"
@@ -5086,6 +5243,14 @@ game (
 	region "USA"
 	serial "81045"
 	rom ( name "Golden Axe - The Duel (USA) (Track 01).bin" size 22802640 crc F306DBD8 md5 5FBD0C035B75A9CA96DB0F41AAEB8B3E sha1 5F3299F19FA3CC4C57514C01FDCF1C7F4DB3ECC9 serial "81045" )
+)
+game (
+	name "Golden Axe - The Duel (USA) (Beta)"
+	releaseyear "1996"
+	releasemonth "02"
+	releaseday "19"
+	region "USA"
+	rom ( name "Golden Axe - The Duel (USA) (Beta) (1996-02-19) (Track 01).bin" size 22802640 crc 24E787B1 md5 985B30ECA4103EA86C4E541A362A85B8 sha1 B8999DF2DF3C379C1F65D11CE7231B31BAE38E08 )
 )
 game (
 	name "Gotha - Ismailia SenEki (Japan)"
@@ -5672,6 +5837,12 @@ game (
 	rom ( name "Horror Tour (Japan) (Track 1).bin" size 373093056 crc 661EF4D1 md5 BEE9A3C0D87EC5687B4F2A4D6D6A22B8 sha1 5A1EB9923EED8DE7CFDE709F109107E3DF5FC674 serial "T-24301G" )
 )
 game (
+	name "Horror Tour (Japan) (Rev B) (12M)"
+	region "Japan"
+	serial "T-24301G"
+	rom ( name "Horror Tour (Japan) (Rev B) (12M) (Track 1).bin" size 373102464 crc 15AAE833 md5 F28EB8BAEADD69AB42BB4C30763DBF90 sha1 45AD6C0BDF79F0B6139372B41383F6866885C39A serial "T-24301G" )
+)
+game (
 	name "Houkago Ren'ai Club - Koi no Etude (Japan) (Disc 1)"
 	region "Japan"
 	serial "T-19713G"
@@ -5942,6 +6113,12 @@ game (
 	rom ( name "Impact Racing (Japan) (Track 01).bin" size 45927504 crc 813D50F4 md5 BD252AB0703D22E0C99C1C761519F907 sha1 0830658450C78AA19856031133E16317E902F7A3 serial "T-7307G" )
 )
 game (
+	name "Impact Racing (Korea)"
+	region "Korea"
+	serial "T-26806H-08"
+	rom ( name "Impact Racing (Korea) (Track 01).bin" size 45927504 crc 2DB4AD38 md5 D83DD6B2908C5A7E7FCF510314874BB4 sha1 7D27CED67CEE2B30903121BF06BE035D1609F20D serial "T-26806H-08" )
+)
+game (
 	name "Impact Racing (USA)"
 	region "USA"
 	serial "T-8139H"
@@ -6034,6 +6211,12 @@ game (
 	rom ( name "Ishin no Arashi (Japan) (Track 1).bin" size 96222672 crc A67B4B7F md5 15085C12594E4DB0463F78308ACC8EB4 sha1 0835641FB0387549D8A65F56618EB0CEF366AEA2 serial "T-7645G" )
 )
 game (
+	name "Ishin no Arashi (Japan) (Rev A)"
+	region "Japan"
+	serial "T-7645G"
+	rom ( name "Ishin no Arashi (Japan) (Rev A) (Track 1).bin" size 96217968 crc C71737C2 md5 4DC8D5C39C220EF23968A94D6BB6FA92 sha1 19E0C9A0A72B7F824F7238EC177211D0D4462CEA serial "T-7645G" )
+)
+game (
 	name "Isto E Zico - Zico no Kangaeru Soccer (Japan)"
 	region "Japan"
 	serial "T-18802G"
@@ -6088,10 +6271,28 @@ game (
 	rom ( name "J.League Pro Soccer Club o Tsukurou! (Japan) (Rev A) (Track 1).bin" size 380040864 crc 6E04011E md5 588B17F695A2170FE213FD5422EAB8F8 sha1 CD38EDE50C9984C8CF9252B133F77B0217089160 serial "GS-9034" )
 )
 game (
+	name "J.League Pro Soccer Club o Tsukurou! (Japan) (Rev B)"
+	region "Japan"
+	serial "GS-9034"
+	rom ( name "J.League Pro Soccer Club o Tsukurou! (Japan) (Rev B) (Track 1).bin" size 380024400 crc 54274582 md5 FF64C34258BA87E9FE2B23537A28B52C sha1 200C8E75F8DB9E87A570F7F05AA9BCF83343F932 serial "GS-9034" )
+)
+game (
 	name "J.League Pro Soccer Club o Tsukurou! 2 (Japan) (2M)"
 	region "Japan"
 	serial "GS-9168"
 	rom ( name "J.League Pro Soccer Club o Tsukurou! 2 (Japan) (2M) (Track 1).bin" size 476717472 crc 675444B3 md5 2360F1CE1A62FD1CA6E7F923B589340E sha1 499471933B0AE793E27C4D7CED1E68537C1C42C8 serial "GS-9168" )
+)
+game (
+	name "J.League Pro Soccer Club o Tsukurou! 2 (Japan) (Rev A)"
+	region "Japan"
+	serial "GS-9168"
+	rom ( name "J.League Pro Soccer Club o Tsukurou! 2 (Japan) (Rev A) (Track 1).bin" size 476733936 crc 7D7D0470 md5 8F751E6B2797D3221F610440888E47F4 sha1 CC4AF19E6ADEF97A248E63E106AAB871A0627B13 serial "GS-9168" )
+)
+game (
+	name "J.League Pro Soccer Club o Tsukurou! 2 (Japan) (Rev B)"
+	region "Japan"
+	serial "GS-9168"
+	rom ( name "J.League Pro Soccer Club o Tsukurou! 2 (Japan) (Rev B) (Track 1).bin" size 476733936 crc F0395EDA md5 0B5E5F9BCDAD6C263300D0A01F9102CF sha1 B0996A2CF7809E24BBF08A2F9C3F6FD5F66A54D1 serial "GS-9168" )
 )
 game (
 	name "J.League Pro Soccer Club o Tsukurou! 2 (Japan) (Rev C) (32M)"
@@ -6110,6 +6311,12 @@ game (
 	region "Japan"
 	serial "GS-9048"
 	rom ( name "J.League Victory Goal '96 (Japan) (2M) (Track 01).bin" size 399277872 crc 7DFC1E0C md5 304CD5E15FB36E1C21A13F6210982E58 sha1 532CC6B1FE8F823ED4654440762A4A565A8A8610 serial "GS-9048" )
+)
+game (
+	name "J.League Victory Goal '96 (Japan) (Rev A)"
+	region "Japan"
+	serial "GS-9048"
+	rom ( name "J.League Victory Goal '96 (Japan) (Rev A) (Track 01).bin" size 399282576 crc D4E91438 md5 CF27E9BD90285E92FE8870683A54697A sha1 AAF9322C67CEF4CB68CF76EC0FBB0C4AB1DA2E85 serial "GS-9048" )
 )
 game (
 	name "J.League Victory Goal '97 (Japan)"
@@ -6142,10 +6349,10 @@ game (
 	rom ( name "Jantei Battle Cos-Player (Japan) (Disc 2) (Making Disc) (Track 1).bin" size 501648672 crc 71582D59 md5 D9F892A1D5A4602BD99EF275009D92A5 sha1 43B0A2D76D499A62047A73620F613271261293D1 serial "T-34601G-1" )
 )
 game (
-	name "Jantei Battle Cos-Player - Original Genga-shuu (Japan)"
+	name "Jantei Battle Cos-Player - Original Gengashuu (Japan)"
 	region "Japan"
 	serial "6106553"
-	rom ( name "Jantei Battle Cos-Player - Original Genga-shuu (Japan) (Track 1).bin" size 9320976 crc 7B6DC38D md5 4051285B26DF5BF030D62A096848FDDA sha1 0E7A45DCF412326E65E9428278D02AB3A21E0433 serial "6106553" )
+	rom ( name "Jantei Battle Cos-Player - Original Gengashuu (Japan) (Track 1).bin" size 9320976 crc 7B6DC38D md5 4051285B26DF5BF030D62A096848FDDA sha1 0E7A45DCF412326E65E9428278D02AB3A21E0433 serial "6106553" )
 )
 game (
 	name "Japan Super Bass Classic '96 (Japan)"
@@ -6250,6 +6457,14 @@ game (
 	rom ( name "Johnny Bazookatone (Europe) (Track 01).bin" size 192233664 crc 264940EC md5 88E5914DE5827F0F46B32C149174A9C9 sha1 681A655B68BB236FFB5D983D14FEB34C1E7244BE serial "T-7909H-50" )
 )
 game (
+	name "Johnny Bazookatone (Europe) (Beta)"
+	releaseyear "1995"
+	releasemonth "11"
+	releaseday "23"
+	region "Europe"
+	rom ( name "Johnny Bazookatone (Europe) (Beta) (1995-11-23) (Track 01).bin" size 191993760 crc 543F4EDE md5 B530C478726CCFE66B121396AF62E4B7 sha1 791A40F5882D912A82B969A8ED185C00ADB075BD )
+)
+game (
 	name "Johnny Bazookatone (USA)"
 	region "USA"
 	serial "T-7909H"
@@ -6334,16 +6549,16 @@ game (
 	rom ( name "Kakinoki Shougi (Japan) (Track 1).bin" size 2914128 crc 34AF47A4 md5 5D6097A3845F2EBA932994312BD6A23B sha1 3F80081A65AB93D55E73DD2F29F32EB96D11CF82 serial "T-2104G" )
 )
 game (
-	name "Kakyuusei (Japan) (Disc 1)"
+	name "Kakyuusei (Japan) (Disc 1) (2M)"
 	region "Japan"
 	serial "T-28002G"
-	rom ( name "Kakyuusei (Japan) (Disc 1) (Track 1).bin" size 632876160 crc AB288B57 md5 4CD6BBB1A18681A42E8C0A7870563CB5 sha1 12314A890B796D63F696AC0A697D27CFE9FFE323 serial "T-28002G" )
+	rom ( name "Kakyuusei (Japan) (Disc 1) (2M) (Track 1).bin" size 632876160 crc AB288B57 md5 4CD6BBB1A18681A42E8C0A7870563CB5 sha1 12314A890B796D63F696AC0A697D27CFE9FFE323 serial "T-28002G" )
 )
 game (
-	name "Kakyuusei (Japan) (Disc 1)"
+	name "Kakyuusei (Japan) (Disc 1) (2M)"
 	region "Japan"
 	serial "T-28002G-0"
-	rom ( name "Kakyuusei (Japan) (Disc 1) (Track 1).bin" size 632876160 crc AB288B57 md5 4CD6BBB1A18681A42E8C0A7870563CB5 sha1 12314A890B796D63F696AC0A697D27CFE9FFE323 serial "T-28002G-0" )
+	rom ( name "Kakyuusei (Japan) (Disc 1) (2M) (Track 1).bin" size 632876160 crc AB288B57 md5 4CD6BBB1A18681A42E8C0A7870563CB5 sha1 12314A890B796D63F696AC0A697D27CFE9FFE323 serial "T-28002G-0" )
 )
 game (
 	name "Kakyuusei (Japan) (Disc 2) (2M)"
@@ -6386,6 +6601,12 @@ game (
 	region "Japan"
 	serial "GS-9017"
 	rom ( name "Kanzen Chuukei Pro Yakyuu Greatest Nine (Japan) (Rev A) (Track 1).bin" size 137281536 crc 6E368E94 md5 75159A6D1CD92368FEE8EE1091A36A4E sha1 6F1B1F6EAB5FAFF81BED135C414ADF92DAC0BC15 serial "GS-9017" )
+)
+game (
+	name "Kanzen Chuukei Pro Yakyuu Greatest Nine (Japan) (Rev B)"
+	region "Japan"
+	serial "GS-9017"
+	rom ( name "Kanzen Chuukei Pro Yakyuu Greatest Nine (Japan) (Rev B) (Track 1).bin" size 137281536 crc AB898A0B md5 8A7079D6D2246E37BA8351D55600D3D2 sha1 638FAA830415B8DDDBAFB65D04C0F3D52A8ACF15 serial "GS-9017" )
 )
 game (
 	name "Keio Flying Squadron 2 (Europe)"
@@ -7006,6 +7227,14 @@ game (
 	rom ( name "Lunacy (USA) (Disc 1) (Track 1).bin" size 656064528 crc DA286FA6 md5 8AE8E0EC0076D54CBBD94B02CF259A92 sha1 BFCFA141C4A3EBE6C7B26C417A7E7BD5DDDA47DF serial "T-14403H-0" )
 )
 game (
+	name "Lunacy (USA) (Disc 1) (Beta)"
+	releaseyear "1997"
+	releasemonth "01"
+	releaseday "11"
+	region "USA"
+	rom ( name "Lunacy (USA) (Disc 1) (Beta) (1997-01-11) (Track 1).bin" size 687021552 crc 8A767541 md5 4446B69425902D4570B300F75CFB73D6 sha1 9A3D1634E145B3366571484AF7BFB693E7EF7ED6 )
+)
+game (
 	name "Lunacy (USA) (Disc 2)"
 	region "USA"
 	serial "T-14403H"
@@ -7016,6 +7245,14 @@ game (
 	region "USA"
 	serial "T-14403H-1"
 	rom ( name "Lunacy (USA) (Disc 2) (Track 1).bin" size 664338864 crc 2D373F4C md5 0887097A1CB2AAA3BE624251B33C0A91 sha1 617C670FD73D250FE13E68CCC7B52285877D4920 serial "T-14403H-1" )
+)
+game (
+	name "Lunacy (USA) (Disc 2) (Beta)"
+	releaseyear "1997"
+	releasemonth "11"
+	releaseday "01"
+	region "USA"
+	rom ( name "Lunacy (USA) (Disc 2) (Beta) (1997-11-01) (Track 1).bin" size 666523872 crc CC480F1A md5 7C1CB221C7CDAA6577C5B6A5E653653A sha1 6C4EA24AE5AE11EFFACC44F8A02F24CBC5618D89 )
 )
 game (
 	name "Lunar - Silver Star Story (Japan)"
@@ -7168,6 +7405,14 @@ game (
 	rom ( name "Madden NFL 97 (USA) (Track 1).bin" size 529357584 crc FC031B1A md5 A76F984FED286B266C45284F3BE1F226 sha1 445E331522BB713EEF615E7476462E97CD9F98D9 serial "T-5010H" )
 )
 game (
+	name "Madden NFL 97 (USA) (Beta)"
+	releaseyear "1996"
+	releasemonth "07"
+	releaseday "16"
+	region "USA"
+	rom ( name "Madden NFL 97 (USA) (Beta) (1996-07-16).bin" size 526777440 crc EF0291C4 md5 DD8E86C045BEC052DBC72A08F77BAC57 sha1 CA8FBF0423DA24F1C0F7E28D775B2D65E3887CFE )
+)
+game (
 	name "Madden NFL 98 (Europe)"
 	region "Europe"
 	serial "T-5024H-50"
@@ -7234,16 +7479,16 @@ game (
 	rom ( name "Magical Drop 2 (Japan) (Track 01).bin" size 39685296 crc 6C34CAE7 md5 3C22621A3A387DC0BAA91A0829EB108F sha1 E4B85B5E1BAB8E3FFCA5D1DD3DA8464EC95C2487 serial "GS-9104" )
 )
 game (
-	name "Magical Drop III - Toretate Zoukan-gou! (Japan) (2M)"
+	name "Magical Drop III - Toretate Zoukangou! (Japan) (2M)"
 	region "Japan"
 	serial "T-1313G"
-	rom ( name "Magical Drop III - Toretate Zoukan-gou! (Japan) (2M) (Track 01).bin" size 12032832 crc 97D3B2B2 md5 09877A93CCE59EFC2DC3B70A70AD9097 sha1 E7C297323DCEC228CCD5D5ACCAB611F2ACCC4F09 serial "T-1313G" )
+	rom ( name "Magical Drop III - Toretate Zoukangou! (Japan) (2M) (Track 01).bin" size 12032832 crc 97D3B2B2 md5 09877A93CCE59EFC2DC3B70A70AD9097 sha1 E7C297323DCEC228CCD5D5ACCAB611F2ACCC4F09 serial "T-1313G" )
 )
 game (
-	name "Magical Drop III - Toretate Zoukan-gou! (Japan) (2M)"
+	name "Magical Drop III - Toretate Zoukangou! (Japan) (2M)"
 	region "Japan"
 	serial "T-1318G"
-	rom ( name "Magical Drop III - Toretate Zoukan-gou! (Japan) (2M) (Track 01).bin" size 12032832 crc 97D3B2B2 md5 09877A93CCE59EFC2DC3B70A70AD9097 sha1 E7C297323DCEC228CCD5D5ACCAB611F2ACCC4F09 serial "T-1318G" )
+	rom ( name "Magical Drop III - Toretate Zoukangou! (Japan) (2M) (Track 01).bin" size 12032832 crc 97D3B2B2 md5 09877A93CCE59EFC2DC3B70A70AD9097 sha1 E7C297323DCEC228CCD5D5ACCAB611F2ACCC4F09 serial "T-1318G" )
 )
 game (
 	name "Magical Hoppers (Japan)"
@@ -7486,28 +7731,28 @@ game (
 	rom ( name "Manx TT SuperBike (USA) (Track 01).bin" size 90020448 crc 2894BD11 md5 9CD6757B4D14A8009E7F60CB7B7749EA sha1 779A441C5CE7CF3456681EB279C0278203FE7AA9 serial "81210" )
 )
 game (
-	name "Maria - Kimi-tachi ga Umareta Wake (Japan) (Disc 1)"
+	name "Maria - Kimitachi ga Umareta Wake (Japan) (Disc 1)"
 	region "Japan"
 	serial "T-36302G"
-	rom ( name "Maria - Kimi-tachi ga Umareta Wake (Japan) (Disc 1) (Track 1).bin" size 633421824 crc 0349A8C4 md5 AA7CA4E75DFC4C253EACC2B1941855AA sha1 D61D836C88E7A1A5D93E8C41F03FFC1D64644FD7 serial "T-36302G" )
+	rom ( name "Maria - Kimitachi ga Umareta Wake (Japan) (Disc 1) (Track 1).bin" size 633421824 crc 0349A8C4 md5 AA7CA4E75DFC4C253EACC2B1941855AA sha1 D61D836C88E7A1A5D93E8C41F03FFC1D64644FD7 serial "T-36302G" )
 )
 game (
-	name "Maria - Kimi-tachi ga Umareta Wake (Japan) (Disc 1)"
+	name "Maria - Kimitachi ga Umareta Wake (Japan) (Disc 1)"
 	region "Japan"
 	serial "T-36302G-0"
-	rom ( name "Maria - Kimi-tachi ga Umareta Wake (Japan) (Disc 1) (Track 1).bin" size 633421824 crc 0349A8C4 md5 AA7CA4E75DFC4C253EACC2B1941855AA sha1 D61D836C88E7A1A5D93E8C41F03FFC1D64644FD7 serial "T-36302G-0" )
+	rom ( name "Maria - Kimitachi ga Umareta Wake (Japan) (Disc 1) (Track 1).bin" size 633421824 crc 0349A8C4 md5 AA7CA4E75DFC4C253EACC2B1941855AA sha1 D61D836C88E7A1A5D93E8C41F03FFC1D64644FD7 serial "T-36302G-0" )
 )
 game (
-	name "Maria - Kimi-tachi ga Umareta Wake (Japan) (Disc 2)"
+	name "Maria - Kimitachi ga Umareta Wake (Japan) (Disc 2)"
 	region "Japan"
 	serial "T-36302G"
-	rom ( name "Maria - Kimi-tachi ga Umareta Wake (Japan) (Disc 2) (Track 1).bin" size 605978688 crc E58FE047 md5 C3D55B3596335EFF91FB6F4C415AFF43 sha1 72CFA5D853C7F8A02259B7FB33CEFC157447CE5C serial "T-36302G" )
+	rom ( name "Maria - Kimitachi ga Umareta Wake (Japan) (Disc 2) (Track 1).bin" size 605978688 crc E58FE047 md5 C3D55B3596335EFF91FB6F4C415AFF43 sha1 72CFA5D853C7F8A02259B7FB33CEFC157447CE5C serial "T-36302G" )
 )
 game (
-	name "Maria - Kimi-tachi ga Umareta Wake (Japan) (Disc 2)"
+	name "Maria - Kimitachi ga Umareta Wake (Japan) (Disc 2)"
 	region "Japan"
 	serial "T-36302G-1"
-	rom ( name "Maria - Kimi-tachi ga Umareta Wake (Japan) (Disc 2) (Track 1).bin" size 605978688 crc E58FE047 md5 C3D55B3596335EFF91FB6F4C415AFF43 sha1 72CFA5D853C7F8A02259B7FB33CEFC157447CE5C serial "T-36302G-1" )
+	rom ( name "Maria - Kimitachi ga Umareta Wake (Japan) (Disc 2) (Track 1).bin" size 605978688 crc E58FE047 md5 C3D55B3596335EFF91FB6F4C415AFF43 sha1 72CFA5D853C7F8A02259B7FB33CEFC157447CE5C serial "T-36302G-1" )
 )
 game (
 	name "Marica - Shinjitsu no Sekai (Japan)"
@@ -8254,6 +8499,22 @@ game (
 	rom ( name "Mystaria - The Realms of Lore (USA) (Track 1).bin" size 177606576 crc CFC53FB6 md5 FD981B8F1271856C4B9473483033EAC8 sha1 94C77B4E196A7A18FB3175290171575FEBDE7880 serial "81300" )
 )
 game (
+	name "Mystaria - The Realms of Lore (USA) (Beta)"
+	releaseyear "1995"
+	releasemonth "09"
+	releaseday "21"
+	region "USA"
+	rom ( name "Mystaria - The Realms of Lore (USA) (Beta) (1995-09-21) (Track 1).bin" size 177623040 crc 95C29670 md5 FE9A727FFFF940AB7133CAC1931FB823 sha1 9686B4F9294DE34697FA1E9C4C1A723BDA0F2C1B )
+)
+game (
+	name "Mystaria - The Realms of Lore (USA) (Beta)"
+	releaseyear "1995"
+	releasemonth "10"
+	releaseday "26"
+	region "USA"
+	rom ( name "Mystaria - The Realms of Lore (USA) (Beta) (1995-10-26) (Track 1).bin" size 177246720 crc 224A87BB md5 E2E867F82A0F87CFAB35080981AF8107 sha1 C717BADA1C01DEF3941E8A885AA8FD81151878FA )
+)
+game (
 	name "Mystery Mansion - Das Haus der verlorenen Seelen (Germany)"
 	region "Germany"
 	serial "MK81012-18"
@@ -8308,6 +8569,14 @@ game (
 	rom ( name "NBA Action 98 (USA) (Track 1).bin" size 138810336 crc 872CE29C md5 63E311ED561AE603E6500B6BD2B70281 sha1 04966D1FDFEB46EC921EAF11A79B3C00A5F62AFF serial "81124" )
 )
 game (
+	name "NBA Action 98 (USA) (Beta)"
+	releaseyear "1997"
+	releasemonth "08"
+	releaseday "12"
+	region "USA"
+	rom ( name "NBA Action 98 (USA) (Beta) (1997-08-12) (Track 1).bin" size 115716048 crc 06ED5CA8 md5 67546CACE1F77D140C83AA8B0A0B9926 sha1 CD00ECD3A777DB9C623684BE7E7CAF7D2EAC9D92 )
+)
+game (
 	name "NBA Jam - Tournament Edition (Europe)"
 	region "Europe"
 	serial "T-8102H-50"
@@ -8356,6 +8625,14 @@ game (
 	rom ( name "NBA Live 97 (USA) (Track 1).bin" size 356807808 crc DDD7D9BC md5 7FB0CEF0EB645A3E43440D507BD2E75D sha1 44AE04B2F78924602E17DA4CBDA6AD1A3C8C749A serial "T-5015H" )
 )
 game (
+	name "NBA Live 97 (USA) (Beta)"
+	releaseyear "1997"
+	releasemonth "02"
+	releaseday "16"
+	region "USA"
+	rom ( name "NBA Live 97 (USA) (Beta) (1997-02-16) (Track 1).bin" size 357238224 crc C7CD6F18 md5 19D4492C90DA39C512C78F7897C52179 sha1 E2113D31BDC5F453391F9771EC4D066489F1625E )
+)
+game (
 	name "NBA Live 98 (Europe)"
 	region "Europe"
 	serial "T-5027H-50"
@@ -8380,6 +8657,12 @@ game (
 	rom ( name "NFL '97 (USA) (Rev A) (Track 01).bin" size 84448560 crc 0CF26141 md5 E11BD940A20966F1EE789A8E78367765 sha1 D892CC066B87801213B313CF535ABAA724515A59 serial "81111" )
 )
 game (
+	name "NFL Quarterback Club '96 (Europe)"
+	region "Europe"
+	serial "T-8109H-50"
+	rom ( name "NFL Quarterback Club '96 (Europe) (Track 1).bin" size 157245312 crc 7453314F md5 6A25FEAFEFCCFE8B0052C62252E73B2A sha1 D7A5A0FA748C0E02CA55D2E490C6795CB660D1B5 serial "T-8109H-50" )
+)
+game (
 	name "NFL Quarterback Club '96 (Japan)"
 	region "Japan"
 	serial "T-8105G"
@@ -8392,28 +8675,22 @@ game (
 	rom ( name "NFL Quarterback Club '96 (USA) (5S) (Track 1).bin" size 156854880 crc 4B166AF7 md5 C7A122711AE9597E6952D8779A6C843F sha1 22FBF7482D75D38417A0BDE1DDB150C0D6CDE4CF serial "T-8109H" )
 )
 game (
+	name "NFL Quarterback Club '97 (Europe)"
+	region "Europe"
+	serial "T-8136H-50"
+	rom ( name "NFL Quarterback Club '97 (Europe) (Track 1).bin" size 106738464 crc F8B02FE2 md5 504E479CBEA470D972980AAC19A5B7BD sha1 570A0EE870E62BE8B47070D7FF8F377199EAD901 serial "T-8136H-50" )
+)
+game (
 	name "NFL Quarterback Club '97 (Japan)"
 	region "Japan"
 	serial "T-8116G"
 	rom ( name "NFL Quarterback Club '97 (Japan) (Track 1).bin" size 106738464 crc 092002A4 md5 424302383F7B17810AF779ACC99B9AA1 sha1 540A65F2D9CC9680E8864D4B486924F077CD2689 serial "T-8116G" )
 )
 game (
-	name "NFL Quarterback Club 96 (Europe)"
-	region "Europe"
-	serial "T-8109H-50"
-	rom ( name "NFL Quarterback Club 96 (Europe) (Track 1).bin" size 157245312 crc 7453314F md5 6A25FEAFEFCCFE8B0052C62252E73B2A sha1 D7A5A0FA748C0E02CA55D2E490C6795CB660D1B5 serial "T-8109H-50" )
-)
-game (
-	name "NFL Quarterback Club 97 (Europe)"
-	region "Europe"
-	serial "T-8136H-50"
-	rom ( name "NFL Quarterback Club 97 (Europe) (Track 1).bin" size 106738464 crc F8B02FE2 md5 504E479CBEA470D972980AAC19A5B7BD sha1 570A0EE870E62BE8B47070D7FF8F377199EAD901 serial "T-8136H-50" )
-)
-game (
-	name "NFL Quarterback Club 97 (USA)"
+	name "NFL Quarterback Club '97 (USA)"
 	region "USA"
 	serial "T-8136H"
-	rom ( name "NFL Quarterback Club 97 (USA) (Track 1).bin" size 106738464 crc F43BA828 md5 AA790ED947AC240EC1AA33E332601EE3 sha1 5B7E5EF7227AA86434AC3C806127D85C39C7C915 serial "T-8136H" )
+	rom ( name "NFL Quarterback Club '97 (USA) (Track 1).bin" size 106738464 crc F43BA828 md5 AA790ED947AC240EC1AA33E332601EE3 sha1 5B7E5EF7227AA86434AC3C806127D85C39C7C915 serial "T-8136H" )
 )
 game (
 	name "NHL 97 (Europe)"
@@ -9286,100 +9563,100 @@ game (
 	rom ( name "Pebble Beach Golf Links - Stadler ni Chousen (Japan) (Track 1).bin" size 427203168 crc 0B5E9F4F md5 965F2CFA1402FF81FD6B36E831B5F604 sha1 65F0D2BDE5A8A64EE9E66D5E76BA082BF6A1C8D3 serial "GS-9006" )
 )
 game (
-	name "PhantasM (Japan) (Disc 1)"
+	name "Phantasm (Japan) (Disc 1)"
 	region "Japan"
 	serial "T-36001G"
-	rom ( name "PhantasM (Japan) (Disc 1) (Track 1).bin" size 366928464 crc 593EB67F md5 8CBE9A84BCDB7197A0652BB1B530395E sha1 87A71EC68B953A5BD98B922FAA251E8BF991E1F5 serial "T-36001G" )
+	rom ( name "Phantasm (Japan) (Disc 1) (Track 1).bin" size 366928464 crc 593EB67F md5 8CBE9A84BCDB7197A0652BB1B530395E sha1 87A71EC68B953A5BD98B922FAA251E8BF991E1F5 serial "T-36001G" )
 )
 game (
-	name "PhantasM (Japan) (Disc 1)"
+	name "Phantasm (Japan) (Disc 1)"
 	region "Japan"
 	serial "T-36001G-0"
-	rom ( name "PhantasM (Japan) (Disc 1) (Track 1).bin" size 366928464 crc 593EB67F md5 8CBE9A84BCDB7197A0652BB1B530395E sha1 87A71EC68B953A5BD98B922FAA251E8BF991E1F5 serial "T-36001G-0" )
+	rom ( name "Phantasm (Japan) (Disc 1) (Track 1).bin" size 366928464 crc 593EB67F md5 8CBE9A84BCDB7197A0652BB1B530395E sha1 87A71EC68B953A5BD98B922FAA251E8BF991E1F5 serial "T-36001G-0" )
 )
 game (
-	name "PhantasM (Japan) (Disc 2)"
+	name "Phantasm (Japan) (Disc 2)"
 	region "Japan"
 	serial "T-36001G"
-	rom ( name "PhantasM (Japan) (Disc 2) (Track 1).bin" size 406872480 crc 3B854F19 md5 2FB0437C01830E43F01D40CBBBDB2871 sha1 1BD8C21614C63B6AF9D9B3A394041642DEB0F59A serial "T-36001G" )
+	rom ( name "Phantasm (Japan) (Disc 2) (Track 1).bin" size 406872480 crc 3B854F19 md5 2FB0437C01830E43F01D40CBBBDB2871 sha1 1BD8C21614C63B6AF9D9B3A394041642DEB0F59A serial "T-36001G" )
 )
 game (
-	name "PhantasM (Japan) (Disc 2)"
+	name "Phantasm (Japan) (Disc 2)"
 	region "Japan"
 	serial "T-36001G-1"
-	rom ( name "PhantasM (Japan) (Disc 2) (Track 1).bin" size 406872480 crc 3B854F19 md5 2FB0437C01830E43F01D40CBBBDB2871 sha1 1BD8C21614C63B6AF9D9B3A394041642DEB0F59A serial "T-36001G-1" )
+	rom ( name "Phantasm (Japan) (Disc 2) (Track 1).bin" size 406872480 crc 3B854F19 md5 2FB0437C01830E43F01D40CBBBDB2871 sha1 1BD8C21614C63B6AF9D9B3A394041642DEB0F59A serial "T-36001G-1" )
 )
 game (
-	name "PhantasM (Japan) (Disc 3) (2M)"
+	name "Phantasm (Japan) (Disc 3) (2M)"
 	region "Japan"
 	serial "T-36001G"
-	rom ( name "PhantasM (Japan) (Disc 3) (2M) (Track 1).bin" size 492720480 crc EEA22C90 md5 E6E5B394890C06477101C71DD6A9B98A sha1 83CA32E9BAF9A80658B0F20905AD23BD5FC2EDD3 serial "T-36001G" )
+	rom ( name "Phantasm (Japan) (Disc 3) (2M) (Track 1).bin" size 492720480 crc EEA22C90 md5 E6E5B394890C06477101C71DD6A9B98A sha1 83CA32E9BAF9A80658B0F20905AD23BD5FC2EDD3 serial "T-36001G" )
 )
 game (
-	name "PhantasM (Japan) (Disc 3) (2M)"
+	name "Phantasm (Japan) (Disc 3) (2M)"
 	region "Japan"
 	serial "T-36001G-2"
-	rom ( name "PhantasM (Japan) (Disc 3) (2M) (Track 1).bin" size 492720480 crc EEA22C90 md5 E6E5B394890C06477101C71DD6A9B98A sha1 83CA32E9BAF9A80658B0F20905AD23BD5FC2EDD3 serial "T-36001G-2" )
+	rom ( name "Phantasm (Japan) (Disc 3) (2M) (Track 1).bin" size 492720480 crc EEA22C90 md5 E6E5B394890C06477101C71DD6A9B98A sha1 83CA32E9BAF9A80658B0F20905AD23BD5FC2EDD3 serial "T-36001G-2" )
 )
 game (
-	name "PhantasM (Japan) (Disc 4)"
+	name "Phantasm (Japan) (Disc 4)"
 	region "Japan"
 	serial "T-36001G"
-	rom ( name "PhantasM (Japan) (Disc 4) (Track 1).bin" size 460321680 crc BAF59DD2 md5 C35D39B914BA4F4C247BDF102BFC8314 sha1 5DF838C50BC8FEBCDBE651E5653BE441A1E7E31C serial "T-36001G" )
+	rom ( name "Phantasm (Japan) (Disc 4) (Track 1).bin" size 460321680 crc BAF59DD2 md5 C35D39B914BA4F4C247BDF102BFC8314 sha1 5DF838C50BC8FEBCDBE651E5653BE441A1E7E31C serial "T-36001G" )
 )
 game (
-	name "PhantasM (Japan) (Disc 4)"
+	name "Phantasm (Japan) (Disc 4)"
 	region "Japan"
 	serial "T-36001G-3"
-	rom ( name "PhantasM (Japan) (Disc 4) (Track 1).bin" size 460321680 crc BAF59DD2 md5 C35D39B914BA4F4C247BDF102BFC8314 sha1 5DF838C50BC8FEBCDBE651E5653BE441A1E7E31C serial "T-36001G-3" )
+	rom ( name "Phantasm (Japan) (Disc 4) (Track 1).bin" size 460321680 crc BAF59DD2 md5 C35D39B914BA4F4C247BDF102BFC8314 sha1 5DF838C50BC8FEBCDBE651E5653BE441A1E7E31C serial "T-36001G-3" )
 )
 game (
-	name "PhantasM (Japan) (Disc 5)"
+	name "Phantasm (Japan) (Disc 5)"
 	region "Japan"
 	serial "T-36001G"
-	rom ( name "PhantasM (Japan) (Disc 5) (Track 1).bin" size 395540544 crc 1361635D md5 B032C9AD3573C34CE0AEE0EDFB981B60 sha1 529651C1822401CE01B838AF73CC49C7437D9976 serial "T-36001G" )
+	rom ( name "Phantasm (Japan) (Disc 5) (Track 1).bin" size 395540544 crc 1361635D md5 B032C9AD3573C34CE0AEE0EDFB981B60 sha1 529651C1822401CE01B838AF73CC49C7437D9976 serial "T-36001G" )
 )
 game (
-	name "PhantasM (Japan) (Disc 5)"
+	name "Phantasm (Japan) (Disc 5)"
 	region "Japan"
 	serial "T-36001G-4"
-	rom ( name "PhantasM (Japan) (Disc 5) (Track 1).bin" size 395540544 crc 1361635D md5 B032C9AD3573C34CE0AEE0EDFB981B60 sha1 529651C1822401CE01B838AF73CC49C7437D9976 serial "T-36001G-4" )
+	rom ( name "Phantasm (Japan) (Disc 5) (Track 1).bin" size 395540544 crc 1361635D md5 B032C9AD3573C34CE0AEE0EDFB981B60 sha1 529651C1822401CE01B838AF73CC49C7437D9976 serial "T-36001G-4" )
 )
 game (
-	name "PhantasM (Japan) (Disc 6) (5M)"
+	name "Phantasm (Japan) (Disc 6) (5M)"
 	region "Japan"
 	serial "T-36001G"
-	rom ( name "PhantasM (Japan) (Disc 6) (5M) (Track 1).bin" size 545624016 crc 8C2363FD md5 ACC2350DA5E0B6004276996048BFA819 sha1 F8A4E21F4F911745567098BED8BE386519857058 serial "T-36001G" )
+	rom ( name "Phantasm (Japan) (Disc 6) (5M) (Track 1).bin" size 545624016 crc 8C2363FD md5 ACC2350DA5E0B6004276996048BFA819 sha1 F8A4E21F4F911745567098BED8BE386519857058 serial "T-36001G" )
 )
 game (
-	name "PhantasM (Japan) (Disc 6) (5M)"
+	name "Phantasm (Japan) (Disc 6) (5M)"
 	region "Japan"
 	serial "T-36001G-5"
-	rom ( name "PhantasM (Japan) (Disc 6) (5M) (Track 1).bin" size 545624016 crc 8C2363FD md5 ACC2350DA5E0B6004276996048BFA819 sha1 F8A4E21F4F911745567098BED8BE386519857058 serial "T-36001G-5" )
+	rom ( name "Phantasm (Japan) (Disc 6) (5M) (Track 1).bin" size 545624016 crc 8C2363FD md5 ACC2350DA5E0B6004276996048BFA819 sha1 F8A4E21F4F911745567098BED8BE386519857058 serial "T-36001G-5" )
 )
 game (
-	name "PhantasM (Japan) (Disc 7)"
+	name "Phantasm (Japan) (Disc 7)"
 	region "Japan"
 	serial "T-36001G"
-	rom ( name "PhantasM (Japan) (Disc 7) (Track 1).bin" size 371072688 crc 65832FF3 md5 E6F5989EED5D051FA7250DA231E36DD3 sha1 0507E507F85217422945793FF5B6E8476A1BFDBB serial "T-36001G" )
+	rom ( name "Phantasm (Japan) (Disc 7) (Track 1).bin" size 371072688 crc 65832FF3 md5 E6F5989EED5D051FA7250DA231E36DD3 sha1 0507E507F85217422945793FF5B6E8476A1BFDBB serial "T-36001G" )
 )
 game (
-	name "PhantasM (Japan) (Disc 7)"
+	name "Phantasm (Japan) (Disc 7)"
 	region "Japan"
 	serial "T-36001G-6"
-	rom ( name "PhantasM (Japan) (Disc 7) (Track 1).bin" size 371072688 crc 65832FF3 md5 E6F5989EED5D051FA7250DA231E36DD3 sha1 0507E507F85217422945793FF5B6E8476A1BFDBB serial "T-36001G-6" )
+	rom ( name "Phantasm (Japan) (Disc 7) (Track 1).bin" size 371072688 crc 65832FF3 md5 E6F5989EED5D051FA7250DA231E36DD3 sha1 0507E507F85217422945793FF5B6E8476A1BFDBB serial "T-36001G-6" )
 )
 game (
-	name "PhantasM (Japan) (Disc 8)"
+	name "Phantasm (Japan) (Disc 8)"
 	region "Japan"
 	serial "T-36001G"
-	rom ( name "PhantasM (Japan) (Disc 8) (Track 1).bin" size 493136784 crc 8D048C75 md5 0747F319C0E50229E5F3DC707D611C35 sha1 964388C0F3349B917958746CCCF487A1528CED7E serial "T-36001G" )
+	rom ( name "Phantasm (Japan) (Disc 8) (Track 1).bin" size 493136784 crc 8D048C75 md5 0747F319C0E50229E5F3DC707D611C35 sha1 964388C0F3349B917958746CCCF487A1528CED7E serial "T-36001G" )
 )
 game (
-	name "PhantasM (Japan) (Disc 8)"
+	name "Phantasm (Japan) (Disc 8)"
 	region "Japan"
 	serial "T-36001G-7"
-	rom ( name "PhantasM (Japan) (Disc 8) (Track 1).bin" size 493136784 crc 8D048C75 md5 0747F319C0E50229E5F3DC707D611C35 sha1 964388C0F3349B917958746CCCF487A1528CED7E serial "T-36001G-7" )
+	rom ( name "Phantasm (Japan) (Disc 8) (Track 1).bin" size 493136784 crc 8D048C75 md5 0747F319C0E50229E5F3DC707D611C35 sha1 964388C0F3349B917958746CCCF487A1528CED7E serial "T-36001G-7" )
 )
 game (
 	name "Photo CD Operating System (Europe) (En,Ja,Fr,De,Es,It)"
@@ -9400,22 +9677,22 @@ game (
 	rom ( name "Photo Genic (Japan) (Track 1).bin" size 244763232 crc 62D4679E md5 7C350D925C911C85EF127313B54F0696 sha1 2090E7F9683081C00C6B6BAFB20E2476697A1E14 serial "T-1525G" )
 )
 game (
-	name "Photograph of a Crime, The - Hankou Shashin - Shibarareta Shoujo-tachi no Mita Mono wa (Japan)"
+	name "Photograph of a Crime, The - Hankou Shashin - Shibarareta Shoujotachi no Mita Mono wa (Japan)"
 	region "Japan"
 	serial "T-15008G"
-	rom ( name "Photograph of a Crime, The - Hankou Shashin - Shibarareta Shoujo-tachi no Mita Mono wa (Japan) (Track 1).bin" size 256083408 crc B94F3958 md5 8F0A2F94971B044DB5B5086F90DBBAAC sha1 2950F92EAC28B39ACEC668A4699EEDDC42C8032A serial "T-15008G" )
+	rom ( name "Photograph of a Crime, The - Hankou Shashin - Shibarareta Shoujotachi no Mita Mono wa (Japan) (Track 1).bin" size 256083408 crc B94F3958 md5 8F0A2F94971B044DB5B5086F90DBBAAC sha1 2950F92EAC28B39ACEC668A4699EEDDC42C8032A serial "T-15008G" )
 )
 game (
-	name "Pia Carrot e Youkoso!! 2 (Japan) (Disc 1) (Game Disc) (3M)"
+	name "Pia Carrot e Youkoso!! 2 (Japan) (Disc 1) (Game Disc) (1M)"
 	region "Japan"
 	serial "T-20114G"
-	rom ( name "Pia Carrot e Youkoso!! 2 (Japan) (Disc 1) (Game Disc) (3M) (Track 1).bin" size 621875856 crc 681D45A8 md5 70894066FC8A8F7CA3A9EDD6F03CCC00 sha1 EB4E3D0D48EA0FD29C01C3451E870B7D75FF9422 serial "T-20114G" )
+	rom ( name "Pia Carrot e Youkoso!! 2 (Japan) (Disc 1) (Game Disc) (1M) (Track 1).bin" size 621875856 crc 681D45A8 md5 70894066FC8A8F7CA3A9EDD6F03CCC00 sha1 EB4E3D0D48EA0FD29C01C3451E870B7D75FF9422 serial "T-20114G" )
 )
 game (
-	name "Pia Carrot e Youkoso!! 2 (Japan) (Disc 1) (Game Disc) (3M)"
+	name "Pia Carrot e Youkoso!! 2 (Japan) (Disc 1) (Game Disc) (1M)"
 	region "Japan"
 	serial "T-20114G-0"
-	rom ( name "Pia Carrot e Youkoso!! 2 (Japan) (Disc 1) (Game Disc) (3M) (Track 1).bin" size 621875856 crc 681D45A8 md5 70894066FC8A8F7CA3A9EDD6F03CCC00 sha1 EB4E3D0D48EA0FD29C01C3451E870B7D75FF9422 serial "T-20114G-0" )
+	rom ( name "Pia Carrot e Youkoso!! 2 (Japan) (Disc 1) (Game Disc) (1M) (Track 1).bin" size 621875856 crc 681D45A8 md5 70894066FC8A8F7CA3A9EDD6F03CCC00 sha1 EB4E3D0D48EA0FD29C01C3451E870B7D75FF9422 serial "T-20114G-0" )
 )
 game (
 	name "Pia Carrot e Youkoso!! 2 (Japan) (Disc 2) (Special Disc) (2M)"
@@ -9736,6 +10013,12 @@ game (
 	rom ( name "Pro Yakyuu Greatest Nine '97 (Japan) (Rev A) (Track 1).bin" size 351369984 crc 1E9E2D4E md5 5CB3D7720D6159796AA29E13698F3C0A sha1 5EEBE2EE52701A77A8016836472F0856C975DDB1 serial "GS-9139" )
 )
 game (
+	name "Pro Yakyuu Greatest Nine '97 (Japan) (Rev B)"
+	region "Japan"
+	serial "GS-9139"
+	rom ( name "Pro Yakyuu Greatest Nine '97 (Japan) (Rev B) (Track 1).bin" size 351369984 crc 01EEB339 md5 4D4449A7728FA1DA90F395E819DD4D32 sha1 0D87207E6072D64E7A5592BABC58C53024E86F22 serial "GS-9139" )
+)
+game (
 	name "Pro Yakyuu Greatest Nine '97 - Make Miracle (Japan)"
 	region "Japan"
 	serial "GS-9171"
@@ -9748,6 +10031,12 @@ game (
 	rom ( name "Pro Yakyuu Greatest Nine '98 (Japan) (Rev A) (Track 1).bin" size 438784416 crc F553ADA2 md5 B3A3DF2C2503D8AD45A070B12DC5EEE4 sha1 3DF3C86FC06897232506FF238CE542D3A83F6A7C serial "GS-9185" )
 )
 game (
+	name "Pro Yakyuu Greatest Nine '98 (Japan) (Rev B)"
+	region "Japan"
+	serial "GS-9208"
+	rom ( name "Pro Yakyuu Greatest Nine '98 (Japan) (Rev B) (Track 1).bin" size 438784416 crc 8160CCA9 md5 14773A55397D8483649B9DF720888578 sha1 FC13806CAC393F59197A35BBC3DE2E7235530CF0 serial "GS-9208" )
+)
+game (
 	name "Pro Yakyuu Greatest Nine '98 - Summer Action (Japan)"
 	region "Japan"
 	serial "GS-9202"
@@ -9758,6 +10047,12 @@ game (
 	region "Japan"
 	serial "GS-9165"
 	rom ( name "Pro Yakyuu Team mo Tsukurou! (Japan) (Track 1).bin" size 556720752 crc 8DF52B89 md5 EC1255EF5A2A9E0CA9F227FE159D3360 sha1 E62BEA70B6812AA1DC08C59C18BAE16DA2136972 serial "GS-9165" )
+)
+game (
+	name "Pro Yakyuu Team mo Tsukurou! (Japan) (Rev B)"
+	region "Japan"
+	serial "GS-9165"
+	rom ( name "Pro Yakyuu Team mo Tsukurou! (Japan) (Rev B) (Track 1).bin" size 556718400 crc 9EE37737 md5 F41A772B6F135D9617B1797F72453794 sha1 77729761D8045946DF90030F750E9FED3183E9A7 serial "GS-9165" )
 )
 game (
 	name "Pro-Pinball (USA)"
@@ -9854,6 +10149,22 @@ game (
 	region "USA"
 	serial "81066"
 	rom ( name "Quake (USA) (Track 01).bin" size 66326400 crc 85ECB329 md5 604D3652C003DEE0FC4A621979A2D4C7 sha1 ADA3AA0B95F1AF966C982739E17B5B1E18A3D66E serial "81066" )
+)
+game (
+	name "Quake (USA) (Beta)"
+	releaseyear "1997"
+	releasemonth "08"
+	releaseday "20"
+	region "USA"
+	rom ( name "Quake (USA) (Beta) (1997-08-20) (Track 01).bin" size 42766416 crc 5DA63FA8 md5 AEE65EEE2C560F6E9B53469A9A0FC5F4 sha1 CD34F9C36B8A660EE5A87556F696361E6E727D3F )
+)
+game (
+	name "Quake (USA) (Beta)"
+	releaseyear "1997"
+	releasemonth "10"
+	releaseday "31"
+	region "USA"
+	rom ( name "Quake (USA) (Beta) (1997-10-31) (Track 01).bin" size 66681552 crc FAFBCE74 md5 8E2AA07CEAB1F7CAFE9EBE810FA8911B sha1 B28B04E4ABC03D816B71E5C2F42E8BE3111EAA71 )
 )
 game (
 	name "Quantum Gate I - Akumu no Joshou (Japan)"
@@ -10096,6 +10407,16 @@ game (
 	rom ( name "Real Sound - Kaze no Regret (Japan) (Disc 4) (2M) (Track 1).bin" size 660648576 crc F82DACAF md5 133A4F3E8435B06F66FD57EF749CBD25 sha1 FD781E8CD9BC9D2159386E491DF295A3FC010BD8 serial "T-30002G-3" )
 )
 game (
+	name "Rebellion (USA)"
+	region "USA"
+	rom ( name "Rebellion (USA) (Unl).bin" size 240440256 crc 4F7C0F73 md5 F874B4D7AB870E1AE733F9FC504ABB05 sha1 FBB6293878403E17F2C219F192D8D1D2CE122F59 )
+)
+game (
+	name "Rebellion (USA) (Alt)"
+	region "USA"
+	rom ( name "Rebellion (USA) (Unl) (Alt).bin" size 240440256 crc 2CD5506F md5 DBCD605540A0D36CC35854640022CF09 sha1 1743081900B63B165C9A6FBCC96A72E9B61BA537 )
+)
+game (
 	name "Refrain Love - Anata ni Aitai (Japan) (Disc 1)"
 	region "Japan"
 	serial "T-5308G"
@@ -10142,6 +10463,14 @@ game (
 	region "Japan"
 	serial "T-23401G"
 	rom ( name "Return to Zork (Japan) (Rev A) (10M) (Track 1).bin" size 616971936 crc 7708040E md5 76D6110F0EB431DBDC98C8A78FB04FFB sha1 8027FFCBA4039A1602D6219CCBD512FD4E1F23E0 serial "T-23401G" )
+)
+game (
+	name "Revolution X - Music Is The Weapon (USA) (Beta)"
+	releaseyear "1996"
+	releasemonth "01"
+	releaseday "11"
+	region "USA"
+	rom ( name "Revolution X - Music Is The Weapon (USA) (Beta) (1996-01-11) (Track 01).bin" size 12446784 crc 7857E398 md5 B7D0DA1ACE29DD88B14D5D7810524C33 sha1 8577A0DEE6301C66255224C87C07044D48F41CA2 )
 )
 game (
 	name "Revolution X - Music Is the Weapon (Europe)"
@@ -10206,6 +10535,14 @@ game (
 	region "Japan"
 	serial "T-8104G"
 	rom ( name "Rise 2 - Resurrection (Japan) (En,Fr,De,Es,It) (Track 01).bin" size 143928288 crc EAE62B34 md5 E79936500A0422309939B3F39643C185 sha1 F6827B98CC8A3DB8F9BE88BA5C02A96DC2CEC41A serial "T-8104G" )
+)
+game (
+	name "Rise 2 - Resurrection (USA) (Beta)"
+	releaseyear "1996"
+	releasemonth "05"
+	releaseday "22"
+	region "USA"
+	rom ( name "Rise 2 - Resurrection (USA) (Beta) (1996-05-22) (Track 01).bin" size 143928288 crc 704783A9 md5 54196E9AA30EB7F8235532CE42218DBB sha1 1BF006F1091C34D27057BBDDE41737C360AD227D )
 )
 game (
 	name "Rise 2 - Resurrection (USA) (En,Fr,De,Es,It)"
@@ -10796,16 +11133,16 @@ game (
 	rom ( name "Sakura Taisen 2 - Kimi, Shinitamou Koto Nakare (Japan) (Disc 3) (Rev A) (13M) (Track 1).bin" size 654707424 crc 96BC2DBD md5 CB0564DA201D351166BB43860C791C55 sha1 A24944A1A4301CFA5465D9447F404EB8E6D72F73 serial "GS-9198-2" )
 )
 game (
-	name "Sakura Taisen 2 - Kimi, Shinitamou Koto Nakare (Japan) (Disc 3) (Shokai Tokutenban) (2M)"
+	name "Sakura Taisen 2 - Kimi, Shinitamou Koto Nakare (Japan) (Disc 3) (Shokai Tokutenban) (1M)"
 	region "Japan"
 	serial "GS-9169"
-	rom ( name "Sakura Taisen 2 - Kimi, Shinitamou Koto Nakare (Japan) (Disc 3) (Shokai Tokutenban) (2M) (Track 1).bin" size 654709776 crc 23C25C87 md5 770EBDA210ECF6299B97D5F4B9731617 sha1 2B3D50B0DA785E9A4BCA7175DE99DD69D3511C50 serial "GS-9169" )
+	rom ( name "Sakura Taisen 2 - Kimi, Shinitamou Koto Nakare (Japan) (Disc 3) (Shokai Tokutenban) (1M) (Track 1).bin" size 654709776 crc 23C25C87 md5 770EBDA210ECF6299B97D5F4B9731617 sha1 2B3D50B0DA785E9A4BCA7175DE99DD69D3511C50 serial "GS-9169" )
 )
 game (
-	name "Sakura Taisen 2 - Kimi, Shinitamou Koto Nakare (Japan) (Disc 3) (Shokai Tokutenban) (2M)"
+	name "Sakura Taisen 2 - Kimi, Shinitamou Koto Nakare (Japan) (Disc 3) (Shokai Tokutenban) (1M)"
 	region "Japan"
 	serial "GS-9169-2"
-	rom ( name "Sakura Taisen 2 - Kimi, Shinitamou Koto Nakare (Japan) (Disc 3) (Shokai Tokutenban) (2M) (Track 1).bin" size 654709776 crc 23C25C87 md5 770EBDA210ECF6299B97D5F4B9731617 sha1 2B3D50B0DA785E9A4BCA7175DE99DD69D3511C50 serial "GS-9169-2" )
+	rom ( name "Sakura Taisen 2 - Kimi, Shinitamou Koto Nakare (Japan) (Disc 3) (Shokai Tokutenban) (1M) (Track 1).bin" size 654709776 crc 23C25C87 md5 770EBDA210ECF6299B97D5F4B9731617 sha1 2B3D50B0DA785E9A4BCA7175DE99DD69D3511C50 serial "GS-9169-2" )
 )
 game (
 	name "Sakura Taisen Teikokukagekidan Taiin Meibo (Japan)"
@@ -11036,6 +11373,11 @@ game (
 	rom ( name "Saturn CG Selection Vol. 1 (Japan) (Rev A) (Track 2).bin" size 509772480 crc FF67AD05 md5 EAF1B2DCBEB153A103DFDF4DBA0373FE sha1 72F1BFFA3B067DDD93C201166C8F6995BA151F2F serial "610-6113" )
 )
 game (
+	name "Saturn FMV Video Vault (USA)"
+	region "USA"
+	rom ( name "Saturn FMV Video Vault (USA) (Unl).bin" size 187256832 crc B578BEBB md5 9309716AB9DD91FBE65933F3F8A3348F sha1 4925AB3E70EEE0E15232D168E6A6AE5D8C6A7DDB )
+)
+game (
 	name "Saturn Music School (Japan)"
 	region "Japan"
 	serial "T-32801G"
@@ -11102,10 +11444,10 @@ game (
 	rom ( name "Saturn Super Vol. 6 (Japan) (1M) (Track 02).bin" size 406486752 crc 6F5A1996 md5 967C60D481467D8A5B01A0869C33B7A3 sha1 4F39BD4F7224BF6BF1D2E53E107F8C678FFDA5E2 serial "610-6020-07" )
 )
 game (
-	name "Saturn Super Vol. 7 (Japan) (2M)"
+	name "Saturn Super Vol. 7 (Japan) (1M)"
 	region "Japan"
 	serial "610-6020-08"
-	rom ( name "Saturn Super Vol. 7 (Japan) (2M) (Track 02).bin" size 418841808 crc 858F1B38 md5 6F345E7414E3E87689DE2A6483ADBF93 sha1 9B430AFBA79D606EBC96BBC210B5DABF78C56F96 serial "610-6020-08" )
+	rom ( name "Saturn Super Vol. 7 (Japan) (1M) (Track 02).bin" size 418841808 crc 858F1B38 md5 6F345E7414E3E87689DE2A6483ADBF93 sha1 9B430AFBA79D606EBC96BBC210B5DABF78C56F96 serial "610-6020-08" )
 )
 game (
 	name "Saturn Super Vol. 8 (Japan)"
@@ -11354,6 +11696,12 @@ game (
 	rom ( name "Sega Rally Championship (Korea) (Track 01).bin" size 29654016 crc AA1229D4 md5 D9E444D35BB19927CB7F257DD89AF755 sha1 9B76A7958A24750D5291C05256D48A7C6B78AABB serial "GS-9506J" )
 )
 game (
+	name "Sega Rally Championship (Korea)"
+	region "Korea"
+	serial "MK-81207-08"
+	rom ( name "Sega Rally Championship (Korea) (Track 01).bin" size 29654016 crc AA1229D4 md5 D9E444D35BB19927CB7F257DD89AF755 sha1 9B76A7958A24750D5291C05256D48A7C6B78AABB serial "MK-81207-08" )
+)
+game (
 	name "Sega Rally Championship (USA)"
 	region "USA"
 	serial "80012"
@@ -11364,6 +11712,14 @@ game (
 	region "USA"
 	serial "81207"
 	rom ( name "Sega Rally Championship (USA) (Track 01).bin" size 31347456 crc E7A06577 md5 FF5FB7590CE8FB30DA9BC0BDD7037303 sha1 A7305950C44839AD4008B29B1DB442DF2FFDDD7C serial "81207" )
+)
+game (
+	name "Sega Rally Championship (USA) (Beta)"
+	releaseyear "1995"
+	releasemonth "10"
+	releaseday "24"
+	region "USA"
+	rom ( name "Sega Rally Championship (USA) (Beta) (1995-10-24) (Track 01).bin" size 25326336 crc 14BC7F06 md5 40E79BEC3691FB94DD3656EC4755FA2E sha1 7CC0E39D0A0F687242C9AA00716E8AA1628ADC11 )
 )
 game (
 	name "Sega Rally Championship Plus (Japan)"
@@ -11444,16 +11800,40 @@ game (
 	rom ( name "Sega Touring Car Championship (USA) (Track 01).bin" size 33396048 crc 51F900AA md5 C120C68599348726C62AB44F1D720ECF sha1 4F5BF750749D2D47361BBAACD63AFD912B33B7AC serial "81216" )
 )
 game (
+	name "Sega Touring Car Championship (USA, Europe) (Beta)"
+	releaseyear "1997"
+	releasemonth "08"
+	releaseday "07"
+	region "USA"
+	rom ( name "Sega Touring Car Championship (USA, Europe) (Beta) (1997-08-07) (Track 1).bin" size 24743040 crc 2AFF841F md5 2FA3510087711C28DBDADBB4DC797936 sha1 3D6E207E89A0560E9D46C3B703E14EE6A2BF1257 )
+)
+game (
 	name "Sega Worldwide Soccer '97 (USA)"
 	region "USA"
 	serial "81112"
 	rom ( name "Sega Worldwide Soccer '97 (USA) (Track 01).bin" size 152183808 crc A1AA69C5 md5 6BD404D049F3916830E71BF8D28BBCB8 sha1 FCE8E4AA5172F770BFC6198E399DDDE756ACCDE3 serial "81112" )
 )
 game (
+	name "Sega Worldwide Soccer '97 (USA) (Beta)"
+	releaseyear "1996"
+	releasemonth "09"
+	releaseday "06"
+	region "USA"
+	rom ( name "Sega Worldwide Soccer '97 (USA) (Beta) (1996-09-06) (Track 01).bin" size 152713008 crc 4FBB885E md5 C102A8AEB3327B4CD0956636E1AFA74A sha1 D495E8439849E1BDB1C3DA8DA1F20319BE22AC8F )
+)
+game (
 	name "Sega Worldwide Soccer '98 (Japan)"
 	region "Japan"
 	serial "GS-9187"
 	rom ( name "Sega Worldwide Soccer '98 (Japan) (Track 1).bin" size 266102928 crc 88CE1740 md5 263D0A334783501DE0D6606B1A42658D sha1 340698A10DB452147514F89235687DDAA286CB10 serial "GS-9187" )
+)
+game (
+	name "Sega Worldwide Soccer '98 - Club Edition (Europe) (Beta)"
+	releaseyear "1997"
+	releasemonth "09"
+	releaseday "12"
+	region "Europe"
+	rom ( name "Sega Worldwide Soccer '98 - Club Edition (Europe) (Beta) (1997-09-12) (Track 1).bin" size 264621168 crc D2C1A9A2 md5 D2449C73980B84960D729981C772CF61 sha1 8B0687C4066346DC5BC35CB3EB7D8174A72496AB )
 )
 game (
 	name "Sega Worldwide Soccer '98 - Club Edition (Europe) (En,Fr,Es)"
@@ -11468,34 +11848,34 @@ game (
 	rom ( name "Sega Worldwide Soccer '98 - Club Edition (Europe) (En,Fr,Es) (Rev A) (Track 1).bin" size 263369904 crc B7713A0B md5 8ADEBA8AF559AC797D58138F90F105D5 sha1 813C7BB290A1B4C8A49509CA1F4C58141D9DEDFD serial "MK81123-50" )
 )
 game (
+	name "Sega Worldwide Soccer '98 - Club Edition (Europe) (En,Fr,Es) (Rev B)"
+	region "Europe"
+	serial "MK81123-50"
+	rom ( name "Sega Worldwide Soccer '98 - Club Edition (Europe) (En,Fr,Es) (Rev B) (Track 1).bin" size 263369904 crc 8D3E2526 md5 7777A206BDF46A1D01CD9BAE84612BB0 sha1 B35F57A2A7173FC547998471A1C82483037842F1 serial "MK81123-50" )
+)
+game (
 	name "Sega Worldwide Soccer 97 (Europe)"
 	region "Europe"
 	serial "MK81112-50"
 	rom ( name "Sega Worldwide Soccer 97 (Europe) (Track 01).bin" size 152360208 crc 11AA6D93 md5 D7E4088DF4E0A250E885F56148013E74 sha1 14CF2BFF6DD80179CE9A595B8787E89E65444752 serial "MK81112-50" )
 )
 game (
-	name "SegaColle Sega Bible Mogitate SegaSaturn Soukan-gou (Japan)"
+	name "SegaSaturn - SGL Tool Kit - Sega 3D Game Library (Japan)"
+	releaseyear "1995"
+	releasemonth "04"
+	releaseday "01"
 	region "Japan"
-	serial "610-6805-01"
-	rom ( name "SegaColle Sega Bible Mogitate SegaSaturn Soukan-gou (Japan) (Track 02).bin" size 411341280 crc 192465EE md5 1FD20AF4E80EFB537705ADDD2F9675D8 sha1 70933294F7BBD2DAAC945C2BC9D0511888F3D7B9 serial "610-6805-01" )
-)
-game (
-	name "SegaSaturn - Graphic & Sound Tools for Macintosh (Japan)"
-	region "Japan"
-	serial "N16-1000"
-	rom ( name "SegaSaturn - Graphic & Sound Tools for Macintosh (Japan).bin" size 58804704 crc 92B7458B md5 8E1095E69471569D29625B2F483CBD79 sha1 89FC7723C5769BAF372768D31A04D6EB7BA2E47A serial "N16-1000" )
-)
-game (
-	name "SegaSaturn - Movie Tools - Cinepak for Sega Saturn (Japan) (Hybrid Version)"
-	region "Japan"
-	serial "L17-1000"
-	rom ( name "SegaSaturn - Movie Tools - Cinepak for Sega Saturn (Japan) (Hybrid Version).bin" size 43709568 crc 2CFF7F8E md5 538DF79AFE57E05DAC3A4C3B5F39DC4E sha1 2BB62F36A4047EF3E916C310BCC1E9EB0B0267DA serial "L17-1000" )
+	serial "L15-1000"
+	rom ( name "SegaSaturn - SGL Tool Kit - Sega 3D Game Library (Japan) (1995-04-01) (Track 1).bin" size 84902496 crc 63C12369 md5 0A8FD8E047578ED2C88474D24E11B678 sha1 1E3590758B3D7260B36F648AEF31B687531E3E53 serial "L15-1000" )
 )
 game (
 	name "SegaSaturn - SGL Tool Kit - Sega 3D Game Library (Japan)"
+	releaseyear "1996"
+	releasemonth "04"
+	releaseday "21"
 	region "Japan"
-	serial "L15-1000"
-	rom ( name "SegaSaturn - SGL Tool Kit - Sega 3D Game Library (Japan) (Track 1).bin" size 84902496 crc 63C12369 md5 0A8FD8E047578ED2C88474D24E11B678 sha1 1E3590758B3D7260B36F648AEF31B687531E3E53 serial "L15-1000" )
+	serial "L15-1001"
+	rom ( name "SegaSaturn - SGL Tool Kit - Sega 3D Game Library (Japan) (1996-04-21) (Track 1).bin" size 78340416 crc A6D4300E md5 C61D9C8FB7579C2D9FE8A35D0EB98B1C sha1 8B5CF92382E97513621F7267AAAB1035CD303AA0 serial "L15-1001" )
 )
 game (
 	name "SegaSaturn Electronic Book Operator (Japan)"
@@ -11526,6 +11906,12 @@ game (
 	region "Japan"
 	serial "HSS-0121"
 	rom ( name "SegaSaturn Photo CD Operator (Japan) (Rev A) (Track 2).bin" size 29915088 crc 1B0BEA38 md5 3E9E837BC1EE56B8BD5CBFDCBFAB037B sha1 891AF0232626407FCE001653940BD36AD31FE582 serial "HSS-0121" )
+)
+game (
+	name "Segakore Sega Bible Mogitate SegaSaturn Soukangou (Japan)"
+	region "Japan"
+	serial "610-6805-01"
+	rom ( name "Segakore Sega Bible Mogitate SegaSaturn Soukangou (Japan) (Track 02).bin" size 411341280 crc 192465EE md5 1FD20AF4E80EFB537705ADDD2F9675D8 sha1 70933294F7BBD2DAAC945C2BC9D0511888F3D7B9 serial "610-6805-01" )
 )
 game (
 	name "Segata Sanshirou - Shinken Yuugi (Japan)"
@@ -11600,6 +11986,18 @@ game (
 	rom ( name "Senkutsu Katsuryu Taisen - Chaos Seed (Japan) (Disc 1) (Game Disc) (Rev A) (10M) (Track 1).bin" size 157878000 crc 82817470 md5 5C18B68C89035177B0BB12FBE2C4E479 sha1 1D841EDA7989F3EC14F7810D2584E762AE231ECE serial "T-30902G-0" )
 )
 game (
+	name "Senkutsu Katsuryu Taisen - Chaos Seed (Japan) (Disc 1) (Game Disc) (Rev B) (21M)"
+	region "Japan"
+	serial "T-30904G"
+	rom ( name "Senkutsu Katsuryu Taisen - Chaos Seed (Japan) (Disc 1) (Game Disc) (Rev B) (21M) (Track 1).bin" size 157880352 crc D8298541 md5 B9B3F25F82877771DED23FE0DAE8A9BC sha1 EC9362205154DD6819E27154C44BF009CE4FB1DF serial "T-30904G" )
+)
+game (
+	name "Senkutsu Katsuryu Taisen - Chaos Seed (Japan) (Disc 1) (Game Disc) (Rev B) (21M)"
+	region "Japan"
+	serial "T-30904G-0"
+	rom ( name "Senkutsu Katsuryu Taisen - Chaos Seed (Japan) (Disc 1) (Game Disc) (Rev B) (21M) (Track 1).bin" size 157880352 crc D8298541 md5 B9B3F25F82877771DED23FE0DAE8A9BC sha1 EC9362205154DD6819E27154C44BF009CE4FB1DF serial "T-30904G-0" )
+)
+game (
 	name "Senkutsu Katsuryu Taisen - Chaos Seed (Japan) (Disc 2) (Omake Disc)"
 	region "Japan"
 	serial "T-30902G"
@@ -11672,6 +12070,12 @@ game (
 	rom ( name "Shanghai - Banri no Choujou - The Great Wall (Japan) (1M) (Track 1).bin" size 7420560 crc DE3C5C68 md5 B8FBD896CECC68518FA6DE277C83B3C7 sha1 CE5E79CA773C93864F45B5D2F4AEC46AAE40D412 serial "T-1505G" )
 )
 game (
+	name "Shanghai - Banri no Choujou - The Great Wall (Japan) (Rev A) (13M)"
+	region "Japan"
+	serial "T-1505G"
+	rom ( name "Shanghai - Banri no Choujou - The Great Wall (Japan) (Rev A) (13M) (Track 1).bin" size 7422912 crc ABA1C60B md5 2675F9FC171AB084572A7490FB5F7AA6 sha1 DA4FD2FB6CEF241528D03B4E314B761001055A71 serial "T-1505G" )
+)
+game (
 	name "Shanghai - Banri no Choujou - The Great Wall (Japan) (Rev A) (15M)"
 	region "Japan"
 	serial "T-1527G"
@@ -11688,6 +12092,14 @@ game (
 	region "USA"
 	serial "T-13001H"
 	rom ( name "Shanghai - Triple-Threat (USA) (Track 1).bin" size 7455840 crc B9F7FCFC md5 64CE223509D9F32DE51E4F549757C173 sha1 37F249E407A8FE2D53C1E43A709F83DF58CCB098 serial "T-13001H" )
+)
+game (
+	name "Shanghai - Triple-Threat (USA) (Beta)"
+	releaseyear "1995"
+	releasemonth "06"
+	releaseday "01"
+	region "USA"
+	rom ( name "Shanghai - Triple-Threat (USA) (Beta) (1995-06-01) (Track 1).bin" size 7434672 crc DE63C22B md5 8A0DB55CABB2A1419E115F6E60ACA8B0 sha1 82E38F2041029993CBD737A0EB8B8EBC860D54C0 )
 )
 game (
 	name "She'sn (Japan)"
@@ -11718,6 +12130,14 @@ game (
 	region "USA"
 	serial "T-7901H"
 	rom ( name "Shellshock (USA) (Track 01).bin" size 241999632 crc 77E4E9A8 md5 ECE67CB896BA15B910AEA17F37A89765 sha1 5E7E0E25C18F2E9C502023D62CD7EAE11A724756 serial "T-7901H" )
+)
+game (
+	name "Shellshock (USA) (Beta)"
+	releaseyear "1996"
+	releasemonth "04"
+	releaseday "16"
+	region "USA"
+	rom ( name "Shellshock (USA) (Beta) (1996-04-16) (Track 01).bin" size 241997280 crc AA5D5EAD md5 B23768914F6A24E2D46C739C6444F1C9 sha1 E59BDF40EE92BD9D84C9D9E3427FB4BF4055CC33 )
 )
 game (
 	name "Shellshock - Jus' Keepin' da Peace (Japan)"
@@ -11756,6 +12176,18 @@ game (
 	rom ( name "Shin Megami Tensei - Devil Summoner (Japan) (Rev A) (Track 1).bin" size 430470096 crc 2145D7E1 md5 BA6703BF4F789D03C2502BF997239283 sha1 046BAB81BE23ACF48845EC566C8D42063B279698 serial "T-14403G" )
 )
 game (
+	name "Shin Megami Tensei - Devil Summoner (Japan) (Rev B)"
+	region "Japan"
+	serial "T-14408G"
+	rom ( name "Shin Megami Tensei - Devil Summoner (Japan) (Rev B) (Track 1).bin" size 430467744 crc E70C6B92 md5 EFF0FF17ADA30E96DFB5B8E006267474 sha1 F2BAC79DD9B5885FE435D3D24293D4308DD26B4C serial "T-14408G" )
+)
+game (
+	name "Shin Megami Tensei - Devil Summoner (Japan) (Rev B)"
+	region "Japan"
+	serial "T-14417G"
+	rom ( name "Shin Megami Tensei - Devil Summoner (Japan) (Rev B) (Track 1).bin" size 430467744 crc E70C6B92 md5 EFF0FF17ADA30E96DFB5B8E006267474 sha1 F2BAC79DD9B5885FE435D3D24293D4308DD26B4C serial "T-14417G" )
+)
+game (
 	name "Shin Megami Tensei - Devil Summoner - Akuma Zensho (Japan)"
 	region "Japan"
 	serial "T-14406G"
@@ -11780,16 +12212,16 @@ game (
 	rom ( name "Shin Seiki Evangelion (Japan) (Track 2).bin" size 592534656 crc 323F868C md5 694C4522009BB7D331473C5386B6D297 sha1 3DC9397B6E51424197186BC8FF61671B310FA445 serial "GS-9141" )
 )
 game (
-	name "Shin Seiki Evangelion - 2nd Impression (Japan) (Made in U.S.A.)"
+	name "Shin Seiki Evangelion - 2nd Impression (Japan) (Alt)"
 	region "Japan"
 	serial "GS-9129"
-	rom ( name "Shin Seiki Evangelion - 2nd Impression (Japan) (Made in U.S.A.) (Track 2).bin" size 415367904 crc A08D2B19 md5 1D200391C7133D1628C5802EB16BAFC4 sha1 841EB8B0A76A9181DD8801C7BD9D78A79DB9939C serial "GS-9129" )
+	rom ( name "Shin Seiki Evangelion - 2nd Impression (Japan) (Alt) (Track 2).bin" size 415367904 crc A08D2B19 md5 1D200391C7133D1628C5802EB16BAFC4 sha1 841EB8B0A76A9181DD8801C7BD9D78A79DB9939C serial "GS-9129" )
 )
 game (
-	name "Shin Seiki Evangelion - Eva to Yukaina Nakama-tachi (Japan)"
+	name "Shin Seiki Evangelion - Eva to Yukai na Nakamatachi (Japan)"
 	region "Japan"
 	serial "T-35103G"
-	rom ( name "Shin Seiki Evangelion - Eva to Yukaina Nakama-tachi (Japan) (Track 1).bin" size 205804704 crc 3D9ABC7F md5 273B800247C5647FC615AF63ECC1A2F2 sha1 53C826D92609F0C8201F38BA07DDCE22057185CF serial "T-35103G" )
+	rom ( name "Shin Seiki Evangelion - Eva to Yukai na Nakamatachi (Japan) (Track 1).bin" size 205804704 crc 3D9ABC7F md5 273B800247C5647FC615AF63ECC1A2F2 sha1 53C826D92609F0C8201F38BA07DDCE22057185CF serial "T-35103G" )
 )
 game (
 	name "Shin Shinobiden (Japan)"
@@ -11834,6 +12266,14 @@ game (
 	region "Japan"
 	serial "GS-9175"
 	rom ( name "Shining Force III - Scenario 1 - Outo no Kyoshin (Japan) (Track 1).bin" size 247987824 crc DFAEE920 md5 B991CC1A933FA785ED3F92C131A5A891 sha1 6AE4C9CC601EE02A432F871373E25CAD3A65B8B8 serial "GS-9175" )
+)
+game (
+	name "Shining Force III - Scenario 1 - Outo no Kyoshin (Japan) (Beta)"
+	releaseyear "1997"
+	releasemonth "11"
+	releaseday "17"
+	region "Japan"
+	rom ( name "Shining Force III - Scenario 1 - Outo no Kyoshin (Japan) (Beta) (1997-11-17) (Track 1).bin" size 248164224 crc DE9E3714 md5 5A410D6737927E75C0822DA3CF815540 sha1 4BC924486CE459BD5BCA6B957AE88F2D5033EFB9 )
 )
 game (
 	name "Shining Force III - Scenario 1 - Outo no Kyoshin (Japan) (Rev A)"
@@ -12054,6 +12494,12 @@ game (
 	region "Japan"
 	serial "T-24902G"
 	rom ( name "Shusse Mahjong Daisettai (Japan) (Track 1).bin" size 44488080 crc A8BA8B09 md5 236D097739CD18FE93C2011647BF5777 sha1 0EE155FAC96A6FB1A3A9B1202DFDFC4059102BE8 serial "T-24902G" )
+)
+game (
+	name "Shutsudou! Miniskirt Police (Japan) (2M)"
+	region "Japan"
+	serial "T-30810G"
+	rom ( name "Shutsudou! Miniskirt Police (Japan) (2M) (Track 1).bin" size 249841200 crc 82AF16FD md5 E62B86257031FE5F07F4CB579E556F0C sha1 AA4C89ADF3C2376C3D83510BB2A0859BB0986E97 serial "T-30810G" )
 )
 game (
 	name "Shutsudou! Miniskirt Police (Japan) (2M)"
@@ -12438,6 +12884,14 @@ game (
 	region "USA"
 	serial "T-5013H"
 	rom ( name "Soviet Strike (USA) (Track 1).bin" size 661563504 crc 2EC4FAE9 md5 F1B1C64BCBAFFA9EAC9706533DACB434 sha1 309A20B6042B978C9E8F8B017415D4C9227F5328 serial "T-5013H" )
+)
+game (
+	name "Soviet Strike (USA, Europe) (Beta)"
+	releaseyear "1996"
+	releasemonth "08"
+	releaseday "30"
+	region "USA"
+	rom ( name "Soviet Strike (USA, Europe) (Beta) (1996-08-30).bin" size 605759952 crc 2F943A11 md5 872343FF0C64CFE079D21CBD12CDB0A3 sha1 2C9620DA3C0FAAFE5955CF12586E35BBF1DF7E69 )
 )
 game (
 	name "Space Hulk - Vengeance of the Blood Angels (Europe)"
@@ -12852,10 +13306,10 @@ game (
 	rom ( name "Striker 96 (Japan) (En,Fr,De,Es,It) (Track 1).bin" size 50017632 crc 40CE41BF md5 DABCEF7F23EEB29D0C5FA53D238B0D47 sha1 6EA586461C326285B0A99D8605255D748436DA58 serial "T-8114G" )
 )
 game (
-	name "Striker 96 (USA)"
+	name "Striker 96 (USA) (En,Fr,De,Es,It)"
 	region "USA"
 	serial "T-8133H"
-	rom ( name "Striker 96 (USA) (Track 1).bin" size 50019984 crc B50BA8F3 md5 553493D271DBDCA065D6A56809231B18 sha1 6870FECB49B652BBB3A607CBA22E1FB7A2599816 serial "T-8133H" )
+	rom ( name "Striker 96 (USA) (En,Fr,De,Es,It) (Track 1).bin" size 50019984 crc B50BA8F3 md5 553493D271DBDCA065D6A56809231B18 sha1 6870FECB49B652BBB3A607CBA22E1FB7A2599816 serial "T-8133H" )
 )
 game (
 	name "Strikers 1945 (Japan)"
@@ -13062,10 +13516,16 @@ game (
 	rom ( name "Super Robot Taisen F (Japan) (Rev A) (10M, 11M, 12M, 13M) (Track 2).bin" size 335442240 crc B69C76CE md5 147CC6874A2324BED131B6967693CFE4 sha1 B5B48ED6CEDF85B9C82E66F41EF9BD6CAD5C9CD3 serial "T-20610G" )
 )
 game (
-	name "Super Robot Taisen F - Kanketsu-hen (Japan) (2M, 3M)"
+	name "Super Robot Taisen F (Japan) (Rev B) (21M)"
+	region "Japan"
+	serial "T-20610G"
+	rom ( name "Super Robot Taisen F (Japan) (Rev B) (21M) (Track 2).bin" size 335919696 crc 4A0C3179 md5 1B7670BC8C52D4E068691BEAF93DCB63 sha1 E8B33F4F22E0465E6ECD7CB32C596BFF25EC5C71 serial "T-20610G" )
+)
+game (
+	name "Super Robot Taisen F - Kanketsu-hen (Japan) (4M)"
 	region "Japan"
 	serial "T-20612G"
-	rom ( name "Super Robot Taisen F - Kanketsu-hen (Japan) (2M, 3M) (Track 2).bin" size 335919696 crc 23AEE29C md5 4C9D634D1D81E11E491FF6E0608BF972 sha1 15A5B8E980F0958381E1A32C6B11743F6B87AB06 serial "T-20612G" )
+	rom ( name "Super Robot Taisen F - Kanketsu-hen (Japan) (4M) (Track 2).bin" size 335919696 crc 23AEE29C md5 4C9D634D1D81E11E491FF6E0608BF972 sha1 15A5B8E980F0958381E1A32C6B11743F6B87AB06 serial "T-20612G" )
 )
 game (
 	name "Super Robot Taisen F - Kanketsu-hen (Japan) (Rev A) (11M)"
@@ -13162,6 +13622,12 @@ game (
 	region "Japan"
 	serial "T-7625G"
 	rom ( name "Taikou Risshiden II (Japan) (2M) (Track 1).bin" size 157393488 crc 96B274ED md5 A18776C08E77F84BF3E140071FF996A4 sha1 8EBAC2171C0574FDE5D2338FE12B6A0DD0581579 serial "T-7625G" )
+)
+game (
+	name "Taikou Risshiden II (Japan) (Rev A) (10M)"
+	region "Japan"
+	serial "T-7618G"
+	rom ( name "Taikou Risshiden II (Japan) (Rev A) (10M) (Track 1).bin" size 157426416 crc A8955263 md5 3E79050B2D4D2589442B71AC5B7318AA sha1 1FAAE5E3E20440972C4914BBD8AB77C5795953B7 serial "T-7618G" )
 )
 game (
 	name "Taikou Risshiden II (Japan) (Rev A) (10M)"
@@ -13356,6 +13822,14 @@ game (
 	rom ( name "Tempest 2000 (USA) (Track 01).bin" size 2573088 crc 9E969E36 md5 AAB84D9000ABA10BAC28189054EBFD18 sha1 2B421C579F3F374501B7B31DD07C9C129EBB106F serial "T-12516H" )
 )
 game (
+	name "Tempest 2000 (USA) (Beta)"
+	releaseyear "1996"
+	releasemonth "05"
+	releaseday "28"
+	region "USA"
+	rom ( name "Tempest 2000 (USA) (Beta) (1996-05-28) (Track 1).bin" size 1839264 crc 3ABCDB8C md5 1687299997526167ECFB986C1276A461 sha1 4D6933466B208C908ED0CF81AC7AD38615D59381 )
+)
+game (
 	name "Ten Pin Alley (USA)"
 	region "USA"
 	serial "T-13705H"
@@ -13512,6 +13986,14 @@ game (
 	rom ( name "Tetris Plus (USA) (Track 01).bin" size 6743184 crc D771BC8E md5 74ABB19A44258714A50C01EAEB6C318E sha1 85B03F952938DFDD154EFE009404DD29A4887DC8 serial "T-5704H" )
 )
 game (
+	name "Tetris Plus (USA) (Beta)"
+	releaseyear "1996"
+	releasemonth "07"
+	releaseday "22"
+	region "USA"
+	rom ( name "Tetris Plus (USA) (Beta) (1996-07-22) (Track 01).bin" size 6740832 crc 0BDABA4D md5 E3ED040FE0A4E5046D3BE5B0953926B3 sha1 4EF874A7F32B0A6F3B9B4F116B2500652A9EE957 )
+)
+game (
 	name "Tetris S (Japan)"
 	region "Japan"
 	serial "T-20802G"
@@ -13566,6 +14048,14 @@ game (
 	rom ( name "Thor - Seireioukiden (Japan) (Track 1).bin" size 96982368 crc D3C19D1B md5 57621A6CA529C79F2D1EDCADD9B858E0 sha1 F2A1CE57158C0040270614F7917E6D2A3281F873 serial "GS-9053" )
 )
 game (
+	name "Thor - Seireioukiden (Japan) (Beta)"
+	releaseyear "1996"
+	releasemonth "03"
+	releaseday "25"
+	region "Japan"
+	rom ( name "Thor - Seireioukiden (Japan) (Beta) (1996-03-25) (Track 1).bin" size 96977664 crc 2CCA0A9A md5 94B43CA12BFBC14D49B036AF7A472041 sha1 538D7EBC32D7141799260FB4B57C304ED0185F7D )
+)
+game (
 	name "Three Dirty Dwarves (Europe)"
 	region "Europe"
 	serial "MK81033-50"
@@ -13576,6 +14066,11 @@ game (
 	region "Japan"
 	serial "GS-9137"
 	rom ( name "Three Dirty Dwarves (Japan) (2M) (Track 1).bin" size 197937264 crc FC06C6B3 md5 651E95CC0DC246F0A79C609D092E3789 sha1 4847E559769E06EBAF53153862BDD6A3773583C8 serial "GS-9137" )
+)
+game (
+	name "Three Dirty Dwarves (USA) (Lost & Found Volume 2)"
+	region "USA"
+	rom ( name "Three Dirty Dwarves (USA) (Lost & Found Volume 2) (Track 1).bin" size 190095696 crc F228021D md5 5AEBA1C46ACFFAE73E079A413D1FE995 sha1 176717A2A7824DA747BBD517F1841E6444071C81 )
 )
 game (
 	name "Three Dirty Dwarves (USA)"
@@ -13716,10 +14211,10 @@ game (
 	rom ( name "Titan Wars (Japan) (Track 1).bin" size 520777488 crc 34DFA82C md5 5E58D1B416F0952509EAAA6E17A4F1FF sha1 12502A41C7A575555F1C9073F16EE5B21DBD8F7A serial "T-15903G" )
 )
 game (
-	name "Tokimeki Mahjong Graffiti - Toshishita no Tenshi-tachi (Japan)"
+	name "Tokimeki Mahjong Graffiti - Toshishita no Tenshitachi (Japan)"
 	region "Japan"
 	serial "T-20202G"
-	rom ( name "Tokimeki Mahjong Graffiti - Toshishita no Tenshi-tachi (Japan) (Track 01).bin" size 84730800 crc 7D92DF0B md5 E0E614404F41A34DF8AA39CB19967F34 sha1 C5FA914BF722847019021420039F6B817BE868E1 serial "T-20202G" )
+	rom ( name "Tokimeki Mahjong Graffiti - Toshishita no Tenshitachi (Japan) (Track 01).bin" size 84730800 crc 7D92DF0B md5 E0E614404F41A34DF8AA39CB19967F34 sha1 C5FA914BF722847019021420039F6B817BE868E1 serial "T-20202G" )
 )
 game (
 	name "Tokimeki Mahjong Paradise - Koi no Tenpai Beat (Japan)"
@@ -13936,6 +14431,12 @@ game (
 	region "Japan"
 	serial "GS-9078"
 	rom ( name "Toushinden S (Japan) (Track 01).bin" size 161525952 crc 34C1A752 md5 A8EF7D7A87E3D88E7CE45325AC899A64 sha1 EF464B9187539CBDE895558339092AC2DEDA39AD serial "GS-9078" )
+)
+game (
+	name "Toushinden S (Japan) (Rev A)"
+	region "Japan"
+	serial "GS-9078"
+	rom ( name "Toushinden S (Japan) (Rev A) (Track 01).bin" size 161525952 crc BCF8CAC1 md5 11700A8572E9B5EA3A6B9D7181221D1A sha1 7DB523D85B27D8A1A701A767D482B23DCE010F87 serial "GS-9078" )
 )
 game (
 	name "Toushinden URA (Japan)"
@@ -14166,6 +14667,14 @@ game (
 	rom ( name "VR Soccer (USA) (Track 1).bin" size 73871616 crc 24B4E423 md5 11D398688395A3FA1671471CFF6DEA45 sha1 9FEEA9FC8F7998364F12D8F531B16369AC247D5C serial "T-12517H" )
 )
 game (
+	name "VR Soccer (USA) (Beta)"
+	releaseyear "1996"
+	releasemonth "09"
+	releaseday "30"
+	region "USA"
+	rom ( name "VR Soccer (USA) (Beta) (1996-09-30) (Track 1).bin" size 73871616 crc 9599F69A md5 29F909661DE251C43B08BDA01CD9AB2B sha1 7090D20DCADEAEA50DB488798C700D14F130B18E )
+)
+game (
 	name "Valora Valley Golf (Europe)"
 	region "Europe"
 	serial "T-2303H-50"
@@ -14279,28 +14788,42 @@ game (
 	rom ( name "Virtua Cop 2 (Europe) (Track 01).bin" size 37693152 crc 837E11D3 md5 385BDA47FABFB318FE4A3292BD4EB894 sha1 8C42452328D4351B107B4C29472C155ABE931B34 serial "SOE-000-DEMO4" )
 )
 game (
-	name "Virtua Cop 2 (Japan) (3M)"
+	name "Virtua Cop 2 (Japan) (En,Ja) (3M)"
 	region "Japan"
 	serial "GS-9097"
-	rom ( name "Virtua Cop 2 (Japan) (3M) (Track 01).bin" size 37702560 crc A95E48E9 md5 41E990ADBD1D3255217E407D3869D7C8 sha1 DBC979C79CAB0B428EA253FFBDAF622E0C476FA7 serial "GS-9097" )
+	rom ( name "Virtua Cop 2 (Japan) (En,Ja) (3M) (Track 01).bin" size 37702560 crc A95E48E9 md5 41E990ADBD1D3255217E407D3869D7C8 sha1 DBC979C79CAB0B428EA253FFBDAF622E0C476FA7 serial "GS-9097" )
 )
 game (
-	name "Virtua Cop 2 (Japan) (3M)"
+	name "Virtua Cop 2 (Japan) (En,Ja) (3M)"
 	region "Japan"
 	serial "GS-9154"
-	rom ( name "Virtua Cop 2 (Japan) (3M) (Track 01).bin" size 37702560 crc A95E48E9 md5 41E990ADBD1D3255217E407D3869D7C8 sha1 DBC979C79CAB0B428EA253FFBDAF622E0C476FA7 serial "GS-9154" )
+	rom ( name "Virtua Cop 2 (Japan) (En,Ja) (3M) (Track 01).bin" size 37702560 crc A95E48E9 md5 41E990ADBD1D3255217E407D3869D7C8 sha1 DBC979C79CAB0B428EA253FFBDAF622E0C476FA7 serial "GS-9154" )
 )
 game (
-	name "Virtua Cop 2 (USA)"
-	region "USA"
-	serial "81043"
-	rom ( name "Virtua Cop 2 (USA) (Track 01).bin" size 37693152 crc E27AD52C md5 05A3AA6A4E5BEE396AC18BC367AD38AF sha1 1995DAB2517C37798D38DE1190DC094B8C82AF9B serial "81043" )
+	name "Virtua Cop 2 (Japan) (En,Ja) (Beta)"
+	releaseyear "1996"
+	releasemonth "09"
+	releaseday "24"
+	region "Japan"
+	rom ( name "Virtua Cop 2 (Japan) (En,Ja) (Beta) (1996-09-24) (Track 01).bin" size 10972080 crc 81021D4F md5 07E3B5D5723FBF9AE8612CC1703B3C2B sha1 8F4490CEF76F15137EBAAC93BC26228087EF514E )
 )
 game (
-	name "Virtua Cop 2 (USA)"
-	region "USA"
-	serial "81052"
-	rom ( name "Virtua Cop 2 (USA) (Track 01).bin" size 37693152 crc E27AD52C md5 05A3AA6A4E5BEE396AC18BC367AD38AF sha1 1995DAB2517C37798D38DE1190DC094B8C82AF9B serial "81052" )
+	name "Virtua Cop 2 (Japan) (En,Ja) (Rev B) (23M)"
+	region "Japan"
+	serial "GS-9097"
+	rom ( name "Virtua Cop 2 (Japan) (En,Ja) (Rev B) (23M) (Track 01).bin" size 37702560 crc 24D6CF15 md5 AD2F4F5117BBD94ACED0CCFEE80046AC sha1 76C897DA9B06A2296FD8BA6535CB0DF67938A2B8 serial "GS-9097" )
+)
+game (
+	name "Virtua Cop 2 (Korea)"
+	region "Korea"
+	serial "GS-9613J"
+	rom ( name "Virtua Cop 2 (Korea) (Track 01).bin" size 37693152 crc E27AD52C md5 05A3AA6A4E5BEE396AC18BC367AD38AF sha1 1995DAB2517C37798D38DE1190DC094B8C82AF9B serial "GS-9613J" )
+)
+game (
+	name "Virtua Cop 2 (Korea)"
+	region "Korea"
+	serial "MK-81043-08"
+	rom ( name "Virtua Cop 2 (Korea) (Track 01).bin" size 37693152 crc E27AD52C md5 05A3AA6A4E5BEE396AC18BC367AD38AF sha1 1995DAB2517C37798D38DE1190DC094B8C82AF9B serial "MK-81043-08" )
 )
 game (
 	name "Virtua Fighter (Europe) (Made in EU)"
@@ -14333,10 +14856,16 @@ game (
 	rom ( name "Virtua Fighter 2 (Europe) (Rev A) (Made in USA) (Track 01).bin" size 61321344 crc 4287EF99 md5 D3B932E85A84438410417D990E7D895D sha1 9BE7B1D5EDC9B765345BBD7C5CF0CB2B60F60DA4 serial "MK81014-50" )
 )
 game (
-	name "Virtua Fighter 2 (Japan) (Rev C) (42M)"
+	name "Virtua Fighter 2 (Japan) (Rev B) (30C)"
 	region "Japan"
-	serial "GS-9146"
-	rom ( name "Virtua Fighter 2 (Japan) (Rev C) (42M) (Track 01).bin" size 61316640 crc D4DC4EE2 md5 51FD397C3667362705E2D098A770AF1D sha1 875FED73F74BB4CF39C15F9B7D895F3DBFB728A3 serial "GS-9146" )
+	serial "GS-9079"
+	rom ( name "Virtua Fighter 2 (Japan) (Rev B) (30C) (Track 01).bin" size 61316640 crc 65C7FC1E md5 14992450395F67B251023821A4D20480 sha1 2475BFB03EEAABDFCCE93BC010D7C395EFDF8DCE serial "GS-9079" )
+)
+game (
+	name "Virtua Fighter 2 (Japan) (Rev C) (40M)"
+	region "Japan"
+	serial "GS-9079"
+	rom ( name "Virtua Fighter 2 (Japan) (Rev C) (40M) (Track 01).bin" size 61316640 crc D4DC4EE2 md5 51FD397C3667362705E2D098A770AF1D sha1 875FED73F74BB4CF39C15F9B7D895F3DBFB728A3 serial "GS-9079" )
 )
 game (
 	name "Virtua Fighter 2 (Korea)"
@@ -14345,10 +14874,32 @@ game (
 	rom ( name "Virtua Fighter 2 (Korea) (Track 01).bin" size 61318992 crc 136AF0A4 md5 9CDF3B152A3E42E47D0908DBD1322006 sha1 1F7B800B6E8152C57F5AE06A47D3ED991FD65305 serial "GS-9507J" )
 )
 game (
+	name "Virtua Fighter 2 (Korea)"
+	region "Korea"
+	serial "MK-81014-08"
+	rom ( name "Virtua Fighter 2 (Korea) (Track 01).bin" size 61318992 crc 136AF0A4 md5 9CDF3B152A3E42E47D0908DBD1322006 sha1 1F7B800B6E8152C57F5AE06A47D3ED991FD65305 serial "MK-81014-08" )
+)
+game (
 	name "Virtua Fighter 2 (USA)"
 	region "USA"
 	serial "81014"
 	rom ( name "Virtua Fighter 2 (USA) (Track 01).bin" size 60267648 crc 2CEA1D09 md5 FAFFD0C8B1832B376AAB5E98FE466043 sha1 28E0B690FFB61EE737C7F2CCC9280185265A1096 serial "81014" )
+)
+game (
+	name "Virtua Fighter 2 (USA) (Beta)"
+	releaseyear "1995"
+	releasemonth "09"
+	releaseday "11"
+	region "USA"
+	rom ( name "Virtua Fighter 2 (USA) (Beta) (1995-09-11) (Track 01).bin" size 9106944 crc 86E5F092 md5 BF60AF7A8052AE39FA107E0B6F1E9A4A sha1 C023C580E299715D0C5E0AFC42188F040F964F12 )
+)
+game (
+	name "Virtua Fighter 2 (USA) (Beta)"
+	releaseyear "1995"
+	releasemonth "10"
+	releaseday "19"
+	region "USA"
+	rom ( name "Virtua Fighter 2 (USA) (Beta) (1995-10-19) (Track 01).bin" size 41771520 crc B18D3397 md5 2392EF28DC940182F3B9AFB1BF75E7D0 sha1 016021C3A16539C49682242A28207DF5D8A79160 )
 )
 game (
 	name "Virtua Fighter 2 (USA)"
@@ -14477,6 +15028,12 @@ game (
 	rom ( name "Virtua Fighter Kids (Korea) (Track 01).bin" size 184293312 crc 17CC59C9 md5 7E928F58B754EF8A74361D6F944A3550 sha1 0BE17BEEF007C489305B228A0B503959AE7BD6D1 serial "GS-9609J" )
 )
 game (
+	name "Virtua Fighter Kids (Korea)"
+	region "Korea"
+	serial "MK-81049-08"
+	rom ( name "Virtua Fighter Kids (Korea) (Track 01).bin" size 184293312 crc 17CC59C9 md5 7E928F58B754EF8A74361D6F944A3550 sha1 0BE17BEEF007C489305B228A0B503959AE7BD6D1 serial "MK-81049-08" )
+)
+game (
 	name "Virtua Fighter Kids (USA)"
 	region "USA"
 	serial "81049"
@@ -14505,6 +15062,12 @@ game (
 	region "Korea"
 	serial "GS-9503J"
 	rom ( name "Virtua Fighter Remix (Korea) (Track 01).bin" size 13538112 crc 8E3FBEC4 md5 3177973EF196B2D1EE8518743CCD0384 sha1 27C294C74FFD7A2D1916783AEF08B62F81EBE53E serial "GS-9503J" )
+)
+game (
+	name "Virtua Fighter Remix (Korea)"
+	region "Korea"
+	serial "MK-81023-08"
+	rom ( name "Virtua Fighter Remix (Korea) (Track 01).bin" size 13538112 crc 8E3FBEC4 md5 3177973EF196B2D1EE8518743CCD0384 sha1 27C294C74FFD7A2D1916783AEF08B62F81EBE53E serial "MK-81023-08" )
 )
 game (
 	name "Virtua Fighter Remix (USA)"
@@ -14627,10 +15190,10 @@ game (
 	rom ( name "Virtual Kyoutei (Japan) (Track 01).bin" size 23106048 crc 46F74981 md5 C386EE3416D36DB0196598BBDDF64084 sha1 564A78C7775E40FCCDE6E58ABF8B4436D6FED333 serial "T-7101G" )
 )
 game (
-	name "Virtual Kyoutei 2 (Japan) (2M)"
+	name "Virtual Kyoutei 2 (Japan) (1M)"
 	region "Japan"
 	serial "T-7104G"
-	rom ( name "Virtual Kyoutei 2 (Japan) (2M) (Track 01).bin" size 16186464 crc 232A1A4D md5 49DA447D8544B6719839C1FD07F1377E sha1 899EFBA8FFCCC2EB7DBF6FA56A81AB17FF1F7A40 serial "T-7104G" )
+	rom ( name "Virtual Kyoutei 2 (Japan) (1M) (Track 01).bin" size 16186464 crc 232A1A4D md5 49DA447D8544B6719839C1FD07F1377E sha1 899EFBA8FFCCC2EB7DBF6FA56A81AB17FF1F7A40 serial "T-7104G" )
 )
 game (
 	name "Virtual Mahjong (Japan)"
@@ -14981,6 +15544,12 @@ game (
 	rom ( name "Wing Arms - Kareinaru Gekitsuiou (Japan) (Rev A) (Track 01).bin" size 148437072 crc 8C7E750F md5 CBEE3607D5C8A755C6E9FD05C73CACAB sha1 8D7DB9B86B054A136E6930A132C44DA6899C92DB serial "GS-9038" )
 )
 game (
+	name "Wing Arms - Kareinaru Gekitsuiou (Japan) (Rev B)"
+	region "Japan"
+	serial "GS-9038"
+	rom ( name "Wing Arms - Kareinaru Gekitsuiou (Japan) (Rev B) (Track 01).bin" size 148437072 crc 022D5B3B md5 74FC09F7B1FEEE4C8B39352397EF1324 sha1 C9E467C29094D031F1453AC6D590950D71582032 serial "GS-9038" )
+)
+game (
 	name "Winning Post (USA)"
 	region "USA"
 	serial "T-7602H"
@@ -15011,6 +15580,12 @@ game (
 	rom ( name "Winning Post 2 - Program '96 (Japan) (Track 1).bin" size 137062800 crc 9503C37C md5 474D62197E86B574E572DB4B9204E7AC sha1 855CF41BF3DA4D8366399AF560F754BB8DFFD6C8 serial "T-7620G" )
 )
 game (
+	name "Winning Post 2 - Program '96 (Japan) (Rev A)"
+	region "Japan"
+	serial "T-7620G"
+	rom ( name "Winning Post 2 - Program '96 (Japan) (Rev A) (Track 1).bin" size 137062800 crc 8B51FCA5 md5 61B5BF40FCA8E03FF3AEB559FE3DF8FB sha1 C352195DD36D577E77C44A8502A51D2433CE5E2A serial "T-7620G" )
+)
+game (
 	name "Winning Post 3 (Japan) (2M)"
 	region "Japan"
 	serial "T-7660G"
@@ -15039,6 +15614,14 @@ game (
 	region "Japan"
 	serial "GS-9177"
 	rom ( name "Winter Heat (Japan) (Track 01).bin" size 57442896 crc F975EED9 md5 1274A9F798D4E32F8936555DCDC24FFA sha1 68611585C50698E0CA0C051EF840E0B1E58B26D7 serial "GS-9177" )
+)
+game (
+	name "Winter Heat (Japan) (Beta)"
+	releaseyear "1997"
+	releasemonth "11"
+	releaseday "26"
+	region "Japan"
+	rom ( name "Winter Heat (Japan) (Beta) (1997-11-26) (Track 01).bin" size 53119920 crc 5C0FCE45 md5 DD89094D95C48D4785E419091BEF010B sha1 0F3E57290D78130C9886AC35F83CEFEDA5B596BF )
 )
 game (
 	name "Winter Heat (USA)"
@@ -15239,6 +15822,12 @@ game (
 	rom ( name "World Series Baseball (USA) (Track 1).bin" size 97109376 crc AA19FED8 md5 E6B71219329B731523B64B253A2FBE78 sha1 0BF67BB689E03AAEDB76D73A73D2D0AF40FCCAF6 serial "81109" )
 )
 game (
+	name "World Series Baseball 98 (Korea)"
+	region "Korea"
+	serial "MK-81127-08"
+	rom ( name "World Series Baseball 98 (Korea) (Track 1).bin" size 389531184 crc 7C826F5B md5 653A3643B2C26AAC5917E559EC41E203 sha1 3FD25AFB4591DFC979DE58E95F09F35AC66F8A84 serial "MK-81127-08" )
+)
+game (
 	name "World Series Baseball 98 (USA)"
 	region "USA"
 	serial "81127"
@@ -15263,6 +15852,14 @@ game (
 	rom ( name "World Series Baseball II (USA) (2S) (Track 1).bin" size 298372368 crc 0CF1E4E9 md5 600298F488423201B4577D286D0E8446 sha1 6769B64FADB8D4B058AFC36284C3544A43897707 serial "81113" )
 )
 game (
+	name "World Series Baseball II (USA) (Beta)"
+	releaseyear "1996"
+	releasemonth "07"
+	releaseday "05"
+	region "USA"
+	rom ( name "World Series Baseball II (USA) (Beta) (1996-07-05) (Track 1).bin" size 167142528 crc FCA4C116 md5 69ECDEE23F2DFD538195A9F2D4BD7663 sha1 6DAE2CB37FD75F73B9728F2AE63F6D475EB86881 )
+)
+game (
 	name "Worldwide Soccer '98 (USA) (En,Fr,Es)"
 	region "USA"
 	serial "81123"
@@ -15273,6 +15870,12 @@ game (
 	region "Korea"
 	serial "GS-9504J"
 	rom ( name "Worldwide Soccer - Sega International Victory Goal Edition (Korea) (Track 01).bin" size 149340240 crc 40C99930 md5 BCE791B393A3561BB225DAECACFE830D sha1 CD1635A5A3EDDBA5232D7E7150C202DDAEB1EDA2 serial "GS-9504J" )
+)
+game (
+	name "Worldwide Soccer - Sega International Victory Goal Edition (Korea)"
+	region "Korea"
+	serial "MK-81105-08"
+	rom ( name "Worldwide Soccer - Sega International Victory Goal Edition (Korea) (Track 01).bin" size 149340240 crc 40C99930 md5 BCE791B393A3561BB225DAECACFE830D sha1 CD1635A5A3EDDBA5232D7E7150C202DDAEB1EDA2 serial "MK-81105-08" )
 )
 game (
 	name "Worms (Europe)"

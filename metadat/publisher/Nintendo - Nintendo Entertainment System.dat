@@ -449,7 +449,7 @@ game (
 
 game (
 	comment "Adventures of Lex and Grim, The (World) (Aftermarket) (Homebrew)"
-	publisher "Joey Echeverria, "
+	publisher "Joey Echeverria,"
 	rom ( crc 2FA23BBF )
 )
 
@@ -11249,13 +11249,13 @@ game (
 
 game (
 	comment "Might & Magic - Secret of the Inner Sanctum (USA)"
-	publisher "New World Computing's"
+	publisher "New World Computing"
 	rom ( crc AB3DC7A6 )
 )
 
 game (
 	comment "Might and Magic - Book One - Secret of the Inner Sanctum (Japan)"
-	publisher "New World Computing's"
+	publisher "New World Computing"
 	rom ( crc 63CB38D2 )
 )
 
@@ -14993,7 +14993,7 @@ game (
 
 game (
 	comment "Secret Ties (USA) (Proto)"
-	publisher "Tokai Engineering"
+	publisher "Tokai Engineering"
 	rom ( crc 0F39FAB8 )
 )
 

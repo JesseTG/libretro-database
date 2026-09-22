@@ -1,4 +1,4 @@
-cheats = 42 
+cheats = 40 
 
 cheat0_desc = "Infinite HP"
 cheat0_code = "800A2904+00C8"

@@ -47,7 +47,7 @@ game (
 
 game (
 	comment "Aki to Tsukasa no Fushigi no Kabe (Japan) (Unl)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 672B7F6C )
 )
 
@@ -65,13 +65,13 @@ game (
 
 game (
 	comment "Backgammon (Japan)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 850BC084 )
 )
 
 game (
 	comment "Aspic - Majaou no Noroi (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 1999ADDB )
 )
 
@@ -107,7 +107,7 @@ game (
 
 game (
 	comment "Big Challenge! Juudou Senshuken (Japan)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 16C8CDD5 )
 )
 
@@ -137,13 +137,13 @@ game (
 
 game (
 	comment "Bishoujo Alien Battle (Japan) (Unl)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc E89FED10 )
 )
 
 game (
 	comment "Bishoujo Alien Battle (Japan) (Unl) (Alt) [b]"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc BD94735E )
 )
 
@@ -155,31 +155,31 @@ game (
 
 game (
 	comment "Bishoujo Hanafuda Club Vol.1 - Oichokabu Hen (Japan) (Unl)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 798BEA42 )
 )
 
 game (
 	comment "Bishoujo Kachinuki Renju - Gomoku Narabe (Japan) (Unl)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc FF06EB11 )
 )
 
 game (
 	comment "Bishoujo Hanafuda Club Vol.2 - Koikoi Bakappana Hen (Japan) (Unl)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 478F36D6 )
 )
 
 game (
 	comment "Bishoujo Mahjong Club (Japan) (Unl)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc DEAEF7E0 )
 )
 
 game (
 	comment "Bishoujo Sexy Puzzle (Japan) (Unl)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 6B0F343E )
 )
 
@@ -209,13 +209,13 @@ game (
 
 game (
 	comment "Bodyconquest I - Abakareshi Musumetachi (Japan) (Disk 1) (Unl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 6E59EC4F )
 )
 
 game (
 	comment "Bodyconquest I - Abakareshi Musumetachi (Japan) (Disk 2) (Unl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc DD80EA36 )
 )
 
@@ -251,13 +251,13 @@ game (
 
 game (
 	comment "Clu Clu Land (Japan) (En) (Disk Writer)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 85E771B9 )
 )
 
 game (
 	comment "Cleopatra no Mahou (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc FDEAA3D8 )
 )
 
@@ -281,7 +281,7 @@ game (
 
 game (
 	comment "Clu Clu Land (Japan) (En) (GameCube, Virtual Console)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 12BF0901 )
 )
 
@@ -305,19 +305,19 @@ game (
 
 game (
 	comment "Comic Sakka Series Touma Senki #4 - Tenkuu Ryuumaou Fukkatsu (Japan) (Unl)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc EDDB3816 )
 )
 
 game (
 	comment "Comic Sakka Series Touma Senki #5 - Youjuu Rudo no Chousen (Japan) (Unl)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc A3BD4E0B )
 )
 
 game (
 	comment "Date de Blackjack (Japan) (Unl)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc AD361F32 )
 )
 
@@ -395,37 +395,37 @@ game (
 
 game (
 	comment "Egger Land (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 34688660 )
 )
 
 game (
 	comment "Doremikko (Japan)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc BEE7A47B )
 )
 
 game (
 	comment "Egger Land (Japan) (Rev 1) (Possible Proto)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 089FA25A )
 )
 
 game (
 	comment "Egger Land - Souzou e no Tabidachi (Japan) (Beta) (1987-11-11)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 5C50B9FC )
 )
 
 game (
 	comment "Egger Land - Souzou e no Tabidachi (Japan) (Disk Writer)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 94DE6CCB )
 )
 
 game (
 	comment "Esper Dream (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc E33C8305 )
 )
 
@@ -443,13 +443,13 @@ game (
 
 game (
 	comment "Esper Dream (Japan) (Rev 1) (Disk Writer)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 7AECF9D8 )
 )
 
 game (
 	comment "Esper Dream (Japan) (Rev 1) (Wii and Wii U Virtual Console)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc B94B78EA )
 )
 
@@ -461,7 +461,7 @@ game (
 
 game (
 	comment "Esper Dream (Japan) (Rev 1) (3DS Virtual Console)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc B94B78EA )
 )
 
@@ -509,31 +509,31 @@ game (
 
 game (
 	comment "Famicom Grand Prix - F1 Race (Japan) (DV 1) (Disk Writer)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc F8A257B2 )
 )
 
 game (
 	comment "Famicom Grand Prix - F1 Race (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 0CE9573B )
 )
 
 game (
 	comment "Famicom Grand Prix II - 3D Hot Rally (Japan) (DV 7)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc A6A25143 )
 )
 
 game (
 	comment "Famicom Grand Prix II - 3D Hot Rally (Japan) (DV 5)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc A0F93B27 )
 )
 
 game (
 	comment "Famicom Grand Prix II - 3D Hot Rally (Japan) (DV 8) (Disk Writer)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc B1BDB8AA )
 )
 
@@ -647,13 +647,13 @@ game (
 
 game (
 	comment "Family Composer (Japan) (Disk Writer)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc 01E451B9 )
 )
 
 game (
 	comment "Family Composer (Japan) (Rev 1) (Possible Proto)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc 49FF37AF )
 )
 
@@ -665,31 +665,31 @@ game (
 
 game (
 	comment "Famimaga Disk Vol. 1 - Hong Kong (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 31C155D8 )
 )
 
 game (
 	comment "Famimaga Disk Vol. 2 - Panic Space (Japan) (Disk Writer)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc A2EBBB2F )
 )
 
 game (
 	comment "Famimaga Disk Vol. 3 - All 1 (Japan) (Disk Writer)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 645B4C48 )
 )
 
 game (
 	comment "Famimaga Disk Vol. 4 - Clox (Japan) (Disk Writer)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 135831C4 )
 )
 
 game (
 	comment "Famimaga Disk Vol. 5 - Puyo Puyo (Japan) (Disk Writer)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 58D3A655 )
 )
 
@@ -701,7 +701,7 @@ game (
 
 game (
 	comment "Famimaga Disk Vol. 6 - Janken Disk Jou (Japan) (Disk Writer)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 958201D8 )
 )
 
@@ -713,55 +713,55 @@ game (
 
 game (
 	comment "Fruits Mahjong 1 - Disk 1 - Mahjong Game Hontai (Japan) (Unl)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 722ECA6D )
 )
 
 game (
 	comment "Fruits Mahjong 1 - Disk 2 - Dai H Taikai (Japan) (Unl)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc F4300462 )
 )
 
 game (
 	comment "Fruits Mahjong 2 - Disk 1 - Tokimeki Gals (Japan) (Unl)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc D065DFCF )
 )
 
 game (
 	comment "Fruits Mahjong 3 - Disk 1 - Yonin no Tenshi Tachi (Japan) (Unl)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 1F0E3CBC )
 )
 
 game (
 	comment "Fruits Mahjong 2 - Disk 2 - Yonin to Dai H Taikai (Japan) (Unl)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc EFF1B027 )
 )
 
 game (
 	comment "Fruits Mahjong 3 - Disk 2 - Tottemo H na Gogo (Japan) (Unl)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 7D853EEC )
 )
 
 game (
 	comment "Fruits Mahjong 4 - Disk 1 - Bishoujo Connection (Japan) (Unl)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc F5DE88B1 )
 )
 
 game (
 	comment "Fruits Mahjong 4 - Disk 2 - Daitan H na Hirusagari (Japan) (Unl)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 4A42467D )
 )
 
 game (
 	comment "Fuuun Shourin Ken - Ankoku no Maou (Japan)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 3C5F6468 )
 )
 
@@ -821,7 +821,7 @@ game (
 
 game (
 	comment "Gokuraku Yuugi - Game Tengoku (Japan)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 42FC78AE )
 )
 
@@ -887,7 +887,7 @@ game (
 
 game (
 	comment "Gomoku Narabe (Japan) (Proto)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 6521FAC2 )
 )
 
@@ -929,7 +929,7 @@ game (
 
 game (
 	comment "Hayama Reiko no Date de Blackjack (Japan) (Unl)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc E918A01A )
 )
 
@@ -1013,13 +1013,13 @@ game (
 
 game (
 	comment "Ishidou (Japan) (Disk Writer)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 0C54A19E )
 )
 
 game (
 	comment "Igo - Kyuu Roban Taikyoku (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 2E1E75AE )
 )
 
@@ -1031,7 +1031,7 @@ game (
 
 game (
 	comment "Jikai Shounen Met Mag (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc A25A1001 )
 )
 
@@ -1049,7 +1049,7 @@ game (
 
 game (
 	comment "Kalin no Tsurugi (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 30A753BE )
 )
 
@@ -1067,7 +1067,7 @@ game (
 
 game (
 	comment "Karate Champ (Japan)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc DFD06601 )
 )
 
@@ -1127,13 +1127,13 @@ game (
 
 game (
 	comment "Knight Move (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc FD6EF8D7 )
 )
 
 game (
 	comment "Knight Move (Japan) (Rev 1) (Disk Writer)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 6D365E2F )
 )
 
@@ -1181,25 +1181,25 @@ game (
 
 game (
 	comment "Link no Bouken - The Legend of Zelda 2 (Japan) (Rev 1)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 1187FE3D )
 )
 
 game (
 	comment "Link no Bouken - The Legend of Zelda 2 (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 25DDEDAD )
 )
 
 game (
 	comment "Link no Bouken - The Legend of Zelda 2 (Japan) (Rev 1) (Collector's Edition)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 25DDEDAD )
 )
 
 game (
 	comment "Link no Bouken - The Legend of Zelda 2 (Japan) (Rev 1) (Wii and Wii U Virtual Console)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 25DDEDAD )
 )
 
@@ -1235,19 +1235,19 @@ game (
 
 game (
 	comment "Lutter (Japan) (Disk Writer)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 89EF45DD )
 )
 
 game (
 	comment "Madou Senki - Deep Dungeon (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 56F522D8 )
 )
 
 game (
 	comment "Madou Senki - Deep Dungeon (Japan) (Rev 1)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F70173FB )
 )
 
@@ -1259,19 +1259,19 @@ game (
 
 game (
 	comment "Magma Project - Hacker (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 1CEE986E )
 )
 
 game (
 	comment "Mahjong (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 9A8A4DBF )
 )
 
 game (
 	comment "Mahjong Kazoku (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 3D43B203 )
 )
 
@@ -1283,7 +1283,7 @@ game (
 
 game (
 	comment "Maerchen Veil (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 973CF165 )
 )
 
@@ -1349,19 +1349,19 @@ game (
 
 game (
 	comment "Monitor Puzzle Kineko, The - Kinetic Connection (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc A8516D48 )
 )
 
 game (
 	comment "Monitor Puzzle Kineko, The - Kinetic Connection II (Japan) (Disk Writer)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc DCED2708 )
 )
 
 game (
 	comment "Monitor Puzzle Kineko, The - Kinetic Connection (Japan) (Rev 1) (Possible Proto)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 23096B29 )
 )
 
@@ -1379,7 +1379,7 @@ game (
 
 game (
 	comment "Namida no Soukoban Special (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 0C5B12D6 )
 )
 
@@ -1421,13 +1421,13 @@ game (
 
 game (
 	comment "Nazoler Land - Daisangou (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 872CD3CF )
 )
 
 game (
 	comment "Nazoler Land - Soukangou (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc B42FD111 )
 )
 
@@ -1451,7 +1451,7 @@ game (
 
 game (
 	comment "Othello (Japan) (DV 2)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 7CEFC63B )
 )
 
@@ -1463,13 +1463,13 @@ game (
 
 game (
 	comment "Othello (Japan) (DV 3, 5) (Disk Writer)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 7CEFC63B )
 )
 
 game (
 	comment "Pac-Man (Japan) (Disk Writer)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc CDF3CA4B )
 )
 
@@ -1481,13 +1481,13 @@ game (
 
 game (
 	comment "Pachicom (Japan) (Disk Writer)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc B1686472 )
 )
 
 game (
 	comment "Pachinko Grand Prix (Japan)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 1C185588 )
 )
 
@@ -1505,7 +1505,7 @@ game (
 
 game (
 	comment "Professional Mahjong Gokuu (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 38A67D37 )
 )
 
@@ -1529,7 +1529,7 @@ game (
 
 game (
 	comment "Puzzle Boys (Japan) (Disk Writer)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 78F31548 )
 )
 
@@ -1565,7 +1565,7 @@ game (
 
 game (
 	comment "Roger Rabbit (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc A7783DC0 )
 )
 
@@ -1613,7 +1613,7 @@ game (
 
 game (
 	comment "Santa Claus no Takarabako (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 645B2EC7 )
 )
 
@@ -1673,25 +1673,25 @@ game (
 
 game (
 	comment "Shanghai (Japan) (Proto) (1986-10-16)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc B1ED9311 )
 )
 
 game (
 	comment "Shanghai II (Japan) (Proto) (Dragon Layout)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 4EAAEA69 )
 )
 
 game (
 	comment "Shanghai II (Japan) (Proto) (Scorpion Layout)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 4E10423E )
 )
 
 game (
 	comment "Silviana - Ai Ippai no Little Angel (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc CC7738CD )
 )
 
@@ -1709,7 +1709,7 @@ game (
 
 game (
 	comment "Solomon no Kagi (Japan) (Disk Writer)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 9C2E3999 )
 )
 
@@ -1721,19 +1721,19 @@ game (
 
 game (
 	comment "Super Boy Allan (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 72F6194B )
 )
 
 game (
 	comment "Super Lode Runner (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc C5A7E32C )
 )
 
 game (
 	comment "Super Lode Runner II (Japan) (Disk Writer)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 042C902B )
 )
 
@@ -1775,19 +1775,19 @@ game (
 
 game (
 	comment "Tanigawa Kouji no Shougi Shinan II - Meijin e no Michi (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 6CAD684C )
 )
 
 game (
 	comment "Tanigawa Kouji no Shougi Shinan II - Meijin e no Michi - Shinban Tsumeshougi - Tsugi no Itte (Japan) (Disk Writer)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 94ED2D89 )
 )
 
 game (
 	comment "Tanigawa Kouji no Shougi Shinan II - Meijin e no Michi (Japan) (Beta) (1987-11-13)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc FC14D862 )
 )
 
@@ -1919,25 +1919,25 @@ game (
 
 game (
 	comment "Ultraman Club - Chikyuu Dakkan Sakusen (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc AD5183DB )
 )
 
 game (
 	comment "Ultraman Club - Chikyuu Dakkan Sakusen (Japan) (Rev 1)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc BB9F839F )
 )
 
 game (
 	comment "Vs. Excitebike (Japan) (En)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc FEBE1841 )
 )
 
 game (
 	comment "Vs. Excitebike (Japan, USA) (Virtual Console)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 79AA22D5 )
 )
 
@@ -1967,7 +1967,7 @@ game (
 
 game (
 	comment "Wrecking Crew (Japan) (Disk Writer)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 68B88428 )
 )
 
@@ -2003,13 +2003,13 @@ game (
 
 game (
 	comment "Yuushi no Monshou - Deep Dungeon (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc BFCC8051 )
 )
 
 game (
 	comment "Yuushi no Monshou - Deep Dungeon (Japan) (Rev 1) (Disk Writer)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 4C5E542B )
 )
 

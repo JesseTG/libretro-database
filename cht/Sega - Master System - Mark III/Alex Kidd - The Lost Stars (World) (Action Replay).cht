@@ -1,4 +1,4 @@
-cheats = 7 
+cheats = 6 
 
 cheat0_desc = "Invincible After 1 Hit (Time Still Decreases)"
 cheat0_code = "00CD-0A01"

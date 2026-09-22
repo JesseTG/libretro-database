@@ -1,7 +1,7 @@
 clrmamepro (
 	name "Sega - Mega-CD - Sega CD"
 	description "Sega - Mega-CD - Sega CD"
-	version "2025.11.10"
+	version "2026.08.01"
 	homepage "http://github.com/robloach/libretro-dats"
 )
 
@@ -1706,16 +1706,14 @@ game (
 	rom ( name "Night Trap (USA) (Disc 1) (Alt).bin" size 616645008 crc 133B76CE md5 6BFE493A225713115096D730EDF77AFE sha1 9CD08D3718E17134A013CAE92A52A2AC0B226B77 serial "4903-0" )
 )
 game (
-	name "Night Trap (USA) (Disc 1) (Rerelease)"
+	name "Night Trap (USA) (Disc 1) (Limited Run Games)"
 	region "USA"
-	serial "T-162105"
-	rom ( name "Night Trap (USA) (Disc 1) (Rerelease) (Track 1).bin" size 617058960 crc DFD08D74 md5 41052FB9C5A921E1DE5056F107AC6374 sha1 E8389B823B5C4305520F3A04591EB2A32CA593D8 serial "T-162105" )
+	rom ( name "Night Trap (USA) (Disc 1) (Limited Run Games) (Track 1).bin" size 617058960 crc DFD08D74 md5 41052FB9C5A921E1DE5056F107AC6374 sha1 E8389B823B5C4305520F3A04591EB2A32CA593D8 )
 )
 game (
-	name "Night Trap (USA) (Disc 1) (Rerelease)"
+	name "Night Trap (USA) (Disc 1) (Sega CD 32X) (Limited Run Games)"
 	region "USA"
-	serial "T-162105-0"
-	rom ( name "Night Trap (USA) (Disc 1) (Rerelease) (Track 1).bin" size 617058960 crc DFD08D74 md5 41052FB9C5A921E1DE5056F107AC6374 sha1 E8389B823B5C4305520F3A04591EB2A32CA593D8 serial "T-162105-0" )
+	rom ( name "Night Trap (USA) (Disc 1) (Sega CD 32X) (Limited Run Games) (Track 1).bin" size 617058960 crc 8F9D8A16 md5 46731E3541F48A59E578805AA330A0E1 sha1 8EBD0879DF65E4ABEEA3D93BAFA8E9E42ECD4653 )
 )
 game (
 	name "Night Trap (USA) (Disc 1) (Sega CD 32X) (RE-1)"
@@ -1742,16 +1740,14 @@ game (
 	rom ( name "Night Trap (USA) (Disc 2).bin" size 515351424 crc 7C560AE9 md5 3976DF829ECD93297B56AD44EBEB001A sha1 FD9C547646CE18C26BFF42526AEB4204F3CEF85E serial "4903-1" )
 )
 game (
-	name "Night Trap (USA) (Disc 2) (Rerelease)"
+	name "Night Trap (USA) (Disc 2) (Limited Run Games)"
 	region "USA"
-	serial "T-162105"
-	rom ( name "Night Trap (USA) (Disc 2) (Rerelease) (Track 1).bin" size 515276160 crc E495D81E md5 8729032AA159DF4704355E0A036690D2 sha1 7587C0FAEA4165D1DF3182A52923D1F2683517B0 serial "T-162105" )
+	rom ( name "Night Trap (USA) (Disc 2) (Limited Run Games) (Track 1).bin" size 515276160 crc E495D81E md5 8729032AA159DF4704355E0A036690D2 sha1 7587C0FAEA4165D1DF3182A52923D1F2683517B0 )
 )
 game (
-	name "Night Trap (USA) (Disc 2) (Rerelease)"
+	name "Night Trap (USA) (Disc 2) (Sega CD 32X) (Limited Run Games)"
 	region "USA"
-	serial "T-162105-1"
-	rom ( name "Night Trap (USA) (Disc 2) (Rerelease) (Track 1).bin" size 515276160 crc E495D81E md5 8729032AA159DF4704355E0A036690D2 sha1 7587C0FAEA4165D1DF3182A52923D1F2683517B0 serial "T-162105-1" )
+	rom ( name "Night Trap (USA) (Disc 2) (Sega CD 32X) (Limited Run Games) (Track 1).bin" size 515276160 crc 7E7649E2 md5 23ED076DB99E1009D8C38E7BF8A01512 sha1 AF635148D1290099241843B519E155E81E47198A )
 )
 game (
 	name "Night Trap (USA) (Disc 2) (Sega CD 32X) (RE-1)"
@@ -2025,6 +2021,12 @@ game (
 	region "USA"
 	serial "T-113035"
 	rom ( name "Puggsy (USA) (Track 01).bin" size 104388816 crc 88336725 md5 601AF1EAEC3BE71C2FAB89226CF8F8A5 sha1 A522B572D7DA5183A548D7AF95F1066FE5B701C4 serial "T-113035" )
+)
+game (
+	name "Quiz Scramble Special (Japan) (Rev B)"
+	region "Japan"
+	serial "G-6003"
+	rom ( name "Quiz Scramble Special (Japan) (Rev B) (Track 01).bin" size 28261632 crc 24F14A3D md5 29FB55C2C680124EEA53EBF03E0F63EC sha1 54D2E8F240A898EB3E0A43A36795DB17A6B27C68 serial "G-6003" )
 )
 game (
 	name "Quiz Tonosama no Yabou (Japan)"

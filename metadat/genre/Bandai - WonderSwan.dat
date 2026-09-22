@@ -35,7 +35,7 @@ game (
 
 game (
 	comment "Chocobo no Fushigi na Dungeon for WonderSwan (Japan) (Rev 2)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc CCAA4853 )
 )
 
@@ -47,19 +47,19 @@ game (
 
 game (
 	comment "Cardcaptor Sakura - Sakura to Fushigi na Clow Card (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 7F3A14C0 )
 )
 
 game (
 	comment "Chocobo no Fushigi na Dungeon for WonderSwan (Japan) (Rev 1)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc A607A350 )
 )
 
 game (
 	comment "Chou Aniki - Otoko no Tamafuda (Japan) (Rev 4)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 7FFF2520 )
 )
 
@@ -71,7 +71,7 @@ game (
 
 game (
 	comment "Chocobo no Fushigi na Dungeon for WonderSwan (Japan) (Rev 3)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc AA53971D )
 )
 
@@ -107,55 +107,55 @@ game (
 
 game (
 	comment "Digimon Adventure - Anode Tamer (Japan) (Rev 1)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 6E9DD148 )
 )
 
 game (
 	comment "Digimon - Ver. WonderSwan (Hong Kong) (En)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 94EA6FFC )
 )
 
 game (
 	comment "Digimon Adventure - Anode Tamer (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc FC6946F0 )
 )
 
 game (
 	comment "Digimon Adventure 02 - D1 Tamers (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 4D28637E )
 )
 
 game (
 	comment "Digimon Adventure - Cathode Tamer (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 42AD238B )
 )
 
 game (
 	comment "Digimon Adventure 02 - Tag Tamers (Japan) (Rev 1)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 6EDEDAF8 )
 )
 
 game (
 	comment "Digimon Adventure 02 - Tag Tamers (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 56CE1BC5 )
 )
 
 game (
 	comment "Digimon Tamers - Brave Tamer (Japan) (Rev 1)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F1F4D41F )
 )
 
 game (
 	comment "Digital Monster - Ver. WonderSwan (Japan) (Rev 1)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc AB59DE2E )
 )
 
@@ -173,7 +173,7 @@ game (
 
 game (
 	comment "Final Lap 2000 (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc CE2F1A1D )
 )
 
@@ -215,7 +215,7 @@ game (
 
 game (
 	comment "Goraku Ou Tango! (Japan) (Rev 2)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 00137E86 )
 )
 
@@ -227,37 +227,37 @@ game (
 
 game (
 	comment "Glocal Hexcite (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 4AED3911 )
 )
 
 game (
 	comment "GunPey (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc A1656BBB )
 )
 
 game (
 	comment "Hanafuda Shiyouyo (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 4B22270D )
 )
 
 game (
 	comment "Harobots (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc AA525C04 )
 )
 
 game (
 	comment "Harobots (Japan) (Rev 1)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F75CE82C )
 )
 
 game (
 	comment "Hunter X Hunter - Ishi o Tsugu Mono (Japan) (Rev 1)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc BD6FC68A )
 )
 
@@ -269,7 +269,7 @@ game (
 
 game (
 	comment "Hunter X Hunter - Ishi o Tsugu Mono (Japan) (Rev 2)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 70AA800E )
 )
 
@@ -311,13 +311,13 @@ game (
 
 game (
 	comment "Langrisser Millennium WS - The Last Century (Japan) (Rev 1)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 9E0854E2 )
 )
 
 game (
 	comment "Last Stand (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc CCCAF8A1 )
 )
 
@@ -329,13 +329,13 @@ game (
 
 game (
 	comment "Macross - True Love Song (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 62D419CD )
 )
 
 game (
 	comment "Mahjong Touryuumon (Japan) (Rev 1)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc C2ED122E )
 )
 
@@ -347,7 +347,7 @@ game (
 
 game (
 	comment "Mahjong Touryuumon (Japan) (Rev 3)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc E7E7FD4C )
 )
 
@@ -359,13 +359,13 @@ game (
 
 game (
 	comment "Medarot Perfect Edition - Kabuto Version (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 12FB8B28 )
 )
 
 game (
 	comment "Medarot Perfect Edition - Kuwagata Version (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 2B40745D )
 )
 
@@ -389,7 +389,7 @@ game (
 
 game (
 	comment "Mingle Magnet (Japan) (En,Ja) (Rev 1)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 9BAAC7BB )
 )
 
@@ -413,7 +413,7 @@ game (
 
 game (
 	comment "Morita Shougi for WonderSwan (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc D675C265 )
 )
 
@@ -449,7 +449,7 @@ game (
 
 game (
 	comment "Ou-chan no Oekaki Logic (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 631BD97A )
 )
 
@@ -461,13 +461,13 @@ game (
 
 game (
 	comment "Puyo Puyo Tsuu (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 5A41A7BA )
 )
 
 game (
 	comment "Pro Mahjong Kiwame for WonderSwan (Japan) (Rev 1)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 90F7E6D6 )
 )
 
@@ -479,13 +479,13 @@ game (
 
 game (
 	comment "Puzzle Bobble (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc F504CD84 )
 )
 
 game (
 	comment "Raku Jongg (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc FE4FF701 )
 )
 
@@ -557,19 +557,19 @@ game (
 
 game (
 	comment "Senkaiden - TV Animation Senkaiden Houshin Engi Yori (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 07A3DD46 )
 )
 
 game (
 	comment "Sennou Millennium (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 301436AC )
 )
 
 game (
 	comment "Shanghai Pocket (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 1C489351 )
 )
 
@@ -581,7 +581,7 @@ game (
 
 game (
 	comment "Shougi Touryuumon (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 3AD194EB )
 )
 
@@ -593,7 +593,7 @@ game (
 
 game (
 	comment "Slither Link (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 352A570D )
 )
 
@@ -653,19 +653,19 @@ game (
 
 game (
 	comment "Taikyoku Igo - Heisei Kiin (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 5023DB90 )
 )
 
 game (
 	comment "Tanjou Debut for WonderSwan (Japan) (Rev 1)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 8B74F59A )
 )
 
 game (
 	comment "Tare Panda no GunPey (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc A5643AA3 )
 )
 
@@ -683,7 +683,7 @@ game (
 
 game (
 	comment "Time Bokan Series - Bokan Densetsu - Buta mo Odaterya Doronboo (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 7DA6ACB9 )
 )
 
@@ -701,19 +701,19 @@ game (
 
 game (
 	comment "Trump Collection - Bottom-Up Teki Trump Seikatsu (Japan) (Rev 1)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc C283EC5F )
 )
 
 game (
 	comment "Trump Collection 2 - Bottom-Up Teki Sekaiisshuu no Tabi (Japan) (Rev 1)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 64AAF392 )
 )
 
 game (
 	comment "Turntablist - DJ Battle (Japan)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc 0D5171F0 )
 )
 
@@ -737,7 +737,7 @@ game (
 
 game (
 	comment "Vaitz Blade (Japan) (Rev 1)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 8FC9E145 )
 )
 

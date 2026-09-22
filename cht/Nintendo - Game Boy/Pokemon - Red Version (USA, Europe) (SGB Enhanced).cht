@@ -1,4 +1,4 @@
-cheats = 590
+cheats = 591
 
 cheat0_desc = "Infinite Money"
 cheat0_code = "019947D3+019948D3+019949D3"
@@ -2359,3 +2359,7 @@ cheat588_enable = false
 cheat589_desc = "Title Screen Music Modifier"
 cheat589_code = ""
 cheat589_enable = false
+
+cheat590_desc = "Buy Rare Candy"
+cheat590_code = "01287CCF"
+cheat590_enable = false

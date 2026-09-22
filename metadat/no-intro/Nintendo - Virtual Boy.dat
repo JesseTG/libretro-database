@@ -1,7 +1,7 @@
 clrmamepro (
 	name "Nintendo - Virtual Boy"
 	description "Nintendo - Virtual Boy"
-	version "2025.11.10"
+	version "2026.08.01"
 	homepage "http://github.com/robloach/libretro-dats"
 )
 
@@ -103,14 +103,14 @@ game (
 	rom ( name "Hyper Fighting (World) (Beta) (Aftermarket) (Unl).vb" size 2097152 crc 4450EDE0 md5 B3E46CDBE57D3995065DAA917A858A76 sha1 322DC4C2DF74BF19D8A30D43C489401BE5E76CA5 serial "VFDE" )
 )
 game (
-	name "Insecticide (World)"
-	rom ( name "Insecticide (World) (Aftermarket) (Unl).vb" size 2097152 crc DE9F669B md5 F2358AE652AFB6A2520CD6DF89EE6B7E sha1 DD7D02CD879584DEA3CB9766E44948AE6A4B320F )
-)
-game (
-	name "Insmouth no Yakata (Japan)"
+	name "Innsmouth no Yakata (Japan)"
 	region "Japan"
 	serial "VIMJ"
-	rom ( name "Insmouth no Yakata (Japan).vb" size 1048576 crc 83CB6A00 md5 1EB964D0EAA3223CFEFDCC99A6265C88 sha1 37E06E53CE2810E870835C48DECDD6C72079BFDA serial "VIMJ" )
+	rom ( name "Innsmouth no Yakata (Japan).vb" size 1048576 crc 83CB6A00 md5 1EB964D0EAA3223CFEFDCC99A6265C88 sha1 37E06E53CE2810E870835C48DECDD6C72079BFDA serial "VIMJ" )
+)
+game (
+	name "Insecticide (World)"
+	rom ( name "Insecticide (World) (Aftermarket) (Unl).vb" size 2097152 crc DE9F669B md5 F2358AE652AFB6A2520CD6DF89EE6B7E sha1 DD7D02CD879584DEA3CB9766E44948AE6A4B320F )
 )
 game (
 	name "Jack Bros. (USA)"
@@ -282,10 +282,10 @@ game (
 	rom ( name "Vertical Force (USA).vb" size 1048576 crc 4C32BA5E md5 87C38F66D5B9EAD72AF22F515A3A5F51 sha1 38F9008F60B09DEEF1151D46B905B090A0338200 serial "VH3E" )
 )
 game (
-	name "Virtual Bowling (Japan)"
+	name "Virtual Bowling (Japan) (En)"
 	region "Japan"
 	serial "VVBJ"
-	rom ( name "Virtual Bowling (Japan).vb" size 1048576 crc 20688279 md5 5B11D402F7E322C71A7D4FA6503631FA sha1 A5BE7654037050F0A781E70EFEA0191F43D26F06 serial "VVBJ" )
+	rom ( name "Virtual Bowling (Japan) (En).vb" size 1048576 crc 20688279 md5 5B11D402F7E322C71A7D4FA6503631FA sha1 A5BE7654037050F0A781E70EFEA0191F43D26F06 serial "VVBJ" )
 )
 game (
 	name "Virtual Boy Wario Land (Japan, USA) (En)"

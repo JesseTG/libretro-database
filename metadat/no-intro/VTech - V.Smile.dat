@@ -1,21 +1,21 @@
 clrmamepro (
 	name "VTech - V.Smile"
 	description "VTech - V.Smile"
-	version "2025.11.10"
+	version "2026.08.01"
 	homepage "http://github.com/robloach/libretro-dats"
 )
 
 game (
-	name "5, Rue Sesame - Le Monde d'Elmo - Les grandes decouvertes d'Elmo (France)"
+	name "5, Rue Sesame - Le Monde d'Elmo - Les Grandes Decouvertes d'Elmo (France)"
 	region "France"
 	serial "8092265005001"
-	rom ( name "5, Rue Sesame - Le Monde d'Elmo - Les grandes decouvertes d'Elmo (France).bin" size 8388608 crc DEF351E7 md5 3C5064C05008700DB8D790F1EF28E935 sha1 95D005B6E2BF36ADD42916025558744CCFFC8863 serial "8092265005001" )
+	rom ( name "5, Rue Sesame - Le Monde d'Elmo - Les Grandes Decouvertes d'Elmo (France).bin" size 8388608 crc DEF351E7 md5 3C5064C05008700DB8D790F1EF28E935 sha1 95D005B6E2BF36ADD42916025558744CCFFC8863 serial "8092265005001" )
 )
 game (
-	name "5, Rue Sesame - Les aventures imaginaires d'Ernest et Bart (France)"
+	name "5, Rue Sesame - Les Aventures Imaginaires d'Ernest et Bart (France)"
 	region "France"
 	serial "8092465001"
-	rom ( name "5, Rue Sesame - Les aventures imaginaires d'Ernest et Bart (France).bin" size 8388608 crc 80DA2B1D md5 0301889DF0B3826DEF06DF1CF9E9215B sha1 0E16FABBEF582893E51503A018D8E6EDFE2A3FEE serial "8092465001" )
+	rom ( name "5, Rue Sesame - Les Aventures Imaginaires d'Ernest et Bart (France).bin" size 8388608 crc 80DA2B1D md5 0301889DF0B3826DEF06DF1CF9E9215B sha1 0E16FABBEF582893E51503A018D8E6EDFE2A3FEE serial "8092465001" )
 )
 game (
 	name "ABC Land Aventure (France)"
@@ -144,10 +144,10 @@ game (
 	rom ( name "Apprenti' pilote (France).bin" size 8388608 crc C4819E95 md5 0279827C1CEF9450D955E2EEE901758E sha1 B625A7FB1D078349AEE1C4CC18EE6F3917AAA816 serial "8092040001" )
 )
 game (
-	name "Arche de Noe, L' - L'aventure des animaux (France) (V.Smile Baby)"
+	name "Arche de Noe, L' - L'Aventure des Animaux (France) (V.Smile Baby)"
 	region "France"
 	serial "8099040001"
-	rom ( name "Arche de Noe, L' - L'aventure des animaux (France) (V.Smile Baby).bin" size 8388608 crc 745F97B3 md5 47288A6EAB3190327A59DEDBFFAB482F sha1 A1D82044E215730A4C8AD7440360EE6336E01B01 serial "8099040001" )
+	rom ( name "Arche de Noe, L' - L'Aventure des Animaux (France) (V.Smile Baby).bin" size 8388608 crc 745F97B3 md5 47288A6EAB3190327A59DEDBFFAB482F sha1 A1D82044E215730A4C8AD7440360EE6336E01B01 serial "8099040001" )
 )
 game (
 	name "Aventuras en el Parque Alfabeto (Spain)"
@@ -168,10 +168,10 @@ game (
 	rom ( name "Avventura nel Parco Alfabeto (Italy).bin" size 8388608 crc E86822D9 md5 0A15171B53E10B6F60E3FD979D44B0B5 sha1 3DF6231AC4BAA105CFFB88BDBD0B7A7766D76C64 serial "8092011007001" )
 )
 game (
-	name "Baby Einstein - Un monde de decouvertes (France) (V.Smile Baby)"
+	name "Baby Einstein - Un Monde de Decouvertes (France) (V.Smile Baby)"
 	region "France"
 	serial "8099045001"
-	rom ( name "Baby Einstein - Un monde de decouvertes (France) (V.Smile Baby).bin" size 8388608 crc D0690AE6 md5 D798FAA12C0041A843E39542ABC36063 sha1 BDE281DB67B477798974983A505BED7497E25763 serial "8099045001" )
+	rom ( name "Baby Einstein - Un Monde de Decouvertes (France) (V.Smile Baby).bin" size 8388608 crc D0690AE6 md5 D798FAA12C0041A843E39542ABC36063 sha1 BDE281DB67B477798974983A505BED7497E25763 serial "8099045001" )
 )
 game (
 	name "Baby Einstein - World of Discoveries (USA) (Rev 1) (V.Smile Baby)"
@@ -274,8 +274,7 @@ game (
 game (
 	name "Bilar - Koer ikapp i Kylarkoeping (Sweden)"
 	region "Sweden"
-	serial "8092674069"
-	rom ( name "Bilar - Koer ikapp i Kylarkoeping (Sweden).bin" size 8388608 crc 69B535F2 md5 35651479FC4942A4D66908BA0FB7217A sha1 7785E4E92A0EDBB90FD0E0A4F2DE3AFAFAE5E957 serial "8092674069" )
+	rom ( name "Bilar - Koer ikapp i Kylarkoeping (Sweden).bin" size 8388608 crc 825A43EB md5 7919C5E9BC43BE88045ADE562AEBFA5E sha1 D63109BC1DCC8549FBED0F0B15EFC53327BFD0D9 )
 )
 game (
 	name "Biler - Raes i Kolerkildekobing (Denmark)"
@@ -565,10 +564,10 @@ game (
 	rom ( name "Disney Aladdin - El Maravilloso Mundo de Aladdin (Spain).bin" size 8388608 crc 5E01645F md5 CBF6FE6456192E90C29662B865EB9029 sha1 DE4D420A7BFB9A33FBD739A5111E331B7BA6C85A serial "8092207001" )
 )
 game (
-	name "Disney Aladdin - Il magico mondo di Aladdin (Italy)"
+	name "Disney Aladdin - Il Magico Mondo di Aladdin (Italy)"
 	region "Italy"
 	serial "8092211007"
-	rom ( name "Disney Aladdin - Il magico mondo di Aladdin (Italy).bin" size 8388608 crc 4EA0F59A md5 41887CCCD9C6D01140D780F15AE1F8FE sha1 0810F65D356B421AC384578DAAA7AF9406807299 serial "8092211007" )
+	rom ( name "Disney Aladdin - Il Magico Mondo di Aladdin (Italy).bin" size 8388608 crc 4EA0F59A md5 41887CCCD9C6D01140D780F15AE1F8FE sha1 0810F65D356B421AC384578DAAA7AF9406807299 serial "8092211007" )
 )
 game (
 	name "Disney Aladdin - Wonders of the World (United Kingdom)"
@@ -623,6 +622,11 @@ game (
 	region "Sweden"
 	serial "8090274069001"
 	rom ( name "Disney Fairies - Tingeling (Sweden).bin" size 8388608 crc 5AE6DCED md5 B5514747C03A0C90506EF9B66F362270 sha1 3298BF1FB43173E1C4C2200DDC5A1A6AF57D4323 serial "8090274069001" )
+)
+game (
+	name "Disney Fairies - Tingeling (Sweden) (Alt)"
+	region "Sweden"
+	rom ( name "Disney Fairies - Tingeling (Sweden) (Alt).bin" size 8388608 crc FD9326C1 md5 A6C185F6E45E7AF0A73438FE3BF95884 sha1 3BBFDC771681707B0BAE81078948B1809E4EBED5 )
 )
 game (
 	name "Disney Fairies - TinkerBell (Germany) (V.Smile Motion)"
@@ -1035,10 +1039,10 @@ game (
 	rom ( name "Disney's Aladdin - De wonderwereld van Aladdin (Netherlands).bin" size 8388608 crc 44FB6EEA md5 58FB4491322F509CB84AFE77B6926F1E sha1 8A05CADF0ECF6E47C13137AC99DACDF9EE8B0810 serial "8092202001" )
 )
 game (
-	name "Disney's Aladdin - Les fabuleuses aventures d'Aladdin (France)"
+	name "Disney's Aladdin - Les Fabuleuses Aventures d'Aladdin (France)"
 	region "France"
 	serial "8092205001"
-	rom ( name "Disney's Aladdin - Les fabuleuses aventures d'Aladdin (France).bin" size 8388608 crc 08AA0570 md5 5B8444B2D301DC8309C3B5D968D4C857 sha1 BA7268CB7FFE858ABBB69745DBF2279E0BB8B234 serial "8092205001" )
+	rom ( name "Disney's Aladdin - Les Fabuleuses Aventures d'Aladdin (France).bin" size 8388608 crc 08AA0570 md5 5B8444B2D301DC8309C3B5D968D4C857 sha1 BA7268CB7FFE858ABBB69745DBF2279E0BB8B234 serial "8092205001" )
 )
 game (
 	name "Disney's Mickey Mouse - Mickey's Magical Adventure (USA)"
@@ -1256,6 +1260,11 @@ game (
 	rom ( name "Disney-Pixar Toy Story 2 - Operation - Raedda Woody! (Sweden).bin" size 8388608 crc A6AA6D6B md5 1CAC2C0AFD34E5A063D9F8B827BDEA18 sha1 CA576D994441FFAAC96E015F5A9309E0326280E1 serial "8092234069001" )
 )
 game (
+	name "Disney-Pixar Toy Story 2 - Operation - Red Woody! (Denmark)"
+	region "Denmark"
+	rom ( name "Disney-Pixar Toy Story 2 - Operation - Red Woody! (Denmark).bin" size 8388608 crc 52D72FBC md5 8F251330A6B694868BE1862DA7BE7AF4 sha1 CCC2B79BB9F1136BD04EDE8935C88AEBCB197071 )
+)
+game (
 	name "Disney-Pixar Toy Story 2 - Operation - Rescue Woody! (United Kingdom)"
 	region "United Kingdom"
 	serial "8092220001"
@@ -1290,6 +1299,11 @@ game (
 	region "Germany"
 	serial "80084424004001"
 	rom ( name "Disney-Pixar Toy Story 3 (Germany) (V.Smile Motion).bin" size 16777216 crc 569826E1 md5 DD72C352688D9FA17BA769262570E1C0 sha1 0EFD4C4CE824C33559B70FB139EF2732A274F0A9 serial "80084424004001" )
+)
+game (
+	name "Disney-Pixar Toy Story 3 (Italy)"
+	region "Italy"
+	rom ( name "Disney-Pixar Toy Story 3 (Italy).bin" size 16777216 crc 00CB3227 md5 C1C14842FAF3407880C5B7FA21158BFF sha1 54348A52A15B8D6F67B284519436CF1A07CB113C )
 )
 game (
 	name "Disney-Pixar Toy Story 3 (Spain) (V.Smile Motion)"
@@ -1384,8 +1398,7 @@ game (
 game (
 	name "Disney-Pixar Wall-E (Sweden)"
 	region "Sweden"
-	serial "080092854001"
-	rom ( name "Disney-Pixar Wall-E (Sweden).bin" size 8388608 crc 860194D2 md5 C1345F7C399EC61DDF5586246D68B442 sha1 3D5F40A0F523C9B090A826FEF45A6BC63A58D519 serial "080092854001" )
+	rom ( name "Disney-Pixar Wall-E (Sweden).bin" size 8388608 crc 832E4D06 md5 261D0F616D5E58A15A2BF96C3668643A sha1 9A4B46C931D5DE17B6E8370E3B5A2E1E74EC4BDB )
 )
 game (
 	name "Disney-Pixar Wall-E (USA)"
@@ -1422,6 +1435,11 @@ game (
 	region "Sweden"
 	serial "8092134069001"
 	rom ( name "Disneys Den lilla sjoejungfrun - Ariels majestaetiska resa! (Sweden).bin" size 8388608 crc E567DB85 md5 35087851AAE4A14FDF8DA5FE5CCE28DF sha1 CA52EACA6CF1B361FD4B1AE2B2380095C612668D serial "8092134069001" )
+)
+game (
+	name "Disneys Den lilla sjoejungfrun - Ariels majestaetiska resa! (Sweden) (Alt)"
+	region "Sweden"
+	rom ( name "Disneys Den lilla sjoejungfrun - Ariels majestaetiska resa! (Sweden) (Alt).bin" size 8388608 crc D87B8758 md5 B06B0EAF3D8712225BBFBCEB6AB78178 sha1 669D4BA2C235E84EAC9626D653C08E255EE6907A )
 )
 game (
 	name "Dolphis Wasser-abenteuer (Germany)"
@@ -1572,8 +1590,7 @@ game (
 game (
 	name "Football Club (Italy)"
 	region "Italy"
-	serial "8092831001"
-	rom ( name "Football Club (Italy).bin" size 8388608 crc E1C8ED7A md5 9590EF6D622DCEC5BE9F047DD43F6753 sha1 B03BF9AC043DA77E3E42F12CE92859BD37E410D2 serial "8092831001" )
+	rom ( name "Football Club (Italy).bin" size 8388608 crc FD7E7C41 md5 FC3AB538B5CB0105FB7E92FA6B27CD80 sha1 C728E8D0F3E7A3F92869E24B5536CC583D9F642E )
 )
 game (
 	name "Freds Zahlen Rallye (Germany)"
@@ -1928,6 +1945,11 @@ game (
 	region "Germany"
 	serial "8092544104"
 	rom ( name "Noddy - Detektiv fuer einen Tag (Germany).bin" size 8388608 crc 2402B5B4 md5 BE83C2F7921FB9630B86C7CB780282F7 sha1 98DD09522B3D897DD8DB070E08E66FCAEBB192A2 serial "8092544104" )
+)
+game (
+	name "Ordspel (Sweden)"
+	region "Sweden"
+	rom ( name "Ordspel (Sweden).bin" size 32768 crc 0C98A692 md5 003113A6484A0131592EB212447B4D3F sha1 347D68F6CBD0AED451B3742D6822AC5E23BA30B8 )
 )
 game (
 	name "Osos Amorosos - Una Leccion de Amor (Spain)"

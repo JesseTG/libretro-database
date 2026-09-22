@@ -5,7 +5,7 @@ clrmamepro (
 
 game (
 	comment "A.P.B. (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc F6FB48FB )
 )
 
@@ -41,7 +41,7 @@ game (
 
 game (
 	comment "Battle Wheels (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 779FAECE )
 )
 
@@ -53,7 +53,7 @@ game (
 
 game (
 	comment "Blue Lightning (USA, Europe) (Demo)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc BFE36525 )
 )
 
@@ -71,13 +71,13 @@ game (
 
 game (
 	comment "Block Out (USA, Europe)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 3CD75DF3 )
 )
 
 game (
 	comment "Blue Lightning (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc DAF587B1 )
 )
 
@@ -95,19 +95,19 @@ game (
 
 game (
 	comment "Checkered Flag (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 19C5A7A5 )
 )
 
 game (
 	comment "Crystal Mines II (USA, Europe)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc AEC474C8 )
 )
 
 game (
 	comment "Daemonsgate (USA) (Proto)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 99729395 )
 )
 
@@ -161,7 +161,7 @@ game (
 
 game (
 	comment "Eye of the Beholder (USA) (Proto)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 6BCEAA9C )
 )
 
@@ -173,13 +173,13 @@ game (
 
 game (
 	comment "Fidelity Ultimate Chess Challenge, The (USA, Europe)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 7E4B5945 )
 )
 
 game (
 	comment "Eye of the Beholder (USA) (Unl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F1B307CB )
 )
 
@@ -209,19 +209,19 @@ game (
 
 game (
 	comment "Hard Drivin' (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 6DF63834 )
 )
 
 game (
 	comment "Hydra (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc E3041C6C )
 )
 
 game (
 	comment "Ishido - The Way of Stones (USA, Europe)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 5CF8BBF0 )
 )
 
@@ -275,7 +275,7 @@ game (
 
 game (
 	comment "Lexis (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 0271B6E9 )
 )
 
@@ -299,7 +299,7 @@ game (
 
 game (
 	comment "Lynx Casino (USA, Europe)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 1091A268 )
 )
 
@@ -317,7 +317,7 @@ game (
 
 game (
 	comment "Marlboro Go! (Europe) (Proto)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc C3FA0D4D )
 )
 
@@ -359,7 +359,7 @@ game (
 
 game (
 	comment "Pit-Fighter (USA, Europe) (Beta) (1992-10-13)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc E7A5A4D0 )
 )
 
@@ -371,7 +371,7 @@ game (
 
 game (
 	comment "Pit-Fighter (USA, Europe)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 2393135F )
 )
 
@@ -383,7 +383,7 @@ game (
 
 game (
 	comment "QIX (USA, Europe)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc B9881423 )
 )
 
@@ -401,13 +401,13 @@ game (
 
 game (
 	comment "Road Riot 4WD (USA) (Proto 1)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc ECCEA0D5 )
 )
 
 game (
 	comment "Road Riot 4WD (USA) (Proto 2)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 82555EEB )
 )
 
@@ -419,13 +419,13 @@ game (
 
 game (
 	comment "RoadBlasters (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 6867E80C )
 )
 
 game (
 	comment "Road Riot 4WD (USA) (Proto 3)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 69959A3B )
 )
 
@@ -437,7 +437,7 @@ game (
 
 game (
 	comment "S.T.U.N. Runner (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 8595C40B )
 )
 
@@ -455,7 +455,7 @@ game (
 
 game (
 	comment "Shanghai (USA, Europe)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 192BCD04 )
 )
 
@@ -473,7 +473,7 @@ game (
 
 game (
 	comment "Super Off-Road (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 690CAEB0 )
 )
 

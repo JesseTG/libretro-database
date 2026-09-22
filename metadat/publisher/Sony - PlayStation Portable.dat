@@ -391,7 +391,7 @@ game (
 
 game (
 	comment "Tekken - Dark Resurrection (Europe) (En,Fr,De,Es,It) (Beta)"
-	publisher "SCEE"
+	publisher "Sony Computer Entertainment Europe"
 	rom (
 		serial "UCET-00424"
 		image "Tekken - Dark Resurrection (Europe) (En,Fr,De,Es,It) (Beta).iso"
@@ -400,7 +400,7 @@ game (
 
 game (
 	comment "Tekken - Dark Resurrection (Europe) (En,Fr,De,Es,It) (v2.00)"
-	publisher "SCEE"
+	publisher "Sony Computer Entertainment Europe"
 	rom (
 		serial "UCES-00356"
 		image "Tekken - Dark Resurrection (Europe) (En,Fr,De,Es,It) (v2.00).iso"
@@ -409,7 +409,7 @@ game (
 
 game (
 	comment "Tekken - Dark Resurrection (Europe) (En,Fr,De,Es,It)"
-	publisher "SCEE"
+	publisher "Sony Computer Entertainment Europe"
 	rom (
 		serial "UCES-00356"
 		image "Tekken - Dark Resurrection (Europe) (En,Fr,De,Es,It).iso"
@@ -418,7 +418,7 @@ game (
 
 game (
 	comment "Tekken - Dark Resurrection (Europe) (Demo)"
-	publisher "SCEE"
+	publisher "Sony Computer Entertainment Europe"
 	rom (
 		serial "UCED-00448"
 		image "Tekken - Dark Resurrection (Europe) (Demo).iso"

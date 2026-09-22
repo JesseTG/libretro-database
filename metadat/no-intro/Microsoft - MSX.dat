@@ -1,7 +1,7 @@
 clrmamepro (
 	name "Microsoft - MSX"
 	description "Microsoft - MSX"
-	version "2025.11.10"
+	version "2026.08.01"
 	homepage "http://github.com/robloach/libretro-dats"
 )
 
@@ -866,9 +866,9 @@ game (
 	rom ( name "Chugaku Hisshu Eibunpo 1 (Japan).rom" size 32768 crc 097E4A7E md5 0107C217236386593B307BE7E5D07C91 sha1 20CE189D670C0FE5F2A945D73107DF7D83070FF7 )
 )
 game (
-	name "Circus Charlie (Japan) (Wii U Virtual Console)"
+	name "Circus Charlie (Japan) (En) (Wii U Virtual Console)"
 	region "Japan"
-	rom ( name "Circus Charlie (Japan) (Wii U Virtual Console).rom" size 16384 crc 83B8D8F3 md5 5995CC6F08FDC9E883ECCE34D1398029 sha1 AE6D0EFD55DEF94274F4CEC459DF8927D132675A )
+	rom ( name "Circus Charlie (Japan) (En) (Wii U Virtual Console).rom" size 16384 crc 83B8D8F3 md5 5995CC6F08FDC9E883ECCE34D1398029 sha1 AE6D0EFD55DEF94274F4CEC459DF8927D132675A )
 )
 game (
 	name "City Connection (Japan)"
@@ -1064,6 +1064,11 @@ game (
 	name "Crusader (Japan) (Alt)"
 	region "Japan"
 	rom ( name "Crusader (Japan) (Alt).rom" size 32768 crc E167FEDE md5 73D601525EFB66DDBD3F0EF46E133A07 sha1 3D2D0A2EB3D12FA67ECBBB90B7AC1BDC76AD8412 )
+)
+game (
+	name "Custar (Japan)"
+	region "Japan"
+	rom ( name "Custar (Japan).rom" size 8192 crc 1E4E5DA0 md5 84A583043446AD3550F9090C9E5F7397 sha1 F864F825B2270C3B98B3C04671A3AC5F2D95AFFA )
 )
 game (
 	name "D-Day (Japan)"
@@ -1878,7 +1883,7 @@ game (
 game (
 	name "H.E.R.O. (Japan)"
 	region "Japan"
-	rom ( name "H.E.R.O. (Japan).rom" size 32768 crc 8FDAD3AF md5 2BA6F43DA5D2F31C3AAB9F8B0A29317B sha1 EBB70722F75279911CCE79E6BD78B8F514561B0F )
+	rom ( name "H.E.R.O. (Japan).rom" size 16384 crc 97AB0D70 md5 6B6D173CC0B3CCDC067606FEF1BFBFF5 sha1 6FBB385147A939A7E6B47F5945D8E3B671A8C065 )
 )
 game (
 	name "Hades no Monsho (Japan)"

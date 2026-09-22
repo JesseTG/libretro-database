@@ -1,4 +1,4 @@
-cheats = 6 
+cheats = 5 
 
 cheat0_desc = "Start On Last Lap"
 cheat0_code = "E00F9D58+0001+300F9D58+00FF"

@@ -1,4 +1,4 @@
-cheats = 60
+cheats = 59
 
 cheat0_desc = "Start on 1-3"
 cheat0_code = "ZAKGALAA"
@@ -235,7 +235,3 @@ cheat57_enable = false
 cheat58_desc = "Walk Thru Walls"
 cheat58_code = "AYOIPPEI+AYXSZPEI"
 cheat58_enable = false
-
-cheat59_desc = "Start with 127 Lives"
-cheat59_code = ""
-cheat59_enable = false

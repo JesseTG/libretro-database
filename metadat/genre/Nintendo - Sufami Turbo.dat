@@ -11,7 +11,7 @@ game (
 
 game (
 	comment "Gegege no Kitarou - Youkai Donjara (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 4296500D )
 )
 
@@ -29,13 +29,13 @@ game (
 
 game (
 	comment "Crayon Shin-chan - Nagagutsu Dobon!! (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 8EB753F3 )
 )
 
 game (
 	comment "Bishoujo Senshi Sailor Moon Sailor Stars - Fuwafuwa Panic 2 (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc BB5C4238 )
 )
 
@@ -77,7 +77,7 @@ game (
 
 game (
 	comment "SD Ultra Battle - Ultraman Densetsu (Japan)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 04939D14 )
 )
 

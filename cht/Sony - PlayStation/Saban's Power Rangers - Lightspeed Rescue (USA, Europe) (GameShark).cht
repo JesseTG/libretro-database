@@ -1,4 +1,4 @@
-cheats = 12 
+cheats = 10 
 
 cheat0_desc = "Enable Infinite Lives"
 cheat0_code = "800B3940+0001"

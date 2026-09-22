@@ -281,25 +281,25 @@ game (
 
 game (
 	comment "Army Men (USA, Europe) (En,Fr,De)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 34411753 )
 )
 
 game (
 	comment "Army Men - Air Combat (USA, Europe) (En,Fr,De)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc B0D1DE8C )
 )
 
 game (
 	comment "Army Men - Sarge's Heroes 2 (USA, Europe) (En,Fr,De)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 71B857EA )
 )
 
 game (
 	comment "Army Men 2 (USA, Europe) (En,Fr,De)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 2272BACA )
 )
 
@@ -641,7 +641,7 @@ game (
 
 game (
 	comment "BattleTanx (USA)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 4431F8E7 )
 )
 
@@ -653,7 +653,7 @@ game (
 
 game (
 	comment "BattleTanx (Europe) (En,Fr,De)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 2FCECB70 )
 )
 
@@ -1343,7 +1343,7 @@ game (
 
 game (
 	comment "Cubix - Robots for Everyone - Race 'n Robots (USA) (En,Fr,De,Es,It)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 9F883B0F )
 )
 
@@ -1607,7 +1607,7 @@ game (
 
 game (
 	comment "Diva Starz (Europe)"
-	publisher "Universal "
+	publisher "Universal"
 	rom ( crc 4476E79F )
 )
 
@@ -1619,13 +1619,13 @@ game (
 
 game (
 	comment "Diva Starz (France)"
-	publisher "Universal "
+	publisher "Universal"
 	rom ( crc FC1B36D1 )
 )
 
 game (
 	comment "Diva Starz (Germany)"
-	publisher "Universal "
+	publisher "Universal"
 	rom ( crc 56095F86 )
 )
 
@@ -1637,7 +1637,7 @@ game (
 
 game (
 	comment "Diva Starz - Mall Mania (USA)"
-	publisher "Universal "
+	publisher "Universal"
 	rom ( crc EBE0ECD6 )
 )
 
@@ -2615,7 +2615,7 @@ game (
 
 game (
 	comment "Games Frenzy (Europe) (En,Fr,De)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 308A4CCB )
 )
 
@@ -2735,7 +2735,7 @@ game (
 
 game (
 	comment "Gobs of Games (USA) (En,Fr,De)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 2E61C391 )
 )
 
@@ -3143,25 +3143,25 @@ game (
 
 game (
 	comment "Heroes of Might and Magic (USA) (En,Fr,De)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc BB0672A6 )
 )
 
 game (
 	comment "Heroes of Might and Magic (Europe) (En,Fr,De)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc E0B9FD3B )
 )
 
 game (
 	comment "Heroes of Might and Magic II (USA) (En,Fr,De)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 53156D4D )
 )
 
 game (
 	comment "Heroes of Might and Magic (USA) (En,Fr,De) (Rev 1) (Proto)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 0753927E )
 )
 
@@ -5267,13 +5267,13 @@ game (
 
 game (
 	comment "Mummy Returns, The (Europe) (En,Fr,De,Es,It)"
-	publisher "Universal "
+	publisher "Universal"
 	rom ( crc 64052B9B )
 )
 
 game (
 	comment "Mummy Returns, The (USA)"
-	publisher "Universal "
+	publisher "Universal"
 	rom ( crc C997F45B )
 )
 
@@ -6263,7 +6263,7 @@ game (
 
 game (
 	comment "Portal Runner (USA)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 913AC306 )
 )
 
@@ -8765,7 +8765,7 @@ game (
 
 game (
 	comment "Vegas Games (Europe) (En,Fr,De)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 81B2BB8D )
 )
 
@@ -8777,13 +8777,13 @@ game (
 
 game (
 	comment "Vegas Games (USA)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 40B5EA96 )
 )
 
 game (
 	comment "Vegas Games (USA) (En,Fr,De) (Rev 1) (Proto)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 4167CF29 )
 )
 
@@ -8861,7 +8861,7 @@ game (
 
 game (
 	comment "Warriors of Might and Magic (USA) (En,Fr,De)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc EF9F5BEA )
 )
 
@@ -8915,7 +8915,7 @@ game (
 
 game (
 	comment "WDL - World Destruction League - Thunder Tanks (USA) (En,Fr,De)"
-	publisher "3DO"
+	publisher "The 3DO Company"
 	rom ( crc 1A0BF4D7 )
 )
 

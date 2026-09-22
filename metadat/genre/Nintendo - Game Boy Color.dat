@@ -95,7 +95,7 @@ game (
 
 game (
 	comment "4x4 World Trophy (Europe) (En,Fr,De,Es,It) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc F62AD75E )
 )
 
@@ -215,7 +215,7 @@ game (
 
 game (
 	comment "Animal Breeder 3 (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc C62A4C30 )
 )
 
@@ -227,25 +227,25 @@ game (
 
 game (
 	comment "Animal Breeder 4 (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 83D838C3 )
 )
 
 game (
 	comment "Animastar GB (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc B14920F0 )
 )
 
 game (
 	comment "Animorphs (Europe) (En,Fr,De,Es,It)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 7FD46DA1 )
 )
 
 game (
 	comment "Animorphs (USA)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc B4F293CC )
 )
 
@@ -275,13 +275,13 @@ game (
 
 game (
 	comment "Antz Racing (Europe) (En,Fr,De,Es,It,Nl)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc F625A959 )
 )
 
 game (
 	comment "Antz Racing (USA) (En,Fr,De,Es,It,Nl)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc DFDF90C0 )
 )
 
@@ -299,13 +299,13 @@ game (
 
 game (
 	comment "Armada - FX Racers (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc D952CBAB )
 )
 
 game (
 	comment "Arle no Bouken - Mahou no Jewel (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 8EE043EA )
 )
 
@@ -395,7 +395,7 @@ game (
 
 game (
 	comment "ATV Racing (Europe) (Unl)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 7987D5CD )
 )
 
@@ -449,19 +449,19 @@ game (
 
 game (
 	comment "Azure Dreams (Europe) (En,Fr,De) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F9CCAB09 )
 )
 
 game (
 	comment "Azure Dreams (USA) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 71D52876 )
 )
 
 game (
 	comment "B-Daman Bakugaiden - Victory e no Michi (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc DDCE76D6 )
 )
 
@@ -497,13 +497,13 @@ game (
 
 game (
 	comment "Backgammon (Europe) (En,Fr,De,Es) (GB Compatible)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc D33D6F7B )
 )
 
 game (
 	comment "Backgammon (Japan) (GB Compatible)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 712A49B3 )
 )
 
@@ -515,19 +515,19 @@ game (
 
 game (
 	comment "Bakusou Dekotora Densetsu GB Special - Otoko Dokyou no Tenka Touitsu (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 92C8B9B5 )
 )
 
 game (
 	comment "Bakusou Senki Metal Walker GB - Koutetsu no Yuujou (Japan) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc D514C9A0 )
 )
 
 game (
 	comment "Bakusou Senki Metal Walker GB - Koutetsu no Yuujou (Japan) (Rev 1) (Proto) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 570BAFDB )
 )
 
@@ -617,13 +617,13 @@ game (
 
 game (
 	comment "Barcode Taisen Bardigun (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc DDFCF4B7 )
 )
 
 game (
 	comment "Barcode Taisen Bardigun (Japan) (Rev 1) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F6D291A9 )
 )
 
@@ -701,31 +701,31 @@ game (
 
 game (
 	comment "Beatmania GB (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc 0D9CB195 )
 )
 
 game (
 	comment "Beatmania GB 2 - Gotcha Mix (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc 59BEB372 )
 )
 
 game (
 	comment "Beatmania GB - Gotcha Mix 2 (Japan)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc B92A6D16 )
 )
 
 game (
 	comment "Beauty and the Beast - A Board Game Adventure (USA, Australia) (SGB Enhanced) (GB Compatible)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 6DE1D581 )
 )
 
 game (
 	comment "Beauty and the Beast - A Board Game Adventure (Europe) (En,Fr,De,Es,It) (SGB Enhanced) (GB Compatible)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc E4C410F0 )
 )
 
@@ -749,7 +749,7 @@ game (
 
 game (
 	comment "Bikkuriman 2000 - Charging Card GB (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 5BE2517C )
 )
 
@@ -773,7 +773,7 @@ game (
 
 game (
 	comment "Black Onyx, The (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 582FE338 )
 )
 
@@ -875,7 +875,7 @@ game (
 
 game (
 	comment "Bomberman Max - Ain Version (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 545E0DA2 )
 )
 
@@ -899,19 +899,19 @@ game (
 
 game (
 	comment "Bomberman Quest (Europe) (En,Fr,De) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 5A9B9AE6 )
 )
 
 game (
 	comment "Bomberman Quest (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 55210934 )
 )
 
 game (
 	comment "Bomberman Quest (USA) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc A089C656 )
 )
 
@@ -923,7 +923,7 @@ game (
 
 game (
 	comment "Brave Saga - Shinshou Astaria (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 5D5D294A )
 )
 
@@ -1007,13 +1007,13 @@ game (
 
 game (
 	comment "Bust-A-Move 4 (USA, Europe) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 8E818E6F )
 )
 
 game (
 	comment "Bust-A-Move Millennium (USA, Europe)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc F8DA0C4A )
 )
 
@@ -1031,7 +1031,7 @@ game (
 
 game (
 	comment "Caesars Palace II (USA, Europe)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 351BA5EA )
 )
 
@@ -1055,7 +1055,7 @@ game (
 
 game (
 	comment "Card Sharks (USA) (Proto)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc E2B2DCFE )
 )
 
@@ -1109,19 +1109,19 @@ game (
 
 game (
 	comment "Carmageddon - Carpocalypse Now (USA) (En,Es) (Beta)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc E9751F81 )
 )
 
 game (
 	comment "Carmageddon - Carpocalypse Now (Germany)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc B447BC06 )
 )
 
 game (
 	comment "Carmageddon - Carpocalypse Now (USA, Europe) (En,Fr,Es,It)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc BB482ED7 )
 )
 
@@ -1193,7 +1193,7 @@ game (
 
 game (
 	comment "Championship Motocross 2001 featuring Ricky Carmichael (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc CBB336ED )
 )
 
@@ -1205,19 +1205,19 @@ game (
 
 game (
 	comment "Chase H.Q. - Secret Police (Europe) (SGB Enhanced) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc CFDF816B )
 )
 
 game (
 	comment "Chase H.Q. - Secret Police (USA) (SGB Enhanced) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 7C7FDEFC )
 )
 
 game (
 	comment "Checkmate (Japan) (En,Ja) (GB Compatible)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 1AAB415D )
 )
 
@@ -1235,13 +1235,13 @@ game (
 
 game (
 	comment "Chiki Chiki Machine Mou Race (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 36C04BE0 )
 )
 
 game (
 	comment "Choro Q - Hyper Customable GB (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 65610CA4 )
 )
 
@@ -1265,7 +1265,7 @@ game (
 
 game (
 	comment "Colin McRae Rally (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc E93AF9C8 )
 )
 
@@ -1277,7 +1277,7 @@ game (
 
 game (
 	comment "Command Master (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc D10B5645 )
 )
 
@@ -1301,13 +1301,13 @@ game (
 
 game (
 	comment "Crazy Bikers (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 53E02B87 )
 )
 
 game (
 	comment "Cool Hand (Europe) (En,Fr,De) (GB Compatible)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc E6C91FB8 )
 )
 
@@ -1319,37 +1319,37 @@ game (
 
 game (
 	comment "Cross Country Racing (Europe) (En,Fr,De) (SGB Enhanced) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc B7B91FE9 )
 )
 
 game (
 	comment "Cross Hunter - Monster Hunter Version (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 48E1BA7D )
 )
 
 game (
 	comment "Cross Hunter - Treasure Hunter Version (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 623C1516 )
 )
 
 game (
 	comment "Cross Hunter - X Hunter Version (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 858010E0 )
 )
 
 game (
 	comment "Crystalis (USA)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 909BB02D )
 )
 
 game (
 	comment "Cruis'n Exotica (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 9562E7E8 )
 )
 
@@ -1361,7 +1361,7 @@ game (
 
 game (
 	comment "Cubix - Robots for Everyone - Race 'n Robots (USA) (En,Fr,De,Es,It)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 9F883B0F )
 )
 
@@ -1385,7 +1385,7 @@ game (
 
 game (
 	comment "Daikaijuu Monogatari - Poyon no Dungeon Room (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 2F368DA6 )
 )
 
@@ -1397,19 +1397,19 @@ game (
 
 game (
 	comment "Daikatana (USA) (Proto 1) (2000-04-19)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 351862BB )
 )
 
 game (
 	comment "Daikatana GB (Japan) (NP)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 2BB01AAD )
 )
 
 game (
 	comment "Daikatana (USA) (Proto 2)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 7D451688 )
 )
 
@@ -1421,19 +1421,19 @@ game (
 
 game (
 	comment "Dance Dance Revolution GB 2 (Japan)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc 565FEC36 )
 )
 
 game (
 	comment "Dance Dance Revolution GB (Japan)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc C64FF2B6 )
 )
 
 game (
 	comment "Dance Dance Revolution GB 3 (Japan)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc 58F26F36 )
 )
 
@@ -1445,13 +1445,13 @@ game (
 
 game (
 	comment "Dancing Furby (Japan) (GB Compatible)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc 3263F692 )
 )
 
 game (
 	comment "Dance Dance Revolution GB - Disney Mix (Japan)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc B31A59BF )
 )
 
@@ -1517,13 +1517,13 @@ game (
 
 game (
 	comment "Dejiko no Mahjong Party (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc C5501FCE )
 )
 
 game (
 	comment "Dejiko no Mahjong Party (Japan) (Rev 1) (Proto)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 7E515A7E )
 )
 
@@ -1637,7 +1637,7 @@ game (
 
 game (
 	comment "Dokapon! - Millennium Quest (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 4FE9E966 )
 )
 
@@ -1649,7 +1649,7 @@ game (
 
 game (
 	comment "Dokidoki Densetsu - Mahoujin Guruguru (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 83E47A1A )
 )
 
@@ -1691,13 +1691,13 @@ game (
 
 game (
 	comment "Doraemon - Kimi to Pet no Monogatari (Japan) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 2FA46211 )
 )
 
 game (
 	comment "Doraemon Kart 2 (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc CF1A2038 )
 )
 
@@ -1763,109 +1763,109 @@ game (
 
 game (
 	comment "Dragon Ball Z - Densetsu no Chou Senshi-tachi (Japan) (Beta) (All Unlocked)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc FB942E08 )
 )
 
 game (
 	comment "Dragon Ball Z - Densetsu no Chou Senshi-tachi (Japan) (Beta)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 3F511F57 )
 )
 
 game (
 	comment "Dragon Ball Z - Guerreros de Leyenda (Spain)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 9DAD6E23 )
 )
 
 game (
 	comment "Dragon Ball Z - Densetsu no Chou Senshi-tachi (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 7D28689A )
 )
 
 game (
 	comment "Dragon Ball Z - Guerreros de Leyenda (Spain) (Beta) (All Unlocked)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc D7654E34 )
 )
 
 game (
 	comment "Dragon Ball Z - Guerreros de Leyenda (Spain) (Beta)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F017924F )
 )
 
 game (
 	comment "Dragon Ball Z - I Leggendari Super Guerrieri (Italy) (Beta) (All Unlocked)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 35790637 )
 )
 
 game (
 	comment "Dragon Ball Z - I Leggendari Super Guerrieri (Italy)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc A888A049 )
 )
 
 game (
 	comment "Dragon Ball Z - Legendaere Superkaempfer (Germany) (Beta 1)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 276F7895 )
 )
 
 game (
 	comment "Dragon Ball Z - Legendaere Superkaempfer (Germany) (Beta 2)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 2353BBE4 )
 )
 
 game (
 	comment "Dragon Ball Z - Legendaere Superkaempfer (Germany)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc EC7DFDC1 )
 )
 
 game (
 	comment "Dragon Ball Z - Legendaere Superkaempfer (Germany) (Beta 3)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 72ACBCB4 )
 )
 
 game (
 	comment "Dragon Ball Z - Legendary Super Warriors (Europe) (Beta) (All Unlocked)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 4EC4F8ED )
 )
 
 game (
 	comment "Dragon Ball Z - Legendaere Superkaempfer (Germany) (Beta 3) (All Unlocked)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F646BD3B )
 )
 
 game (
 	comment "Dragon Ball Z - Legendary Super Warriors (Europe)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 7BF836DB )
 )
 
 game (
 	comment "Dragon Ball Z - Legendary Super Warriors (USA)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 025AA88A )
 )
 
 game (
 	comment "Dragon Ball Z - Les Guerriers Legendaires (France) (Beta) (All Unlocked)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F4041D28 )
 )
 
 game (
 	comment "Dragon Ball Z - Les Guerriers Legendaires (France)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc C07E9438 )
 )
 
@@ -1895,49 +1895,49 @@ game (
 
 game (
 	comment "Dragon Quest III - Soshite Densetsu e... (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 21078C16 )
 )
 
 game (
 	comment "Dragon Quest Monsters (Germany) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 2A82B63B )
 )
 
 game (
 	comment "Dragon Quest Monsters - Terry no Wonderland (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 4702C4F1 )
 )
 
 game (
 	comment "Dragon Quest I & II (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc A053B42E )
 )
 
 game (
 	comment "Dragon Quest Monsters - Terry no Wonderland (Japan) (Rev 1) (SGB Enhanced, GB Compatible) (NP)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 66B83E3A )
 )
 
 game (
 	comment "Dragon Quest Monsters - Terry no Wonderland (Japan) (Rev 1) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc D263D88D )
 )
 
 game (
 	comment "Dragon Quest Monsters 2 - Maruta no Fushigi na Kagi - Iru no Bouken (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 68BA18D7 )
 )
 
 game (
 	comment "Dragon Quest Monsters 2 - Maruta no Fushigi na Kagi - Ruka no Tabidachi (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 2C428A87 )
 )
 
@@ -1949,49 +1949,49 @@ game (
 
 game (
 	comment "Dragon Tales - Dragon Wings (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 191D31EC )
 )
 
 game (
 	comment "Dragon Tales - Dragon Wings (Europe)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 137D7B45 )
 )
 
 game (
 	comment "Dragon Quest Monsters 2 - Maruta no Fushigi na Kagi - Ruka no Tabidachi (Japan) (Rev 1) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 649E8D97 )
 )
 
 game (
 	comment "Dragon Warrior I & II (USA) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 71D693DA )
 )
 
 game (
 	comment "Dragon Warrior III (USA)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 0FD9C59C )
 )
 
 game (
 	comment "Dragon Warrior Monsters (USA, Europe) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc E56C35B1 )
 )
 
 game (
 	comment "Dragon Warrior Monsters 2 - Cobi's Journey (USA) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc AB7BFDD5 )
 )
 
 game (
 	comment "Dragon Warrior Monsters 2 - Tara's Adventure (USA) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 35EC5FB2 )
 )
 
@@ -2003,19 +2003,19 @@ game (
 
 game (
 	comment "Driver (Europe) (En,Fr,De,Es,It) (Beta)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 33E9D438 )
 )
 
 game (
 	comment "Driver (Europe) (En,Fr,De,Es,It)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc E9E67403 )
 )
 
 game (
 	comment "Driver - You Are the Wheelman (USA) (En,Fr,De,Es,It)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc D4C7F6DF )
 )
 
@@ -2039,7 +2039,7 @@ game (
 
 game (
 	comment "Dukes of Hazzard, The - Racing for Home (Europe) (En,Fr,De)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 21826ADC )
 )
 
@@ -2051,37 +2051,37 @@ game (
 
 game (
 	comment "Dukes of Hazzard, The - Racing for Home (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc FB08DCEB )
 )
 
 game (
 	comment "Dungeon Savior (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 2BCB5F78 )
 )
 
 game (
 	comment "Dungeon Savior (Japan) (Rev 1) (Proto) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 0180364B )
 )
 
 game (
 	comment "DX Jinsei Game (Japan)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 7E15B3DD )
 )
 
 game (
 	comment "DX Monopoly GB (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 3F1E076C )
 )
 
 game (
 	comment "DynaMike (Europe) (Proto)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 53C069E9 )
 )
 
@@ -2141,7 +2141,7 @@ game (
 
 game (
 	comment "Elie no Atelier GB (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 7967320E )
 )
 
@@ -2171,7 +2171,7 @@ game (
 
 game (
 	comment "Estpolis Denki - Yomigaeru Densetsu (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 54617416 )
 )
 
@@ -2183,13 +2183,13 @@ game (
 
 game (
 	comment "Evel Knievel (USA) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 51E951B5 )
 )
 
 game (
 	comment "Evel Knievel (Europe) (En,Fr,De,Es,It,Nl,Sv) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc DFD6A908 )
 )
 
@@ -2207,25 +2207,25 @@ game (
 
 game (
 	comment "F-1 World Grand Prix (Europe) (En,Fr,De,Es)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 8D9A9182 )
 )
 
 game (
 	comment "F-1 World Grand Prix (Europe) (Beta)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc D6496FE9 )
 )
 
 game (
 	comment "F-1 World Grand Prix (Japan) (En) (Beta 2)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 5E24811E )
 )
 
 game (
 	comment "F-1 World Grand Prix (Japan) (En) (Beta 1)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 3122807B )
 )
 
@@ -2249,49 +2249,49 @@ game (
 
 game (
 	comment "F1 Championship Season 2000 (Europe) (En,Fr,De,Es,It)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 5C10315E )
 )
 
 game (
 	comment "F1 Championship Season 2000 (Brazil) (En,Fr,De,Es,It)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc F4F5ED18 )
 )
 
 game (
 	comment "F1 Racing Championship (USA) (En,Fr,De,Es,It) (Proto)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 9EC98CAB )
 )
 
 game (
 	comment "F1 Racing Championship (Europe) (En,Fr,De,Es,It) (Beta)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc E115DDB1 )
 )
 
 game (
 	comment "F1 Racing Championship (Europe) (En,Fr,De,Es,It)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 93A9789F )
 )
 
 game (
 	comment "F1 World Grand Prix II for Game Boy Color (Europe) (En,Fr,De,Es)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc EEF4A20B )
 )
 
 game (
 	comment "F1 World Grand Prix II for Game Boy Color (USA) (En,Fr,De,Es)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 482E10C5 )
 )
 
 game (
 	comment "F1 World Grand Prix II for Game Boy Color (Japan) (En,Ja)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 28453467 )
 )
 
@@ -2345,7 +2345,7 @@ game (
 
 game (
 	comment "Formula One 2000 (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 703C057F )
 )
 
@@ -2357,7 +2357,7 @@ game (
 
 game (
 	comment "Formula One 2000 (Europe) (En,Fr,De,Es,It) (Proto)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc E689BF16 )
 )
 
@@ -2411,7 +2411,7 @@ game (
 
 game (
 	comment "From TV Animation One Piece - Maboroshi no Grand Line Boukenki! (Japan) (Beta 1) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc A86DE7B7 )
 )
 
@@ -2429,19 +2429,19 @@ game (
 
 game (
 	comment "From TV Animation One Piece - Maboroshi no Grand Line Boukenki! (Japan) (Beta 2) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 419BEFCC )
 )
 
 game (
 	comment "From TV Animation One Piece - Maboroshi no Grand Line Boukenki! (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc A7317BB8 )
 )
 
 game (
 	comment "Front Row (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 6EEA9243 )
 )
 
@@ -2459,13 +2459,13 @@ game (
 
 game (
 	comment "Fushigi no Dungeon - Fuurai no Shiren GB 2 - Sabaku no Majou (Japan) (BFWJ)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F3C20FBE )
 )
 
 game (
 	comment "Fushigi no Dungeon - Fuurai no Shiren GB 2 - Sabaku no Majou (Japan) (AFMJ)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 2C97E90F )
 )
 
@@ -2477,19 +2477,19 @@ game (
 
 game (
 	comment "Gakkyuu Ou Yamazaki (Japan) (Rev 1) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc EF2CFD99 )
 )
 
 game (
 	comment "Gakkyuu Ou Yamazaki (Japan) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc B8147B5C )
 )
 
 game (
 	comment "Gambler Densetsu Tetsuya - Shinjuku Tenun Hen (Japan) (Rev 1)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 91739DEF )
 )
 
@@ -2507,7 +2507,7 @@ game (
 
 game (
 	comment "Gambler Densetsu Tetsuya - Shinjuku Tenun Hen (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 28356950 )
 )
 
@@ -2555,7 +2555,7 @@ game (
 
 game (
 	comment "Games Frenzy (Europe) (En,Fr,De)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 308A4CCB )
 )
 
@@ -2573,19 +2573,19 @@ game (
 
 game (
 	comment "Ganbare Goemon - Tengutou no Gyakushuu (Japan) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc D829EB2F )
 )
 
 game (
 	comment "GB Harobots (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 1C0368FA )
 )
 
 game (
 	comment "GB Karan Koron Gakuen - Hanafuda Mahjong (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc AABA1EA4 )
 )
 
@@ -2603,13 +2603,13 @@ game (
 
 game (
 	comment "Gem Gem Monster (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc DE7505C0 )
 )
 
 game (
 	comment "Gensou Maden Saiyuuki - Sabaku no Shijin (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 918A40E7 )
 )
 
@@ -2663,7 +2663,7 @@ game (
 
 game (
 	comment "Glocal Hexcite (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc F1908391 )
 )
 
@@ -2753,49 +2753,49 @@ game (
 
 game (
 	comment "Goraku Ou Tango! (Japan) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 81FB43E1 )
 )
 
 game (
 	comment "Grand Theft Auto (Europe) (En,Fr,De,Es,It) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 25BA9231 )
 )
 
 game (
 	comment "Grand Theft Auto (USA) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 924DE366 )
 )
 
 game (
 	comment "Grand Theft Auto 2 (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 68610203 )
 )
 
 game (
 	comment "Grand Theft Auto 2 (Europe) (En,Fr,De,Es,It)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc AD563BD9 )
 )
 
 game (
 	comment "Grandia - Parallel Trippers (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 23223670 )
 )
 
 game (
 	comment "Granduel - Shinki Dungeon no Hihou (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc D589C501 )
 )
 
 game (
 	comment "Granduel - Shinki Dungeon no Hihou (Japan) (Sample)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 7122136D )
 )
 
@@ -2813,37 +2813,37 @@ game (
 
 game (
 	comment "Grinch (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 432DC371 )
 )
 
 game (
 	comment "Grinch, The (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc C5A47896 )
 )
 
 game (
 	comment "Grinch, The (Europe) (En,Fr,De)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 9ED6059A )
 )
 
 game (
 	comment "Guruguru Garakutas (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 7EAEEEAC )
 )
 
 game (
 	comment "Gyouten Ningen Batseelor - Doctor Guy no Yabou (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc B17DC263 )
 )
 
 game (
 	comment "Halloween Racer (Europe) (En,Fr,De,Es,It,Pt)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 70F3B431 )
 )
 
@@ -2891,7 +2891,7 @@ game (
 
 game (
 	comment "Hamtaro - Ham-Hams Unite! (Europe) (En,Fr,De,Es,It)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 45BE9D9B )
 )
 
@@ -2903,7 +2903,7 @@ game (
 
 game (
 	comment "Hamtaro - Ham-Hams Unite! (USA)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 1271117F )
 )
 
@@ -2927,31 +2927,31 @@ game (
 
 game (
 	comment "Harry Potter (Taiwan) (Unl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 5BEBE333 )
 )
 
 game (
 	comment "Harley-Davidson Motor Cycles - Race Across America (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 644BAC84 )
 )
 
 game (
 	comment "Harry Potter and the Chamber of Secrets (USA, Europe) (En,Fr,De,Es,It,Nl,Pt,Sv,Da)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 136E9D0C )
 )
 
 game (
 	comment "Harry Potter and the Sorcerer's Stone (USA, Europe) (En,Fr,De,Es,It,Nl,Pt,Sv,No,Da,Fi)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 4FD8B7C5 )
 )
 
 game (
 	comment "Harry Potter to Kenja no Ishi (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 2DA2686A )
 )
 
@@ -3005,13 +3005,13 @@ game (
 
 game (
 	comment "Hello Kitty no Beads Factory (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 12F74CD4 )
 )
 
 game (
 	comment "Hello Kitty no Magical Museum (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc F6768930 )
 )
 
@@ -3029,13 +3029,13 @@ game (
 
 game (
 	comment "Hello Kitty's Cube Frenzy (USA) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 937729F6 )
 )
 
 game (
 	comment "Hello Kitty's Cube Frenzy (Europe) (Proto) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 9606A07F )
 )
 
@@ -3053,13 +3053,13 @@ game (
 
 game (
 	comment "Heroes of Might and Magic (USA) (En,Fr,De)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc BB0672A6 )
 )
 
 game (
 	comment "Heroes of Might and Magic (Europe) (En,Fr,De)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc E0B9FD3B )
 )
 
@@ -3071,19 +3071,19 @@ game (
 
 game (
 	comment "Heroes of Might and Magic (USA) (En,Fr,De) (Rev 1) (Proto)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 0753927E )
 )
 
 game (
 	comment "Hexcite (Europe) (En,Fr,De) (Proto) (SGB Enhanced) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 2C6BDCFA )
 )
 
 game (
 	comment "Hexcite - The Shapes of Victory (USA, Europe) (SGB Enhanced) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 84084E5F )
 )
 
@@ -3095,7 +3095,7 @@ game (
 
 game (
 	comment "Hissatsu Pachinko Boy - CR Monster House (Japan)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 70F10315 )
 )
 
@@ -3125,31 +3125,31 @@ game (
 
 game (
 	comment "Honkaku Hanafuda GB (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 05DCBD55 )
 )
 
 game (
 	comment "Honkaku Shougi - Shougi Ou (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 3A96E868 )
 )
 
 game (
 	comment "Honkaku Taisen Shougi Ayumu (Japan) (GB Compatible)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 89140949 )
 )
 
 game (
 	comment "Honkaku Yonin Uchi Mahjong - Mahjong Ou (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 8ED4BBBA )
 )
 
 game (
 	comment "Hot Wheels - Stunt Track Driver (USA, Europe) (SGB Enhanced) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 72A5E820 )
 )
 
@@ -3227,7 +3227,7 @@ game (
 
 game (
 	comment "Ide Yousuke no Mahjong Kyoushitsu GB (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 61DF88CA )
 )
 
@@ -3251,7 +3251,7 @@ game (
 
 game (
 	comment "International Rally (USA) (SGB Enhanced) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc B85FD752 )
 )
 
@@ -3305,13 +3305,13 @@ game (
 
 game (
 	comment "It's a World Rally (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 39E34650 )
 )
 
 game (
 	comment "Itsudemo Pachinko GB - CR Monster House (Japan)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 834091BA )
 )
 
@@ -3329,7 +3329,7 @@ game (
 
 game (
 	comment "Jack no Daibouken - Daimaou no Gyakushuu (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc CFF5325A )
 )
 
@@ -3341,7 +3341,7 @@ game (
 
 game (
 	comment "Jankyuusei - Cosplay Paradise (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc D60E1C0A )
 )
 
@@ -3359,19 +3359,19 @@ game (
 
 game (
 	comment "Jeff Gordon XS Racing (USA) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc A41ED926 )
 )
 
 game (
 	comment "Jeremy McGrath Supercross 2000 (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc F0F9ABE6 )
 )
 
 game (
 	comment "Jeremy McGrath Supercross 2000 (Japan) (En) (NP)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 666D2A75 )
 )
 
@@ -3425,49 +3425,49 @@ game (
 
 game (
 	comment "Jissen ni Yakudatsu Tsumego (Japan) (Rev 1)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 55EFA05E )
 )
 
 game (
 	comment "Jinsei Game - Tomodachi Takusan Tsukurou yo! (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc C8D46E99 )
 )
 
 game (
 	comment "Jissen ni Yakudatsu Tsumego (Japan)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 69C6DBEF )
 )
 
 game (
 	comment "John Romero's Daikatana (Europe) (En,Fr,It)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc D9062E49 )
 )
 
 game (
 	comment "John Romero's Daikatana (Europe) (Fr,De,Es)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F7E83313 )
 )
 
 game (
 	comment "Joryuu Janshi ni Chousen GB - Watashi-tachi ni Chousen Shitene! (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 9FA5CDB5 )
 )
 
 game (
 	comment "Jungle Book, The - Mowgli's Wild Adventure (USA) (En,Fr,De,Es,It)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 9B6B755F )
 )
 
 game (
 	comment "Jungle Book, The - Mowgli's Wild Adventure (Europe) (En,Fr,De,Es,It)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc B609ECEA )
 )
 
@@ -3485,7 +3485,7 @@ game (
 
 game (
 	comment "Juukou Senki Bullet Battlers (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 4039C187 )
 )
 
@@ -3503,37 +3503,37 @@ game (
 
 game (
 	comment "Kaept'n Blaubaer - Die verrueckte Schatzsuche (Germany)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 77E13DBE )
 )
 
 game (
 	comment "Kakurenbo Battle - Monster Tactics (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 9CFA76C3 )
 )
 
 game (
 	comment "Kakutou Ryouri Densetsu Bistro Recipe - Gekitou Foodon Battle Hen (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 459A126B )
 )
 
 game (
 	comment "Kakutou Ryouri Densetsu Bistro Recipe - Kettou Bistgarm Hen (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 4FBEC464 )
 )
 
 game (
 	comment "Kanji Boy 2 (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 81FD8918 )
 )
 
 game (
 	comment "Kanji de Puzzle (Japan) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 25EFA1D7 )
 )
 
@@ -3545,7 +3545,7 @@ game (
 
 game (
 	comment "Karamuchou wa Oosawagi! - Okawari! (Japan) (SGB Enhanced, GB Compatible) (NP)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 6C568E06 )
 )
 
@@ -3557,13 +3557,13 @@ game (
 
 game (
 	comment "Kaseki Sousei Reborn II - Monster Digger (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc BF80C897 )
 )
 
 game (
 	comment "Katou Hifumi Kudan - Shougi Kyoushitsu (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc A262269F )
 )
 
@@ -3581,25 +3581,25 @@ game (
 
 game (
 	comment "Kawaii Pet Shop Monogatari (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 44767443 )
 )
 
 game (
 	comment "Kawaii Pet Shop Monogatari 2 (Japan) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 3791DCA1 )
 )
 
 game (
 	comment "Kawaii Pet Shop Monogatari 2 (Japan) (Rev 1) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 6FCE1AD0 )
 )
 
 game (
 	comment "Keep the Balance (Europe) (En,Fr,De,Es,It)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc B868E846 )
 )
 
@@ -3611,13 +3611,13 @@ game (
 
 game (
 	comment "Keitai Denjuu Telefang - Power Version (Japan) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 8B61CFCC )
 )
 
 game (
 	comment "Keitai Denjuu Telefang - Speed Version (Japan) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc FB528F66 )
 )
 
@@ -3635,13 +3635,13 @@ game (
 
 game (
 	comment "Kettou Transformers Beast Wars - Beast Senshi Saikyou Ketteisen (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 72895639 )
 )
 
 game (
 	comment "Kidou Senkan Nadesico - Ruri Ruri Mahjong (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 6427CD7A )
 )
 
@@ -3689,7 +3689,7 @@ game (
 
 game (
 	comment "Klustar (Europe) (En,Fr,De,Es,It) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 577E1521 )
 )
 
@@ -3701,25 +3701,25 @@ game (
 
 game (
 	comment "Klustar (USA) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 3F8D6041 )
 )
 
 game (
 	comment "Klustar (Japan) (Proto 2) (1999-09-28) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 65DA9075 )
 )
 
 game (
 	comment "Klustar (Europe) (En,Fr,De,Es,It) (Beta) (1998-10-01) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc FC56BB35 )
 )
 
 game (
 	comment "Klustar (Japan) (Proto 1) (1998-10-01) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc F9C6E0A5 )
 )
 
@@ -3761,7 +3761,7 @@ game (
 
 game (
 	comment "Konchuu Hakase 2 (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc B6381744 )
 )
 
@@ -3773,7 +3773,7 @@ game (
 
 game (
 	comment "Konchuu Fighters (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc C6758B0B )
 )
 
@@ -3791,13 +3791,13 @@ game (
 
 game (
 	comment "Konchuu Hakase 2 (Japan) (Rev 1) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc D390430E )
 )
 
 game (
 	comment "Koto Battle - Tengai no Moribito (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 430EB1E1 )
 )
 
@@ -3821,7 +3821,7 @@ game (
 
 game (
 	comment "Las Vegas Cool Hand (USA) (GB Compatible)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc BEF1CDE4 )
 )
 
@@ -3845,7 +3845,7 @@ game (
 
 game (
 	comment "Le Mans 24 Hours (Europe) (En,Fr,De,Es,It)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 1B49D07D )
 )
 
@@ -3887,127 +3887,127 @@ game (
 
 game (
 	comment "Legend of Zelda, The - Link's Awakening DX (France) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F48824FE )
 )
 
 game (
 	comment "Legend of Zelda, The - Link's Awakening DX (France) (Rev 1) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 4E2B75E7 )
 )
 
 game (
 	comment "Legend of Zelda, The - Link's Awakening DX (Germany) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc FED5959B )
 )
 
 game (
 	comment "Legend of Zelda, The - Link's Awakening DX (Germany) (Rev 1) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc EFB76777 )
 )
 
 game (
 	comment "Legend of Zelda, The - Link's Awakening DX (USA, Europe) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 97822948 )
 )
 
 game (
 	comment "Legend of Zelda, The - Link's Awakening DX (USA, Europe) (Rev 1) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc B38EB9DE )
 )
 
 game (
 	comment "Legend of Zelda, The - Link's Awakening DX (USA, Europe) (Rev 2) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 06887A34 )
 )
 
 game (
 	comment "Legend of Zelda, The - Link's Awakening DX (Germany) (Beta) (1998-12-11) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc BE5E366E )
 )
 
 game (
 	comment "Legend of Zelda, The - Link's Awakening DX (Germany) (Rev 1) (Beta) (1999-09-04) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 33C65722 )
 )
 
 game (
 	comment "Legend of Zelda, The - Link's Awakening DX (USA, Europe) (Rev 2) (Beta) (1999-09-04) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 84415B28 )
 )
 
 game (
 	comment "Legend of Zelda, The - Link's Awakening DX (Germany) (Rev 1) (Beta) (1999-08-19) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc FDCCC2BD )
 )
 
 game (
 	comment "Legend of Zelda, The - Link's Awakening DX (France) (Rev 1) (Beta) (1999-09-04) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 865CC1ED )
 )
 
 game (
 	comment "Legend of Zelda, The - Link's Awakening DX (France) (Rev 1) (Beta) (1999-08-19) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 05F23861 )
 )
 
 game (
 	comment "Legend of Zelda, The - Link's Awakening DX (USA, Europe) (Rev 2) (Beta) (1999-09-07) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 5715D896 )
 )
 
 game (
 	comment "Legend of Zelda, The - Link's Awakening DX (USA, Europe) (Rev 2) (Beta) (1999-08-19) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc A8855C67 )
 )
 
 game (
 	comment "Legend of Zelda, The - Link's Awakening DX (Germany) (Rev 1) (Beta) (1999-09-22) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 3E88A24A )
 )
 
 game (
 	comment "Legend of Zelda, The - Oracle of Ages (Europe) (En,Fr,De,Es,It)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 5933E3FA )
 )
 
 game (
 	comment "Legend of Zelda, The - Link's Awakening DX (Europe) (Rev 2) (Beta) (1999-09-19) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F9A66CDA )
 )
 
 game (
 	comment "Legend of Zelda, The - Oracle of Ages (USA, Australia)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 3800A387 )
 )
 
 game (
 	comment "Legend of Zelda, The - Oracle of Seasons (Europe) (En,Fr,De,Es,It)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc DBAC1357 )
 )
 
 game (
 	comment "Legend of Zelda, The - Oracle of Seasons (USA, Australia)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc D7E9F5D7 )
 )
 
@@ -4037,49 +4037,49 @@ game (
 
 game (
 	comment "LEGO Racers (Europe) (En,Fr,De,Es,It,Nl,Pt,Sv,No,Da)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 0A109F13 )
 )
 
 game (
 	comment "LEGO Racers (USA) (En,Fr,Es)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc F6865B09 )
 )
 
 game (
 	comment "LEGO Stunt Rally (Europe) (En,Fr,De,Es,It,Nl,Pt,Sv,No,Da)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 05CC01FB )
 )
 
 game (
 	comment "LEGO Stunt Rally (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc DA084760 )
 )
 
 game (
 	comment "Lemmings (Europe) (Proto)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 5EA0796B )
 )
 
 game (
 	comment "Lemmings VS (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 947D45AE )
 )
 
 game (
 	comment "Lemmings & Oh No! More Lemmings (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 97E5CE2F )
 )
 
 game (
 	comment "Lil' Monster (USA) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc C6859B34 )
 )
 
@@ -4103,7 +4103,7 @@ game (
 
 game (
 	comment "Little Magic (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc CA38283D )
 )
 
@@ -4127,19 +4127,19 @@ game (
 
 game (
 	comment "Logical (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc D67275F7 )
 )
 
 game (
 	comment "Logical (Europe)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 5EEE76C4 )
 )
 
 game (
 	comment "Lode Runner - Domudomu Dan no Yabou (Japan) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc ECEAB84E )
 )
 
@@ -4205,85 +4205,85 @@ game (
 
 game (
 	comment "Looney Tunes Racing (Europe) (En,Fr,De,Es,It,Nl)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 7EFDCA8A )
 )
 
 game (
 	comment "Looney Tunes Racing (USA) (En,Fr,De,Es,It,Nl)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 66792CDE )
 )
 
 game (
 	comment "Loppi Puzzle Magazine - Hirameku Puzzle Dai-2-gou (Japan) (SGB Enhanced, GB Compatible) (NP)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 29E193C5 )
 )
 
 game (
 	comment "Loppi Puzzle Magazine - Hirameku Puzzle Dai-2-gou (Japan) (Rev 1) (SGB Enhanced, GB Compatible) (NP)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc D54D5836 )
 )
 
 game (
 	comment "Loppi Puzzle Magazine - Hirameku Puzzle Dai-3-gou (Japan) (SGB Enhanced, GB Compatible) (NP)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc E078D9F8 )
 )
 
 game (
 	comment "Loppi Puzzle Magazine - Hirameku Puzzle Dai-3-gou (Japan) (Rev 1) (SGB Enhanced, GB Compatible) (NP)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 065A3BF5 )
 )
 
 game (
 	comment "Loppi Puzzle Magazine - Hirameku Puzzle Soukangou (Japan) (SGB Enhanced, GB Compatible) (NP)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc C0287CF2 )
 )
 
 game (
 	comment "Loppi Puzzle Magazine - Hirameku Puzzle Soukangou (Japan) (Rev 1) (SGB Enhanced, GB Compatible) (NP)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 267B5253 )
 )
 
 game (
 	comment "Loppi Puzzle Magazine - Kangaeru Puzzle Dai-3-gou (Japan) (SGB Enhanced, GB Compatible) (NP)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 3EF25533 )
 )
 
 game (
 	comment "Loppi Puzzle Magazine - Kangaeru Puzzle Dai-2-gou (Japan) (SGB Enhanced, GB Compatible) (NP)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc D457CC6C )
 )
 
 game (
 	comment "Loppi Puzzle Magazine - Kangaeru Puzzle Dai-2-gou (Japan) (Rev 1) (SGB Enhanced, GB Compatible) (NP)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 27AB2187 )
 )
 
 game (
 	comment "Loppi Puzzle Magazine - Kangaeru Puzzle Dai-3-gou (Japan) (Rev 1) (SGB Enhanced, GB Compatible) (NP)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 62D3F1E5 )
 )
 
 game (
 	comment "Loppi Puzzle Magazine - Kangaeru Puzzle Soukangou (Japan) (SGB Enhanced, GB Compatible) (NP)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 094FFD1E )
 )
 
 game (
 	comment "Loppi Puzzle Magazine - Kangaeru Puzzle Soukangou (Japan) (Rev 1) (SGB Enhanced, GB Compatible) (NP)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 88CE5C13 )
 )
 
@@ -4301,7 +4301,7 @@ game (
 
 game (
 	comment "Luca no Puzzle de Daibouken! (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 3AEBFAD8 )
 )
 
@@ -4331,13 +4331,13 @@ game (
 
 game (
 	comment "Lufia - The Legend Returns (Europe) (En,De)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 470DCB1D )
 )
 
 game (
 	comment "Lufia - The Legend Returns (USA)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 5BAE3C04 )
 )
 
@@ -4409,55 +4409,55 @@ game (
 
 game (
 	comment "Magical Drop (Europe) (En,Fr,De)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc EA9EE203 )
 )
 
 game (
 	comment "Magical Tetris Challenge (Europe) (En,Fr,De,Es,It,Nl,Sv)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 0A421839 )
 )
 
 game (
 	comment "Magical Drop (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc E4188A79 )
 )
 
 game (
 	comment "Magical Tetris Challenge (Europe) (En,Fr,De,Es,It,Nl,Sv) (Rev 1)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc C82BE2F4 )
 )
 
 game (
 	comment "Magical Tetris Challenge (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc F53CF66C )
 )
 
 game (
 	comment "Mahjong Joou (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 7D83A5E8 )
 )
 
 game (
 	comment "Mahjong Quest (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc C870B88F )
 )
 
 game (
 	comment "Majokko Mari-chan no Kisekae Monogatari (Japan) (Rev 1) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 0D16A545 )
 )
 
 game (
 	comment "Majokko Mari-chan no Kisekae Monogatari (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 934F4B0A )
 )
 
@@ -4469,7 +4469,7 @@ game (
 
 game (
 	comment "Marie no Atelier GB (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 6144FC66 )
 )
 
@@ -4529,7 +4529,7 @@ game (
 
 game (
 	comment "Mary-Kate and Ashley - Winners Circle (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 35D6DDCC )
 )
 
@@ -4559,25 +4559,25 @@ game (
 
 game (
 	comment "Matchbox Emergency Patrol (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc A3F23D7E )
 )
 
 game (
 	comment "Maus, Die (Europe) (En,Fr,De,Es)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc E7BD4A49 )
 )
 
 game (
 	comment "Maus, Die (Europe) (En,Fr,De,Es) (Beta)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc D6E8F27E )
 )
 
 game (
 	comment "Maya the Bee - Garden Adventures (Europe) (En,Fr,De,Es)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 142B6EFB )
 )
 
@@ -4595,61 +4595,61 @@ game (
 
 game (
 	comment "Medarot 2 - Kabuto Version (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc BF6BD446 )
 )
 
 game (
 	comment "Medarot 2 - Kuwagata Version (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 5B8FFD37 )
 )
 
 game (
 	comment "Medarot 2 - Parts Collection (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 159673DB )
 )
 
 game (
 	comment "Medarot 3 - Kabuto Version (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc E655632C )
 )
 
 game (
 	comment "Medarot 3 - Kuwagata Version (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc BC617834 )
 )
 
 game (
 	comment "Medarot 3 - Parts Collection - Z kara no Chousenjou (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc EE2D977F )
 )
 
 game (
 	comment "Medarot 4 - Kabuto Version (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc C192A368 )
 )
 
 game (
 	comment "Medarot 4 - Kuwagata Version (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 6A29B9D8 )
 )
 
 game (
 	comment "Medarot 5 - Susutake Mura no Tenkousei - Kuwagata (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 014083A8 )
 )
 
 game (
 	comment "Medarot 5 - Susutake Mura no Tenkousei - Kabuto (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc A3C1756E )
 )
 
@@ -4679,13 +4679,13 @@ game (
 
 game (
 	comment "Megami Tensei Gaiden - Last Bible (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc BD9BA639 )
 )
 
 game (
 	comment "Megami Tensei Gaiden - Last Bible II (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 9CAA00B5 )
 )
 
@@ -4751,7 +4751,7 @@ game (
 
 game (
 	comment "Metal Walker (USA) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 3BE68391 )
 )
 
@@ -4763,7 +4763,7 @@ game (
 
 game (
 	comment "Metamode (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc A76EED5B )
 )
 
@@ -4775,37 +4775,37 @@ game (
 
 game (
 	comment "Mickey's Racing Adventure (USA, Europe) (En,Fr,De,Es,It)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc D5E845F4 )
 )
 
 game (
 	comment "Mickey's Speedway USA (USA, Europe) (En,Fr,De,Es)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 11763934 )
 )
 
 game (
 	comment "Micro Machines 1 and 2 - Twin Turbo (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 5DD337EB )
 )
 
 game (
 	comment "Micro Machines V3 (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc B8064453 )
 )
 
 game (
 	comment "Micro Maniacs (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc E66E093B )
 )
 
 game (
 	comment "Microsoft - The 6 in 1 Puzzle Collection Entertainment Pack (Europe) (En,Fr,De,Es,It)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc EE4CBA24 )
 )
 
@@ -4817,7 +4817,7 @@ game (
 
 game (
 	comment "Microsoft - The 6 in 1 Puzzle Collection Entertainment Pack (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 0777B8D7 )
 )
 
@@ -4859,13 +4859,13 @@ game (
 
 game (
 	comment "Minna no Shougi - Shokyuu Hen (Japan) (GB Compatible)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 5CB4FC8A )
 )
 
 game (
 	comment "Minna no Shougi - Shokyuu Hen (Japan) (Rev 1) (GB Compatible)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc F766015A )
 )
 
@@ -4913,7 +4913,7 @@ game (
 
 game (
 	comment "Momotarou Densetsu 1-2 (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc DA7FB08F )
 )
 
@@ -4925,13 +4925,13 @@ game (
 
 game (
 	comment "Monopoly (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc 0503E567 )
 )
 
 game (
 	comment "Monopoly (USA) (GB Compatible)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc E559A717 )
 )
 
@@ -4943,25 +4943,25 @@ game (
 
 game (
 	comment "Monster Farm Battle Card GB (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 69B88F1E )
 )
 
 game (
 	comment "Monster Race 2 (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc B985F0D8 )
 )
 
 game (
 	comment "Monster Rancher Battle Card GB (USA) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 50DDF120 )
 )
 
 game (
 	comment "Monster Rancher Explorer (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 6C35E8F0 )
 )
 
@@ -5057,7 +5057,7 @@ game (
 
 game (
 	comment "Motocross Maniacs 2 (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 17D27FA9 )
 )
 
@@ -5105,7 +5105,7 @@ game (
 
 game (
 	comment "MTV Sports - Pure Ride (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc B7B2354B )
 )
 
@@ -5207,25 +5207,25 @@ game (
 
 game (
 	comment "NASCAR 2000 (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 54D90A4C )
 )
 
 game (
 	comment "NASCAR Challenge (USA) (Rumble Version)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 39C6B868 )
 )
 
 game (
 	comment "NASCAR Heat (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc FA83B37C )
 )
 
 game (
 	comment "NASCAR Racers (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc F39A5C4F )
 )
 
@@ -5303,13 +5303,13 @@ game (
 
 game (
 	comment "Network Boukenki Bugsite - Alpha Version (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc D65C8BA1 )
 )
 
 game (
 	comment "Network Boukenki Bugsite - Beta Version (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 56F52663 )
 )
 
@@ -5375,7 +5375,7 @@ game (
 
 game (
 	comment "Nicktoons Racing (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc A3F079D4 )
 )
 
@@ -5405,7 +5405,7 @@ game (
 
 game (
 	comment "Nushi Tsuri Adventure - Kite no Bouken (Japan) (Rumble Version)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc AC52F6EF )
 )
 
@@ -5423,7 +5423,7 @@ game (
 
 game (
 	comment "NYR - New York Race (Europe) (En,Fr,De,Es,It,Pt)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 62F560D8 )
 )
 
@@ -5435,13 +5435,13 @@ game (
 
 game (
 	comment "Ohasuta Dance Dance Revolution GB (Japan)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc E338C118 )
 )
 
 game (
 	comment "Ohasuta Yama-chan & Raymond (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 840EF32F )
 )
 
@@ -5453,7 +5453,7 @@ game (
 
 game (
 	comment "Ojarumaru - Tsukiyo ga Ike no Takaramono (Japan) (GB Compatible)"
-	genre "Board game"
+	genre "Board"
 	rom ( crc ED7461D2 )
 )
 
@@ -5465,19 +5465,19 @@ game (
 
 game (
 	comment "Othello Millennium (Japan) (GB Compatible)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc C7800576 )
 )
 
 game (
 	comment "Other Life - Azure Dreams GB (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc C6F1ABD4 )
 )
 
 game (
 	comment "Ou Dorobou Jing - Angel Version (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc D47C0DCF )
 )
 
@@ -5489,7 +5489,7 @@ game (
 
 game (
 	comment "Ou Dorobou Jing - Devil Version (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 2A39A874 )
 )
 
@@ -5513,25 +5513,25 @@ game (
 
 game (
 	comment "Pachinko CR Mouretsu Genshijin T (Japan) (GB Compatible)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc F75E269E )
 )
 
 game (
 	comment "Pachinko Hisshou Guide - Data no Ousama (Japan) (GB Compatible)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 1A631BAB )
 )
 
 game (
 	comment "Painter (Europe) (Unl)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc F4801F21 )
 )
 
 game (
 	comment "Pachipachi Pachisurou - New Pulsar Hen (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 1E443D1B )
 )
 
@@ -5549,7 +5549,7 @@ game (
 
 game (
 	comment "Perfect Choro Q (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc AFA1AAC3 )
 )
 
@@ -5639,7 +5639,7 @@ game (
 
 game (
 	comment "Pocket Color Mahjong (Japan) (GB Compatible)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 08DC0AF4 )
 )
 
@@ -5669,13 +5669,13 @@ game (
 
 game (
 	comment "Pocket GT (USA) (Proto)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 9E120D94 )
 )
 
 game (
 	comment "Pocket GT (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 2AC77C5A )
 )
 
@@ -5687,79 +5687,79 @@ game (
 
 game (
 	comment "Pocket Hanafuda (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc AF0C51B8 )
 )
 
 game (
 	comment "Pocket Lure Boy (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 35A29628 )
 )
 
 game (
 	comment "Pocket Monsters - Crystal Version (Taiwan) (Unl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 4B2B8B57 )
 )
 
 game (
 	comment "Pocket Monsters - Crystal Version (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 270C4ECC )
 )
 
 game (
 	comment "Pocket Monsters Diamond (Taiwan) (En) (Unl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 41E3723C )
 )
 
 game (
 	comment "Pocket Monsters Eun (Korea)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 9CC1F90F )
 )
 
 game (
 	comment "Pocket Monsters Geum (Korea)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 249A7A66 )
 )
 
 game (
 	comment "Pocket Monsters Gin (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc BE1B928A )
 )
 
 game (
 	comment "Pocket Monsters Gin (Japan) (Rev 1) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 0AEA5383 )
 )
 
 game (
 	comment "Pocket Monsters Kin (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 524478D4 )
 )
 
 game (
 	comment "Pocket Music (Europe) (En,Fr,De,Es,It)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc 1BFB531E )
 )
 
 game (
 	comment "Pocket Music (USA) (En,Fr,De,Es,It) (Proto)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc C4387812 )
 )
 
 game (
 	comment "Pocket Monsters Kin (Japan) (Rev 1) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 4EF7F2A5 )
 )
 
@@ -5783,31 +5783,31 @@ game (
 
 game (
 	comment "Pocket Puyo Puyo Sun (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 45661EC3 )
 )
 
 game (
 	comment "Pocket Puyo Puyo-n (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 870DB337 )
 )
 
 game (
 	comment "Pocket Puyo Puyo-n (Japan) (Rev 2)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 573613D7 )
 )
 
 game (
 	comment "Pocket Puyo Puyo-n (Japan) (Rev 1)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc C884037A )
 )
 
 game (
 	comment "Pocket Racing (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc FBF97372 )
 )
 
@@ -5825,133 +5825,133 @@ game (
 
 game (
 	comment "Pokemon - Crystal Version (USA)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc EE6F5188 )
 )
 
 game (
 	comment "Pokemon - Crystal Version (Australia)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc BB6DD80C )
 )
 
 game (
 	comment "Pokemon - Crystal Version (USA, Europe) (Rev 1)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 3358E30A )
 )
 
 game (
 	comment "Pokemon - Edicion Cristal (Spain)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc FF0A6F8A )
 )
 
 game (
 	comment "Pokemon - Edicion Oro (Spain) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 3434A92B )
 )
 
 game (
 	comment "Pokemon - Edicion Plata (Spain) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 1D9FAAC5 )
 )
 
 game (
 	comment "Pokemon - Gold Version (USA, Europe) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 6BDE3C3E )
 )
 
 game (
 	comment "Pokemon - Kristall-Edition (Germany)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 616D85DE )
 )
 
 game (
 	comment "Pokemon - Goldene Edition (Germany) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 4889DFAA )
 )
 
 game (
 	comment "Pokemon - Silberne Edition (Germany) (Beta) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 576F5CED )
 )
 
 game (
 	comment "Pokemon - Silberne Edition (Germany) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 96C9DB95 )
 )
 
 game (
 	comment "Pokemon - Silver Version (USA, Europe) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 8AD48636 )
 )
 
 game (
 	comment "Pokemon - Version Cristal (France)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 878B2AA7 )
 )
 
 game (
 	comment "Pokemon - Version Argent (France) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc E0C216EA )
 )
 
 game (
 	comment "Pokemon - Versione Cristallo (Italy)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc D45AC039 )
 )
 
 game (
 	comment "Pokemon - Version Or (France) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 37A70702 )
 )
 
 game (
 	comment "Pokemon - Versione Argento (Italy) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc CBA6D2D4 )
 )
 
 game (
 	comment "Pokemon - Versione Oro (Italy) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 4C184CE3 )
 )
 
 game (
 	comment "Pokemon Card GB (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 1926F570 )
 )
 
 game (
 	comment "Pokemon de Panepon (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 6BF7E4A6 )
 )
 
 game (
 	comment "Pokemon Card GB 2 - GR Dan Sanjou! (Japan)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 6C933A14 )
 )
 
 game (
 	comment "Pokemon Diamond (Taiwan) (En) (Unl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 1B5BEF4B )
 )
 
@@ -5969,7 +5969,7 @@ game (
 
 game (
 	comment "Pokemon Puzzle Challenge (Europe) (En,Fr,De,Es,It)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 8206B1CE )
 )
 
@@ -5981,49 +5981,49 @@ game (
 
 game (
 	comment "Pokemon Puzzle Challenge (USA, Australia)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc D06BBA96 )
 )
 
 game (
 	comment "Pokemon Trading Card Game (Europe) (En,Es,It) (SGB Enhanced) (GB Compatible)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 966DAEF1 )
 )
 
 game (
 	comment "Pokemon Trading Card Game (Europe) (En,Fr,De) (SGB Enhanced) (GB Compatible)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 4523376E )
 )
 
 game (
 	comment "Pokemon Trading Card Game (USA, Australia) (SGB Enhanced) (GB Compatible)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 81069D53 )
 )
 
 game (
 	comment "Pokemon Trading Card Game (Europe) (En,Fr,De) (Rev 1) (SGB Enhanced) (GB Compatible)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 942D0B7F )
 )
 
 game (
 	comment "Pokemon Trading Card Game (Europe) (En,Es,It) (Rev 1) (SGB Enhanced) (GB Compatible)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 3F1D7E58 )
 )
 
 game (
 	comment "Polaris SnoCross (USA) (Rumble Version)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc DD8B189E )
 )
 
 game (
 	comment "Pong - The Next Level (USA, Europe)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 476BD39D )
 )
 
@@ -6041,31 +6041,31 @@ game (
 
 game (
 	comment "Pop'n Music GB (Japan)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc 07E6CA95 )
 )
 
 game (
 	comment "Pop'n Music GB - Animation Melody (Japan)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc 9B2429A7 )
 )
 
 game (
 	comment "Pop'n Music GB - Disney Tunes (Japan)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc 48C3C6EF )
 )
 
 game (
 	comment "Pop'n Pop (Europe)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc FC67F7E4 )
 )
 
 game (
 	comment "Pop'n Pop (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 1CFFB764 )
 )
 
@@ -6095,13 +6095,13 @@ game (
 
 game (
 	comment "Power Quest (Europe) (En-US,En-GB,Fr,De,Es,It) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 30E1E567 )
 )
 
 game (
 	comment "Power Quest (USA) (En-US,En-GB,Fr,De,Es,It) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc DAD6F6B4 )
 )
 
@@ -6239,13 +6239,13 @@ game (
 
 game (
 	comment "Pro Mahjong Kiwame II GB (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 14F91F86 )
 )
 
 game (
 	comment "Pro Mahjong Tsuwamono GB 2 (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc F03016F5 )
 )
 
@@ -6275,13 +6275,13 @@ game (
 
 game (
 	comment "Puchi Carat (USA) (Proto) (SGB Enhanced) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc A97EA742 )
 )
 
 game (
 	comment "Puchi Carat (Europe) (SGB Enhanced) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc A9A89DDA )
 )
 
@@ -6293,13 +6293,13 @@ game (
 
 game (
 	comment "Puchi Carat (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc F0D0C36D )
 )
 
 game (
 	comment "Pumuckls Abenteuer im Geisterschloss (Germany)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 87FCEC24 )
 )
 
@@ -6317,25 +6317,25 @@ game (
 
 game (
 	comment "Puzzle Bobble 4 (Japan) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 79A35284 )
 )
 
 game (
 	comment "Puzzle de Shoubuyo! - Wootama-chan (Japan) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 73ED3042 )
 )
 
 game (
 	comment "Puzzle Bobble Millennium (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 00FDED94 )
 )
 
 game (
 	comment "Puzzle Master (USA) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 06EB7A01 )
 )
 
@@ -6359,25 +6359,25 @@ game (
 
 game (
 	comment "Qix Adventure (USA) (Proto)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc BB3744A9 )
 )
 
 game (
 	comment "Qix Adventure (Europe)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc D729DB40 )
 )
 
 game (
 	comment "Qix Adventure (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 5ACEA4A9 )
 )
 
 game (
 	comment "Quest - Brian's Journey (USA) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 9AC27645 )
 )
 
@@ -6419,19 +6419,19 @@ game (
 
 game (
 	comment "Racin' Ratz (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc D6881014 )
 )
 
 game (
 	comment "Race Time (Europe) (Unl)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 599C867D )
 )
 
 game (
 	comment "Radikal Bikers (Europe) (En,Fr,De,Es) (Proto)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 81E25D37 )
 )
 
@@ -6503,7 +6503,7 @@ game (
 
 game (
 	comment "Razmoket, Les - 100% Angelica (France)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 1D66CB29 )
 )
 
@@ -6599,7 +6599,7 @@ game (
 
 game (
 	comment "Revelations - The Demon Slayer (USA) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc D1A65D74 )
 )
 
@@ -6617,37 +6617,37 @@ game (
 
 game (
 	comment "Roadsters (Europe) (En,Fr,De,Es,It,Nl) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 717B3525 )
 )
 
 game (
 	comment "Rip-Tide Racer (Europe) (En,Fr,De,Es,It) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc AB8C3A31 )
 )
 
 game (
 	comment "Road Rash (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 11025EEB )
 )
 
 game (
 	comment "Roadsters (USA) (En,Fr,De,Es,It,Nl) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 38B022BE )
 )
 
 game (
 	comment "Roadsters '98 (USA) (Proto) (SGB Enhanced) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc FE2995A1 )
 )
 
 game (
 	comment "Robin Hood (Europe) (En,Fr,De,Es,It,Nl)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc D4F84329 )
 )
 
@@ -6659,37 +6659,37 @@ game (
 
 game (
 	comment "Robopon - Sun Version (USA) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 32CAEF11 )
 )
 
 game (
 	comment "Robopon - Sun Version (USA) (Beta) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 0B6985E4 )
 )
 
 game (
 	comment "Robot Poncots - Comic Bom Bom Special Version (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 4AA209CD )
 )
 
 game (
 	comment "Robot Poncots - Star Version (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc B28F32AC )
 )
 
 game (
 	comment "Robot Poncots - Sun Version (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc CB0B8003 )
 )
 
 game (
 	comment "Robot Poncots - Moon Version (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 87A29030 )
 )
 
@@ -6731,7 +6731,7 @@ game (
 
 game (
 	comment "Rokumon Tengai Mon-Colle-Knight GB (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc E48ADF8D )
 )
 
@@ -6773,7 +6773,7 @@ game (
 
 game (
 	comment "Rox (Japan) (En) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 4BD73D99 )
 )
 
@@ -6785,19 +6785,19 @@ game (
 
 game (
 	comment "Rox (USA, Europe) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 2E944775 )
 )
 
 game (
 	comment "RPG Tsukuru GB (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 0B614307 )
 )
 
 game (
 	comment "RPG Tsukuru GB (Japan) (Rev 1) (NP)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 57F82031 )
 )
 
@@ -6809,13 +6809,13 @@ game (
 
 game (
 	comment "Rugrats - Totally Angelica (USA, Europe)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc FC6195EF )
 )
 
 game (
 	comment "Rugrats - Typisch Angelica (Germany)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 026C4794 )
 )
 
@@ -6869,7 +6869,7 @@ game (
 
 game (
 	comment "Sakata Gorou Kudan no Renju Kyoushitsu (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc B5412C6F )
 )
 
@@ -6887,7 +6887,7 @@ game (
 
 game (
 	comment "Sakura Taisen GB 2 - Thunderbolt Sakusen (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 47636A2C )
 )
 
@@ -6899,7 +6899,7 @@ game (
 
 game (
 	comment "San Francisco Rush 2049 (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc EF368F16 )
 )
 
@@ -6911,25 +6911,25 @@ game (
 
 game (
 	comment "Sanrio Timenet - Kako Hen (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 458B579D )
 )
 
 game (
 	comment "Sanrio Timenet - Kako Hen (Japan) (Rev 1) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 6555B740 )
 )
 
 game (
 	comment "Sanrio Timenet - Mirai Hen (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc EFE51E17 )
 )
 
 game (
 	comment "Sanrio Timenet - Mirai Hen (Japan) (Rev 1) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 179DA7F3 )
 )
 
@@ -6959,19 +6959,19 @@ game (
 
 game (
 	comment "Sei Hai Densetsu (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 8804F856 )
 )
 
 game (
 	comment "Seme COM Dungeon - Drururuaga (Japan) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 0B1B928C )
 )
 
 game (
 	comment "Senkai Ibunroku Juntei Taisen - TV Animation Senkaiden Houshin Engi Yori (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 23FA5F53 )
 )
 
@@ -7067,25 +7067,25 @@ game (
 
 game (
 	comment "Shanghai Pocket (Europe) (SGB Enhanced) (GB Compatible)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 9401BA47 )
 )
 
 game (
 	comment "Shanghai Pocket (Europe) (Rev 1) (SGB Enhanced) (GB Compatible)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc D8FAC36C )
 )
 
 game (
 	comment "Shanghai Pocket (USA) (SGB Enhanced) (GB Compatible)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc A5E3ECE9 )
 )
 
 game (
 	comment "Shanghai Pocket (USA) (Rev 1) (Proto) (SGB Enhanced) (GB Compatible)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc D529DAFD )
 )
 
@@ -7115,73 +7115,73 @@ game (
 
 game (
 	comment "Shin Megami Tensei Devil Children - Aka no Sho (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F90C4977 )
 )
 
 game (
 	comment "Shin Megami Tensei Devil Children - Aka no Sho (Japan) (Rev 1) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc C1E27556 )
 )
 
 game (
 	comment "Shin Megami Tensei Devil Children - Kuro no Sho (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 55B9AF51 )
 )
 
 game (
 	comment "Shin Megami Tensei Devil Children - Kuro no Sho (Japan) (Rev 1) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 3D4AE536 )
 )
 
 game (
 	comment "Shin Megami Tensei Devil Children - Shiro no Sho (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 39A10855 )
 )
 
 game (
 	comment "Shin Megami Tensei Devil Children - Shiro no Sho (Japan) (Rev 1) (Proto)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 79EA53F4 )
 )
 
 game (
 	comment "Shinseiki Evangelion - Mahjong Hokan Keikaku (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 5337FF55 )
 )
 
 game (
 	comment "Shin Megami Tensei Trading Card - Card Summoner (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 85264877 )
 )
 
 game (
 	comment "Shougi 3 (Japan) (GB Compatible)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 64B479FA )
 )
 
 game (
 	comment "Shougi 2 (Japan) (GB Compatible)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc A7748D2B )
 )
 
 game (
 	comment "Shrek - Fairy Tale Freakdown (USA, Europe) (En,Fr,De,Es,It)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 387E6459 )
 )
 
 game (
 	comment "Shutokou Racing, The (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 36E781CD )
 )
 
@@ -7247,7 +7247,7 @@ game (
 
 game (
 	comment "SnowCross (Europe) (En,Fr,De,Es,It,Pt)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 4BA47DBC )
 )
 
@@ -7259,7 +7259,7 @@ game (
 
 game (
 	comment "Solomon (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 6AEE0958 )
 )
 
@@ -7277,7 +7277,7 @@ game (
 
 game (
 	comment "Soreike! Anpanman - Fushigi na Nikoniko Album (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc A80EEEAD )
 )
 
@@ -7289,7 +7289,7 @@ game (
 
 game (
 	comment "Soul Getter - Houkago Bouken RPG (Japan) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 3FFCD45B )
 )
 
@@ -7337,13 +7337,13 @@ game (
 
 game (
 	comment "Space-Net - Cosmo Blue (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F606D369 )
 )
 
 game (
 	comment "Space-Net - Cosmo Red (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 01F96353 )
 )
 
@@ -7445,7 +7445,7 @@ game (
 
 game (
 	comment "Star Ocean - Blue Sphere (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 8C7DDBDA )
 )
 
@@ -7469,13 +7469,13 @@ game (
 
 game (
 	comment "Star Wars Episode I - Racer (USA, Europe) (Rumble Version)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 0EBC5758 )
 )
 
 game (
 	comment "Stranded Kids (Europe) (En,Fr,De) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 816A4D94 )
 )
 
@@ -7529,7 +7529,7 @@ game (
 
 game (
 	comment "Super Bombliss DX (Japan) (En) (SGB Enhanced) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 34C8A4A5 )
 )
 
@@ -7547,13 +7547,13 @@ game (
 
 game (
 	comment "Super Chinese Fighter EX (Japan)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc DCDAA333 )
 )
 
 game (
 	comment "Super Gals! Kotobuki Ran 2 - Miracle Getting (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc E77FA0F2 )
 )
 
@@ -7631,7 +7631,7 @@ game (
 
 game (
 	comment "Supercross Freestyle (Europe) (En,Fr,De,Es,It)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 4D3E0F51 )
 )
 
@@ -7655,7 +7655,7 @@ game (
 
 game (
 	comment "Survival Kids (USA) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc C46ABA56 )
 )
 
@@ -7667,19 +7667,19 @@ game (
 
 game (
 	comment "Survival Kids - Kotou no Boukensha (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 61FA675C )
 )
 
 game (
 	comment "Survival Kids 2 - Dasshutsu!! Futago-Jima! (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc AB8B25D8 )
 )
 
 game (
 	comment "Survival Kids 2 - Dasshutsu!! Futago-Jima! (Japan) (Rev 1) (SGB Enhanced, GB Compatible) (NP)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc BD366D22 )
 )
 
@@ -7697,13 +7697,13 @@ game (
 
 game (
 	comment "Suzuki Alstare Extreme Racing (Europe) (En,Fr,De,Es,It,Nl)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 0F7264BA )
 )
 
 game (
 	comment "Suzuki Alstare Extreme Racing (USA) (Proto)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc A13CF42E )
 )
 
@@ -7715,7 +7715,7 @@ game (
 
 game (
 	comment "Swing (Germany)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 7041929D )
 )
 
@@ -7727,7 +7727,7 @@ game (
 
 game (
 	comment "Swing (Europe) (En,Fr,De,Es,It) (Proto)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 60D06DF9 )
 )
 
@@ -7739,25 +7739,25 @@ game (
 
 game (
 	comment "Sylvanian Families 2 - Irozuku Mori no Fantasy (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F82D391F )
 )
 
 game (
 	comment "Sylvanian Families 2 - Irozuku Mori no Fantasy (Japan) (Rev 1) (NP)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc AD6F3BDF )
 )
 
 game (
 	comment "Sylvanian Families 3 - Hoshi Furu Yoru no Sunadokei (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc ABF32B8B )
 )
 
 game (
 	comment "Sylvanian Melodies - Mori no Nakama to Odori Masho! (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Music and Dance"
+	genre "Music / Dancing"
 	rom ( crc 6DD8AC91 )
 )
 
@@ -7781,25 +7781,25 @@ game (
 
 game (
 	comment "Taisen Tsume Shougi (Japan) (NP) (GB Compatible)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 95310C8B )
 )
 
 game (
 	comment "Taito Memorial - Chase H.Q. - Secret Police (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 6A0C272D )
 )
 
 game (
 	comment "Tales of Phantasia - Narikiri Dungeon (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 725CF31C )
 )
 
 game (
 	comment "Tanimura Hitoshi Ryuu Pachinko Kouryaku Daisakusen - Don Quijote ga Iku (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc CE8AE58C )
 )
 
@@ -7835,7 +7835,7 @@ game (
 
 game (
 	comment "Taxi 2 (France)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 0FD9FFF0 )
 )
 
@@ -7847,13 +7847,13 @@ game (
 
 game (
 	comment "Taxi 2 (Europe) (En,Fr,De,Es,It,Nl) (Proto)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 288BEF6E )
 )
 
 game (
 	comment "Taxi 3 (France)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 2838996F )
 )
 
@@ -7865,67 +7865,67 @@ game (
 
 game (
 	comment "Test Drive 2001 (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc BB894EC7 )
 )
 
 game (
 	comment "Test Drive 6 (Europe) (En,Fr,De,Es,It) (Sample) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 2F179045 )
 )
 
 game (
 	comment "Test Drive 6 (Europe) (En,Fr,De,Es,It) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 13691CEB )
 )
 
 game (
 	comment "Test Drive 6 (USA) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 5CE00547 )
 )
 
 game (
 	comment "Test Drive Cycles (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc E32BB06F )
 )
 
 game (
 	comment "Test Drive 6 (USA) (Rev 1) (Proto)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 5333C5DB )
 )
 
 game (
 	comment "Test Drive Le Mans (USA) (En,Fr,Es)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc E6D6AC8F )
 )
 
 game (
 	comment "Test Drive Off-Road 3 (USA) (Rumble Version) (SGB Enhanced) (GB Compatible)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 0FDD5B9E )
 )
 
 game (
 	comment "Tetris Adventure - Susume Mickey to Nakama-tachi (Japan) (Rev 1)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc B7C0831F )
 )
 
 game (
 	comment "Tetris Adventure - Susume Mickey to Nakama-tachi (Japan)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc EAF6E4F2 )
 )
 
 game (
 	comment "Tetris DX (World) (SGB Enhanced) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 69989152 )
 )
 
@@ -7937,7 +7937,7 @@ game (
 
 game (
 	comment "TG Rally 2 (United Kingdom)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 795A9992 )
 )
 
@@ -7955,13 +7955,13 @@ game (
 
 game (
 	comment "Thunderbirds (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc B5BECECF )
 )
 
 game (
 	comment "Thunderbirds (Europe) (En,Fr,De,Es,It)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 36536324 )
 )
 
@@ -8039,7 +8039,7 @@ game (
 
 game (
 	comment "TOCA Touring Car Championship (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc B509892B )
 )
 
@@ -8165,19 +8165,19 @@ game (
 
 game (
 	comment "Tonka Raceway (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc E108B2C2 )
 )
 
 game (
 	comment "Tonka Raceway (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc BC07F4FB )
 )
 
 game (
 	comment "Tonka Raceway (USA) (Rumble Version)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc A5AF4B28 )
 )
 
@@ -8237,43 +8237,43 @@ game (
 
 game (
 	comment "Top Gear Pocket (USA) (Rumble Version)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 84499FC1 )
 )
 
 game (
 	comment "Top Gear Pocket (Japan) (En) (Rumble Version)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc EBCCA3DA )
 )
 
 game (
 	comment "Top Gear Pocket 2 (Japan) (Rumble Version)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 1845F25A )
 )
 
 game (
 	comment "Top Gear Pocket 2 (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc EFB87F80 )
 )
 
 game (
 	comment "Top Gear Pocket 2 (USA) (Rev 1) (Proto)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc EB0838D6 )
 )
 
 game (
 	comment "Top Gear Pocket 2 (Japan) (Rev 1) (Proto) (Rumble Version)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc FC680273 )
 )
 
 game (
 	comment "Top Gear Rally (Europe) (Rumble Version)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 337E5DD3 )
 )
 
@@ -8285,7 +8285,7 @@ game (
 
 game (
 	comment "Top Gear Rally 2 (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 017773CD )
 )
 
@@ -8309,13 +8309,13 @@ game (
 
 game (
 	comment "Towers - Lord Baniff's Deceit (USA, Europe)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 7B9B2468 )
 )
 
 game (
 	comment "Tottoko Hamutarou 2 - Hamu-chan Zu Daishuugou Dechu (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F1FBCF84 )
 )
 
@@ -8345,13 +8345,13 @@ game (
 
 game (
 	comment "Toy Story Racer (Europe) (En,Fr,De)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc F660ED94 )
 )
 
 game (
 	comment "Toy Story Racer (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc D911DD97 )
 )
 
@@ -8393,7 +8393,7 @@ game (
 
 game (
 	comment "Trouballs (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 260EED04 )
 )
 
@@ -8495,7 +8495,7 @@ game (
 
 game (
 	comment "Uchuujin Tanaka Tarou de - RPG Tsukuru GB 2 (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 219E42E3 )
 )
 
@@ -8513,7 +8513,7 @@ game (
 
 game (
 	comment "Ultimate Fighting Championship (Europe)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 92A5A1AD )
 )
 
@@ -8531,7 +8531,7 @@ game (
 
 game (
 	comment "Ultimate Fighting Championship (USA)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc D5F036CE )
 )
 
@@ -8543,67 +8543,67 @@ game (
 
 game (
 	comment "Uno (Europe) (En,Fr,De,Es,It,Nl) (GB Compatible)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 70760CCE )
 )
 
 game (
 	comment "Uno (USA) (GB Compatible)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc F026D509 )
 )
 
 game (
 	comment "V-Rally - Championship Edition (Europe) (En,Fr,De,Es)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 1312B3F7 )
 )
 
 game (
 	comment "V-Rally - Championship Edition (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc FAB9D941 )
 )
 
 game (
 	comment "Vegas Games (Europe) (En,Fr,De)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 81B2BB8D )
 )
 
 game (
 	comment "V-Rally - Edition 99 (USA) (En,Fr,Es)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc DA300C6C )
 )
 
 game (
 	comment "Vegas Games (USA)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 40B5EA96 )
 )
 
 game (
 	comment "Vegas Games (USA) (En,Fr,De) (Rev 1) (Proto)"
-	genre "Casino"
+	genre "Gambling"
 	rom ( crc 4167CF29 )
 )
 
 game (
 	comment "Vigilante 8 (USA) (Rumble Version)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc D1A188DC )
 )
 
 game (
 	comment "VIP (Europe) (En,Fr,De,Es,It)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc DBDD6D85 )
 )
 
 game (
 	comment "VIP (USA) (En,Fr,Es)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 436C87D4 )
 )
 
@@ -8615,25 +8615,25 @@ game (
 
 game (
 	comment "Wacky Races (Europe) (En,Fr,De,Es,It,Nl)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 37EA6093 )
 )
 
 game (
 	comment "Wacky Races (USA) (En,Fr,Es)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 543ABB1B )
 )
 
 game (
 	comment "Walt Disney World Quest - Magical Racing Tour (Europe) (Fr,De,Es)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc E54B22B9 )
 )
 
 game (
 	comment "Walt Disney World Quest - Magical Racing Tour (USA, Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 56BEB694 )
 )
 
@@ -8657,7 +8657,7 @@ game (
 
 game (
 	comment "Warriors of Might and Magic (USA) (En,Fr,De)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc EF9F5BEA )
 )
 
@@ -8735,13 +8735,13 @@ game (
 
 game (
 	comment "Wetrix (Europe) (En,Fr,De)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 9CBFAA3D )
 )
 
 game (
 	comment "Wetrix GB (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 6215C5B3 )
 )
 
@@ -8789,37 +8789,37 @@ game (
 
 game (
 	comment "Wizardry Empire (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 7ADC90E1 )
 )
 
 game (
 	comment "Wizardry Empire (Japan) (Rev 1)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc FA82620F )
 )
 
 game (
 	comment "Wizardry Empire - Fukkatsu no Tsue (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 1A10552B )
 )
 
 game (
 	comment "Wizardry I - Proving Grounds of the Mad Overlord (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc A99A33DC )
 )
 
 game (
 	comment "Wizardry II - Llylgamyn no Isan (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc DD727F1A )
 )
 
 game (
 	comment "Wizardry III - Diamond no Kishi (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc D44D3596 )
 )
 
@@ -8837,19 +8837,19 @@ game (
 
 game (
 	comment "Woody Woodpecker no Go! Go! Racing (Japan)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc F59DAA99 )
 )
 
 game (
 	comment "Woody Woodpecker Racing (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc B0F43498 )
 )
 
 game (
 	comment "Woody Woodpecker Racing (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 0424CF43 )
 )
 
@@ -8903,19 +8903,19 @@ game (
 
 game (
 	comment "X-Men - Mutant Academy (Japan)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 8162ADC1 )
 )
 
 game (
 	comment "X-Men - Mutant Academy (USA, Europe)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc EC6278A3 )
 )
 
 game (
 	comment "X-Men - Mutant Academy (USA, Europe) (Rev 1)"
-	genre "Fight"
+	genre "Fighting"
 	rom ( crc 234E1E9C )
 )
 
@@ -8957,13 +8957,13 @@ game (
 
 game (
 	comment "Xtreme Wheels (Europe)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc E101246F )
 )
 
 game (
 	comment "Xtreme Wheels (USA)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 129465DB )
 )
 
@@ -8975,7 +8975,7 @@ game (
 
 game (
 	comment "Xtreme Wheels (Japan) (NP)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 30132AB8 )
 )
 
@@ -8987,103 +8987,103 @@ game (
 
 game (
 	comment "Yogi Bear - Great Balloon Blast (USA)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc F817E978 )
 )
 
 game (
 	comment "Yu-Gi-Oh! - Dark Duel Stories (Europe)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 338E2CDA )
 )
 
 game (
 	comment "Yu-Gi-Oh! - Dark Duel Stories (USA)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 803A56AE )
 )
 
 game (
 	comment "Yu-Gi-Oh! - Dark Duel Stories (Europe) (Beta)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 1A60F198 )
 )
 
 game (
 	comment "Yu-Gi-Oh! - Das Dunkle Duell (Germany)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 6CA75BA0 )
 )
 
 game (
 	comment "Yu-Gi-Oh! - Duel des Tenebres (France) (Beta)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc C0DD1B26 )
 )
 
 game (
 	comment "Yu-Gi-Oh! - Duel des Tenebres (France)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 5B72BAB5 )
 )
 
 game (
 	comment "Yu-Gi-Oh! - Duelo en las Tinieblas (Spain)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc DC160F10 )
 )
 
 game (
 	comment "Yu-Gi-Oh! - Monster Capsule GB (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 1371E872 )
 )
 
 game (
 	comment "Yu-Gi-Oh! - Racconti Oscuri (Italy)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 8A6B0948 )
 )
 
 game (
 	comment "Yu-Gi-Oh! Duel Monsters 4 - Battle of Great Duelist - Jounouchi Deck (Japan)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 298BD054 )
 )
 
 game (
 	comment "Yu-Gi-Oh! Duel Monsters 4 - Battle of Great Duelist - Kaiba Deck (Japan)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc A4D06001 )
 )
 
 game (
 	comment "Yu-Gi-Oh! Duel Monsters II - Dark Duel Stories (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc BA7182C3 )
 )
 
 game (
 	comment "Yu-Gi-Oh! Duel Monsters III - Tri Holy God Advant (Japan)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 9F9DBAB4 )
 )
 
 game (
 	comment "Yu-Gi-Oh! Duel Monsters 4 - Battle of Great Duelist - Yuugi Deck (Japan)"
-	genre "Playing cards"
+	genre "Card"
 	rom ( crc 4D6105F6 )
 )
 
 game (
 	comment "Zelda no Densetsu - Yume o Miru Shima DX (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc D974ABEA )
 )
 
 game (
 	comment "Zelda no Densetsu - Fushigi no Kinomi - Daichi no Shou (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc E42538F0 )
 )
 
@@ -9095,49 +9095,49 @@ game (
 
 game (
 	comment "Zelda no Densetsu - Fushigi no Kinomi - Jikuu no Shou (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 3272E6F9 )
 )
 
 game (
 	comment "Zelda no Densetsu - Yume o Miru Shima DX (Japan) (Rev 1) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc BD8A1041 )
 )
 
 game (
 	comment "Zelda no Densetsu - Yume o Miru Shima DX (Japan) (Rev 2) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc E998E595 )
 )
 
 game (
 	comment "Zelda no Densetsu - Yume o Miru Shima DX (Japan) (Beta) (1998-06-30) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F46F0CED )
 )
 
 game (
 	comment "Zelda no Densetsu - Yume o Miru Shima DX (Japan) (Beta) (1998-07-05 18.00.56) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 11290C31 )
 )
 
 game (
 	comment "Zelda no Densetsu - Yume o Miru Shima DX (Japan) (Beta) (1998-07-07) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 879CDF7D )
 )
 
 game (
 	comment "Zelda no Densetsu - Yume o Miru Shima DX (Japan) (Beta) (1998-07-05 21.55.32) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 3C63E083 )
 )
 
 game (
 	comment "Zelda no Densetsu - Yume o Miru Shima DX (Japan) (Beta) (1998-07-14) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 13C76902 )
 )
 
@@ -9155,25 +9155,25 @@ game (
 
 game (
 	comment "Zoids - Jashin Fukkatsu! Genobreaker Hen (Japan) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc F36C874D )
 )
 
 game (
 	comment "Zoids - Jashin Fukkatsu! Genobreaker Hen (Japan) (Rev 1) (SGB Enhanced) (GB Compatible)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 96461918 )
 )
 
 game (
 	comment "Zok Zok Heroes (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc C09F9E1B )
 )
 
 game (
 	comment "Zoids - Shirogane no Juukishin Liger Zero (Japan)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 530705A1 )
 )
 

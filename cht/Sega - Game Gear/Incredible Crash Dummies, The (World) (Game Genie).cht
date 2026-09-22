@@ -1,7 +1,7 @@
 cheats = 19 
 
 cheat0_desc = "Start With 1 Life"
-cheat0_code = "01C+40F+F7E"
+cheat0_code = "01C-40F-F7E"
 cheat0_enable = false 
 
 cheat1_desc = "Start With 1 Lives"
@@ -13,7 +13,7 @@ cheat2_code = "03C-40F-F7E"
 cheat2_enable = false 
 
 cheat3_desc = "Start With 5 Lives"
-cheat3_code = "05C+40F+F7E"
+cheat3_code = "05C-40F-F7E"
 cheat3_enable = false 
 
 cheat4_desc = "Start With 7 Lives"
@@ -21,7 +21,7 @@ cheat4_code = "07C-40F-F7E"
 cheat4_enable = false 
 
 cheat5_desc = "Start With 9 Lives"
-cheat5_code = "09C+40F+F7E"
+cheat5_code = "09C-40F-F7E"
 cheat5_enable = false 
 
 cheat6_desc = "Infinite Lives"
@@ -73,6 +73,6 @@ cheat17_code = "3EC-29F-082+04C-2AF-E62+00C-2BF-E69"
 cheat17_enable = false 
 
 cheat18_desc = "Fire Has No Effect On Crash Dummies"
-cheat18_code = "00B+E1A+E69"
+cheat18_code = "00B-E1A-E69"
 cheat18_enable = false 
 

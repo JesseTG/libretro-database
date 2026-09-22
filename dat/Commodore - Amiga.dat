@@ -1,6 +1,6 @@
 clrmamepro (
 	name "Commodore - Amiga - WHDLoad"
-	date "2025-12-16"
+	date "2026-08-02"
 	author "libretro"
 	comment "Retroplay's WHDLoad Games & Beta/Unofficial, full sets"
 )
@@ -191,7 +191,7 @@ game (
 )
 
 game (
-	name "AAARGH! (Europe) (Arcadia)"
+	name "AAARGH! (USA) (Arcadia)"
 	rom ( name "Aaargh!_v0.1_Arcadia.lha" size 677038 crc CDD9419E sha1 7ff80d99ff66d5ad6667f7880ac85f0ec7c9b02c )
 )
 
@@ -366,6 +366,11 @@ game (
 )
 
 game (
+	name "Agresor (Poland)"
+	rom ( name "Agresor_v1.0_Pl.lha" size 747073 crc 5CF6D21C sha1 c1e528edafdf354f46683565cc7373445588219c )
+)
+
+game (
 	name "Aigle d'Or, L' - Le Retour (France) (512 kB)"
 	rom ( name "AigleDOr_v1.2_512k_Fr_2600.lha" size 1541808 crc 18CA4867 sha1 658f9929cf4662786e610f318c30a2c3f3b9ddbb )
 )
@@ -481,7 +486,7 @@ game (
 )
 
 game (
-	name "Alien Bash (Europe) (Coverdisk - The One #06/93)"
+	name "Alien Bash (Europe) (Coverdisk - The One Amiga #06/93)"
 	rom ( name "AlienBash_v1.0.lha" size 119936 crc CBC596FD sha1 48ee0455b607da42408a9099e1df55aaa748e4d8 )
 )
 
@@ -631,7 +636,7 @@ game (
 )
 
 game (
-	name "ATR - All Terrain Racing Christmas Demo (Europe) (Coverdisk - Amiga Format #67, Amiga Action #67)"
+	name "ATR - All Terrain Racing Christmas Demo (Europe) (Coverdisk - Amiga Format #67)"
 	rom ( name "AllTerrainRacingXmasDemo_v1.2.lha" size 394966 crc D44DD95F sha1 fd2a54fcad916a8cb42d8cdf5b798dba4cf05b70 )
 )
 
@@ -746,23 +751,13 @@ game (
 )
 
 game (
-	name "Ancient Art Of War, The (Europe)"
+	name "Ancient Art of War, The (Europe)"
 	rom ( name "AncientArtOfWar_v1.1.lha" size 384115 crc C5E2D33E sha1 d4ae5b72e0a6de02e86a10906ff93e464fd61918 )
 )
 
 game (
 	name "Ancient Art of War in the Skies, The (Europe)"
 	rom ( name "AncientArtOfWarInTheSkies_v1.0_1666.lha" size 2063086 crc 7A440793 sha1 7f65928e41912f44b755b597a22d02924dbf0510 )
-)
-
-game (
-	name "Andromeda Mission (Europe)"
-	rom ( name "AndromedaMission_v1.0.lha" size 516884 crc 0D83E419 sha1 48f64b7010f414c8f526326012d6aeb0ed2485cb )
-)
-
-game (
-	name "Andromeda Mission (Germany)"
-	rom ( name "AndromedaMission_v1.0_De.lha" size 517110 crc E3080108 sha1 237e96dce810c4568a525e84951b5311de80f496 )
 )
 
 game (
@@ -806,7 +801,7 @@ game (
 )
 
 game (
-	name "Antares - Der Griff Nach Den Sternen (Germany)"
+	name "Antares - Der Griff nach den Sternen (Germany)"
 	rom ( name "AntaresDerGriffNachDenSternen_v1.0_De.lha" size 1828283 crc 252E4635 sha1 d4b7ef3bc56b933bfbdb8763226857516c00fcfb )
 )
 
@@ -1032,7 +1027,12 @@ game (
 
 game (
 	name "Army Moves (Europe)"
-	rom ( name "ArmyMoves_v1.3_2442.lha" size 124958 crc DFE99B0D sha1 dde6f272592e19fe483c751793eb6245ab4ae4af )
+	rom ( name "ArmyMoves_v2.0.lha" size 131852 crc FCE4009A sha1 78c2d67fd8415fa5f37e902f43f4489885052b2e )
+)
+
+game (
+	name "Army Moves (Europe) (Coverdisk - CU Amiga #05/91)"
+	rom ( name "ArmyMoves_v2.0_CU_2442.lha" size 131326 crc 65F71421 sha1 217a9ede40c2183003b4d3aa780c4ce4a394a786 )
 )
 
 game (
@@ -1316,7 +1316,7 @@ game (
 )
 
 game (
-	name "Aztec Challenge (Europe) (PD/Freeware)"
+	name "Aztec Challenge (Europe) (C64)"
 	rom ( name "AztecChallenge_v1.0.lha" size 208141 crc A494CD48 sha1 b82b99d449f5c1684eee56eabf45e9d12427b31f )
 )
 
@@ -1411,7 +1411,7 @@ game (
 )
 
 game (
-	name "Bagitman (Europe) (PD/Freeware)"
+	name "Bagitman (Europe) (C64)"
 	rom ( name "Bagitman_v2.0.lha" size 93285 crc E70D4077 sha1 9946c7d1a04c270192705e75d42f6262b7af324f )
 )
 
@@ -1462,12 +1462,12 @@ game (
 
 game (
 	name "Banshee (Europe) (En,Fr,De,Da) (AGA)"
-	rom ( name "Banshee_v3.3_AGA_0633.lha" size 2954097 crc EAA73733 sha1 5249043ca0d28c2a2aec5eb901037f9fddf4131b )
+	rom ( name "Banshee_v4.0_AGA_0633.lha" size 2954872 crc ED7041AA sha1 98d5033c7c2cd3429942355cd2f211f952e36cd4 )
 )
 
 game (
 	name "Banshee (Europe) (En,Fr,De,Da) (CD32)"
-	rom ( name "Banshee_v3.3_CD32.lha" size 2812925 crc 8DB86779 sha1 7ed5eb571843a084dc8935461ae29b947ccfead4 )
+	rom ( name "Banshee_v4.0_CD32.lha" size 2813712 crc DE017975 sha1 2f922007301f572c26eb0219d7b7286526d29a4e )
 )
 
 game (
@@ -1706,7 +1706,7 @@ game (
 )
 
 game (
-	name "Battleships (USA)"
+	name "Battleship (USA)"
 	rom ( name "Battleship_v2.1_NTSC.lha" size 152813 crc FBE9CA06 sha1 1e8f746c377c6cf20eacd419150d8162c611bcfd )
 )
 
@@ -1717,12 +1717,12 @@ game (
 
 game (
 	name "Battle Squadron - The Destruction of the Barrax Empire! (Europe)"
-	rom ( name "BattleSquadron_v1.7_0941.lha" size 874662 crc 41743132 sha1 4850d1fb315653b27545f964b2ba7f9f3821405e )
+	rom ( name "BattleSquadron_v1.8_0941.lha" size 875167 crc 86936407 sha1 38bc3833b0f701b02af0df1c42dff4bba317d8d4 )
 )
 
 game (
 	name "Battle Squadron - The Destruction of the Barrax Empire! (USA)"
-	rom ( name "BattleSquadron_v1.7_NTSC_0942.lha" size 892067 crc DC294F9B sha1 c2a38716ee5733a63a388d6c3e3d75e7d6dfd366 )
+	rom ( name "BattleSquadron_v1.8_NTSC_0942.lha" size 875074 crc DD2FD406 sha1 0bfb537b7ed4bb104600d3e8b3b711f841199aab )
 )
 
 game (
@@ -1816,12 +1816,12 @@ game (
 )
 
 game (
-	name "Beneath a Steel Sky (Europe) (CD32)"
+	name "Beneath a Steel Sky (Europe) (En,De,Fr,It) (CD32)"
 	rom ( name "BeneathASteelSky_v2.2_CD32.lha" size 66993137 crc 25D35CD9 sha1 bb62501dd8f77361aafe02b66045bde52cb38414 )
 )
 
 game (
-	name "Beneath a Steel Sky (Europe) (CD32) (No Voice)"
+	name "Beneath a Steel Sky (Europe) (En,De,Fr,It) (CD32) (No Voice)"
 	rom ( name "BeneathASteelSky_v2.2_CD32_NoVoice.lha" size 9205104 crc CD226BCF sha1 afa0409a3e54f19f03af1febc8bb8c12724d89a4 )
 )
 
@@ -1927,7 +1927,7 @@ game (
 
 game (
 	name "Biing! - Sex, Intrigen und Skalpelle (Germany) (AGA)"
-	rom ( name "Biing_v1.1_AGA_De_0442.lha" size 20133137 crc F31BBDD2 sha1 666067d856db17ff54574b3e6bf959dd8aa5bbf8 )
+	rom ( name "Biing_v1.2_AGA_De_0442.lha" size 20133499 crc 21519456 sha1 5500a07e8a95f2470678604c01998f5226a71532 )
 )
 
 game (
@@ -2002,7 +2002,12 @@ game (
 
 game (
 	name "Black Dawn II (Europe) (Licenceware)"
-	rom ( name "BlackDawn2_v1.1.lha" size 498130 crc 2BC9F286 sha1 10c743553afc51d135fc01f79636cb2ac26ab652 )
+	rom ( name "BlackDawn2_v1.2.lha" size 498278 crc 9D5188A3 sha1 86eeda82f367e55f9fcd6311c1b291041af181e9 )
+)
+
+game (
+	name "Black Dawn II (Europe) (Shareware)"
+	rom ( name "BlackDawn2_v1.2_Shareware.lha" size 443912 crc 8F481D48 sha1 8ee6a80fff5e1ff3beed9ec2ffedb7683f2787c0 )
 )
 
 game (
@@ -2091,7 +2096,7 @@ game (
 )
 
 game (
-	name "Blastaball (Europe) (Arcadia)"
+	name "Blastaball (USA) (Arcadia)"
 	rom ( name "BlastaBall_v0.1_Arcadia.lha" size 269913 crc C3F94BD5 sha1 c873dbc87d9ba5529fe09319f48b97d8da68fa09 )
 )
 
@@ -2456,7 +2461,7 @@ game (
 )
 
 game (
-	name "BreakThru (Europe) (PD/Freeware)"
+	name "BreakThru (Europe) (Arcade)"
 	rom ( name "BreakThru_v1.1.lha" size 493839 crc 7B610290 sha1 7e9f2c306b89b5c96fbf4019dc8c53ec720a8ae5 )
 )
 
@@ -2798,17 +2803,22 @@ game (
 
 game (
 	name "Cannon Fodder 2 (Europe)"
-	rom ( name "CannonFodder2_v1.12_0104.lha" size 1435113 crc E8D4EB6A sha1 df3a165742f851b79185e23ac4f7131894eb86d1 )
+	rom ( name "CannonFodder2_v1.17_0104.lha" size 1463039 crc AB81F4E9 sha1 f6b75572aca34d9b4f70f292e7c1d5b0fa7b5f7b )
 )
 
 game (
 	name "Cannon Fodder 2 (Germany)"
-	rom ( name "CannonFodder2_v1.12_De_0241.lha" size 1412741 crc 5A24722E sha1 13f27f63af5c048b33f43876c0bd51b27c477691 )
+	rom ( name "CannonFodder2_v1.17_De_0241.lha" size 1440658 crc DE522A16 sha1 14ea57ac0797d90e441f31db3978836283628ce4 )
 )
 
 game (
 	name "Cannon Fodder 2 (France)"
-	rom ( name "CannonFodder2_v1.12_Fr_2578.lha" size 1411954 crc 762BBC6F sha1 31113209f318207d5f757c32226661c340dc47d9 )
+	rom ( name "CannonFodder2_v1.17_Fr_2578.lha" size 1439850 crc FB5CF7DA sha1 c6877a767e89a5a88b8143fa9ef78c30699407b1 )
+)
+
+game (
+	name "Cannon Fodder 2 (Italy)"
+	rom ( name "CannonFodder2_v1.17_It.lha" size 1437299 crc B045C7FD sha1 8c22602bf79df7d64be1c205f0334adb475769b6 )
 )
 
 game (
@@ -2823,22 +2833,22 @@ game (
 
 game (
 	name "Cannon Fodder (Europe)"
-	rom ( name "CannonFodder_v2.0_0860.lha" size 1553045 crc 40DA8F0E sha1 ddcda9b51e132bfee68e35816a7664dcdfa402c2 )
+	rom ( name "CannonFodder_v3.2_0860.lha" size 1551828 crc C0C414DC sha1 11b7fdba69e240d43a994ee40f57e8dc4aeeb9ca )
 )
 
 game (
 	name "Cannon Fodder (Germany)"
-	rom ( name "CannonFodder_v2.0_De.lha" size 1551535 crc DF7E8773 sha1 4f81e2af03ac6487d83442f64f1529396f33b63b )
+	rom ( name "CannonFodder_v3.2_De.lha" size 1550103 crc 5E9CD347 sha1 ee5bdb4acad1663600b79494be5dfc3353bf256d )
 )
 
 game (
 	name "Cannon Fodder (France)"
-	rom ( name "CannonFodder_v2.0_Fr_2332.lha" size 1555008 crc 00DF7039 sha1 7f943ad7a80134d4bd2b15362f692761821d8081 )
+	rom ( name "CannonFodder_v3.2_Fr_2332.lha" size 1553495 crc 25D96F96 sha1 4ca810c19d332778b9c3082b70213252503b1e48 )
 )
 
 game (
 	name "Cannon Fodder (Italy)"
-	rom ( name "CannonFodder_v2.0_It.lha" size 1550997 crc 2B3B6374 sha1 6f396602ebbbb829695fd31f49d110e5e343d1b7 )
+	rom ( name "CannonFodder_v3.2_It.lha" size 1549629 crc C1F69CC4 sha1 5f5e1bb0ed7edcb2dc140183aa1a21317ea0c5a2 )
 )
 
 game (
@@ -3043,7 +3053,7 @@ game (
 
 game (
 	name "Castlevania (Europe)"
-	rom ( name "CastleVania_v1.1.lha" size 564277 crc 610249D0 sha1 d5543d4a62b1bb1c6ad772b48688cde384f86c6b )
+	rom ( name "CastleVania_v1.2.lha" size 563700 crc 66B32C19 sha1 e964e8bf4f0df36a308f5486a10b023ac48dff31 )
 )
 
 game (
@@ -3378,12 +3388,12 @@ game (
 
 game (
 	name "Chrono Quest (Europe)"
-	rom ( name "ChronoQuest_v1.4_1016.lha" size 1026552 crc 6654B764 sha1 2d40a9061cfa211be55c17dd00ce92a6231a4abf )
+	rom ( name "ChronoQuest_v1.5_1016.lha" size 1030279 crc 12E127A3 sha1 4d3cea72e8e43fdccdae6aa8ee6e9f89d82c5350 )
 )
 
 game (
 	name "Chrono Quest (Germany)"
-	rom ( name "ChronoQuest_v1.4_De_0792.lha" size 1026951 crc 278A4627 sha1 e8c7b13a561ee198c55c99b694e3ce42f7d419ef )
+	rom ( name "ChronoQuest_v1.5_De_0792.lha" size 1030678 crc E0EB44A4 sha1 6ed62996a29ec9581139697c7d955adf6af088ba )
 )
 
 game (
@@ -3428,7 +3438,7 @@ game (
 
 game (
 	name "Circus Attractions (Europe)"
-	rom ( name "CircusAttractions_v1.1a_0450.lha" size 640529 crc 3A10BF8B sha1 689effffc794f96ec8bf113469bad0e1fe3f150c )
+	rom ( name "CircusAttractions_v1.2_0450.lha" size 654773 crc 964ADEB2 sha1 8ab91a5872525b39339e1b294448acb6e1b7bac9 )
 )
 
 game (
@@ -3738,7 +3748,7 @@ game (
 
 game (
 	name "Cool Spot (Europe)"
-	rom ( name "CoolSpot_v2.1_1345.lha" size 1322023 crc 53C38100 sha1 0c3d36cd634a50855ae2b2d83bcdde1dc203ca9e )
+	rom ( name "CoolSpot_v2.2_1345.lha" size 1314841 crc C35846A3 sha1 59860f91045b673cd18be3bbf90d84e35a70502c )
 )
 
 game (
@@ -3767,7 +3777,7 @@ game (
 )
 
 game (
-	name "Corruption (Europe)"
+	name "Corruption (Europe) (Collection - Magnetic Scrolls Vol. I)"
 	rom ( name "Corruption_v1.0_0271.lha" size 1147255 crc E50FEE9A sha1 2c6ded62b6f6d7e1e5c2fe6703b856fa001e40ec )
 )
 
@@ -4572,18 +4582,18 @@ game (
 )
 
 game (
-	name "Delta Command (Europe) (Arcadia)"
+	name "Delta Command (USA) (Arcadia)"
 	rom ( name "DeltaCommand_v1.0_Arcadia.lha" size 820921 crc EA7CCF4A sha1 aebfdd9be4a26d7743d0d15a6ed188969059ebb3 )
 )
 
 game (
 	name "DeLuxe Galaga (Europe) (Shareware)"
-	rom ( name "DeluxeGalaga_v1.3.lha" size 872318 crc D4EAA641 sha1 de7bf072e2cd9f9e47764c4b3883b6c8c5eaf92a )
+	rom ( name "DeluxeGalaga_v1.5.lha" size 872796 crc 349DE278 sha1 1d45cfe2157387be4d3d89a7b459bc4a45993c54 )
 )
 
 game (
 	name "DeLuxe Galaga (Europe) (AGA) (Shareware)"
-	rom ( name "DeluxeGalaga_v1.3_AGA.lha" size 1041289 crc D2EB0DFD sha1 b037671d758eab3d4c7aec98b9ff43630bd078dc )
+	rom ( name "DeluxeGalaga_v1.5_AGA.lha" size 1042562 crc 1ADBEE36 sha1 f17bb4c7c00fafe37b1cb5617d9aae77384fc0b0 )
 )
 
 game (
@@ -4972,7 +4982,7 @@ game (
 )
 
 game (
-	name "Donkey Kong (Europe) (PD/Freeware)"
+	name "Donkey Kong (Europe) (C64)"
 	rom ( name "DonkeyKong_v1.0_Bignonia.lha" size 201824 crc 668E7094 sha1 804a72c33e29139dcb992e2d2a13472f540d0aff )
 )
 
@@ -5099,6 +5109,11 @@ game (
 game (
 	name "DragonScape (Europe)"
 	rom ( name "DragonScape_v1.1.lha" size 304815 crc 868D899C sha1 19ae4f2d3964eb621b46fc95a1fb47a26f13e784 )
+)
+
+game (
+	name "DragonScape (USA)"
+	rom ( name "DragonScape_v1.1_NTSC.lha" size 305184 crc 958AD08C sha1 e52da2aa3ce95a1dfedfb4b621f5784989d11a53 )
 )
 
 game (
@@ -5518,7 +5533,7 @@ game (
 
 game (
 	name "Captain Dynamo (Europe)"
-	rom ( name "Dynamo_v1.3_0995.lha" size 258853 crc B114CEA8 sha1 dfefc3fc0614c70786f0dcb6889b5e6ea839266a )
+	rom ( name "Dynamo_v1.4_0995.lha" size 268948 crc 43B3C445 sha1 327d1fbfaa2a3aa2f72c5e9d8a494878d4d1f4c4 )
 )
 
 game (
@@ -5544,6 +5559,11 @@ game (
 game (
 	name "Ebonstar (USA)"
 	rom ( name "Ebonstar_v1.0_NTSC_0915.lha" size 108305 crc 71BFF6A1 sha1 57528508e55d8662851ae8058dd7cb48ab780ae6 )
+)
+
+game (
+	name "Echodrome (Europe) (PD/Freeware)"
+	rom ( name "Echodrome_v1.1.lha" size 402426 crc C5FD4C9F sha1 c03bfebd943ad11bb0b5a3e8deb228b503c566b5 )
 )
 
 game (
@@ -5703,27 +5723,22 @@ game (
 
 game (
 	name "Emerald Mine II (Europe)"
-	rom ( name "EmeraldMine2_v0.91b_1520.lha" size 421015 crc E532E5E5 sha1 ddeaf46b01c3e64c7235f68da00e776cca34a11d )
+	rom ( name "EmeraldMine2_v1.0_1520.lha" size 424188 crc 8A1F65DC sha1 9b5ba8aa49b866d6c62fbee13060bf19ee28011d )
 )
 
 game (
 	name "Emerald Mine 3 - Professional (Europe)"
-	rom ( name "EmeraldMine3_v1.1.lha" size 388675 crc 19A6FA42 sha1 6cc19914fcd5ea21d98fd31db4197dd6a6b1b726 )
-)
-
-game (
-	name "Emerald Mine (Europe) (older ver)"
-	rom ( name "EmeraldMine_v1.0_1525.lha" size 397943 crc 6E69FEBD sha1 19695b53893ed2c500967a6e6c0f032207ec0459 )
+	rom ( name "EmeraldMine3_v1.2_2707.lha" size 389998 crc 81A84AD9 sha1 474e49631a448371b1365af876988e7516ec765c )
 )
 
 game (
 	name "Emerald Mine (Europe)"
-	rom ( name "EmeraldMine_v1.1_1525.lha" size 403503 crc C7F0BEC5 sha1 812e5ae8d24738d42ab1d6b99e7c91c75bedaa99 )
+	rom ( name "EmeraldMine_v1.2_1525.lha" size 403410 crc 156C9618 sha1 df69c9b7ee4ed7ab6b553b3872f1c5824478ed83 )
 )
 
 game (
 	name "Emerald Mines (Europe) (CD)"
-	rom ( name "EmeraldMines_v1.0_CD.lha" size 10698482 crc 6C8D3274 sha1 0b0bcc9feae056ae2b2ee4aefffdf2ca45567439 )
+	rom ( name "EmeraldMines_v2.0_CD.lha" size 8777723 crc F3E2E1DD sha1 ed695d6f26ed9e06e766141e3c118d9ff750147d )
 )
 
 game (
@@ -6013,7 +6028,7 @@ game (
 
 game (
 	name "Explora (France)"
-	rom ( name "Explora_v1.4_Fr.lha" size 1227689 crc 4273123E sha1 e7fffe3b2342dcaf6cb837597d35369dc08540c6 )
+	rom ( name "Explora_v1.5_Fr.lha" size 1231412 crc 55907615 sha1 7d6ceca44170890d67dd5d51a953c52c2b00abcf )
 )
 
 game (
@@ -6067,7 +6082,7 @@ game (
 )
 
 game (
-	name "Eye of the Storm (Europe)"
+	name "Eye of the Storm (Europe) (En,Fr,De,Es)"
 	rom ( name "EyeOfTheStorm_v1.1.lha" size 538560 crc 30BCEF1B sha1 3bdb0121b428d0034cf383c81c0779a532e4104e )
 )
 
@@ -6393,17 +6408,22 @@ game (
 
 game (
 	name "Fightin' Spirit (Europe)"
-	rom ( name "FightinSpirit_v1.2.lha" size 3590355 crc 185185B4 sha1 3cee6f44381644de7c405f0d5bc8cbbc73267c29 )
+	rom ( name "FightinSpirit_v1.3_Files.lha" size 3546369 crc 78A3DC8E sha1 94f1ba38071fa13e8a5041acddeec744b36ae66a )
+)
+
+game (
+	name "Fightin' Spirit (Europe) (Image)"
+	rom ( name "FightinSpirit_v1.3_Image.lha" size 3591997 crc AEE0E3A9 sha1 d45d7d09a1b933ca9e8c41aa97ccea8024420bb0 )
 )
 
 game (
 	name "Fightin' Spirit (Europe) (AGA)"
-	rom ( name "FightinSpirit_v1.2_AGA.lha" size 3955621 crc 1FC15B96 sha1 1d17621a0ac758dccebeb0bcfe46beb3c728c3c7 )
+	rom ( name "FightinSpirit_v1.3_AGA.lha" size 3958229 crc D3ABACE3 sha1 312ca1fbe2a5057929c77150a6ea077ffc6d9dce )
 )
 
 game (
 	name "Fightin' Spirit (Europe) (CD32)"
-	rom ( name "FightinSpirit_v1.2_CD32.lha" size 3810367 crc D7384086 sha1 b1baabb1f876a890f37df14a4a427b34ef6f186b )
+	rom ( name "FightinSpirit_v1.3_CD32.lha" size 3811951 crc 1DE0157D sha1 c199d895946de53509e53b1c3341212f9eaac6cd )
 )
 
 game (
@@ -6427,7 +6447,7 @@ game (
 )
 
 game (
-	name "Final Battle, The (France) (En,Fr)"
+	name "Final Battle, The (France)"
 	rom ( name "FinalBattle_v1.2_Fr.lha" size 530357 crc A250360B sha1 cea3089d4023dbcdca51999d6bcd4544ec20efd0 )
 )
 
@@ -6542,6 +6562,11 @@ game (
 )
 
 game (
+	name "First Person Pinball (Europe)"
+	rom ( name "FirstPersonPinball_v1.0_0418.lha" size 193925 crc 13B00E8C sha1 4c191564a2b15b66177e783044f890f9e973c4fd )
+)
+
+game (
 	name "First Samurai (Europe)"
 	rom ( name "FirstSamurai_v2.1_1182.lha" size 970450 crc B67394AF sha1 5ffad4302a6ba667d5670450ee4a3fdaaad82d00 )
 )
@@ -6552,7 +6577,7 @@ game (
 )
 
 game (
-	name "Fish! (Europe)"
+	name "Fish! (Europe) (Collection - Magnetic Scrolls Vol. I)"
 	rom ( name "Fish_v1.0_0271.lha" size 1115140 crc DF5C4BBC sha1 3fa27286f6b7dd2d1f112484c0de735354182638 )
 )
 
@@ -6653,7 +6678,7 @@ game (
 
 game (
 	name "Flight of the Intruder (Europe)"
-	rom ( name "FlightOfTheIntruder_v1.0_0245.lha" size 655628 crc 4E338731 sha1 b579831cef932226ff59da5f837b129e84df1dc0 )
+	rom ( name "FlightOfTheIntruder_v1.1_0245.lha" size 655832 crc 58B5E414 sha1 cf2777f8f9379334777ba51e02203d97b6662ab8 )
 )
 
 game (
@@ -6663,42 +6688,42 @@ game (
 
 game (
 	name "Flight Simulator II & Hawaiian Odyssey Scenery Adventure (Europe)"
-	rom ( name "FlightSimulator2&HawaiianSceneryDisk_v1.0_0329.lha" size 196410 crc 6F86DC5E sha1 af9cb2ad4e7cb8fadf7afba7b26b66175ecaf64a )
+	rom ( name "FlightSimulator2&HawaiianSceneryDisk_v1.2_0329.lha" size 198186 crc 232262BD sha1 4642504fc252fd176387d0f0ae78ca99f978484a )
 )
 
 game (
 	name "Flight Simulator II & Scenery Disk 7 (Europe)"
-	rom ( name "FlightSimulator2&SceneryDisk07_v1.0_0329.lha" size 228193 crc B6ABDB3B sha1 4565d36eb7ec4402cf8c6e3209068643935c0ec3 )
+	rom ( name "FlightSimulator2&SceneryDisk07_v1.2_0329.lha" size 229982 crc 506CCF0D sha1 f7f4217804487884437ed96a10be451690903f99 )
 )
 
 game (
 	name "Flight Simulator II & Scenery Disk 9 (Europe)"
-	rom ( name "FlightSimulator2&SceneryDisk09_v1.0_0329.lha" size 315038 crc 5EACA59F sha1 02807af7cfcc2552e54c154436f8664344b13b87 )
+	rom ( name "FlightSimulator2&SceneryDisk09_v1.2_0329.lha" size 316824 crc d8b47dde sha1 78221318e786b8631f62d53491cceaa5fd3d8d14 )
 )
 
 game (
 	name "Flight Simulator II & Scenery Disk 11 (Europe)"
-	rom ( name "FlightSimulator2&SceneryDisk11_v1.0_0329.lha" size 223060 crc CCDF7096 sha1 f4fa2dc29d256747a8319278f6694d38efbb3775 )
+	rom ( name "FlightSimulator2&SceneryDisk11_v1.2_0329.lha" size 224853 crc 37F5A4A9 sha1 fc1d44e9d0715e16bb11ab988aab08cbfc209f30 )
 )
 
 game (
 	name "Flight Simulator II & Scenery Disk 12 (Europe)"
-	rom ( name "FlightSimulator2&SceneryDisk12_v1.0_0329.lha" size 283491 crc CEB1BC01 sha1 50fb8a796aad30416308e4cb021cfea20176cb55 )
+	rom ( name "FlightSimulator2&SceneryDisk12_v1.2_0329.lha" size 285282 crc 0DF87DAD sha1 8d7f1db7bc024546a2c7ec4e829ad9dca4cf9a40 )
 )
 
 game (
 	name "Flight Simulator II & Japan Scenery Disk (Europe)"
-	rom ( name "FlightSimulator2&SceneryDisk13_v1.0_0329.lha" size 142935 crc 86468C18 sha1 91e5c1b2b0fb98e35304f26fc4c847d5164e247b )
+	rom ( name "FlightSimulator2&SceneryDisk13_v1.2_0329.lha" size 144724 crc 111C793D sha1 c1fddb2c1351b2bb12cac7985d7fb20e8af37009 )
 )
 
 game (
 	name "Flight Simulator II & Western European Tour Scenery Disk (Europe)"
-	rom ( name "FlightSimulator2&SceneryDisk14_v1.0_0329.lha" size 215031 crc 66568E74 sha1 489c50458a39a17865bec162efcb7738a0df755c )
+	rom ( name "FlightSimulator2&SceneryDisk14_v1.2_0329.lha" size 216823 crc 6B279D20 sha1 f7a0f15f929488eaaa9a0a5437c40ceeb08869db )
 )
 
 game (
 	name "Flight Simulator II (Europe)"
-	rom ( name "FlightSimulator2_v1.0_0329.lha" size 196863 crc F659406C sha1 e8c6fc82f4f870d9c684f7603c81eab5efb95f51 )
+	rom ( name "FlightSimulator2_v1.2_0329.lha" size 198636 crc 48E19F39 sha1 425dff10bcc0702c8b7133a3dca0c5212f7fb6ed )
 )
 
 game (
@@ -6763,7 +6788,12 @@ game (
 
 game (
 	name "Flying Shark (Europe)"
-	rom ( name "FlyingShark_v1.0.lha" size 330698 crc 4FCC5A6E sha1 a10752fe7030b590155dcaf7473389251637a789 )
+	rom ( name "FlyingShark_v2.1.lha" size 279176 crc 3F5F56BB sha1 4a306c0bf712f28aa81f1da99fbc6bd8f32c3f4a )
+)
+
+game (
+	name "Flying Shark (Europe) (Alt)"
+	rom ( name "FlyingShark_v2.1_Alt.lha" size 285073 crc 7C1E52C5 sha1 99425117d1203e682fcd823705b50a97748f4afa )
 )
 
 game (
@@ -6882,7 +6912,7 @@ game (
 )
 
 game (
-	name "Frantic Freddie (Europe) (PD/Freeware)"
+	name "Frantic Freddie (Europe) (C64)"
 	rom ( name "FranticFreddie_v2.0.lha" size 124236 crc 936E9169 sha1 0c5333ea76a50d15aecb4904b1e4706b12ecbd55 )
 )
 
@@ -7087,7 +7117,7 @@ game (
 )
 
 game (
-	name "Gainforce (Europe)"
+	name "Gainforce (Europe) (Coverdisk - Amiga Fun DE #02/93)"
 	rom ( name "Gainforce_v1.0.lha" size 834506 crc 947B1D17 sha1 cf261baab33df03d7fa997a493f23c4190257622 )
 )
 
@@ -7102,12 +7132,12 @@ game (
 )
 
 game (
-	name "Galactic - The Xmas Edition (Europe)"
+	name "Galactic - The Xmas Edition (Europe) (Coverdisk - The One Amiga #01/94) (1 MB)"
 	rom ( name "GalacticTheXmasEdition_v1.0_1MB.lha" size 200709 crc 8A155BB7 sha1 a95e26bc8cc73c44120ca8069c60a7d95a82968a )
 )
 
 game (
-	name "Galactic - The Xmas Edition (Europe) (2 MB)"
+	name "Galactic - The Xmas Edition (Europe) (Coverdisk - The One Amiga #01/94)"
 	rom ( name "GalacticTheXmasEdition_v1.0_2MB.lha" size 205408 crc F4CF0096 sha1 5432425ab417b32b8b0374d8dfc9f4939d0b0049 )
 )
 
@@ -7117,17 +7147,17 @@ game (
 )
 
 game (
-	name "Galaga '92 (Europe)"
+	name "Galaga '92 (Europe) (PD/Freeware)"
 	rom ( name "Galaga92_v1.0.lha" size 129619 crc A8136D8D sha1 0b2f722e10fca18ee8f088f574bea60ef2496ec7 )
 )
 
 game (
-	name "Galaxy 89 (Europe)"
+	name "Galaxy '89 (Europe)"
 	rom ( name "Galaxy89_v1.0.lha" size 236952 crc 6F0BE490 sha1 8ba9268058a77240526e52174831272f20951fee )
 )
 
 game (
-	name "Galaxy Blast (Europe)"
+	name "Galaxy Blast (Europe) (Coverdisk - Amiga Mania #5, Amigo! #03/92)"
 	rom ( name "GalaxyBlast_v1.1.lha" size 764908 crc 231EA328 sha1 16c735664d4b762921e91f77928c33d915550c54 )
 )
 
@@ -7312,7 +7342,7 @@ game (
 )
 
 game (
-	name "Giddy II - Hero In An Egg Shell (Europe)"
+	name "Giddy II - Hero in an Egg Shell (Europe) (Licenceware)"
 	rom ( name "Giddy2HeroInAnEggShell_v1.0.lha" size 294030 crc AF871BBE sha1 5e25c409a24a2889a0423a22be4cac5e3ef3ce1e )
 )
 
@@ -7322,7 +7352,7 @@ game (
 )
 
 game (
-	name "Gilbert - Escape From Drill (Europe)"
+	name "Gilbert - Escape from Drill (Europe)"
 	rom ( name "GilbertEscapeFromDrill_v1.0_2969.lha" size 320839 crc 34BA6D73 sha1 9cd285cc4f9cd0d2407e8698fb01eb45dfaf2646 )
 )
 
@@ -7337,7 +7367,7 @@ game (
 )
 
 game (
-	name "Global Trek (Europe)"
+	name "Global Trek (Australia)"
 	rom ( name "GlobalTrek_v1.1.lha" size 80085 crc 37D3BD4E sha1 bbd2d0e9f78dce6c7aea5d9666c65eca717ed458 )
 )
 
@@ -7387,7 +7417,7 @@ game (
 )
 
 game (
-	name "Glubble (Europe)"
+	name "Glubble (Europe) (PD/Freeware)"
 	rom ( name "Glubble_v1.0.lha" size 564348 crc E7AAA37C sha1 34baaf59d975f304912a773a7f02661ea649e681 )
 )
 
@@ -7447,7 +7477,7 @@ game (
 )
 
 game (
-	name "Goblins 3 (Europe)"
+	name "Goblins 3 (Europe) (En,Fr,De)"
 	rom ( name "Goblins3_v3.1.lha" size 3313552 crc 5C3282C1 sha1 92314028bcedf53a16f0fb54dea39f5edeeaa107 )
 )
 
@@ -7532,12 +7562,12 @@ game (
 )
 
 game (
-	name "Gordian Tomb (Europe)"
+	name "Gordian Tomb (Europe) (Coverdisk - Amigo! #3/91)"
 	rom ( name "GordianTomb_v1.0.lha" size 216890 crc 16A3B30F sha1 e6a093400b6420f535f0ae4163218e932e5d3e5b )
 )
 
 game (
-	name "Gotcha (Europe)"
+	name "Gotcha (Europe) (Prestige)"
 	rom ( name "Gotcha_v1.0_Prestige.lha" size 423829 crc C117E150 sha1 00c67dbc3e433eadc7d29d7cd1f9d27d262db48c )
 )
 
@@ -7642,7 +7672,7 @@ game (
 )
 
 game (
-	name "Green Beret (Europe) (PD/Freeware)"
+	name "Green Beret (Europe) (Arcade)"
 	rom ( name "GreenBeret_v1.0.lha" size 358268 crc 6A4C6F21 sha1 7ed81c28dd748b883067f1e30875a6f9f990a20f )
 )
 
@@ -7686,7 +7716,7 @@ game (
 )
 
 game (
-	name "Guild of Thieves, The (Europe)"
+	name "Guild of Thieves, The (Europe) (Collection - Magnetic Scrolls Vol. I)"
 	rom ( name "GuildOfThieves_v1.0_0271.lha" size 1148578 crc 0B4266D1 sha1 466f9cc21d9cd4405109c65b2aaed76a685d448a )
 )
 
@@ -7771,12 +7801,12 @@ game (
 )
 
 game (
-	name "Hagar the Horrible (Europe)"
+	name "Hägar the Horrible (Europe)"
 	rom ( name "HagarTheHorrible_v1.0_1967.lha" size 1164663 crc EFA67DBE sha1 99a87dba0bc61fbe28f0fa46a19c500708219b85 )
 )
 
 game (
-	name "Hagar the Horrible (Germany)"
+	name "Hägar the Horrible (Germany)"
 	rom ( name "HagarTheHorrible_v1.0_De.lha" size 1113327 crc C8D0D492 sha1 4a4b621b0da8d7b1a8b4d0a9bd5b533ca5807c23 )
 )
 
@@ -7796,12 +7826,12 @@ game (
 )
 
 game (
-	name "Hanse - Die Expedition (Germany)"
+	name "Hanse (Germany) (OCS)"
 	rom ( name "Hanse_v1.01_De.lha" size 215029 crc DC11042F sha1 78bad4d8091c3551901fa38c4603d609cb755cb3 )
 )
 
 game (
-	name "Harald Hårdtand i 'Kampen Om De Rene Tænder' (Denmark)"
+	name "Harald Hårdtand i 'Kampen om de Rene Tænder' (Denmark)"
 	rom ( name "HaraldHaardtand_v1.2_Dk.lha" size 799751 crc FA6CC8C3 sha1 d84b61fce89fc73668c2799c6f56cd663ea1e460 )
 )
 
@@ -7931,7 +7961,7 @@ game (
 )
 
 game (
-	name "Heimdall 2 (Europe)"
+	name "Heimdall 2 (Europe) (En,Fr,De,It)"
 	rom ( name "Heimdall2_v1.6_1165.lha" size 2631496 crc 98A7C29D sha1 fc150be00e17a305494661a26671fc1cc2d3c6b5 )
 )
 
@@ -7976,7 +8006,7 @@ game (
 )
 
 game (
-	name "Hellowoon - Das Geheimnis Des Zauberstabs (Germany)"
+	name "Hellowoon - Das Geheimnis des Zauberstabs (Germany)"
 	rom ( name "Hellowoon_v1.0_De.lha" size 411278 crc 2D4240A8 sha1 f4c87abd6709edfef67f527819d98bc8facb8b3e )
 )
 
@@ -7991,7 +8021,7 @@ game (
 )
 
 game (
-	name "Hellrun Machine, The (Europe)"
+	name "Hellrun Machine, The (Europe) (Coverdisk - Amiga Fun DE #11/92, Amiga Mania #8)"
 	rom ( name "HellrunMachine_v2.0_2035.lha" size 371139 crc 4BEF21D4 sha1 3fa175fda3b375ddc24741bb4fb715d67b975123 )
 )
 
@@ -8001,12 +8031,17 @@ game (
 )
 
 game (
-	name "Heroes of the Lance (Europe)"
+	name "Advanced Dungeons & Dragons - Heroes of the Lance - A DragonLance Action Game (Europe)"
 	rom ( name "HeroesOfTheLance_v1.01_0778.lha" size 508207 crc 31E100F6 sha1 62c870f938ef8a00f32548f596cce0fbcd559750 )
 )
 
 game (
-	name "HeroQuest - Return of the Witch Lord (Europe)"
+	name "HeroQuest (Europe) (En,Fr,De,Es,It)"
+	rom ( name "HeroQuest_v1.3a_0127.lha" size 482684 crc 986807A7 sha1 2a10b8d9c8253a5b35a1f8ae76046fad4ca2cf23 )
+)
+
+game (
+	name "HeroQuest - Return of the Witch Lord (Europe) (En,Fr,De,Es,It)"
 	rom ( name "HeroQuest&ReturnOfTheWitchLord_v1.3a_0127&0508.lha" size 766513 crc EC9F12B5 sha1 de1025cb4acba530ba4d88702decebb90af55834 )
 )
 
@@ -8016,12 +8051,7 @@ game (
 )
 
 game (
-	name "HeroQuest (Europe)"
-	rom ( name "HeroQuest_v1.3a_0127.lha" size 482684 crc 986807A7 sha1 2a10b8d9c8253a5b35a1f8ae76046fad4ca2cf23 )
-)
-
-game (
-	name "Hero's Quest - So You Want To Be A Hero (Europe)"
+	name "Hero's Quest - So You Want to Be a Hero (Europe)"
 	rom ( name "HerosQuest_v1.4b_0795.lha" size 3025122 crc FD404A45 sha1 4b927e83dfc32d415d4c78821c3f069248183c39 )
 )
 
@@ -8038,7 +8068,6 @@ game (
 game (
 	name "High Steel (Europe)"
 	rom ( name "HighSteel_v1.1_1397.lha" size 216567 crc 1337D50C sha1 504095b998fdef126592e427fa269748166c041a )
-
 )
 
 game (
@@ -8072,17 +8101,17 @@ game (
 )
 
 game (
-	name "Hilt II (Europe)"
+	name "Hilt II (Europe) (Licenceware)"
 	rom ( name "Hilt2_v1.0.lha" size 815841 crc 15BB4283 sha1 f5ee7e4f93071538cdb27004f1e095abf27a2bc8 )
 )
 
 game (
-	name "Hilt II (Germany)"
+	name "Hilt II (Germany) (Licenceware)"
 	rom ( name "Hilt2_v1.0_De.lha" size 816036 crc CB025791 sha1 aa7236408b36600c75eecb5a54655b7394c44c81 )
 )
 
 game (
-	name "Hilt - Against the Hoardes (Europe)"
+	name "Hilt - Against the Hoardes (Europe) (Licenceware)"
 	rom ( name "Hilt_v1.0.lha" size 458223 crc 4372F678 sha1 11b2b48eea9912c8301fd3d8cbd50b10a96866c9 )
 )
 
@@ -8188,7 +8217,7 @@ game (
 )
 
 game (
-	name "Hostages (USA)"
+	name "Hostage - Rescue Mission (USA)"
 	rom ( name "Hostage_v1.2_NTSC_1173.lha" size 446139 crc 596B60E4 sha1 f2b39394e39e70331c554a4b012dfb908711283f )
 )
 
@@ -8198,7 +8227,7 @@ game (
 )
 
 game (
-	name "Hostile Breed (Europe)"
+	name "Hostile Breed (Europe) (En,Fr,De) (Proto)"
 	rom ( name "HostileBreed_v1.0.lha" size 1829084 crc 2EEA1E02 sha1 84f6177b40ced27eacdc6eacef07e5fe192678b6 )
 )
 
@@ -8213,7 +8242,7 @@ game (
 )
 
 game (
-	name "Hotshot (Europe)"
+	name "HotShot (Europe)"
 	rom ( name "Hotshot_v1.0_2083.lha" size 252214 crc 725933B7 sha1 5e0e99493c17e2a52eaffd5aa25f2536f8ffc42a )
 )
 
@@ -8233,7 +8262,7 @@ game (
 )
 
 game (
-	name "Hoyle Volume III (Europe)"
+	name "Hoyle Official Book of Games - Volume 3 - Great Board Games (Europe)"
 	rom ( name "HoyleVolume3_v1.2.lha" size 1232126 crc 9B528F33 sha1 f50629fe027dbbc7be411878456324abc4ad9c86 )
 )
 
@@ -8303,7 +8332,7 @@ game (
 )
 
 game (
-	name "Humans, The (Europe) (CD32)"
+	name "Humans, The (Europe) (En,Fr,De,Es,It) (CD32)"
 	rom ( name "Humans_v1.5_CD32.lha" size 2868810 crc A306A387 sha1 ef0ccb82f8a1c67b3de4773808427c93a084ffd8 )
 )
 
@@ -8543,12 +8572,12 @@ game (
 )
 
 game (
-	name "Indigo (Europe)"
+	name "Indigo (Europe) (Proto)"
 	rom ( name "Indigo_v1.1_Files.lha" size 518826 crc 0C2AF64D sha1 f22ed7ee1105ced2b39d454be6b139c82b2c1195 )
 )
 
 game (
-	name "Indigo (Europe) (Image)"
+	name "Indigo (Europe) (Image) (Proto)"
 	rom ( name "Indigo_v1.1_Image.lha" size 560891 crc EB3FD81F sha1 6cb94423b8a846b36464f3fabe2cb22d7c5c19b0 )
 )
 
@@ -8563,12 +8592,12 @@ game (
 )
 
 game (
-	name "Inertia Drive (Europe)"
+	name "Inertia Drive (Australia)"
 	rom ( name "InertiaDrive_v1.1.lha" size 69259 crc 663E6861 sha1 90b47f0bf33b80973ba6b121af31531d532e54d0 )
 )
 
 game (
-	name "Inertia Drive (Europe) (MegaPak)"
+	name "Inertia Drive (Australia) (MegaPak)"
 	rom ( name "InertiaDrive_v1.1_MegaPak.lha" size 66501 crc 83C8B38D sha1 6035177e9829e310cb194bc3ea3c6683697d506e )
 )
 
@@ -8653,7 +8682,7 @@ game (
 )
 
 game (
-	name "International Soccer (Europe)"
+	name "International Soccer (Europe) (Zeppelin Games)"
 	rom ( name "InternationalSoccer_v1.0_2429.lha" size 462562 crc 257944C4 sha1 68b8bee40579db02ac95c9db4b98b29dbba0df8e )
 )
 
@@ -8661,7 +8690,6 @@ game (
 	name "International Soccer Challenge (Europe)"
 	rom ( name "InternationalSoccerChallenge_v1.0_0866.lha" size 470931 crc FF72EC6E sha1 6fff036fba032e03a6616231dbdb6960d014ae23 )
 )
-
 
 game (
 	name "International Sports Challenge (Europe)"
@@ -8699,7 +8727,7 @@ game (
 )
 
 game (
-	name "Invasion (Europe)"
+	name "Invasion (Australia)"
 	rom ( name "Invasion_v1.0.lha" size 101010 crc E55C0036 sha1 a9a28567bda6dcf66314e2257dcc57a65b4cb534 )
 )
 
@@ -8719,7 +8747,7 @@ game (
 )
 
 game (
-	name "I Play 3D Soccer (Europe) (En,Fr,De,It)"
+	name "I Play - 3-D Soccer (Europe) (En,Fr,De,It)"
 	rom ( name "IPlay3DSoccer_v1.01_2104.lha" size 410891 crc A2A6886F sha1 59943c46904d04d42742f37d2413da789e372011 )
 )
 
@@ -8834,12 +8862,12 @@ game (
 )
 
 game (
-	name "It Came From The Desert II (Europe)"
+	name "It Came From The Desert II - Antheads	(Europe)"
 	rom ( name "ItCameFromTheDesert2_v2.2_0014&0262.lha" size 1627932 crc 82C5FD62 sha1 d05dfe04b55e5016c96cf305aa5935d3e797edd5 )
 )
 
 game (
-	name "It Came From The Desert II (Italy)"
+	name "It Came From The Desert II - Antheads (Italy)"
 	rom ( name "ItCameFromTheDesert2_v2.2_It.lha" size 1613850 crc 53CDE7AF sha1 536e52f2cb3aa4bd2dce041db62b40c8e234abb1 )
 )
 
@@ -8869,7 +8897,7 @@ game (
 )
 
 game (
-	name "Jabato Vs Imperio Libertad (Spain)"
+	name "Jabato (Spain)"
 	rom ( name "Jabato_v1.0_Es.lha" size 567461 crc 059CC84E sha1 ac762abeff75758d8ea530176a4cf7dff34f0b62 )
 )
 
@@ -9029,7 +9057,7 @@ game (
 )
 
 game (
-	name "Jimmy's Fantastic Journey (Europe)"
+	name "Jimmy's Fantastic Journey (Europe) (Shareware)"
 	rom ( name "JimmysFantasticJourney_v1.1.lha" size 558251 crc 930F9917 sha1 3b171e989ff3b6f7db1c6fde7f97517ec1166c4a )
 )
 
@@ -9039,7 +9067,7 @@ game (
 )
 
 game (
-	name "Jimmy Willburne - A La Recherche Du Peigne Perdu (France)"
+	name "Jimmy Willburne - A La Recherche du Peigne Perdu (France) (Shareware)"
 	rom ( name "JimmyWillburne_v1.0_Fr.lha" size 1709127 crc A8C1A845 sha1 bd49e9d83a79d41396394a541da81aeba1e58696 )
 )
 
@@ -9124,12 +9152,12 @@ game (
 )
 
 game (
-	name "Journey to the Center of the Earth (Europe)"
+	name "Journey to the Centre of the Earth (Europe)"
 	rom ( name "JourneyToTheCenterOfTheEarth_v1.0_1901.lha" size 855349 crc 6EACCB28 sha1 ab8a3d24aafd1f7ea2c05e7934fd54f8a02fec40 )
 )
 
 game (
-	name "Jouster 3 (Europe)"
+	name "Jouster 3 (Europe) (PD/Freeware)"
 	rom ( name "Jouster3_v1.0.lha" size 611253 crc F72302D2 sha1 5d227304080d4eedfa6cde6f0815afd1f653a9f9 )
 )
 
@@ -9154,7 +9182,7 @@ game (
 )
 
 game (
-	name "Jump'n'Roll (Europe)"
+	name "Jump 'n' Roll (Europe) (Coverdisk - Amiga Action #48)"
 	rom ( name "JumpNRoll_v1.0.lha" size 63018 crc 6E245706 sha1 21520c5afa4847b4a8b5caddae037215e1553eef )
 )
 
@@ -9249,7 +9277,7 @@ game (
 )
 
 game (
-	name "Karate King & CityDefence (Europe)"
+	name "Karate King & City Defence (Europe)"
 	rom ( name "KarateKing&CityDefence_v1.1.lha" size 481343 crc ED71B0D6 sha1 c06cad9dc1da3951023e26690ee0079bb7247fb1 )
 )
 
@@ -9329,7 +9357,7 @@ game (
 )
 
 game (
-	name "Kick Off & Extra Time (Europe) (En,Fr,De,It,Nl) (1 Disk)"
+	name "Kick Off & Extra Time (Europe) (En,Fr,De,Es,It) (Budget - Top Shots)"
 	rom ( name "KickOff&ExtraTime_v1.2_1Disk_0881.lha" size 310296 crc 55875618 sha1 741bf392f2b09d3885dea07c435c9d0bbc26efbd )
 )
 
@@ -9364,7 +9392,7 @@ game (
 )
 
 game (
-	name "Kick Off 2 - Competition Version (Europe)"
+	name "Kick Off 2 - Competition Version (Europe) (Hack)"
 	rom ( name "KickOff2CompetitionVersion_v1.09a.lha" size 386223 crc 103E9642 sha1 f388affbaed38649a809b5567add1866deac3b1d )
 )
 
@@ -9384,7 +9412,7 @@ game (
 )
 
 game (
-	name "Kick Off 2 - The Final Whistle - Competition Version (Europe)"
+	name "Kick Off 2 - The Final Whistle - Competition Version (Europe) (Hack)"
 	rom ( name "KickOff2FinalWhistleCompetitionVersion_v1.04.lha" size 719650 crc FE337FE6 sha1 0e71d110ee33a1919a998f74915658d23b6da320 )
 )
 
@@ -9434,12 +9462,12 @@ game (
 )
 
 game (
-	name "Kick Off '96 (Europe)"
+	name "Kick Off 96 (Europe)"
 	rom ( name "KickOff96_v1.01.lha" size 681073 crc F102628E sha1 288cf063da5418eb1da2435084c09d1ee938523b )
 )
 
 game (
-	name "Kick Off (Europe)"
+	name "Kick Off (Europe) (En,Fr,De,It,Nl)"
 	rom ( name "KickOff_v1.2_0189.lha" size 247937 crc AD5AA815 sha1 ba832d663841bff2afc382be26894bbd4a620e58 )
 )
 
@@ -9479,7 +9507,7 @@ game (
 )
 
 game (
-	name "Killing Cloud, The (Europe) (En,Fr,De)"
+	name "Killing Cloud, The (Europe)"
 	rom ( name "KillingCloud_v2.3_3031.lha" size 1104171 crc D6B54891 sha1 1fdd43133a6be44b68de4c997d93ba745b6ac8d9 )
 )
 
@@ -9599,6 +9627,46 @@ game (
 )
 
 game (
+	name "King's Quest V - Absence Makes the Heart Go Yonder (Europe) (Remastered)"
+	rom ( name "KingsQuest5Remastered_v1.3.lha" size 8216375 crc FD35F5BF sha1 32086ca7e920f80b1940d8f30bc44f3b76d20e16 )
+)
+
+game (
+	name "King's Quest V - Absence Makes the Heart Go Yonder (Germany) (Remastered)"
+	rom ( name "KingsQuest5Remastered_v1.3_De.lha" size 8335597 crc 38B62F68 sha1 36561c21436d5ddfc3e9c77591148804289f8b79 )
+)
+
+game (
+	name "King's Quest V - Absence Makes the Heart Go Yonder (Germany) (Remastered) (MT32)"
+	rom ( name "KingsQuest5Remastered_v1.3_De_MT32.lha" size 8338011 crc E73D2355 sha1 851cc1d8364ff707887ffeae99eb3cdfc5ee7981 )
+)
+
+game (
+	name "King's Quest V - Absence Makes the Heart Go Yonder (Spain) (Remastered)"
+	rom ( name "KingsQuest5Remastered_v1.3_Es.lha" size 8465058 crc 62560B93 sha1 abb0028170d20d4ad8a112a92747aada9fbefe1a )
+)
+
+game (
+	name "King's Quest V - Absence Makes the Heart Go Yonder (Spain) (Remastered) (MT32)"
+	rom ( name "KingsQuest5Remastered_v1.3_Es_MT32.lha" size 8468287 crc 7363453C sha1 2637b6c77566b9ae8f80d34225113e0af5a9cada )
+)
+
+game (
+	name "King's Quest V - Absence Makes the Heart Go Yonder (Italy) (Remastered)"
+	rom ( name "KingsQuest5Remastered_v1.3_It.lha" size 8355414 crc 550E1800 sha1 ae5a92e08a0a6c7bb1a9168062a672197c9eb080 )
+)
+
+game (
+	name "King's Quest V - Absence Makes the Heart Go Yonder (Italy) (Remastered) (MT32)"
+	rom ( name "KingsQuest5Remastered_v1.3_It_MT32.lha" size 8357875 crc 2CFB274A sha1 0c54d35391eddfd004f96d896c94c538b71af116 )
+)
+
+game (
+	name "King's Quest V - Absence Makes the Heart Go Yonder (Europe) (Remastered) (MT32)"
+	rom ( name "KingsQuest5Remastered_v1.3_MT32.lha" size 8218792 crc A0F8E5F1 sha1 4ec204406c4b702ab5b5ffeeab8a70536bba6aa7 )
+)
+
+game (
 	name "King's Quest VI - Heir Today, Gone Tomorrow (Europe)"
 	rom ( name "KingsQuest6_v1.1.lha" size 6104813 crc 6C54AD9D sha1 2401433890e5f3424aee3b0e16cec8f3529582cd )
 )
@@ -9619,12 +9687,12 @@ game (
 )
 
 game (
-	name "King's Quest I - Quest for the Crown (Europe) (Enhanced)"
+	name "King's Quest - Quest for the Crown (Europe) (Enhanced)"
 	rom ( name "KingsQuestEnhanced_v1.3_1436.lha" size 2931299 crc 3BD87E5A sha1 bb5bf7bd5cd476b8dba0fbb7d58ecad73a074a66 )
 )
 
 game (
-	name "Kiro's Quest (Europe)"
+	name "Kiro's Quest (Europe) (Coverdisk - Amigo! #03/95)"
 	rom ( name "KirosQuest_v1.3.lha" size 323775 crc 6F7E4CDE sha1 85f1fe441e08fda4ca2190e9da3e26a28c54d080 )
 )
 
@@ -9639,7 +9707,7 @@ game (
 )
 
 game (
-	name "Knightmare (Europe) (Konami)"
+	name "Knightmare (USA, Europe) (Konami)"
 	rom ( name "Knightmare_v1.1_Konami.lha" size 642522 crc 0E8CD5A9 sha1 f981c2602787e01019e356c91dbc73bf2e889b03 )
 )
 
@@ -9714,7 +9782,7 @@ game (
 )
 
 game (
-	name "Labyrinth (Denmark) (Det Nye COMputer)"
+	name "Labyrinth (Denmark) (Coverdisk - Det Nye COMputer)"
 	rom ( name "Labyrinth_v1.0.1_DetNyeCOMputer_Dk.lha" size 244111 crc 0B4ABECD sha1 989b874d4bebfef1330c4830346f9fa65d2413b9 )
 )
 
@@ -9724,7 +9792,7 @@ game (
 )
 
 game (
-	name "Labyrinthe d'Anglomania (France)"
+	name "Labyrinthe d'Anglomania 1, Le (France)"
 	rom ( name "LabyrintheDAnglomania1_v1.0_Fr.lha" size 340001 crc 1AE96F52 sha1 4018321a5cc17010f1010a3be33d74ea02e25ffc )
 )
 
@@ -9779,7 +9847,7 @@ game (
 )
 
 game (
-	name "A La Poursuite De Carmen Sandiego Dans Le Monde (France)"
+	name "A la Poursuite de Carmen Sandiego dans le Monde (France)"
 	rom ( name "LaPoursuiteDeCarmenSandiegoDansLeMonde_v0.1_Fr.lha" size 474493 crc B00758FD sha1 ede769fa827f21b044a9d50521aa55836124b2b5 )
 )
 
@@ -9844,7 +9912,7 @@ game (
 )
 
 game (
-	name "Leader Board (Europe) (Arcadia)"
+	name "Leader Board (USA) (Arcadia)"
 	rom ( name "LeaderBoard_v0.1_Arcadia.lha" size 412934 crc 1C96EAE8 sha1 24652f62d664c7ca6a238b94a05e7d1313f67ff2 )
 )
 
@@ -10516,32 +10584,32 @@ game (
 
 game (
 	name "Lost Vikings, The (Europe)"
-	rom ( name "LostVikings_v2.0_2235.lha" size 1423775 crc 0AEBCEFC sha1 3d3d6b6d3ab3e08dc498bf10afd09ac27b483d2b )
+	rom ( name "LostVikings_v2.1_2235.lha" size 1433808 crc CB2B440B sha1 79dee3c67cbf8d657ec2ea0d11b465c228fcec81 )
 )
 
 game (
 	name "Lost Vikings, The (Europe) (CD32)"
-	rom ( name "LostVikings_v2.0_CD32.lha" size 1424790 crc 492DB217 sha1 b7eac5062c6892081d6b0bef82c5a6632d1de082 )
+	rom ( name "LostVikings_v2.1_CD32.lha" size 1434849 crc 5C29BDD0 sha1 f27ba078c0a097ff4bd4012cb64ba4d340b1492c )
 )
 
 game (
 	name "Lost Vikings, The (Germany)"
-	rom ( name "LostVikings_v2.0_De_2774.lha" size 1425310 crc DCEC1343 sha1 cbe811ca862d8f9d8523832238b31629b6035dd2 )
+	rom ( name "LostVikings_v2.1_De_2774.lha" size 1434356 crc 9E33DAE2 sha1 b96b376031618c10e3139fbbbb20ddffa23ac768 )
 )
 
 game (
 	name "Lost Vikings, The (France)"
-	rom ( name "LostVikings_v2.0_Fr_2236.lha" size 1425417 crc 9354213D sha1 d0de142a17282cc511288eb5d6165dbf8caddbee )
+	rom ( name "LostVikings_v2.1_Fr.lha" size 1434462 crc A68450E9 sha1 e247c545b499ef63b5bcc2b36416dd88e6754465 )
 )
 
 game (
 	name "Lost Vikings, The (Europe) (Demo)"
-	rom ( name "LostVikingsDemo_v2.0.lha" size 680403 crc 28695F44 sha1 7414df891ce65a69645b0cd9a8b84ec3d07ecf5b )
+	rom ( name "LostVikingsDemo_v2.1.lha" size 689507 crc 783E362A sha1 09c215c27973bc8bfec0c5eef0191e16c3643f3f )
 )
 
 game (
 	name "Lost Vikings, The (France) (Demo)"
-	rom ( name "LostVikingsDemo_v2.0_Fr.lha" size 682501 crc 0BAD3A09 sha1 79092a0ef3f3cc4c36aa305a947c0e30373213e4 )
+	rom ( name "LostVikingsDemo_v2.1_Fr.lha" size 691610 crc CFF16A19 sha1 723514ee488339bc4eeda5637d51fc65f623fbed )
 )
 
 game (
@@ -10700,7 +10768,7 @@ game (
 )
 
 game (
-	name "Magic Johnson's Fast Break (Europe) (Arcadia)"
+	name "Magic Johnson's Fast Break (USA) (Arcadia)"
 	rom ( name "MagicJohnsonsFastBreak_v0.1_Arcadia.lha" size 555144 crc A7B3C1F9 sha1 0f91808a33ec7b6aa4855f0f89c474e079ed197a )
 )
 
@@ -11091,7 +11159,7 @@ game (
 
 game (
 	name "Mega Typhoon (Europe)"
-	rom ( name "MegaTyphoon_v1.4.lha" size 586923 crc 6515B526 sha1 f449b82a4707679a600d8e5fe0c58d297d81a2ff )
+	rom ( name "MegaTyphoon_v1.5.lha" size 587017 crc 9E4C1615 sha1 5f80e3b5c14cb639ce97504f46f3f5cdd2a0aff7 )
 )
 
 game (
@@ -11415,6 +11483,16 @@ game (
 )
 
 game (
+	name "Mission Andromeda (Europe)"
+	rom ( name "MissionAndromeda_v1.1.lha" size 518133 crc D22BE335 sha1 a8ef5b5e86a971953933aafac256f12f093ecbb0 )
+)
+
+game (
+	name "Mission Andromeda (Germany)"
+	rom ( name "MissionAndromeda_v1.1_De.lha" size 518259 crc B3BC08B1 sha1 cd3abb3cc97c916a03366ec46c15062474e44998 )
+)
+
+game (
 	name "Mission Elevator (Europe)"
 	rom ( name "MissionElevator_v1.1_1282.lha" size 186441 crc 8C7AEA54 sha1 68f2f21dcbe7e4b56ff38be1c589e6edefd4d5e5 )
 )
@@ -11507,6 +11585,11 @@ game (
 game (
 	name "Moon Blaster (France)"
 	rom ( name "MoonBlaster_v1.1_Fr_2418.lha" size 471541 crc 3D08AC96 sha1 ff782b2e94eb08252e7b5af0bba8d26d068d8f2c )
+)
+
+game (
+	name "Moon Cresta (Europe) (Arcade)"
+	rom ( name "MoonCresta_v1.0.lha" size 305846 crc E879A61C sha1 464bb8b41039728e08f5ba2a0840136ac5ea082d )
 )
 
 game (
@@ -11620,6 +11703,11 @@ game (
 )
 
 game (
+	name "Movem (Europe) (Coverdisk - Amiga Fun UK #6)"
+	rom ( name "Movem_v1.0.lha" size 125269 crc 055A9308 sha1 4b27a57b1b8a6c7be9341435dd642d08bd30a12a )
+)
+
+game (
 	name "Mr Blobby (Europe)"
 	rom ( name "MrBlobby_v1.0_1773.lha" size 1091714 crc E3734EDA sha1 aac8b8b9e087ef54a2f41a4e255580b4f96dd0d9 )
 )
@@ -11725,7 +11813,7 @@ game (
 )
 
 game (
-	name "'Nam 1965-1975 (Europe)"
+	name "'Nam 1965-1975 (Europe) (En,De,Fr,It)"
 	rom ( name "Nam19651975_v1.0.lha" size 997274 crc 04C1F53A sha1 bd66193759623de13e602cacb2d39376a5c03479 )
 )
 
@@ -11925,7 +12013,7 @@ game (
 )
 
 game (
-	name "Ninja Mission (Europe) (Arcadia)"
+	name "Ninja Mission (USA) (Arcadia)"
 	rom ( name "NinjaMission_v0.1_Arcadia.lha" size 470107 crc EE9CEB0C sha1 8f0416e642a72bb50bd5ea4e3c667eb3c693e10c )
 )
 
@@ -12121,7 +12209,7 @@ game (
 
 game (
 	name "Oilmania (Europe) (Coverdisk - Amigo! #05/92)"
-	rom ( name "Oilmania_v1.0.lha" size 870363 crc E76660C0 sha1 2b9be8c7b91f94100a0c0d022af272e1c2092187 )
+	rom ( name "Oilmania_v1.1.lha" size 630803 crc F0F13D39 sha1 8e8f3e199d3a0ec3c7fb120e319dea65184dfd97 )
 )
 
 game (
@@ -12366,12 +12454,12 @@ game (
 
 game (
 	name "OutRun - Amiga Edition (Europe) (AGA)"
-	rom ( name "OutRunAmigaEdition_v1.3_AGA.lha" size 2457928 crc A11D13AE sha1 89c1b32930eaced651e5e75433e93b13e7593623 )
+	rom ( name "OutRunAmigaEdition_v1.3_AGA.lha" size 2457928 crc 48A64773 sha1 73bd1c9b485004a6370e5cd453fe31e1422ff49a )
 )
 
 game (
 	name "OutRun - Amiga Edition (Europe) (AGA) (68040)"
-	rom ( name "OutRunAmigaEdition_v1.3_AGA_68040.lha" size 2457919 crc CB2F852F sha1 f738e7873305128469077f2d544747e983e35321 )
+	rom ( name "OutRunAmigaEdition_v1.3_AGA_68040.lha" size 2457925 crc 42BCF831 sha1 ce0c55a4808a48448bdb86e0c3e44cd8ae941cbe )
 )
 
 game (
@@ -12391,7 +12479,7 @@ game (
 
 game (
 	name "Overdrive (Europe) (Team 17)"
-	rom ( name "Overdrive_v2.0_Team17_1149.lha" size 1906069 crc 5BB95368 sha1 2abce6d93a1bb647d71e5a09e8c94636a0beec85 )
+	rom ( name "Overdrive_v2.1_Team17_1149.lha" size 1906992 crc EF39D7AA sha1 60b737d92f2d6a1cf60e475b07bce76118162146 )
 )
 
 game (
@@ -12715,12 +12803,12 @@ game (
 )
 
 game (
-	name "Pharaoh's Curse (Europe)"
+	name "Pharaoh's Curse (Europe) (C64)"
 	rom ( name "PharaohsCurse_v1.0.lha" size 129877 crc A4C52A07 sha1 6eae2ae1067542835a52ba1b02abf9164f5886e5 )
 )
 
 game (
-	name "Pharaoh's Match (Europe) (Arcadia)"
+	name "Pharaoh's Match (USA) (Arcadia)"
 	rom ( name "PharaohsMatch_v0.1_Arcadia.lha" size 191102 crc D7CC3A7B sha1 f6b019c144c4dd7c69ba2b1fe5cdf0bdcf29e908 )
 )
 
@@ -12882,6 +12970,21 @@ game (
 game (
 	name "Pipe Mania (Europe)"
 	rom ( name "PipeMania_v1.0_0220.lha" size 193574 crc 837A4836 sha1 8c3903aa3e465eb6bace4b412c304dc0d049f88f )
+)
+
+game (
+	name "Piracy Deluxe (Europe) (Proto)"
+	rom ( name "PiracyDeluxe_v1.0.lha" size 1055195 crc 0C8D21E7 sha1 4e201d84c3be14a612d38c78558b2f9ae534bc47 )
+)
+
+game (
+	name "Piracy Deluxe - Deleted Level (Europe) (Proto)"
+	rom ( name "PiracyDeluxeDeletedLevel_v1.0.lha" size 425387 crc 22E4CABD sha1 17e9e954be29ede848422a90b1bb8cc41a025d42 )
+)
+
+game (
+	name "Piracy on the High Seas (Europe)"
+	rom ( name "PiracyOnTheHighSeas_v1.0.lha" size 1899598 crc 0D2BF225 sha1 aabed896e5ef564b9d1608760a4cf182a0d29e67 )
 )
 
 game (
@@ -13047,6 +13150,36 @@ game (
 game (
 	name "Police Quest 3 - The Kindred (USA) (MT32)"
 	rom ( name "PoliceQuest3_v1.4_NTSC_MT32_1341.lha" size 3740470 crc 041509F2 sha1 5f63280b1b77f56da69975043b00944dc4c07b2e )
+)
+
+game (
+	name "Police Quest 3 - The Kindred (Europe) (Remastered)"
+	rom ( name "PoliceQuest3Remastered_v1.4.lha" size 5702769 crc EAA26EC0 sha1 075e3a299765ee8558f70a1578ae98c36d38cf91 )
+)
+
+game (
+	name "Police Quest 3 - The Kindred (Germany) (Remastered)"
+	rom ( name "PoliceQuest3Remastered_v1.4_De.lha" size 5703632 crc 98867BE8 sha1 b8a6e159f80da9e3bd5a2768767092bab4d4dda4 )
+)
+
+game (
+	name "Police Quest 3 - The Kindred (Germany) (MT32) (Remastered)"
+	rom ( name "PoliceQuest3Remastered_v1.4_De_MT32.lha" size 5704313 crc 4A3289A9 sha1 6d5065f3271c667ea7c94cc8226d7eadcb26288a )
+)
+
+game (
+	name "Police Quest 3 - The Kindred (Spain) (Remastered)"
+	rom ( name "PoliceQuest3Remastered_v1.4_Es.lha" size 5984515 crc 3E5FF87A sha1 4ba45ab7436fe0eec19aae8871c385f41391b507 )
+)
+
+game (
+	name "Police Quest 3 - The Kindred (Spain) (MT32) (Remastered)"
+	rom ( name "PoliceQuest3Remastered_v1.4_Es_MT32.lha" size 5985816 crc F5CF0969 sha1 46e334a6110c932f425ffa82f6725bbd7ca5f8da )
+)
+
+game (
+	name "Police Quest 3 - The Kindred (Europe) (MT32) (Remastered)"
+	rom ( name "PoliceQuest3Remastered_v1.4_MT32.lha" size 5703445 crc 58DAEE4D sha1 8513a1059dd6a5ca2bbca4472f13047431903318 )
 )
 
 game (
@@ -13727,12 +13860,12 @@ game (
 
 game (
 	name "Rally Championships (Europe) (En,Fr,De,Es,It,Nl,Pt,Pl)"
-	rom ( name "RallyChampionships_v1.1.lha" size 3159859 crc 6E9D18F1 sha1 554cfa1556aa5241509a42256bd960ffa753b216 )
+	rom ( name "RallyChampionships_v1.2_2357.lha" size 3164270 crc 7FA780FF sha1 03478be4c84325f03ff3e6818e3c472f77f8b1aa )
 )
 
 game (
 	name "Rally Championships (Europe) (En,Fr,De,Es,It,Nl,Pt,Pl) (AGA)"
-	rom ( name "RallyChampionships_v1.1_AGA.lha" size 4537185 crc C747BAA0 sha1 b3151103fae501be5510c809934670d5a3c941a8 )
+	rom ( name "RallyChampionships_v1.2_AGA_2358.lha" size 4542324 crc A673A0F6 sha1 fe71fb9c4995605adbcd2460d7dce6f12ab97fde )
 )
 
 game (
@@ -13821,7 +13954,7 @@ game (
 )
 
 game (
-	name "Popeye (Europe)"
+	name "Popeye (Europe) (C64)"
 	rom ( name "RealPopeye_v1.1.lha" size 489546 crc 84C321C2 sha1 568aa13aefe4d449adfdaf3543c123d844da4fcd )
 )
 
@@ -13925,8 +14058,8 @@ game (
 	rom ( name "Renegade_v1.2_1966.lha" size 360395 crc DD6B176E sha1 e419f2f67f7bffb7482a4d35aff342164b688c36 )
 )
 game (
-	name "Renegade (Europe) (AGA)"
-	rom ( name "Renegade_v1.0_AGA.lha" size 1095901 crc D688E311 sha1 76e42e85eb5f35e588f59d38f5502a817106d7d5 )
+	name "Renegade (Europe) (Arcade) (AGA)"
+	rom ( name "Renegade_v1.2_AGA.lha" size 1104510 crc D063634E sha1 a1b2689c5e8177ffa37c999eac659e63b2ead9de )
 )
 
 game (
@@ -14115,7 +14248,7 @@ game (
 )
 
 game (
-	name "Roadwars (Europe) (Arcadia)"
+	name "Roadwars (USA) (Arcadia)"
 	rom ( name "RoadWars_v0.1_Arcadia.lha" size 301301 crc 23122B25 sha1 a2c836cf0bb9183145807324d2e66a4dc4a7f113 )
 )
 
@@ -14386,12 +14519,12 @@ game (
 
 game (
 	name "Ruff 'n' Tumble (Europe)"
-	rom ( name "RuffNTumble_v2.8_0199.lha" size 1535100 crc 020AE773 sha1 6b4012594cd5ae39153f0389772e5bdd90700044 )
+	rom ( name "RuffNTumble_v2.9_0199.lha" size 1535273 crc 3BE69E19 sha1 0d31edd2dfecc6e84131569d68485c7557cf4039 )
 )
 
 game (
 	name "Ruff 'n' Tumble (Europe) (512 kB)"
-	rom ( name "RuffNTumble_v2.8_512k_0199.lha" size 1535245 crc 0CA472E5 sha1 4b4153127383e5f9983ceb00271fac3a065923c3 )
+	rom ( name "RuffNTumble_v2.7_512k_0199.lha" size 1535274 crc AD6CD75E sha1 4db1d076d2daeaf8e1c994e5ec72dcb1d2af62d4 )
 )
 
 game (
@@ -14750,6 +14883,11 @@ game (
 )
 
 game (
+	name "Sensible World of Soccer '25-'26 (Europe)"
+	rom ( name "SensibleWorldOfSoccer2526_v2.3.lha" size 1571985 crc BD19C204 sha1 3d5c8ea5fbb19e32f3bf51a1200cc26108c345d4 )
+)
+
+game (
 	name "Sensible World of Soccer '95-'96 (Europe)"
 	rom ( name "SensibleWorldOfSoccer9596_v2.3_1755.lha" size 1313753 crc 3998DC95 sha1 d3b0be8c972d509a51f1e765dd22e923bfb33b2c )
 )
@@ -14905,7 +15043,7 @@ game (
 )
 
 game (
-	name "Shadow of the Beast III (Europe) (Demo)"
+	name "Shadow of the Beast (Europe) (Demo)"
 	rom ( name "ShadowOfTheBeastDemo_v1.0.lha" size 679506 crc 9BFD48B9 sha1 416bac48808bb62b15bc605370ecab0380421a85 )
 )
 
@@ -15680,6 +15818,11 @@ game (
 )
 
 game (
+	name "Space Battle (Europe)"
+	rom ( name "SpaceBattle_v1.0_2705.lha" size 401930 crc 44499531 sha1 d96f502d70dc79a41ef445e49ec19df4a1b6839b )
+)
+
+game (
 	name "Space Crusade - The Voyage Beyond (Europe)"
 	rom ( name "SpaceCrusade&TheVoyageBeyond_v3.1_1535.lha" size 1680607 crc 04E41BF0 sha1 9f068b186c7559b6e84f6120b0646923175c7e23 )
 )
@@ -15785,6 +15928,36 @@ game (
 )
 
 game (
+	name "Space Quest IV - Roger Wilco and the Time Rippers (Europe) (Remastered)"
+	rom ( name "SpaceQuest4Remastered_v1.1.lha" size 6557544 crc 3F30CE71 sha1 a360891d7992ae3db1f7055ef60d08890915346d )
+)
+
+game (
+	name "Space Quest IV - Roger Wilco and the Time Rippers (Germany) (Remastered)"
+	rom ( name "SpaceQuest4Remastered_v1.1_De.lha" size 6558322 crc 1F4E90FC sha1 3f491526984bd7c11a30adcd34a26a3641f21670 )
+)
+
+game (
+	name "Space Quest IV - Roger Wilco and the Time Rippers (Germany) (MT32) (Remastered)"
+	rom ( name "SpaceQuest4Remastered_v1.1_De_MT32.lha" size 6562499 crc A2FCF75F sha1 6a97f45c3d70a9e24e1eecdff69446682c655044 )
+)
+
+game (
+	name "Space Quest IV - Roger Wilco and the Time Rippers (Spain) (Remastered)"
+	rom ( name "SpaceQuest4Remastered_v1.1_Es.lha" size 6857164 crc D306AB22 sha1 6f1a1ce82937ad7060e8d26c09a9ad10148c61e6 )
+)
+
+game (
+	name "Space Quest IV - Roger Wilco and the Time Rippers (Spain) (MT32) (Remastered)"
+	rom ( name "SpaceQuest4Remastered_v1.1_Es_MT32.lha" size 6862076 crc B7BFE5AB sha1 7b11ffdbf7d6b025075bb2967b84f19b60f9f2b5 )
+)
+
+game (
+	name "Space Quest IV - Roger Wilco and the Time Rippers (Europe) (MT32) (Remastered)"
+	rom ( name "SpaceQuest4Remastered_v1.1_MT32.lha" size 6561712 crc CFEECD2E sha1 89d746948a3e5be815a091c07dc674ba9f6fabf6 )
+)
+
+game (
 	name "Space Quest Chapter 1 - The Sarien Encounter (USA)"
 	rom ( name "SpaceQuest_v1.3a_NTSC_1484.lha" size 342153 crc 2511916C sha1 4994ce86ba794fd403cfc89d3d0896b980350b43 )
 )
@@ -15810,7 +15983,7 @@ game (
 )
 
 game (
-	name "Space Ranger (Europe) (Arcadia)"
+	name "Space Ranger (USA) (Arcadia)"
 	rom ( name "SpaceRanger_v0.1_Arcadia.lha" size 318020 crc 84FCFEE4 sha1 775377279929cf06a58451f51e58ee2554a66c42 )
 )
 
@@ -15822,6 +15995,11 @@ game (
 game (
 	name "Space Station (Europe)"
 	rom ( name "SpaceStation_v1.0_1615.lha" size 104951 crc 73840C99 sha1 4944e24eab6426c568c029c5fbf33cd340f976a4 )
+)
+
+game (
+	name "Space Vegetables (Europe) (Compilation - Mega Collection)"
+	rom ( name "SpaceVegetables_v1.0.lha" size 232005 crc F428071E sha1 a0ec03552eae19889054c10b0f57cab42741e3f2 )
 )
 
 game (
@@ -15980,7 +16158,7 @@ game (
 )
 
 game (
-	name "Spot (Europe) (Arcadia)"
+	name "Spot (USA) (Arcadia)"
 	rom ( name "Spot_v0.1_Arcadia.lha" size 522889 crc 960713E7 sha1 8d1b36b421c6b3a8b893fc743d436ba215cc3d3d )
 )
 
@@ -16086,7 +16264,7 @@ game (
 
 game (
 	name "Stardust (Europe)"
-	rom ( name "Stardust_v1.6_2102.lha" size 2398447 crc D3566A22 sha1 64468c191ec800c0ecf78b6a8840ee0d742f02d8 )
+	rom ( name "Stardust_v1.7_2102.lha" size 2399007 crc 2F5BA627 sha1 8a97976e913cdb9995ae60833d141a51c6dcb327 )
 )
 
 game (
@@ -16212,6 +16390,11 @@ game (
 game (
 	name "Stellar 7 (USA)"
 	rom ( name "Stellar7_v1.0_NTSC_2026.lha" size 1405347 crc 098CD1CE sha1 73c6f28891715478b7b37c334fe3ec0e6f3f2895 )
+)
+
+game (
+	name "Steve Davis World Snooker (Europe)"
+	rom ( name "SteveDavisWorldSnooker_v1.0_1061.lha" size 543399 crc 2747C6AD sha1 a1a19ae9b2fd5091859f01273d80ffb318723e58 )
 )
 
 game (
@@ -16415,8 +16598,13 @@ game (
 )
 
 game (
-	name "Stunt Car Racer TNT (Europe)"
+	name "Stunt Car Racer (Europe) (The New Tracks)"
 	rom ( name "StuntCarRacerTNT_v1.4.lha" size 267054 crc 83E9A051 sha1 03893cff45fb974616e0a29d2b8918532da121b6 )
+)
+
+game (
+	name "Stunt Car Racer (Europe) (Framerate Unleashed)"
+	rom ( name "StuntCarRacerUnleashed_v1.1_0222.lha" size 547786 crc 2807D126 sha1 8bbe29840f6def378dc5619661a4c5f72ad51b4b )
 )
 
 game (
@@ -16427,6 +16615,11 @@ game (
 game (
 	name "Stunt Track Racer (USA)"
 	rom ( name "StuntTrackRacer_v1.0_NTSC_1142.lha" size 478526 crc 068FA1C8 sha1 7b96d9cc28329458154b7f47bb122e97f940c3c3 )
+)
+
+game (
+	name "Stunt Track Racer (USA) (Framerate Unleashed)"
+	rom ( name "StuntTrackRacerUnleashed_v1.1_NTSC_0222.lha" size 548989 crc 053AFCDC sha1 26694d948afbb78d3944735c6e0b3acce82a7610 )
 )
 
 game (
@@ -16531,12 +16724,12 @@ game (
 
 game (
 	name "Superfrog (Europe) (CD32)"
-	rom ( name "Superfrog_v1.6_CD32.lha" size 3346083 crc 02063A64 sha1 09f6767d1a9fcd71bf249e08897fc31407b76a44 )
+	rom ( name "Superfrog_v1.8_CD32.lha" size 3363125 crc DFE8AFAD sha1 df585f69a879d1b5c4b4e5d3492234eaad27bd3a )
 )
 
 game (
 	name "Superfrog (Europe)"
-	rom ( name "Superfrog_v1.6_0035.lha" size 2791965 crc 8B5C0794 sha1 69f65bf8f628bbde79b92b7ab4e3858bc5e55b92 )
+	rom ( name "Superfrog_v1.8_0035.lha" size 2809000 crc 1CBD0CFB sha1 fc8eb75436dfbaef471327ee35c1ed70f1463a2e )
 )
 
 game (
@@ -16776,12 +16969,12 @@ game (
 
 game (
 	name "Super Tennis Champs & Data Disks (Europe)"
-	rom ( name "SuperTennisChamps&DataDisks_v1.2_1153.lha" size 1434269 crc 8E4945EE sha1 f23ed95255c82389a9f7254db3c6fdd8799a92dc )
+	rom ( name "SuperTennisChamps&DataDisks_v1.3_1153.lha" size 1434654 crc 05B7C1DF sha1 ab32d19b90b23356bcd4c556d1e0c655f40c77ef )
 )
 
 game (
 	name "Super Tennis Champs (Europe)"
-	rom ( name "SuperTennisChamps_v1.2_1153.lha" size 670180 crc 7A167E88 sha1 caf502806db1673a5b2dbd1d3e6a1c5e70874709 )
+	rom ( name "SuperTennisChamps_v1.3_1153.lha" size 670565 crc 84CC88B5 sha1 6da06b297419509c72575886749a80f8ec9ea9c6 )
 )
 
 game (
@@ -16836,7 +17029,7 @@ game (
 
 game (
 	name "SWIV (Europe)"
-	rom ( name "SWIV_v1.8_0038.lha" size 808997 crc 0DA5F74C sha1 2823026f183acba8fe3814d0e3605eabd77f6051 )
+	rom ( name "SWIV_v1.9_0038.lha" size 808952 crc 37F7F79E sha1 900ec4043e9760f774da577d88ae8b312bee7879 )
 )
 
 game (
@@ -16910,7 +17103,7 @@ game (
 )
 
 game (
-	name "SportTime Table Hockey (Europe) (Arcadia)"
+	name "SportTime Table Hockey (USA) (Arcadia)"
 	rom ( name "TableHockey_v0.1_Arcadia.lha" size 118128 crc 3A02101E sha1 98be0f0ed7d5bcf43408fa6eb904d7093c61d4bf )
 )
 
@@ -17100,7 +17293,7 @@ game (
 )
 
 game (
-	name "Ten Pin Bowling (Europe) (Arcadia)"
+	name "Ten Pin Bowling (USA) (Arcadia)"
 	rom ( name "TenPinBowling_v0.1_Arcadia.lha" size 186153 crc 066120AC sha1 596efb7b987f71359aad7c53029d9dee9a568b75 )
 )
 
@@ -18286,7 +18479,7 @@ game (
 
 game (
 	name "Ugh! (Europe)"
-	rom ( name "Ugh_v1.2_0396.lha" size 276017 crc 74DAC1DA sha1 a65f414c6823f55a01c5e85217c28d1626f90cf5 )
+	rom ( name "Ugh_v1.6_0396.lha" size 280775 crc 3492A15C sha1 565112e0a4ca3aaea3e3862263e043f9060c3391 )
 )
 
 game (
@@ -18425,7 +18618,7 @@ game (
 )
 
 game (
-	name "Up Scope (Europe) (Arcadia)"
+	name "Up Scope (USA) (Arcadia)"
 	rom ( name "UpScope_v1.01_Arcadia.lha" size 211475 crc BA660626 sha1 069d17293301a092f83d5ea430a1f6c85c7bd6ad )
 )
 
@@ -19290,7 +19483,7 @@ game (
 )
 
 game (
-	name "World Darts (Europe) (Arcadia)"
+	name "World Darts (USA) (Arcadia)"
 	rom ( name "WorldDarts_v0.1_Arcadia.lha" size 398310 crc 56A3C76A sha1 87c2fb3ac1c1f21a36c8e0feb050566e1084b3ce )
 )
 
@@ -19325,7 +19518,7 @@ game (
 )
 
 game (
-	name "World Trophy Soccer (Europe) (Arcadia)"
+	name "World Trophy Soccer (USA) (Arcadia)"
 	rom ( name "WorldTrophySoccer_v0.1_Arcadia.lha" size 441999 crc 9EEE4815 sha1 76381f3c95f4ef955d3fe76a37bdae1274acfe23 )
 )
 
@@ -19376,7 +19569,7 @@ game (
 
 game (
 	name "W Potrzasku (Poland)"
-	rom ( name "WPotrzasku_v1.0_Pl.lha" size 2562036 crc 74E81AD0 sha1 1c64f404887e1d02adef4f6e5d219fc58a728ac7 )
+	rom ( name "WPotrzasku_v1.1_Pl.lha" size 2562092 crc 48287203 sha1 705d4a9a0c2536d2f7997cf9d59fe998f47cea6d )
 )
 
 game (
@@ -19450,7 +19643,7 @@ game (
 )
 
 game (
-	name "Xenon 2 - Megablast (Europe) (CDTV)"
+	name "Xenon 2 - Megablast (Europe) (En,Fr,De,It) (CDTV)"
 	rom ( name "Xenon2_v1.7_CDTV.lha" size 3219427 crc 9C3F3DB6 sha1 d1d5b49f878aa11bea300151279c6aae8b9ead32 )
 )
 
@@ -19460,7 +19653,7 @@ game (
 )
 
 game (
-	name "Xenon (Europe) (Arcadia)"
+	name "Xenon (USA) (Arcadia)"
 	rom ( name "Xenon_v0.2_Arcadia.lha" size 330793 crc 062D3865 sha1 1e2f58341fa81f87388b21bd436f0dd9900bc4e4 )
 )
 
@@ -19595,12 +19788,12 @@ game (
 )
 
 game (
-	name "Zaxxon (Europe)"
+	name "Zaxxon (Europe) (C64)"
 	rom ( name "Zaxxon_v2.0.lha" size 168008 crc 7A144599 sha1 3354d57c47fd0f84fed0dbd2e4ff2f147bd9bbe4 )
 )
 
 game (
-	name "Zaxxon (Europe) (512 kB)"
+	name "Zaxxon (Europe) (C64) (512 kB)"
 	rom ( name "Zaxxon_v2.0_512k.lha" size 148804 crc F6CC30DD sha1 4c7ac043946d8bcc7d255e6781e1e27dc528c358 )
 )
 
@@ -19611,17 +19804,22 @@ game (
 
 game (
 	name "Zeewolf 2 - Wild Justice (Europe)"
-	rom ( name "Zeewolf2_v5.00_0608.lha" size 442957 crc CBA3138B sha1 7b4eea2db5f94025b9bc3a32d392ae0c31a02ee0 )
+	rom ( name "Zeewolf2_v6.0.0_0608.lha" size 441834 crc 77C50551 sha1 fa3d308aaf97fac5a49d5566c4591c98c15edbb6 )
 )
 
 game (
 	name "Zeewolf (Europe)"
-	rom ( name "Zeewolf_v5.03_0414.lha" size 399857 crc E45F57BD sha1 86e96aabae45bcb74aa2132884723863e50097c9 )
+	rom ( name "Zeewolf_v6.0.0_0414.lha" size 404039 crc 99FAD929 sha1 8bf52586d3342f1cfe6a9ec9115af0445df89cb6 )
 )
 
 game (
 	name "Zero Gravity (EAS) (Europe)"
 	rom ( name "ZeroGravity_v1.0.lha" size 161310 crc CAF291D8 sha1 d9620a8050d9212b271db9480fcb95fcdee4c41f )
+)
+
+game (
+	name "Zippy Race (Europe) (Arcade)"
+	rom ( name "ZippyRace_v1.1.lha" size 289007 crc B41C8303 sha1 29a62516835ba265430fc22fe4d42dc52d60bb2e )
 )
 
 game (
@@ -19645,12 +19843,12 @@ game (
 )
 
 game (
-	name "Zombie Apocalypse II (Europe) (AGA)"
+	name "Zombie Apocalypse II (Europe) (AGA) (Shareware)"
 	rom ( name "ZombieApocalypse2_v1.1_AGA.lha" size 419667 crc C8903476 sha1 2ca59a6b7f8325a4dc934b1f1e68938277d30c5d )
 )
 
 game (
-	name "Zombie Apocalypse (Europe)"
+	name "Zombie Apocalypse (Europe) (Shareware)"
 	rom ( name "ZombieApocalypse_v1.0.lha" size 163970 crc E9748690 sha1 dd2c3440c68017071f486538654a2911ee644e76 )
 )
 
@@ -19709,6 +19907,11 @@ game (
 	rom ( name "Zynaps_v1.0_0879.lha" size 286792 crc 45C49AC5 sha1 ae710da5fe187a7130f26fe0e0816d72d69a30ec )
 )
 
+game (
+	name "Zzzep (Europe) (Coverdisk - Amiga Fun DE #03/90)"
+	rom ( name "Zzzep_v1.0.lha" size 268868 crc 1FF5181C sha1 3b849a14501ff8a22afab51b53347f764c5eea63 )
+)
+
 
 game (
 	name "Abu Simbel Profanation - The Full Adventure (Europe) (AGA) (PD/Freeware)"
@@ -19731,12 +19934,12 @@ game (
 )
 
 game (
-	name "ATR - All Terrain Racing Christmas Demo (Europe) (Coverdisk - Amiga Format #67, Amiga Action #67) (Beta)"
+	name "ATR - All Terrain Racing Christmas Demo (Europe) (Coverdisk - Amiga Format #67) (Beta)"
 	rom ( name "AllTerrainRacingXmasDemo_v1.3.lha" size 398708 crc A2CBE550 sha1 1b708b1f54987026d3032277105399fb9bb24af0 )
 )
 
 game (
-	name "Amidar 500 (Europe) (PD/Freeware)"
+	name "Amidar 500 (Europe) (Arcade)"
 	rom ( name "Amidar_v1.0.lha" size 228930 crc B77635DA sha1 9d146d08adf8da28ef007b80eb0242cc5905f045 )
 )
 
@@ -19761,12 +19964,12 @@ game (
 )
 
 game (
-	name "Bad Dudes vs. Dragon Ninja (Europe) (AGA)"
+	name "Bad Dudes vs. Dragon Ninja (Europe) (Arcade) (AGA)"
 	rom ( name "BadDudesVsDragonNinja_v1.01_AGA.lha" size 3032310 crc BF4FD61F sha1 a25a0d3bc2cf7ffc1c603fddf7f7a85861a60ae9 )
 )
 
 game (
-	name "Bagman 500 (Europe) (PD/Freeware)"
+	name "Bagman 500 (Europe) (Arcade)"
 	rom ( name "Bagman_v1.0.lha" size 170427 crc C2960994 sha1 2e8e3e4fc6efaa9bd27989a8311eff3856de5c9e )
 )
 
@@ -19776,23 +19979,28 @@ game (
 )
 
 game (
-	name "Burger Time 500 (Europe) (PD/Freeware)"
+	name "Burger Time 500 (Europe) (Arcade)"
 	rom ( name "BurgerTime_v1.0.lha" size 135416 crc 61078BF3 sha1 d827353392c07d4a0df787ebb586a9f7fd2ce6fb )
 )
 
 game (
-	name "Burger Time 500 (Europe) (PD/Freeware) (68020)"
+	name "Burger Time 500 (Europe) (Arcade) (68020)"
 	rom ( name "BurgerTime_v1.0_68020.lha" size 139908 crc FA45EEE2 sha1 b087a2aa22e5fad55a7fb5e374b8fa6d40bc7689 )
 )
 
 game (
 	name "Castlevania (Europe) (AGA)"
-	rom ( name "Castlevania_v1.2_AGA_November2025.lha" size 2075896 crc 44F939FB sha1 5efbf44320570f7ba81d28663246134bcc6bb46f )
+	rom ( name "Castlevania_v1.2_AGA_July2026.lha" size 2168143 crc 49BD4D54 sha1 4586cd235bca1af16b51f720ab924a4f25b064ea )
 )
 
 game (
 	name "Citadel - Remonstered Edition (Europe)"
 	rom ( name "Citadel_v1.4_RemonsteredEdition.lha" size 3705127 crc CFC32130 sha1 e5a1c9f1970bc882ba09bb4979afb10072ab6f91 )
+)
+
+game (
+	name "Commando (Europe) (Arcade) (AGA)"
+	rom ( name "Commando_v1.01_AGA.lha" size 894275 crc BF650BAD sha1 1803211e99664187f892de1dc8682f2a9d9970fc )
 )
 
 game (
@@ -19806,23 +20014,43 @@ game (
 )
 
 game (
-	name "Donkey Kong 500 (Europe) (PD/Freeware)"
-	rom ( name "DonkeyKong_v1.0.lha" size 185879 crc C873BB2A sha1 8ea6a9460fa45861799881f979a3fe0c6c847944 )
+	name "Dig Dug II (Europe) (Arcade)"
+	rom ( name "DigDug2_v1.02.lha" size 320070 crc 439BE027 sha1 753aded4e9b96d1eba43c2f94e829a39727816b0 )
 )
 
 game (
-	name "Elevator Action 500 (Europe) (AGA) (PD/Freeware)"
-	rom ( name "ElevatorAction_v1.01_AGA.lha" size 212201 crc FB4E87DA sha1 bac751596ed5b992f7fe694e10f92f9a5f1424b7 )
+	name "Dig Dug II (Europe) (Arcade) (AGA)"
+	rom ( name "DigDug2_v1.02_AGA.lha" size 308580 crc 477BAD34 sha1 5a58278fed1292ce292e9c8acd02b76fbbf7a22f )
 )
 
 game (
-	name "Elevator Action 500 (Europe) (ECS) (PD/Freeware)"
-	rom ( name "ElevatorAction_v1.01_ECS.lha" size 190450 crc 0E69E03B sha1 6580e90795936154508646ac8af57367331e9f6d )
+	name "Donkey Kong 500 (Europe) (Arcade)"
+	rom ( name "DonkeyKong_v1.2.lha" size 187368 crc EF84CBE3 sha1 134e5477c982d9729e9aedf44f479edf4b691509 )
 )
 
 game (
-	name "Elevator Action 500 (Europe) (OCS) (PD/Freeware)"
-	rom ( name "ElevatorAction_v1.01_OCS.lha" size 107502 crc 78687A84 sha1 a069c273f9b7502f6dc885d891607b0742e6378f )
+	name "Double Dragon (Europe) (Arcade) (AGA)"
+	rom ( name "DoubleDragon_Beta4_AGA.lha" size 3668506 crc 7DFA8E7A sha1 3517163e65ce61462ad0781859c2f216366ca2de )
+)
+
+game (
+	name "Double Dragon (Europe) (Arcade) (AGA) (Decrunched)"
+	rom ( name "DoubleDragon_Beta4_AGA_Decrunched.lha" size 3610879 crc F5A40383 sha1 0a427518b0dba40d080526f1570f83958b7306a9 )
+)
+
+game (
+	name "Elevator Action 500 (Europe) (Arcade) (AGA)"
+	rom ( name "ElevatorAction_v1.02_AGA.lha" size 212308 crc 6AB90F29 sha1 1727e74397902583958725de3baf5a4df7034d17 )
+)
+
+game (
+	name "Elevator Action 500 (Europe) (Arcade) (ECS)"
+	rom ( name "ElevatorAction_v1.02_ECS.lha" size 190521 crc 2DBD9639 sha1 120ddb70fd2d24cd8d058ad678c746620a246b3c )
+)
+
+game (
+	name "Elevator Action 500 (Europe) (Arcade) (OCS)"
+	rom ( name "ElevatorAction_v1.02_OCS.lha" size 107544 crc 23636422 sha1 fa5de94787ff94df6199beed28755353e5891fa5 )
 )
 
 game (
@@ -19847,7 +20075,7 @@ game (
 
 game (
 	name "Final Fight (Europe) (Enchanced)"
-	rom ( name "FinalFightEnhanced_v1.0.lha" size 1340072 crc CA106423 sha1 74d5ce7de9c9b9999e1720e02d5ecb026b2512f9 )
+	rom ( name "FinalFightEnhanced_v1.0.lha" size 1340442 crc EFBACC6B sha1 3ddc66e7c40ee46a347eb4e89320a861dfb1a25a )
 )
 
 game (
@@ -19856,23 +20084,28 @@ game (
 )
 
 game (
-	name "Frogger 500 (Europe) (PD/Freeware)"
+	name "Frogger 500 (Europe) (Arcade)"
 	rom ( name "Frogger_v1.24.lha" size 63650 crc C3EED38F sha1 6daca5dc10a2776dbb06d8549a5259a41bd55d45 )
 )
 
 game (
-	name "Galaga 500 (Europe) (PD/Freeware)"
-	rom ( name "Galaga_v1.0.lha" size 201478 crc 27533215 sha1 8f65a615efe97781401446a2f648ad10ff362bb0 )
+	name "Galaga 500 (Europe) (Arcade)"
+	rom ( name "Galaga_v1.1.lha" size 169271 crc 28A01F43 sha1 b1d7399eb2d8ad641b8f90c002d9724e12bdb7c6 )
 )
 
 game (
-	name "Galaxian 500 (Europe) (PD/Freeware)"
+	name "Galaxian 500 (Europe) (Arcade)"
 	rom ( name "Galaxian_v1.0.lha" size 187738 crc 30B9794D sha1 83474c6ddb5e394b9df70261e6c7f483d788b91a )
 )
 
 game (
 	name "Ghost Battle (Europe) (older ver)"
 	rom ( name "GhostBattle_v1.3.lha" size 968772 crc 738A43FC sha1 e868a10bfc541ae797744c4b66db1a64a1af8113 )
+)
+
+game (
+	name "Ghosts'n Goblins (Europe) (Arcade) (AGA)"
+	rom ( name "GhostsNGoblins_v1.1_AGA.lha" size 2125764 crc 944097B2 sha1 a61ebe9c5f685cc26238db5f0fadf79342d4686d )
 )
 
 game (
@@ -19896,18 +20129,18 @@ game (
 )
 
 game (
-	name "Gyruss 500 (Europe) (PD/Freeware) (1MB)"
+	name "Gyruss 500 (Europe) (Arcade) (1 MB)"
 	rom ( name "Gyruss_v1.0_1MB.lha" size 322059 crc 4e32ab14 sha1 dc6ed5699e0bc98cfe18f17b79f1074949d05e26 )
 )
 
 game (
-	name "Gyruss 500 (Europe) (PD/Freeware)"
+	name "Gyruss 500 (Europe) (Arcade) (2 MB)"
 	rom ( name "Gyruss_v1.0_2MB.lha" size 474632 crc 1E3373C1 sha1 3b6181d7bdc6828db921b44c0790aa7aab2c21af )
 )
 
 game (
 	name "HeroQuest (Europe) (En,Fr,De,Es,It) (Fix)"
-	rom ( name "HeroQuest_v1.2_German_fix_by_Viddi_v2.lha" size 766302 crc 080B571E sha1 4ce8a289bd989feced66e90d191f2008b5dcd8b6 )
+	rom ( name "HeroQuest_v1.2_German_fix_by_Viddi_v4.lha" size 766297 crc 4687E5A3 sha1 f67672a7a2086ebd4b6cb0699192d06873ac8478 )
 )
 
 game (
@@ -19916,17 +20149,22 @@ game (
 )
 
 game (
+	name "Hook (Spain) (Hack)"
+	rom ( name "Hook_v0.3_Es.lha" size 2843171 crc 39C841D3 sha1 ac8f43f1a871c090e3533d740a176271ca1f08b6 )
+)
+
+game (
 	name "Hugo (Spain) (Hack)"
 	rom ( name "Hugo_v1.0_Es_Spanish_hack_by_K-teto.lha" size 2999261 crc 7A802370 sha1 44bba2b860341cace196d13e20f7fc9fe2e126e8 )
 )
 
 game (
-	name "Hyper Sports (Europe)"
+	name "Hyper Sports (Europe) (Arcade)"
 	rom ( name "HyperSports_v0.93.lha" size 541333 crc 08C9853C sha1 dfdfb5e91c4dcad08618a5841c1ff7a64e118e5b )
 )
 
 game (
-	name "Hyper Sports (Europe) (AGA)"
+	name "Hyper Sports (Europe) (Arcade) (AGA)"
 	rom ( name "HyperSports_v0.93_AGA.lha" size 555537 crc F93F56F3 sha1 6bdcd5bc51d00e75d65924bcd5921abe8938a856 )
 )
 
@@ -19936,12 +20174,37 @@ game (
 )
 
 game (
+	name "JailBreak (Europe) (Arcade) (1 MB)"
+	rom ( name "JailBreak_v1.02_1MB.lha" size 376896 crc 38EC7205 sha1 74bc63750b6a1c64cc549a06e8a5f87829e7bdd3 )
+)
+
+game (
+	name "JailBreak (Europe) (Arcade) (2 MB)"
+	rom ( name "JailBreak_v1.02_2MB.lha" size 523261 crc E1ADDB2E sha1 52c587ab61c300333033bf6443ef447d30c421d7 )
+)
+
+game (
+	name "JailBreak (Europe) (Arcade) (AGA)"
+	rom ( name "JailBreak_v1.02_AGA.lha" size 515699 crc F2628B5C sha1 f754b99182cfc84449f997874ca12eb4c205671f )
+)
+
+game (
 	name "Joust (Europe) (Atari ST)"
 	rom ( name "Joust_v1.0_AtariST.lha" size 39802 crc 23C16F02 sha1 f1806f935e77be50c1adb98f56d4a7177726cd6d )
 )
 
 game (
-	name "Karate Champ (Europe) (Data East)"
+	name "Kaboomania (Europe) (Demo)"
+	rom ( name "KaboomaniaDemo_v1.3.lha" size 697233 crc 36DE2967 sha1 a9773ef2214c8c447e1b5a95518ca1be9be4d7dd )
+)
+
+game (
+	name "Kaboomania (Europe) (AGA) (Demo)"
+	rom ( name "KaboomaniaDemo_v1.3_AGA.lha" size 949671 crc 103A0461 sha1 cafc285db8ade57ec7183c92432f77a90ec5f4fc )
+)
+
+game (
+	name "Karate Champ - Player vs Player (Europe) (Arcade)"
 	rom ( name "KarateChamp_v1.01.lha" size 253377 crc 4104B146 sha1 cc7873cfc7e56ce81bf7c8564fbe3947123203eb )
 )
 
@@ -19956,7 +20219,7 @@ game (
 )
 
 game (
-	name "King and Balloon 500 (Europe) (PD/Freeware)"
+	name "King and Balloon 500 (Europe) (Arcade)"
 	rom ( name "KingAndBalloon_v0.94.lha" size 98778 crc 1D22B0CA sha1 0aa001b47b08e7cf590272447305af6dacfa4765 )
 )
 
@@ -19996,12 +20259,12 @@ game (
 )
 
 game (
-	name "Lock'n'Chase 500 (Europe) (PD/Freeware)"
+	name "Lock 'n' Chase 500 (Europe) (Arcade)"
 	rom ( name "LockNChase_v1.02.lha" size 144436 crc DF0581F2 sha1 69203b5c27f1ad0973f99642796c563fbd696f58 )
 )
 
 game (
-	name "Lock'n'Chase 500 (Europe) (PD/Freeware) (68020)"
+	name "Lock 'n' Chase 500 (Europe) (Arcade) (68020)"
 	rom ( name "LockNChase_v1.02_68020.lha" size 144411 crc D5D7044B sha1 d853b95546145a7d343c4ba37d66167e869493fc )
 )
 
@@ -20013,6 +20276,16 @@ game (
 game (
 	name "Lost Treasures of Infocom, The (Europe)"
 	rom ( name "LostTreasuresOfInfocom_v1.0.lha" size 2829855 crc E70DD022 sha1 6a99e94597722062f066562b23f6ac9fbb65075a )
+)
+
+game (
+	name "Mappy (Europe) (Arcade)"
+	rom ( name "Mappy_v1.0.lha" size 255768 crc 0ECBEEA7 sha1 d2565059b382d45d1f9fc10ce3c719c4b0a941bb )
+)
+
+game (
+	name "Mappy (Europe) (Arcade) (AGA)"
+	rom ( name "Mappy_v1.0_AGA.lha" size 249075 crc 91345BD5 sha1 93a5f9ff21db885a7ced7fd80bdc8febf05ff962 )
 )
 
 game (
@@ -20041,17 +20314,17 @@ game (
 )
 
 game (
-	name "Moon Patrol 500 (Europe) (ECS) (PD/Freeware)"
+	name "Moon Patrol 500 (Europe) (Arcade) (ECS)"
 	rom ( name "MoonPatrol_v1.01_ECS.lha" size 200445 crc 13D83DCC sha1 d11ac1ea0fff6dc11efc59dd9ef3c331d26183b4 )
 )
 
 game (
-	name "Moon Patrol 500 (Europe) (OCS) (PD/Freeware)"
+	name "Moon Patrol 500 (Europe) (Arcade) (OCS)"
 	rom ( name "MoonPatrol_v1.01_OCS.lha" size 191472 crc 4C65C645 sha1 ab0f16f8f219b7f9b8ba2cfb43d8390ceb635814 )
 )
 
 game (
-	name "Moon Patrol 500 (Europe) (AGA) (PD/Freeware)"
+	name "Moon Patrol 500 (Europe) (Arcade) (AGA)"
 	rom ( name "MoonPatrol_v1.01_AGA.lha" size 198862 crc C92C38B6 sha1 7779115a43b580f5ccdb09eb7268ae9ea55db439 )
 )
 
@@ -20066,13 +20339,23 @@ game (
 )
 
 game (
-	name "Ms. Pac-Man 500 (Europe) (PD/Freeware)"
+	name "Ms. Pac-Man 500 (Europe) (Arcade)"
 	rom ( name "MsPacMan_v1.1.lha" size 132400 crc 715B8445 sha1 3a866bf827dea7863919a48656733765d06b84a6 )
 )
 
 game (
 	name "Neutralizer II (Europe) (Proto)"
 	rom ( name "Neutralizer2Demo_v0.1_BETA.lha" size 84986 crc 2C053806 sha1 6e69a38bfa7bb313e8ae0dc3321a364660cb3877 )
+)
+
+game (
+	name "Nibbler (Europe) (Arcade)"
+	rom ( name "Nibbler_v1.0.lha" size 118889 crc D7797A03 sha1 6405c4ced4d176df54ec57fd6a8ce17c10ec2c7c )
+)
+
+game (
+	name "Nibbler (Europe) (Arcade) (68020)"
+	rom ( name "Nibbler_v1.0_68020.lha" size 118726 crc B2FFE646 sha1 a33ab7a760f71f51c24f5141443c92ca0bb6afbe )
 )
 
 game (
@@ -20091,33 +20374,43 @@ game (
 )
 
 game (
-	name "Pac-Man 500 (Europe) (PD/Freeware)"
+	name "Pac-Man 500 (Europe) (Arcade)"
 	rom ( name "PacMan_v1.0.lha" size 104140 crc 4DB6F96C sha1 800fc2f3ae2174ada935c4315bcd99b4e7877401 )
 )
 
 game (
-	name "Pengo 500 (Europe) (PD/Freeware)"
+	name "Pengo 500 (Europe) (Arcade)"
 	rom ( name "Pengo_v1.0.lha" size 234998 crc BC513194 sha1 d460926feb4695e58230bd72848fe4476d0b97c6 )
 )
 
 game (
-	name "Phoenix 500 (Europe) (PD/Freeware)"
-	rom ( name "Phoenix_v1.01.lha" size 96712 crc 5489D822 sha1 eab346f8b1ca07d3ebaecb40c49cd3b85a45d927 )
+	name "Phoenix 500 (Europe) (Arcade)"
+	rom ( name "Phoenix_v1.02.lha" size 96722 crc FC901F02 sha1 df26fdeceaa39af3d84e3f8660bed6016e902679 )
 )
 
 game (
-	name "Phoenix 500 (Europe) (AGA) (PD/Freeware)"
-	rom ( name "Phoenix_v1.01_AGA.lha" size 101256 crc 0B03150B sha1 bccfdb73a612ddec74088cbeec6c917f8d7ed798 )
+	name "Phoenix 500 (Europe) (Arcade) (AGA)"
+	rom ( name "Phoenix_v1.02_AGA.lha" size 101267 crc 1E6FF29A sha1 cd549b595a362da20a92dfd3006222b99c000675 )
 )
 
 game (
-	name "Pooyan 500 (Europe) (PD/Freeware)"
-	rom ( name "Pooyan_v1.0.lha" size 286112 crc 3BA2968D sha1 1ace0330fd8edf8415155a6ef70318fea7f7d976 )
+	name "Pooyan 500 (Europe) (Arcade)"
+	rom ( name "Pooyan_v1.01.lha" size 283706 crc CA662500 sha1 156eca8e579e1f3deb2814c7202fbccb25952cc6 )
 )
 
 game (
 	name "Project-X - Special Edition '93 (Europe) (Hack)"
 	rom ( name "ProjectXSE2017_v1.5_Hack_by_Earok.lha" size 2238734 crc ED237871 sha1 fcbfa6525603ae6b5cd07b9afc0a97663f95ce9b )
+)
+
+game (
+	name "Rally-X (Europe) (Arcade)"
+	rom ( name "RallyX_v1.0.lha" size 93739 crc A1D0402A sha1 a51d0eb7dd30ca4707adb00cd09bbdb723b940de )
+)
+
+game (
+	name "Rally-X (Europe) (Arcade) (AGA)"
+	rom ( name "RallyX_v1.0_AGA.lha" size 94768 crc 783289A9 sha1 3dea3db7b1e179dbd2629959a3a2ee3c05c1851c )
 )
 
 game (
@@ -20136,6 +20429,16 @@ game (
 )
 
 game (
+	name "Roc'n Rope (Europe) (Arcade)"
+	rom ( name "RocNRope_v1.01.lha" size 195745 crc 67BDA808 sha1 2a6391770ef975ade536f7de00477ca3f6cca496 )
+)
+
+game (
+	name "Roc'n Rope (Europe) (Arcade) (AGA)"
+	rom ( name "RocNRope_v1.01_AGA.lha" size 208652 crc 910BC14A sha1 671231881e8b8d9eafe8633e568745c644b4d204 )
+)
+
+game (
 	name "Rogue Declan Zero (Europe)"
 	rom ( name "RogueDeclanZero_v1.0.lha" size 281122 crc 9F3408ED sha1 3d8c7390a56733cfcd0c1342c1aab221b10516a8 )
 )
@@ -20146,7 +20449,7 @@ game (
 )
 
 game (
-	name "Scramble 500 (Europe) (PD/Freeware)"
+	name "Scramble 500 (Europe) (Arcade)"
 	rom ( name "Scramble_v1.0.lha" size 161624 crc D4F7DD08 sha1 7e2041adb2e07ffb7258c9c29ea0f57e1820e334 )
 )
 
@@ -20176,7 +20479,7 @@ game (
 )
 
 game (
-	name "Super Bagman 500 (Europe) (PD/Freeware)"
+	name "Super Bagman 500 (Europe) (Arcade)"
 	rom ( name "SuperBagman_v1.0.lha" size 204160 crc 7BF2B636 sha1 95348357f7c02d0600a124329907a4b0ec7d4c81 )
 )
 
@@ -20191,7 +20494,7 @@ game (
 )
 
 game (
-	name "Tetris 1200 (Europe) (AGA)"
+	name "Tetris 1200 (Europe) (Arcade) (AGA)"
 	rom ( name "Tetris_v1.03_AGA.lha" size 169952 crc 677EAC84 sha1 83926418c943e70478277a457cb9ad045ec85497 )
 )
 
@@ -20206,13 +20509,13 @@ game (
 )
 
 game (
-	name "Track & Field (Europe)"
-	rom ( name "Track&Field_v1.05.lha" size 303402 crc 9F21EADD sha1 ee736fa39d1f5c41c0d490104b94bd72b5635e53 )
+	name "Track & Field (Europe) (Arcade)"
+	rom ( name "Track&Field_v1.09.lha" size 303337 crc BCD0B5BB sha1 74ce582965119a8454d1b4d39662b0d0fb9912f5 )
 )
 
 game (
-	name "Track & Field (Europe) (AGA)"
-	rom ( name "Track&Field_v1.05_AGA.lha" size 399687 crc 8A5577F3 sha1 c2e3230df3e07389b5468b9192a07ec0ae9e0921 )
+	name "Track & Field (Europe) (Arcade) (AGA)"
+	rom ( name "Track&Field_v1.09_AGA.lha" size 399790 crc 79847407 sha1 87f84c49b60fedb6fd200da0eacc95b0b56886c0 )
 )
 
 game (
@@ -20241,13 +20544,18 @@ game (
 )
 
 game (
-	name "U.S. Championship V'Ball (Europe)"
-	rom ( name "USChampionshipVBall_v0.99.lha" size 1831213 crc 85272954 sha1 34337bb6358b21c2fee7a95641dd26bac31d3280 )
+	name "U.S. Championship V'Ball (Europe) (Arcade)"
+	rom ( name "USChampionshipVBall_v1.10.lha" size 2619476 crc E6B7A4AE sha1 d59747fd04507ae3836d82591c32993e9845d633 )
 )
 
 game (
-	name "U.S. Championship V'Ball (Europe) (AGA)"
-	rom ( name "USChampionshipVBall_v0.99_AGA.lha" size 4223659 crc 1DB00CDA sha1 262f0ff00f9faea5ef59045f89fc3a836a966d4a )
+	name "U.S. Championship V'Ball (Europe) (Arcade) (AGA)"
+	rom ( name "USChampionshipVBall_v1.10_AGA.lha" size 5815872 crc 52F6E92A sha1 aea37bf233191b2c1c2e256fe6f348bd983586d0 )
+)
+
+game (
+	name "Vulgus (Europe) (Arcade) (AGA)"
+	rom ( name "Vulgus_v1.01_AGA.lha" size 377765 crc 3FF7E405 sha1 f0fd07625a4859deb164f7906b82c77f369c3f3b )
 )
 
 game (
@@ -20286,8 +20594,8 @@ game (
 )
 
 game (
-	name "Xevious 1200 (Europe) (AGA)"
-	rom ( name "Xevious_v1.0_AGA.lha" size 349313 crc DA9461A2 sha1 b0ab3197f1d5a70d50ebe6b5c8605f1a667461c0 )
+	name "Xevious 1200 (Europe) (Arcade) (AGA)"
+	rom ( name "Xevious_v1.01_AGA.lha" size 307346 crc 92C61B8C sha1 8cdc3bd572169e179bdefc5c09ec5f655c835a42 )
 )
 
 game (

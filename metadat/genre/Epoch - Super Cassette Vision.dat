@@ -35,7 +35,7 @@ game (
 
 game (
 	comment "Dragon Slayer (Japan) (En)"
-	genre "Role playing games"
+	genre "Role-playing (RPG)"
 	rom ( crc 5971940F )
 )
 
@@ -83,7 +83,7 @@ game (
 
 game (
 	comment "Pole Position II (Japan) (En)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc CB69903D )
 )
 
@@ -107,7 +107,7 @@ game (
 
 game (
 	comment "Real Graphic Mahjongg (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc D3D9106C )
 )
 
@@ -119,7 +119,7 @@ game (
 
 game (
 	comment "Shougi Nyuumon (Japan)"
-	genre "Asiatic board game"
+	genre "Board"
 	rom ( crc 84005C4C )
 )
 
@@ -131,7 +131,7 @@ game (
 
 game (
 	comment "Star Speeder (Japan) (En)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 511576EE )
 )
 
@@ -155,7 +155,7 @@ game (
 
 game (
 	comment "Boulder Dash (France)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc 5DB59007 )
 )
 
@@ -167,7 +167,7 @@ game (
 
 game (
 	comment "Boulder Dash (Japan) (En)"
-	genre "Puzzle-Game"
+	genre "Puzzle"
 	rom ( crc E045884C )
 )
 
@@ -179,7 +179,7 @@ game (
 
 game (
 	comment "Wheelie Racer (Japan, France)"
-	genre "Race, Driving"
+	genre "Racing"
 	rom ( crc 9D9B29DB )
 )
 

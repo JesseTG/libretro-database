@@ -1,7 +1,7 @@
 clrmamepro (
 	name "NEC - PC Engine CD - TurboGrafx-CD"
 	description "NEC - PC Engine CD - TurboGrafx-CD"
-	version "2025.11.10"
+	version "2026.08.01"
 	homepage "http://github.com/robloach/libretro-dats"
 )
 
@@ -281,10 +281,10 @@ game (
 	rom ( name "CAL III - Kanketsu-hen (Japan) (Track 2).bin" size 134659056 crc 5B3482BE md5 0E8EF8956AD03D0F2CD61889135F919D sha1 A948F3B94557452926FF588B4C161F22FD586F9B serial "NAPR-1039" )
 )
 game (
-	name "CD Battle - Hikari no Yuusha-tachi (Japan)"
+	name "CD Battle - Hikari no Yuushatachi (Japan)"
 	region "Japan"
 	serial "KICD-3001"
-	rom ( name "CD Battle - Hikari no Yuusha-tachi (Japan) (Track 2).bin" size 2020368 crc 242E84BF md5 393D56A3FA14FC7B85BFAA9D7065533C sha1 91A6747CDC623F78BCF7FE34133CE8DA54DC023F serial "KICD-3001" )
+	rom ( name "CD Battle - Hikari no Yuushatachi (Japan) (Track 2).bin" size 2020368 crc 242E84BF md5 393D56A3FA14FC7B85BFAA9D7065533C sha1 91A6747CDC623F78BCF7FE34133CE8DA54DC023F serial "KICD-3001" )
 )
 game (
 	name "CD Bishoujo Pachinko - Kyuuma Yon Shimai (Japan)"
@@ -2757,10 +2757,10 @@ game (
 	rom ( name "Ultra Box 6-gou (Japan) (Track 02).bin" size 125843760 crc B8ACEDE1 md5 303B0A653E64184F91D0228DE267AF98 sha1 BD5639CA3FBB003B2AE79F4CD53CC30423F92DCB serial "JCCD2606" )
 )
 game (
-	name "Ultra Box Soukan-gou (Japan)"
+	name "Ultra Box Soukangou (Japan)"
 	region "Japan"
 	serial "JCCD0601"
-	rom ( name "Ultra Box Soukan-gou (Japan) (Track 02).bin" size 196568400 crc 5D65EAA8 md5 12F426C35962510D7A5BE53A0855BD91 sha1 C5322DAADEFB4F6FE5B0066F121A7E60F4542122 serial "JCCD0601" )
+	rom ( name "Ultra Box Soukangou (Japan) (Track 02).bin" size 196568400 crc 5D65EAA8 md5 12F426C35962510D7A5BE53A0855BD91 sha1 C5322DAADEFB4F6FE5B0066F121A7E60F4542122 serial "JCCD0601" )
 )
 game (
 	name "Urusei Yatsura - Stay with You (Japan)"

@@ -1,7 +1,7 @@
 clrmamepro (
 	name "Sony - PlayStation Portable"
 	description "Sony - PlayStation Portable"
-	version "2025.11.10"
+	version "2026.08.01"
 	homepage "http://github.com/robloach/libretro-dats"
 )
 
@@ -150,6 +150,12 @@ game (
 	region "Europe"
 	serial "ULES-01513"
 	rom ( name "3rd Birthday, The (Europe).iso" size 1467547648 crc 80BA851C md5 D7C2309DA1FB349B8DFCE11F1B6C90A7 sha1 6112AA5D52C018C894A0D29BE70018E2AF1D63EB serial "ULES-01513" )
+)
+game (
+	name "3rd Birthday, The (Europe)"
+	region "Europe"
+	serial "ULES-01513/0046931"
+	rom ( name "3rd Birthday, The (Europe).iso" size 1467547648 crc 80BA851C md5 D7C2309DA1FB349B8DFCE11F1B6C90A7 sha1 6112AA5D52C018C894A0D29BE70018E2AF1D63EB serial "ULES-01513/0046931" )
 )
 game (
 	name "3rd Birthday, The (Europe)"
@@ -409,10 +415,10 @@ game (
 	rom ( name "Ace Combat - Joint Assault (Europe) (En,Ja,Fr,De,Es,It).iso" size 1768357888 crc F693DDFC md5 08B52190032AB3CF803B28203B78F46F sha1 59602300F796986AE1B1F2BA9C5D1446AB85388C serial "ULES-01408" )
 )
 game (
-	name "Ace Combat - Joint Assault (USA)"
+	name "Ace Combat - Joint Assault (USA) (En,Ja,Fr,De,Es,It)"
 	region "USA"
 	serial "ULUS-10511"
-	rom ( name "Ace Combat - Joint Assault (USA).iso" size 1768357888 crc 062DFFCE md5 41ED76EE6999B205DD3585F95A80D0FE sha1 EB5295E9295E02ECB3F121E3F5B940A4BD7BF30C serial "ULUS-10511" )
+	rom ( name "Ace Combat - Joint Assault (USA) (En,Ja,Fr,De,Es,It).iso" size 1768357888 crc 062DFFCE md5 41ED76EE6999B205DD3585F95A80D0FE sha1 EB5295E9295E02ECB3F121E3F5B940A4BD7BF30C serial "ULUS-10511" )
 )
 game (
 	name "Ace Combat X - Skies of Deception (Europe) (En,Ja,Fr,De,Es,It,Ko)"
@@ -544,22 +550,22 @@ game (
 	rom ( name "Aedis Eclipse - Generation of Chaos (USA).iso" size 668991488 crc 24767759 md5 2E80E2EF6D8B85C6A522EAE32525A04B sha1 0311898A53261FD837751D1ACD4BB932C06E3C52 serial "ULUS-10242" )
 )
 game (
-	name "After Burner - Black Falcon (Europe) (En,Fr,De,Es,It)"
+	name "After Burner - Black Falcon (Europe) (En,Fr,De,Es,It) (ULES-00753)"
 	region "Europe"
 	serial "ULES-00753"
-	rom ( name "After Burner - Black Falcon (Europe) (En,Fr,De,Es,It).iso" size 427851776 crc 3F3F6A57 md5 2C6DA8D3B81D6AC5C9DF1B2DAC23EB5F sha1 C3A9430B75DC1DC42D9A87D1AD6B6FE9DB918280 serial "ULES-00753" )
+	rom ( name "After Burner - Black Falcon (Europe) (En,Fr,De,Es,It) (ULES-00753).iso" size 427851776 crc 3F3F6A57 md5 2C6DA8D3B81D6AC5C9DF1B2DAC23EB5F sha1 C3A9430B75DC1DC42D9A87D1AD6B6FE9DB918280 serial "ULES-00753" )
 )
 game (
-	name "After Burner - Black Falcon (Europe) (En,Fr,De,Es,It) (Alt)"
+	name "After Burner - Black Falcon (Europe) (En,Fr,De,Es,It) (ULES-00785)"
 	region "Europe"
 	serial "ULES-00785"
-	rom ( name "After Burner - Black Falcon (Europe) (En,Fr,De,Es,It) (Alt).iso" size 427851776 crc D1262DBC md5 8C55C07DB7A2A1BE8D761457D4A315CB sha1 79C0D9D6DF1EF4EE5BB5D7E3001F173917A89436 serial "ULES-00785" )
+	rom ( name "After Burner - Black Falcon (Europe) (En,Fr,De,Es,It) (ULES-00785).iso" size 427851776 crc D1262DBC md5 8C55C07DB7A2A1BE8D761457D4A315CB sha1 79C0D9D6DF1EF4EE5BB5D7E3001F173917A89436 serial "ULES-00785" )
 )
 game (
-	name "After Burner - Black Falcon (USA) (En,Fr,Es,It,Nl)"
+	name "After Burner - Black Falcon (USA) (En,Fr,De,Es,It)"
 	region "USA"
 	serial "ULUS-10244"
-	rom ( name "After Burner - Black Falcon (USA) (En,Fr,Es,It,Nl).iso" size 427360256 crc B0C2D6A2 md5 C419BD2610E2C2044FD669E11F48088C sha1 D0CEF4378316B4D27C4AC5B0E7969F358E79A926 serial "ULUS-10244" )
+	rom ( name "After Burner - Black Falcon (USA) (En,Fr,De,Es,It).iso" size 427360256 crc B0C2D6A2 md5 C419BD2610E2C2044FD669E11F48088C sha1 D0CEF4378316B4D27C4AC5B0E7969F358E79A926 serial "ULUS-10244" )
 )
 game (
 	name "Agarest Senki Mariage (Japan)"
@@ -1165,10 +1171,10 @@ game (
 	rom ( name "Astro Boy - The Video Game (Europe) (En,Fr,De,Es,It).iso" size 1153073152 crc D1C45A85 md5 B7C0B582018D11D852668A4B63A989A4 sha1 16B376733BF170D3CE225C313AB38D4624995074 serial "ULES-01345" )
 )
 game (
-	name "Astro Boy - The Video Game (USA) (En,Fr,Es,It,Nl)"
+	name "Astro Boy - The Video Game (USA) (En,Fr,De,Es,It)"
 	region "USA"
 	serial "ULUS-10454"
-	rom ( name "Astro Boy - The Video Game (USA) (En,Fr,Es,It,Nl).iso" size 1147731968 crc 11979E2D md5 8DC1AA2C19C04997859B712DD25C4153 sha1 6693AE4BDC6AA799D736FD9F89243209064CA8E5 serial "ULUS-10454" )
+	rom ( name "Astro Boy - The Video Game (USA) (En,Fr,De,Es,It).iso" size 1147731968 crc 11979E2D md5 8DC1AA2C19C04997859B712DD25C4153 sha1 6693AE4BDC6AA799D736FD9F89243209064CA8E5 serial "ULUS-10454" )
 )
 game (
 	name "Atari Classics Evolved (USA)"
@@ -1220,6 +1226,18 @@ game (
 	region "USA"
 	serial "ULUS-10363"
 	rom ( name "B-Boy (USA).iso" size 1653604352 crc CCB3C6FC md5 6297F694D21C39C79EEBD323F8822EFC sha1 DEC7B0758F2EBB9D9AA35EB4BB412AA4461B0491 serial "ULUS-10363" )
+)
+game (
+	name "Baito Hell 2000 (Japan, Asia)"
+	region "Japan"
+	serial "UCAS-40046"
+	rom ( name "Baito Hell 2000 (Japan, Asia).iso" size 464715776 crc 53116BF8 md5 756004AEA237688AEBA3436FC5916DAB sha1 C0F4461DAA6DE7B897FE320787061DB21A29E3D1 serial "UCAS-40046" )
+)
+game (
+	name "Baito Hell 2000 (Japan, Asia)"
+	region "Japan"
+	serial "UCJS-18008"
+	rom ( name "Baito Hell 2000 (Japan, Asia).iso" size 464715776 crc 53116BF8 md5 756004AEA237688AEBA3436FC5916DAB sha1 C0F4461DAA6DE7B897FE320787061DB21A29E3D1 serial "UCJS-18008" )
 )
 game (
 	name "Baka to Test to Shoukanjuu Portable (Japan)"
@@ -1355,12 +1373,6 @@ game (
 	region "USA"
 	serial "ULUS-10405"
 	rom ( name "Beaterator (USA).iso" size 1083506688 crc D69DD83D md5 FB54536ED0947FADC325C5476FBE3BE5 sha1 D48C2AB869751BE3EF600574C45AA10D3A9BA574 serial "ULUS-10405" )
-)
-game (
-	name "Beit Hell 2000 (Japan)"
-	region "Japan"
-	serial "UCJS-10022"
-	rom ( name "Beit Hell 2000 (Japan).iso" size 464715776 crc 53116BF8 md5 756004AEA237688AEBA3436FC5916DAB sha1 C0F4461DAA6DE7B897FE320787061DB21A29E3D1 serial "UCJS-10022" )
 )
 game (
 	name "Ben 10 - Alien Force (Europe) (En,Fr,De,Es,It)"
@@ -1696,6 +1708,12 @@ game (
 	rom ( name "Blitz - Overtime (USA).iso" size 1379336192 crc E28B87C1 md5 9DA5CC94AAFA2B9AFFA625CFFDF261CD sha1 AA45FAE86F6B7CB5B037CF5360D1041795A59BF4 serial "ULUS-10200" )
 )
 game (
+	name "Blokus Club Portable with Bumpy Trot (Japan)"
+	region "Japan"
+	serial "ULJS-00068"
+	rom ( name "Blokus Club Portable with Bumpy Trot (Japan).iso" size 67764224 crc A2848899 md5 DA4300B2656CFB1AF09DD2E1CB80B490 sha1 C7DBFBDA28E317A3F4A05DB6CF23FDBEF2220741 serial "ULJS-00068" )
+)
+game (
 	name "Blokus Club Portable with Bumpy Trot (Japan) (Taikenban)"
 	region "Japan"
 	serial "ULJM-91007"
@@ -1768,16 +1786,34 @@ game (
 	rom ( name "Boku no Natsuyasumi Portable 2 - Nazo Nazo Shimai to Chinbotsusen no Himitsu! (Japan).iso" size 834633728 crc E2DEDDA4 md5 0A59DEF5972CEAD16D410742E2434E81 sha1 3E456B68C4E9C4F6C025A86459F63369310D894B serial "UCJS-10111" )
 )
 game (
-	name "Boku no Watashi no Katamari Damacy (Japan)"
+	name "Boku no Watashi no Katamari Damacy (Japan, Asia)"
 	region "Japan"
-	serial "ULJS-00033"
-	rom ( name "Boku no Watashi no Katamari Damacy (Japan).iso" size 1769144320 crc 05E040A4 md5 44B02D52F0F88B88BF30EE33CDE59C8C sha1 DE2A96672EB3B95A09252DE2A346AC715F91ED5F serial "ULJS-00033" )
+	serial "UCAS-40049"
+	rom ( name "Boku no Watashi no Katamari Damacy (Japan, Asia).iso" size 1769144320 crc 05E040A4 md5 44B02D52F0F88B88BF30EE33CDE59C8C sha1 DE2A96672EB3B95A09252DE2A346AC715F91ED5F serial "UCAS-40049" )
 )
 game (
-	name "Boku no Watashi no Katamari Damacy (Japan)"
+	name "Boku no Watashi no Katamari Damacy (Japan, Asia)"
+	region "Japan"
+	serial "ULJS-00033"
+	rom ( name "Boku no Watashi no Katamari Damacy (Japan, Asia).iso" size 1769144320 crc 05E040A4 md5 44B02D52F0F88B88BF30EE33CDE59C8C sha1 DE2A96672EB3B95A09252DE2A346AC715F91ED5F serial "ULJS-00033" )
+)
+game (
+	name "Boku no Watashi no Katamari Damacy (Japan, Asia)"
 	region "Japan"
 	serial "ULJS-19009"
-	rom ( name "Boku no Watashi no Katamari Damacy (Japan).iso" size 1769144320 crc 05E040A4 md5 44B02D52F0F88B88BF30EE33CDE59C8C sha1 DE2A96672EB3B95A09252DE2A346AC715F91ED5F serial "ULJS-19009" )
+	rom ( name "Boku no Watashi no Katamari Damacy (Japan, Asia).iso" size 1769144320 crc 05E040A4 md5 44B02D52F0F88B88BF30EE33CDE59C8C sha1 DE2A96672EB3B95A09252DE2A346AC715F91ED5F serial "ULJS-19009" )
+)
+game (
+	name "Boku wa Koukuu Kanseikan - Airport Hero Haneda (Japan)"
+	region "Japan"
+	serial "ULJM-05769"
+	rom ( name "Boku wa Koukuu Kanseikan - Airport Hero Haneda (Japan).iso" size 316112896 crc 646D7DE8 md5 4AE281717B7401DD7684806C7B55141E sha1 3CF4EEFB38241A10014005A3FB5C993C09E4919D serial "ULJM-05769" )
+)
+game (
+	name "Boku wa Koukuu Kanseikan - Airport Hero Kankuu (Japan)"
+	region "Japan"
+	serial "ULJM-05803"
+	rom ( name "Boku wa Koukuu Kanseikan - Airport Hero Kankuu (Japan).iso" size 299991040 crc A1F5699D md5 526584C5D4626D0F14C00310A375D7C3 sha1 59CCF506CDC3E864E3F9B743CBAE5CA2FC3C5065 serial "ULJM-05803" )
 )
 game (
 	name "Boku wa Koukuu Kanseikan - Airport Hero Naha (Japan)"
@@ -2208,6 +2244,18 @@ game (
 game (
 	name "Buzz! Brain Bender (Europe) (En,Fr,De,Es,It,Nl,Pt,Pl)"
 	region "Europe"
+	serial "UCES-01157/9781554"
+	rom ( name "Buzz! Brain Bender (Europe) (En,Fr,De,Es,It,Nl,Pt,Pl).iso" size 804782080 crc 00E748A7 md5 E4AA5EBD6E49EBDF46A89A1929E10C35 sha1 990B9DCFE2A716360560AC754EBD65B287251158 serial "UCES-01157/9781554" )
+)
+game (
+	name "Buzz! Brain Bender (Europe) (En,Fr,De,Es,It,Nl,Pt,Pl)"
+	region "Europe"
+	serial "UCES-01157/FRE"
+	rom ( name "Buzz! Brain Bender (Europe) (En,Fr,De,Es,It,Nl,Pt,Pl).iso" size 804782080 crc 00E748A7 md5 E4AA5EBD6E49EBDF46A89A1929E10C35 sha1 990B9DCFE2A716360560AC754EBD65B287251158 serial "UCES-01157/FRE" )
+)
+game (
+	name "Buzz! Brain Bender (Europe) (En,Fr,De,Es,It,Nl,Pt,Pl)"
+	region "Europe"
 	serial "UCES-01157/POR"
 	rom ( name "Buzz! Brain Bender (Europe) (En,Fr,De,Es,It,Nl,Pt,Pl).iso" size 804782080 crc 00E748A7 md5 E4AA5EBD6E49EBDF46A89A1929E10C35 sha1 990B9DCFE2A716360560AC754EBD65B287251158 serial "UCES-01157/POR" )
 )
@@ -2306,6 +2354,12 @@ game (
 	rom ( name "Buzz! Master Quiz (Europe) (Es,Pt).iso" size 1501069312 crc 5D89C901 md5 1AF1C4C75408027EFBF30F31F558F9BC sha1 7BDA74E645C80613C29745A3EE72C893DBF95294 serial "UCES-01032/POR" )
 )
 game (
+	name "Buzz! Master Quiz (Europe) (Es,Pt)"
+	region "Europe"
+	serial "UCES-01032/SPA"
+	rom ( name "Buzz! Master Quiz (Europe) (Es,Pt).iso" size 1501069312 crc 5D89C901 md5 1AF1C4C75408027EFBF30F31F558F9BC sha1 7BDA74E645C80613C29745A3EE72C893DBF95294 serial "UCES-01032/SPA" )
+)
+game (
 	name "Buzz! Master Quiz (Europe) (Fr,Nl)"
 	region "Europe"
 	serial "UCES-01033"
@@ -2358,6 +2412,12 @@ game (
 	region "Spain"
 	serial "UCES-01200"
 	rom ( name "Buzz! Que Sabes de tu Pais (Spain).iso" size 900923392 crc DD041C87 md5 1115E7C6260C9B91A9427B321728B447 sha1 03E7B33CF72DC4A61C2207504C5BFFD29D5D3E08 serial "UCES-01200" )
+)
+game (
+	name "Buzz! Que Sabes de tu Pais (Spain)"
+	region "Spain"
+	serial "UCES-01200-/-9147541"
+	rom ( name "Buzz! Que Sabes de tu Pais (Spain).iso" size 900923392 crc DD041C87 md5 1115E7C6260C9B91A9427B321728B447 sha1 03E7B33CF72DC4A61C2207504C5BFFD29D5D3E08 serial "UCES-01200-/-9147541" )
 )
 game (
 	name "Buzz! Quem e o Genio Portugues (Europe) (Pt,Ru)"
@@ -2579,6 +2639,12 @@ game (
 	region "Asia"
 	serial "UCAS-40199"
 	rom ( name "Capcom Classics Collection Remixed (Asia).iso" size 571965440 crc 137E6DFD md5 0864C87CFFC27EFFED9B8B44FA6754BD sha1 32264269BDF18DB2C92E406440A85ADD28C932B8 serial "UCAS-40199" )
+)
+game (
+	name "Capcom Classics Collection Remixed (Asia)"
+	region "Asia"
+	serial "ULAS-42053"
+	rom ( name "Capcom Classics Collection Remixed (Asia).iso" size 571965440 crc 137E6DFD md5 0864C87CFFC27EFFED9B8B44FA6754BD sha1 32264269BDF18DB2C92E406440A85ADD28C932B8 serial "ULAS-42053" )
 )
 game (
 	name "Capcom Classics Collection Remixed (Europe)"
@@ -2803,10 +2869,22 @@ game (
 	rom ( name "Chou no Doku Hana no Kusari - Taishou Tsuya Koi Ibun (Japan).iso" size 1577517056 crc 988D8D12 md5 1B7ECAAEA41CA4159F8ADCACA948AFE5 sha1 07AC176716E0632008FB1A12AD87668E1BAD7275 serial "ULJM-06343" )
 )
 game (
-	name "Chronicle of Dungeon Maker (Asia)"
-	region "Asia"
+	name "Chronicle of Dungeon Maker (Japan, Asia)"
+	region "Japan"
 	serial "UCAS-40176"
-	rom ( name "Chronicle of Dungeon Maker (Asia).iso" size 150372352 crc 6F49C328 md5 ED5FE34B338FDD18F690B971CA99DB06 sha1 3E5EEE6F4534C397D11C80CC75B76956B2722B0D serial "UCAS-40176" )
+	rom ( name "Chronicle of Dungeon Maker (Japan, Asia).iso" size 150372352 crc 6F49C328 md5 ED5FE34B338FDD18F690B971CA99DB06 sha1 3E5EEE6F4534C397D11C80CC75B76956B2722B0D serial "UCAS-40176" )
+)
+game (
+	name "Chronicle of Dungeon Maker (Japan, Asia)"
+	region "Japan"
+	serial "ULJM-05172"
+	rom ( name "Chronicle of Dungeon Maker (Japan, Asia).iso" size 150372352 crc 6F49C328 md5 ED5FE34B338FDD18F690B971CA99DB06 sha1 3E5EEE6F4534C397D11C80CC75B76956B2722B0D serial "ULJM-05172" )
+)
+game (
+	name "Chronicle of Dungeon Maker (Japan, Asia)"
+	region "Japan"
+	serial "ULJM-05274"
+	rom ( name "Chronicle of Dungeon Maker (Japan, Asia).iso" size 150372352 crc 6F49C328 md5 ED5FE34B338FDD18F690B971CA99DB06 sha1 3E5EEE6F4534C397D11C80CC75B76956B2722B0D serial "ULJM-05274" )
 )
 game (
 	name "Chronicle of Dungeon Maker II (Japan)"
@@ -3052,6 +3130,12 @@ game (
 	rom ( name "Coded Gun (Korea) (En,Ja).iso" size 183730176 crc A928AE76 md5 92C47CE768A6429B0935C572D383495B sha1 B5E7FDB02BEC3B92A4C0DF7E8559D05249BA3C9F serial "ULKS-46016" )
 )
 game (
+	name "Coded Gun - Contagion (Korea)"
+	region "Korea"
+	serial "ULKS-46139"
+	rom ( name "Coded Gun - Contagion (Korea).iso" size 597098496 crc 5C0E7762 md5 1F625A8CECD65C3187F1BE935F209BE6 sha1 0CCADD4DB39731EE7CEEE57F85970ED3DE2DC914 serial "ULKS-46139" )
+)
+game (
 	name "Coded Soul - Gyeseungdoeneun Idea (Korea)"
 	region "Korea"
 	serial "UCKS-45071"
@@ -3220,10 +3304,10 @@ game (
 	rom ( name "Crash - Mind over Mutant (USA) (En,Fr).iso" size 1576468480 crc 3CD38795 md5 6E87A1D2F74FEAAC5E793502EB7427ED sha1 15A6293FD5E0FA9D1A7BDCBF8D3B1C0659731A59 serial "ULUS-10377" )
 )
 game (
-	name "Crash Bandicoot - Gacchanko World (Japan)"
+	name "Crash Bandicoot - Gatchanko World (Japan)"
 	region "Japan"
 	serial "ULJM-05036"
-	rom ( name "Crash Bandicoot - Gacchanko World (Japan).iso" size 1421770752 crc 64FF6427 md5 1574A24A449F13206194879B97550957 sha1 F80AD367EA60A05E04FAA2E8BB4518387A80E135 serial "ULJM-05036" )
+	rom ( name "Crash Bandicoot - Gatchanko World (Japan).iso" size 1421770752 crc 64FF6427 md5 1574A24A449F13206194879B97550957 sha1 F80AD367EA60A05E04FAA2E8BB4518387A80E135 serial "ULJM-05036" )
 )
 game (
 	name "Crash Tag Team Racing (Europe)"
@@ -3441,6 +3525,12 @@ game (
 game (
 	name "Crisis Core - Final Fantasy VII (Japan, Asia)"
 	region "Japan"
+	serial "UCKS-45052"
+	rom ( name "Crisis Core - Final Fantasy VII (Japan, Asia).iso" size 1787723776 crc C62F7203 md5 A838139A3B5982DE651D4104F7AA0BCB sha1 96BA56DD9456A8E5876C7C7C78C7C1D3965521AD serial "UCKS-45052" )
+)
+game (
+	name "Crisis Core - Final Fantasy VII (Japan, Asia)"
+	region "Japan"
 	serial "ULJM-05275"
 	rom ( name "Crisis Core - Final Fantasy VII (Japan, Asia).iso" size 1787723776 crc C62F7203 md5 A838139A3B5982DE651D4104F7AA0BCB sha1 96BA56DD9456A8E5876C7C7C78C7C1D3965521AD serial "ULJM-05275" )
 )
@@ -3449,6 +3539,12 @@ game (
 	region "Japan"
 	serial "ULJM-05517"
 	rom ( name "Crisis Core - Final Fantasy VII (Japan, Asia).iso" size 1787723776 crc C62F7203 md5 A838139A3B5982DE651D4104F7AA0BCB sha1 96BA56DD9456A8E5876C7C7C78C7C1D3965521AD serial "ULJM-05517" )
+)
+game (
+	name "Crisis Core - Final Fantasy VII (Korea) (En)"
+	region "Korea"
+	serial "UCKS-45100"
+	rom ( name "Crisis Core - Final Fantasy VII (Korea) (En).iso" size 1716715520 crc CE3803E6 md5 600E128107606F784BC50EA45C4F5D91 sha1 A376AA0B0F62BABA8ECBDCEB9B60FDC38566D847 serial "UCKS-45100" )
 )
 game (
 	name "Crisis Core - Final Fantasy VII (Spain)"
@@ -3862,10 +3958,10 @@ game (
 	rom ( name "Dead Head Fred (Europe).iso" size 1408303104 crc C96271CC md5 DAD4EDAF3F9CF69F17FFC47ACB728738 sha1 F17084519B9894E7E9C2ECF0CF1E9B79FC707F8A serial "ULES-00902" )
 )
 game (
-	name "Dead Head Fred (Europe) (En,Fr,De,Es,It)"
+	name "Dead Head Fred (Europe) (Fr,De,Es,It)"
 	region "Europe"
 	serial "ULES-00903"
-	rom ( name "Dead Head Fred (Europe) (En,Fr,De,Es,It).iso" size 1791688704 crc EF6E14A1 md5 54CAD2D7024E894A2DD7EBB4A5063251 sha1 1A9D0AE6B93712155C732502EC3914B3CDB9F8CC serial "ULES-00903" )
+	rom ( name "Dead Head Fred (Europe) (Fr,De,Es,It).iso" size 1791688704 crc EF6E14A1 md5 54CAD2D7024E894A2DD7EBB4A5063251 sha1 1A9D0AE6B93712155C732502EC3914B3CDB9F8CC serial "ULES-00903" )
 )
 game (
 	name "Dead Head Fred (USA)"
@@ -3902,6 +3998,12 @@ game (
 	region "Japan"
 	serial "ULJM-05640"
 	rom ( name "Dead or Alive - Paradise (Japan) (En,Ja,Fr,De).iso" size 877232128 crc 9F610CA1 md5 C29BC2C9C9CD883E3AE25EDBB49E65A3 sha1 8E952C6C7CDE29EFFD09485E8682C64CA75B0F7F serial "ULJM-05640" )
+)
+game (
+	name "Dead or Alive - Paradise (Korea) (En,Ja,Fr,De)"
+	region "Korea"
+	serial "ULKS-46246"
+	rom ( name "Dead or Alive - Paradise (Korea) (En,Ja,Fr,De).iso" size 869990400 crc 3BDB6E90 md5 F57C2D68DCF36EF124431EDD21E1F130 sha1 AB1ACEE2ADD299B67CFCC3E31E709178DF4DCE24 serial "ULKS-46246" )
 )
 game (
 	name "Dead or Alive - Paradise (USA) (En,Ja,Fr,De)"
@@ -4375,6 +4477,12 @@ game (
 	rom ( name "Disney-Pixar Cars (Italy).iso" size 906362880 crc DE060D79 md5 41C5FEDC649DABC763E602AB6CCEACC9 sha1 6A63C67DC3B50F30CCBC50D3EBD595B85079BCAD serial "ULES-00325" )
 )
 game (
+	name "Disney-Pixar Cars (Japan)"
+	region "Japan"
+	serial "ULJM-05149"
+	rom ( name "Disney-Pixar Cars (Japan).iso" size 906362880 crc 2900E689 md5 AF19F923D91AD39556483376FEA00BB5 sha1 110661F95054B1D2D2211BD3FAD4DBDF25C2E6EF serial "ULJM-05149" )
+)
+game (
 	name "Disney-Pixar Cars (Netherlands)"
 	region "Netherlands"
 	serial "ULES-00322"
@@ -4715,6 +4823,12 @@ game (
 	region "Europe"
 	serial "ULES-01505"
 	rom ( name "Dissidia 012 - Duodecim Final Fantasy (Europe) (En,Fr,De,Es,It).iso" size 1754529792 crc 81BFB318 md5 184E0E4B222CFD4B516CD2675BE32345 sha1 2E6E8B71A1F66A5BA1390FA68EA36188AC4FE2B6 serial "ULES-01505" )
+)
+game (
+	name "Dissidia 012 - Duodecim Final Fantasy (Europe) (En,Fr,De,Es,It)"
+	region "Europe"
+	serial "ULES-01505/0046788"
+	rom ( name "Dissidia 012 - Duodecim Final Fantasy (Europe) (En,Fr,De,Es,It).iso" size 1754529792 crc 81BFB318 md5 184E0E4B222CFD4B516CD2675BE32345 sha1 2E6E8B71A1F66A5BA1390FA68EA36188AC4FE2B6 serial "ULES-01505/0046788" )
 )
 game (
 	name "Dissidia 012 - Duodecim Final Fantasy (Japan)"
@@ -5212,6 +5326,12 @@ game (
 	rom ( name "Dungeons & Dragons - Tactics (Europe) (En,Fr,De,Es,It).iso" size 484900864 crc 0C19B333 md5 436DBF1E4C869D0E320B1BA7E4B2270C sha1 F23A7BA960A7353EE0024F5343E39E18C69A3CD5 serial "ULES-00721" )
 )
 game (
+	name "Dungeons & Dragons - Tactics (Korea)"
+	region "Korea"
+	serial "ULKS-46124"
+	rom ( name "Dungeons & Dragons - Tactics (Korea).iso" size 484900864 crc 4615087A md5 AC15F38C16E879B896D1ACDA7C1FC0EB sha1 173CFFE352B9055DC61391EE6B41228D7DCB71E6 serial "ULKS-46124" )
+)
+game (
 	name "Dungeons & Dragons - Tactics (USA)"
 	region "USA"
 	serial "ULUS-10232"
@@ -5380,6 +5500,12 @@ game (
 	rom ( name "Echoshift (Korea).iso" size 291110912 crc 08DA1716 md5 9306A57A07B4F53EE6810CE46B51C957 sha1 CFFE9FD18CD249DC3FD2B36C8C4E27EA15DF250A serial "UCKS-45142" )
 )
 game (
+	name "Edith Memories - Sincheon Magye GOC V (Korea)"
+	region "Korea"
+	serial "ULKS-46067"
+	rom ( name "Edith Memories - Sincheon Magye GOC V (Korea).iso" size 1755381760 crc 4CB65C6F md5 33E3B04CB5EC32557E7AD768A6BA6F3D sha1 4E68D9052D9D43CC614F44E3C3BCCD238AE45681 serial "ULKS-46067" )
+)
+game (
 	name "Eikoku Tantei Mysteria (Japan)"
 	region "Japan"
 	serial "ULJS-00562"
@@ -5466,6 +5592,12 @@ game (
 game (
 	name "Eiyuu Densetsu - Sora no Kiseki the 3rd (Japan)"
 	region "Japan"
+	serial "ULJM-05353"
+	rom ( name "Eiyuu Densetsu - Sora no Kiseki the 3rd (Japan).iso" size 1659174912 crc E87E6E10 md5 98CF3F269C3A652A2857B6EA883CC486 sha1 8C28A27A6220BD5B72E68F69480EEB96FC502A69 serial "ULJM-05353" )
+)
+game (
+	name "Eiyuu Densetsu - Sora no Kiseki the 3rd (Japan)"
+	region "Japan"
 	serial "ULJM-08036"
 	rom ( name "Eiyuu Densetsu - Sora no Kiseki the 3rd (Japan).iso" size 1659174912 crc E87E6E10 md5 98CF3F269C3A652A2857B6EA883CC486 sha1 8C28A27A6220BD5B72E68F69480EEB96FC502A69 serial "ULJM-08036" )
 )
@@ -5548,6 +5680,18 @@ game (
 	rom ( name "Enkeltbillet (Japan).iso" size 1469841408 crc D5A0E58E md5 7A1E7644F6C244684B242C697F9B537C sha1 DB0F48D897131F392E326D6F2CF8B17502A1AACC serial "ULJM-06374" )
 )
 game (
+	name "Entaku no Seito - The Eternal Legend (Japan)"
+	region "Japan"
+	serial "ULJS-00548"
+	rom ( name "Entaku no Seito - The Eternal Legend (Japan).iso" size 506855424 crc 1246B861 md5 FF12B79D6D07F376763BEDC1CC20A959 sha1 06B30A3A68081786529A39A1E2506C113EFEF3E0 serial "ULJS-00548" )
+)
+game (
+	name "Entaku no Seito - The Eternal Legend (Japan)"
+	region "Japan"
+	serial "ULJS-00593"
+	rom ( name "Entaku no Seito - The Eternal Legend (Japan).iso" size 506855424 crc 1246B861 md5 FF12B79D6D07F376763BEDC1CC20A959 sha1 06B30A3A68081786529A39A1E2506C113EFEF3E0 serial "ULJS-00593" )
+)
+game (
 	name "Entraineur 2006, L' - Championship Manager (France)"
 	region "France"
 	serial "ULES-00331"
@@ -5584,22 +5728,22 @@ game (
 	rom ( name "Evangelion - Jo (Japan).iso" size 773881856 crc 4375D1CA md5 D5717FB31DA39CF9EA31F69E6764C28F sha1 D757D16A942FE225852C2E041C5B6B15C5A25DCE serial "ULJS-00201" )
 )
 game (
-	name "Evangelion Shin Gekijou-ban - 3nd Impact (Japan, Asia)"
+	name "Evangelion Shin Gekijouban - 3nd Impact (Japan, Asia)"
 	region "Japan"
 	serial "ULAS-42293"
-	rom ( name "Evangelion Shin Gekijou-ban - 3nd Impact (Japan, Asia).iso" size 1142915072 crc D8515C17 md5 D1752EC00C5A9974EB94154EB1BD06FC sha1 1797FEFD53E8E993F9F1E0206D1D634462E46701 serial "ULAS-42293" )
+	rom ( name "Evangelion Shin Gekijouban - 3nd Impact (Japan, Asia).iso" size 1142915072 crc D8515C17 md5 D1752EC00C5A9974EB94154EB1BD06FC sha1 1797FEFD53E8E993F9F1E0206D1D634462E46701 serial "ULAS-42293" )
 )
 game (
-	name "Evangelion Shin Gekijou-ban - 3nd Impact (Japan, Asia)"
+	name "Evangelion Shin Gekijouban - 3nd Impact (Japan, Asia)"
 	region "Japan"
 	serial "ULJS-00407"
-	rom ( name "Evangelion Shin Gekijou-ban - 3nd Impact (Japan, Asia).iso" size 1142915072 crc D8515C17 md5 D1752EC00C5A9974EB94154EB1BD06FC sha1 1797FEFD53E8E993F9F1E0206D1D634462E46701 serial "ULJS-00407" )
+	rom ( name "Evangelion Shin Gekijouban - 3nd Impact (Japan, Asia).iso" size 1142915072 crc D8515C17 md5 D1752EC00C5A9974EB94154EB1BD06FC sha1 1797FEFD53E8E993F9F1E0206D1D634462E46701 serial "ULJS-00407" )
 )
 game (
-	name "Evangelion Shin Gekijou-ban - 3nd Impact (Japan, Asia)"
+	name "Evangelion Shin Gekijouban - 3nd Impact (Japan, Asia)"
 	region "Japan"
 	serial "ULJS-00408"
-	rom ( name "Evangelion Shin Gekijou-ban - 3nd Impact (Japan, Asia).iso" size 1142915072 crc D8515C17 md5 D1752EC00C5A9974EB94154EB1BD06FC sha1 1797FEFD53E8E993F9F1E0206D1D634462E46701 serial "ULJS-00408" )
+	rom ( name "Evangelion Shin Gekijouban - 3nd Impact (Japan, Asia).iso" size 1142915072 crc D8515C17 md5 D1752EC00C5A9974EB94154EB1BD06FC sha1 1797FEFD53E8E993F9F1E0206D1D634462E46701 serial "ULJS-00408" )
 )
 game (
 	name "Ever 17 - The Out of Infinity - Premium Edition (Japan)"
@@ -5737,16 +5881,22 @@ game (
 	rom ( name "Exit (Europe) (En,Fr,De,Es,It).iso" size 135233536 crc 8865D8A8 md5 3CAB464C34921A812B23F30D563EE951 sha1 1004C059240770DF67025F798690638DF1E6C9CF serial "ULES-00285" )
 )
 game (
-	name "Exit (Japan)"
+	name "Exit (Japan, Asia)"
 	region "Japan"
-	serial "ULJM-05062"
-	rom ( name "Exit (Japan).iso" size 112852992 crc 05D404F2 md5 B16AA2AC623F7C4E83BB7AF1FC3F8ABA sha1 028E0EE071182B4E01223B7A32138B35AF285B79 serial "ULJM-05062" )
+	serial "UCAS-40174"
+	rom ( name "Exit (Japan, Asia).iso" size 112852992 crc 05D404F2 md5 B16AA2AC623F7C4E83BB7AF1FC3F8ABA sha1 028E0EE071182B4E01223B7A32138B35AF285B79 serial "UCAS-40174" )
 )
 game (
-	name "Exit (Japan)"
+	name "Exit (Japan, Asia)"
+	region "Japan"
+	serial "ULJM-05062"
+	rom ( name "Exit (Japan, Asia).iso" size 112852992 crc 05D404F2 md5 B16AA2AC623F7C4E83BB7AF1FC3F8ABA sha1 028E0EE071182B4E01223B7A32138B35AF285B79 serial "ULJM-05062" )
+)
+game (
+	name "Exit (Japan, Asia)"
 	region "Japan"
 	serial "ULJM-05271"
-	rom ( name "Exit (Japan).iso" size 112852992 crc 05D404F2 md5 B16AA2AC623F7C4E83BB7AF1FC3F8ABA sha1 028E0EE071182B4E01223B7A32138B35AF285B79 serial "ULJM-05271" )
+	rom ( name "Exit (Japan, Asia).iso" size 112852992 crc 05D404F2 md5 B16AA2AC623F7C4E83BB7AF1FC3F8ABA sha1 028E0EE071182B4E01223B7A32138B35AF285B79 serial "ULJM-05271" )
 )
 game (
 	name "Exit (Korea)"
@@ -6810,6 +6960,12 @@ game (
 	rom ( name "Field Commander (USA) (Beta) (v1.10) (2006-03-01).iso" size 1198948352 crc EBBB5607 md5 B7C690331A973D499D32354F12B06C68 sha1 9820AA6D00B6BB4B8C3E76DBFFC68A42C47FE404 serial "ULUX-80153" )
 )
 game (
+	name "Fight Ippatsu! Juuden-chan!! CC (Japan)"
+	region "Japan"
+	serial "ULJM-05667"
+	rom ( name "Fight Ippatsu! Juuden-chan!! CC (Japan).iso" size 1043988480 crc ADC07767 md5 1BA78D93F5332A3F9A2A9C7892323012 sha1 3CA69F2A49B736662E4F481B61D58C9A738AA580 serial "ULJM-05667" )
+)
+game (
 	name "Fight Night Round 3 (Asia)"
 	region "Asia"
 	serial "ULAS-42044"
@@ -6888,6 +7044,12 @@ game (
 	rom ( name "Final Fantasy - 20th Anniversary Edition (USA) (En,Ja) (FW6.00).iso" size 198115328 crc 279AD1F4 md5 86A3476E8F05AEFEEE90579B69DD9FFC sha1 30C7B61BCB39599B41C19DC28EA69DB90C342B9F serial "ULUS-10251" )
 )
 game (
+	name "Final Fantasy II (Europe) (En,Ja)"
+	region "Europe"
+	serial "ULES-00987"
+	rom ( name "Final Fantasy II (Europe) (En,Ja).iso" size 354123776 crc 3C08AE0B md5 763C9ACF981E27793CF64A2031036630 sha1 7B9BAED6CD99CAB24A6382EA3151620DDACBF9B8 serial "ULES-00987" )
+)
+game (
 	name "Final Fantasy II (Japan, Asia) (En,Ja)"
 	region "Japan"
 	serial "UCAS-40152"
@@ -6906,22 +7068,16 @@ game (
 	rom ( name "Final Fantasy II (Japan, Asia) (En,Ja).iso" size 287342592 crc ACE011CD md5 27758D84776E568789650D7DD8583944 sha1 7D1FA79CC5C84451C83858C01A2BFDF00C654D07 serial "ULJM-05515" )
 )
 game (
-	name "Final Fantasy II - 20th Anniversary Edition (Europe) (En,Ja)"
-	region "Europe"
-	serial "ULES-00987"
-	rom ( name "Final Fantasy II - 20th Anniversary Edition (Europe) (En,Ja).iso" size 354123776 crc 3C08AE0B md5 763C9ACF981E27793CF64A2031036630 sha1 7B9BAED6CD99CAB24A6382EA3151620DDACBF9B8 serial "ULES-00987" )
-)
-game (
-	name "Final Fantasy II - 20th Anniversary Edition (USA, Canada) (En,Ja)"
+	name "Final Fantasy II (USA, Canada) (En,Ja)"
 	region "USA"
 	serial "ULUS-10263"
-	rom ( name "Final Fantasy II - 20th Anniversary Edition (USA, Canada) (En,Ja).iso" size 287342592 crc 541FA240 md5 9AC65EDE66CDC40FF791F8BE7709B0C2 sha1 BBD97B3AAFA741BCAAE738D8A0E1466574F7072D serial "ULUS-10263" )
+	rom ( name "Final Fantasy II (USA, Canada) (En,Ja).iso" size 287342592 crc 541FA240 md5 9AC65EDE66CDC40FF791F8BE7709B0C2 sha1 BBD97B3AAFA741BCAAE738D8A0E1466574F7072D serial "ULUS-10263" )
 )
 game (
-	name "Final Fantasy II - 20th Anniversary Edition (USA, Canada) (En,Ja)"
+	name "Final Fantasy II (USA, Canada) (En,Ja)"
 	region "USA"
 	serial "ULUS-10263-F"
-	rom ( name "Final Fantasy II - 20th Anniversary Edition (USA, Canada) (En,Ja).iso" size 287342592 crc 541FA240 md5 9AC65EDE66CDC40FF791F8BE7709B0C2 sha1 BBD97B3AAFA741BCAAE738D8A0E1466574F7072D serial "ULUS-10263-F" )
+	rom ( name "Final Fantasy II (USA, Canada) (En,Ja).iso" size 287342592 crc 541FA240 md5 9AC65EDE66CDC40FF791F8BE7709B0C2 sha1 BBD97B3AAFA741BCAAE738D8A0E1466574F7072D serial "ULUS-10263-F" )
 )
 game (
 	name "Final Fantasy III (Japan)"
@@ -7087,6 +7243,12 @@ game (
 	region "Germany"
 	serial "ULES-00969"
 	rom ( name "FlatOut - Head On (Germany).iso" size 450461696 crc 35FEA199 md5 3BE6BED2551501765DB3C63B2DFC5B71 sha1 83F63BBAC43BB7A2A25B9DD53BAD5E09B46D7485 serial "ULES-00969" )
+)
+game (
+	name "FlatOut - Head On (Korea)"
+	region "Korea"
+	serial "UCKS-45088"
+	rom ( name "FlatOut - Head On (Korea).iso" size 450592768 crc 30DA0A2F md5 E09412EA10B35D2EFEF61D7102929D29 sha1 97DE03236448F6E11121336B810894F5A47B52E1 serial "UCKS-45088" )
 )
 game (
 	name "FlatOut - Head On (USA)"
@@ -7484,6 +7646,12 @@ game (
 	rom ( name "Geki Sengoku Musou (Japan, Asia).iso" size 329842688 crc 7F348852 md5 DC595434B5A71CA95738589D06309C45 sha1 132E8F70D0BD83DB7D12C48C9597F72D86CE14F8 serial "ULJM-08012" )
 )
 game (
+	name "Gekiatsu!! Pachige-Damashi Portable Vol. 1 - Evangelion - Shinjitsu no Tsubasa (Japan)"
+	region "Japan"
+	serial "ULJM-05906"
+	rom ( name "Gekiatsu!! Pachige-Damashi Portable Vol. 1 - Evangelion - Shinjitsu no Tsubasa (Japan).iso" size 1812660224 crc 8A84603E md5 84EEEC5443910DB9B54B51D4A7163425 sha1 C7AD88FB0E483C1B79D218AB28C0E12A98CC0F76 serial "ULJM-05906" )
+)
+game (
 	name "Gekka Ryouran Romance (Japan)"
 	region "Japan"
 	serial "ULJM-05943"
@@ -7532,6 +7700,12 @@ game (
 	rom ( name "Gensou Suikoden - Tsumugareshi Hyakunen no Toki (Japan).iso" size 1367769088 crc D746B3AB md5 D7142D766A2BFBDF9AE27680BD237E7C sha1 0FABEF0BD8AD9FA5782F9FC9C25DD61728BC6E2C serial "ULJM-05886" )
 )
 game (
+	name "Gensou Suikoden I & II (Japan) (v1.03)"
+	region "Japan"
+	serial "ULJM-05086"
+	rom ( name "Gensou Suikoden I & II (Japan) (v1.03).iso" size 849149952 crc 557EA9A6 md5 9EA034E240D2622A626E9EEB6206EF71 sha1 D94DDFA77AB78D42F79D87E1797764038A57A0FD serial "ULJM-05086" )
+)
+game (
 	name "Gensou Suikoden I & II (Japan) (v2.00)"
 	region "Japan"
 	serial "ULJM-05086"
@@ -7554,6 +7728,12 @@ game (
 	region "Europe"
 	serial "UCES-01535"
 	rom ( name "Geronimo Stilton in the Kingdom of Fantasy (Europe) (En,Fr,Es,It,Nl,Pt).iso" size 897908736 crc CA31FCF5 md5 7523F78CD9314DC0DC7B49426D9B57C6 sha1 8315C718CC22815305883AA32207A35AECEF0093 serial "UCES-01535" )
+)
+game (
+	name "Geronimo Stilton in the Kingdom of Fantasy (Europe) (En,Fr,Es,It,Nl,Pt)"
+	region "Europe"
+	serial "UCES-01535/SPA"
+	rom ( name "Geronimo Stilton in the Kingdom of Fantasy (Europe) (En,Fr,Es,It,Nl,Pt).iso" size 897908736 crc CA31FCF5 md5 7523F78CD9314DC0DC7B49426D9B57C6 sha1 8315C718CC22815305883AA32207A35AECEF0093 serial "UCES-01535/SPA" )
 )
 game (
 	name "Geten no Hana (Japan)"
@@ -8325,6 +8505,12 @@ game (
 	rom ( name "GripShift (Europe) (En,Fr,De,Es,It).iso" size 894861312 crc C8D1A498 md5 65717378D68AC81A6A3F6F89EB6635D7 sha1 A5D71A29B76898F0ED9C2CDAE49C710FA85AD3B6 serial "ULES-00177" )
 )
 game (
+	name "GripShift (Japan)"
+	region "Japan"
+	serial "ULJM-05089"
+	rom ( name "GripShift (Japan).iso" size 833519616 crc C0AE8F59 md5 0FCCA0B207116D3E6A38F9D6A9152240 sha1 543238E46EA742E9044858714C3949272A3EC843 serial "ULJM-05089" )
+)
+game (
 	name "GripShift (Korea)"
 	region "Korea"
 	serial "ULKS-46040"
@@ -9015,10 +9201,10 @@ game (
 	rom ( name "Hatsune Miku - Project Diva 2nd (Japan).iso" size 1612283904 crc 242E921C md5 2F5D32D9F77F926492B8CC07D88B18B0 sha1 AF3929CF33E6F92CF3B991245DF1EE8E2B576A17 serial "ULJM-05681" )
 )
 game (
-	name "Hatsune Miku - Project Diva 2nd (Japan) (Okaidoku-ban)"
+	name "Hatsune Miku - Project Diva 2nd (Japan) (Okaidokuban)"
 	region "Japan"
 	serial "ULJM-05952"
-	rom ( name "Hatsune Miku - Project Diva 2nd (Japan) (Okaidoku-ban).iso" size 1618280448 crc 08832D16 md5 1C58EC248D77583803BC6B25C648AFFB sha1 DE0D2E73DF4F74743758B1F8C06D78D4E81390AD serial "ULJM-05952" )
+	rom ( name "Hatsune Miku - Project Diva 2nd (Japan) (Okaidokuban).iso" size 1618280448 crc 08832D16 md5 1C58EC248D77583803BC6B25C648AFFB sha1 DE0D2E73DF4F74743758B1F8C06D78D4E81390AD serial "ULJM-05952" )
 )
 game (
 	name "Hatsune Miku - Project Diva Extend (Japan, Asia)"
@@ -9405,6 +9591,12 @@ game (
 	rom ( name "Hot Shots Golf - Open Tee 2 (Asia).iso" size 942899200 crc 12A87A73 md5 DE907DB7E8601A179BBAAFEAB3961029 sha1 4FC38BAFC074FACC6073EDA1F01EACAD08726C66 serial "UCAS-40213" )
 )
 game (
+	name "Hot Shots Golf - Open Tee 2 (Asia)"
+	region "Asia"
+	serial "UCKS-45093"
+	rom ( name "Hot Shots Golf - Open Tee 2 (Asia).iso" size 942899200 crc 12A87A73 md5 DE907DB7E8601A179BBAAFEAB3961029 sha1 4FC38BAFC074FACC6073EDA1F01EACAD08726C66 serial "UCKS-45093" )
+)
+game (
 	name "Hot Shots Golf - Open Tee 2 (USA) (Beta)"
 	releaseyear "2008"
 	releasemonth "03"
@@ -9514,6 +9706,12 @@ game (
 	region "Japan"
 	serial "UCAS-40241"
 	rom ( name "Idolm@ster SP, The - Perfect Sun (Japan, Asia).iso" size 1406959616 crc D49CF27D md5 71225F89B5C67C672B9245A8C6D63E9D sha1 7BB1525EE0F9F569BAD3FE5FA6E6396644FD1490 serial "UCAS-40241" )
+)
+game (
+	name "Idolm@ster SP, The - Perfect Sun (Japan, Asia)"
+	region "Japan"
+	serial "UCKS-45109"
+	rom ( name "Idolm@ster SP, The - Perfect Sun (Japan, Asia).iso" size 1406959616 crc D49CF27D md5 71225F89B5C67C672B9245A8C6D63E9D sha1 7BB1525EE0F9F569BAD3FE5FA6E6396644FD1490 serial "UCKS-45109" )
 )
 game (
 	name "Idolm@ster SP, The - Perfect Sun (Japan, Asia)"
@@ -9663,28 +9861,34 @@ game (
 	rom ( name "Infinite Loop - Kojou ga Miseta Yume (Japan).iso" size 937492480 crc 99F4C6B9 md5 3AAEFDAA3B109476D47BE5CB5E780E06 sha1 765D7204476B95A495F1F0AC8B1A1F23A5269574 serial "ULJS-00144" )
 )
 game (
-	name "Initial D - Street Stage (Japan)"
-	region "Japan"
-	serial "ULJM-05093"
-	rom ( name "Initial D - Street Stage (Japan).iso" size 1187938304 crc 23B9E647 md5 225F1F56C37097C7A11ECADDD52ABBF1 sha1 637150702AC7E0418FE58CFCA71C948DA2746FA2 serial "ULJM-05093" )
-)
-game (
-	name "Initial D - Street Stage (Japan)"
-	region "Japan"
-	serial "ULJM-08013"
-	rom ( name "Initial D - Street Stage (Japan).iso" size 1187938304 crc 23B9E647 md5 225F1F56C37097C7A11ECADDD52ABBF1 sha1 637150702AC7E0418FE58CFCA71C948DA2746FA2 serial "ULJM-08013" )
-)
-game (
-	name "Initial D - Street Stage (Japan)"
-	region "Japan"
-	serial "ULJM-08040"
-	rom ( name "Initial D - Street Stage (Japan).iso" size 1187938304 crc 23B9E647 md5 225F1F56C37097C7A11ECADDD52ABBF1 sha1 637150702AC7E0418FE58CFCA71C948DA2746FA2 serial "ULJM-08040" )
-)
-game (
 	name "Initial D - Street Stage (Japan) (Taikenban)"
 	region "Japan"
 	serial "ULJM-95001"
 	rom ( name "Initial D - Street Stage (Japan) (Taikenban).iso" size 1187938304 crc 4A79DCA1 md5 E743F16EE023F07CD6FBB62318BF43C9 sha1 4CEA098C3CBD08D650CAF42CCE2B2CECE6D2428E serial "ULJM-95001" )
+)
+game (
+	name "Initial D - Street Stage (Japan, Asia)"
+	region "Japan"
+	serial "ULAS-42042"
+	rom ( name "Initial D - Street Stage (Japan, Asia).iso" size 1187938304 crc 23B9E647 md5 225F1F56C37097C7A11ECADDD52ABBF1 sha1 637150702AC7E0418FE58CFCA71C948DA2746FA2 serial "ULAS-42042" )
+)
+game (
+	name "Initial D - Street Stage (Japan, Asia)"
+	region "Japan"
+	serial "ULJM-05093"
+	rom ( name "Initial D - Street Stage (Japan, Asia).iso" size 1187938304 crc 23B9E647 md5 225F1F56C37097C7A11ECADDD52ABBF1 sha1 637150702AC7E0418FE58CFCA71C948DA2746FA2 serial "ULJM-05093" )
+)
+game (
+	name "Initial D - Street Stage (Japan, Asia)"
+	region "Japan"
+	serial "ULJM-08013"
+	rom ( name "Initial D - Street Stage (Japan, Asia).iso" size 1187938304 crc 23B9E647 md5 225F1F56C37097C7A11ECADDD52ABBF1 sha1 637150702AC7E0418FE58CFCA71C948DA2746FA2 serial "ULJM-08013" )
+)
+game (
+	name "Initial D - Street Stage (Japan, Asia)"
+	region "Japan"
+	serial "ULJM-08040"
+	rom ( name "Initial D - Street Stage (Japan, Asia).iso" size 1187938304 crc 23B9E647 md5 225F1F56C37097C7A11ECADDD52ABBF1 sha1 637150702AC7E0418FE58CFCA71C948DA2746FA2 serial "ULJM-08040" )
 )
 game (
 	name "Innocent Life - A Futuristic Harvest Moon (Europe) (En,Fr,De,Es,It)"
@@ -10166,6 +10370,12 @@ game (
 	rom ( name "Jin Samguk Mussang (Korea).iso" size 201687040 crc 9376A0BB md5 A78B8914518999DB79C383B8A1365C7C sha1 BE91BFE4195D71D503C287B0B8E21FBA4F8F91E1 serial "ULKS-46012" )
 )
 game (
+	name "Jin Samguk Mussang - Multi Raid (Korea)"
+	region "Korea"
+	serial "ULKS-46201"
+	rom ( name "Jin Samguk Mussang - Multi Raid (Korea).iso" size 1044840448 crc EB865B8C md5 DBD10A2A75FF929CCF38E96178AD0E09 sha1 476F5D3C6E7B0BB4440E3AE2B617E4505EEAA0C4 serial "ULKS-46201" )
+)
+game (
 	name "Jin Samguk Mussang 2nd Evolution (Korea)"
 	region "Korea"
 	serial "ULKS-46084"
@@ -10337,6 +10547,12 @@ game (
 	rom ( name "Juuza Engi - Engetsu Sangokuden (Japan).iso" size 1797652480 crc A1E9D94B md5 C87E450F83D94535002F22B0E9376BC0 sha1 F210339F05FCCD82D330777A97A39CECF7CD8B91 serial "ULJM-06089" )
 )
 game (
+	name "Juuza Engi - Engetsu Sangokuden (Japan)"
+	region "Japan"
+	serial "ULJM-06090"
+	rom ( name "Juuza Engi - Engetsu Sangokuden (Japan).iso" size 1797652480 crc A1E9D94B md5 C87E450F83D94535002F22B0E9376BC0 sha1 F210339F05FCCD82D330777A97A39CECF7CD8B91 serial "ULJM-06090" )
+)
+game (
 	name "Juuza Engi - Engetsu Sangokuden 2 (Japan)"
 	region "Japan"
 	serial "ULJM-06367"
@@ -10437,6 +10653,24 @@ game (
 	region "Japan"
 	serial "ULJM-05418"
 	rom ( name "Kamen no Maid Guy - Boyoyon Battle Royale (Japan, Asia).iso" size 258113536 crc 959EA52B md5 9FA8FAD23907BCCE2C6A4DE72D4BE329 sha1 B6860E3E6DA71502F53613747B8EC4DA5ABAE99A serial "ULJM-05418" )
+)
+game (
+	name "Kamigami no Asobi (Japan)"
+	region "Japan"
+	serial "ULJM-06282"
+	rom ( name "Kamigami no Asobi (Japan).iso" size 1445789696 crc 83966DDC md5 E89406C87DBFF5B34812A8355E3ECEC2 sha1 0367BBFD2D17C1F36F057970D5F472D316D98D6D serial "ULJM-06282" )
+)
+game (
+	name "Kamigami no Asobi - InFinite (Japan)"
+	region "Japan"
+	serial "PBGP-0110"
+	rom ( name "Kamigami no Asobi - InFinite (Japan).iso" size 1550680064 crc A938A921 md5 F89C1A1F459428DFFF8695A4695FA010 sha1 7167A7BB3F0364D97E82415026792FEF4DC2BCF1 serial "PBGP-0110" )
+)
+game (
+	name "Kamigami no Asobi - InFinite (Japan)"
+	region "Japan"
+	serial "ULJM-06401"
+	rom ( name "Kamigami no Asobi - InFinite (Japan).iso" size 1550680064 crc A938A921 md5 F89C1A1F459428DFFF8695A4695FA010 sha1 7167A7BB3F0364D97E82415026792FEF4DC2BCF1 serial "ULJM-06401" )
 )
 game (
 	name "Kaminaru Kimi to (Japan)"
@@ -10637,10 +10871,10 @@ game (
 	rom ( name "Ken to Mahou to Gakuen Mono. 3 (Japan).iso" size 972226560 crc 6AD2644D md5 9D51A181AD47835910EBF1F59E2F943F sha1 4436518853013E523C7886D8AC739025ED790B1C serial "ULJM-05735" )
 )
 game (
-	name "Ken to Mahou to Gakuen Mono. Final - Shinnyuusei wa Ohime-sama! (Japan)"
+	name "Ken to Mahou to Gakuen Mono. Final - Shinnyuusei wa Ohimesama! (Japan)"
 	region "Japan"
 	serial "ULJM-05965"
-	rom ( name "Ken to Mahou to Gakuen Mono. Final - Shinnyuusei wa Ohime-sama! (Japan).iso" size 1057193984 crc EC9AAEEA md5 1D6C21E50DA888EC9C00031AC3F3504C sha1 FC892B3B66FA1E621430E8199A8E9749DB5DE73F serial "ULJM-05965" )
+	rom ( name "Ken to Mahou to Gakuen Mono. Final - Shinnyuusei wa Ohimesama! (Japan).iso" size 1057193984 crc EC9AAEEA md5 1D6C21E50DA888EC9C00031AC3F3504C sha1 FC892B3B66FA1E621430E8199A8E9749DB5DE73F serial "ULJM-05965" )
 )
 game (
 	name "Kenka Bancho - Badass Rumble (USA)"
@@ -11089,6 +11323,12 @@ game (
 	rom ( name "Kingdom of Paradise (USA) (Beta) (2005-10-10).iso" size 1081573376 crc F24428D7 md5 CD75581DE66886F429D46A4C0001A0A6 sha1 5E79CC375E51CF9CC41ADF92DC7D8398400EF23A )
 )
 game (
+	name "Kinnikuman - Muscle Generations (Japan)"
+	region "Japan"
+	serial "ULJS-00046"
+	rom ( name "Kinnikuman - Muscle Generations (Japan).iso" size 352321536 crc A6719E94 md5 862ABCDE8ABB46A82EEDC85F1E2FD31D sha1 94006D5BCD537D26AA0015B9E1F9041F61A92DCD serial "ULJS-00046" )
+)
+game (
 	name "Kirameki School Life SP - The Wonder Years (Japan)"
 	region "Japan"
 	serial "ULJS-00458"
@@ -11227,10 +11467,16 @@ game (
 	rom ( name "Koori no Haka - Ichiyanagi Nagomu, 3-dome no Junan (Japan).iso" size 418185216 crc BB7798A6 md5 EBC5938E50E5E7E0699B2F7E0270C879 sha1 BF9F68561CA2A4CAC7A0A16C60BD9DB91255A7C3 serial "ULJS-00247" )
 )
 game (
-	name "Korokoro Kollon (Japan)"
+	name "Koro Koro!! Kollon (Japan)"
 	region "Japan"
 	serial "ULJM-05081"
-	rom ( name "Korokoro Kollon (Japan).iso" size 99319808 crc 5CBEF0EE md5 CBCFA23DADC7C8D24F580350A7D31F16 sha1 E23212E158884EC353D47C2EBDA233851E5C44E9 serial "ULJM-05081" )
+	rom ( name "Koro Koro!! Kollon (Japan).iso" size 99319808 crc 5CBEF0EE md5 CBCFA23DADC7C8D24F580350A7D31F16 sha1 E23212E158884EC353D47C2EBDA233851E5C44E9 serial "ULJM-05081" )
+)
+game (
+	name "Koro Koro!! Kollon (Korea)"
+	region "Korea"
+	serial "ULKS-46093"
+	rom ( name "Koro Koro!! Kollon (Korea).iso" size 99319808 crc 6C2B1DD2 md5 54639069BEB3FBC9827D7447C5B7BE70 sha1 780234AB176B302E854E917ED9EC8FCB62B32B9F serial "ULKS-46093" )
 )
 game (
 	name "Kotoba no Puzzle - Mojipittan Daijiten (Japan)"
@@ -11662,6 +11908,12 @@ game (
 	rom ( name "Lemmings (USA).iso" size 471498752 crc 1FCA769A md5 367EB49C91B37C32AB7B30E10C327480 sha1 FB50074E30A582EE913D108A4024DAC702EA5B91 serial "UCUS-98647" )
 )
 game (
+	name "Like Life Every Hour (Japan)"
+	region "Japan"
+	serial "ULJM-05507"
+	rom ( name "Like Life Every Hour (Japan).iso" size 1505951744 crc 39489A9E md5 7599BCE7A99AD32343C966BB6589646F sha1 7CB23584DC4B1446ADFEDE168D4EC641323A272D serial "ULJM-05507" )
+)
+game (
 	name "Lisa to Issho ni Tairiku Oudan - A-Ressha de Ikou (Japan)"
 	region "Japan"
 	serial "ULJM-05137"
@@ -11720,6 +11972,12 @@ game (
 	region "Asia"
 	serial "UCAS-40262"
 	rom ( name "LittleBigPlanet (Asia) (En,Zh,Ko).iso" size 1493499904 crc 24652DD2 md5 2F6973F3EA9359190875BE437C8B5270 sha1 430B60F0B88BA14500B576329F8438B41E7C4018 serial "UCAS-40262" )
+)
+game (
+	name "LittleBigPlanet (Asia) (En,Zh,Ko)"
+	region "Asia"
+	serial "UCKS-45130"
+	rom ( name "LittleBigPlanet (Asia) (En,Zh,Ko).iso" size 1493499904 crc 24652DD2 md5 2F6973F3EA9359190875BE437C8B5270 sha1 430B60F0B88BA14500B576329F8438B41E7C4018 serial "UCKS-45130" )
 )
 game (
 	name "LittleBigPlanet (Europe) (En,Fr,De,Es,It,Nl,Pt,Sv,No,Da,Fi,Pl,Ru)"
@@ -11890,6 +12148,21 @@ game (
 	rom ( name "Lord of Arcana (Europe) (En,Fr,De,Es).iso" size 812908544 crc 63F4FA48 md5 93E64B6B3235AFCE40AE84E7095603EF sha1 C228B2D2D906D98D183FC033D750D7260BB10647 serial "ULES-01507" )
 )
 game (
+	name "Lord of Arcana (Europe) (En,Fr,De,Es)"
+	region "Europe"
+	serial "ULES-01507-/-0046429"
+	rom ( name "Lord of Arcana (Europe) (En,Fr,De,Es).iso" size 812908544 crc 63F4FA48 md5 93E64B6B3235AFCE40AE84E7095603EF sha1 C228B2D2D906D98D183FC033D750D7260BB10647 serial "ULES-01507-/-0046429" )
+)
+game (
+	name "Lord of Arcana (Europe) (En,Fr,De,Es) (Beta)"
+	releaseyear "2010"
+	releasemonth "11"
+	releaseday "12"
+	region "Europe"
+	serial "ULET-01506/0.01"
+	rom ( name "Lord of Arcana (Europe) (En,Fr,De,Es) (Beta) (2010-11-12).iso" size 628555776 crc DFD32837 md5 B7E87985DB5F5ACB5F3B989663584FB1 sha1 A3149A45C48A5FEDCB55576D6F5225F11E58DB7A serial "ULET-01506/0.01" )
+)
+game (
 	name "Lord of Arcana (Japan)"
 	region "Japan"
 	serial "ULJM-05767"
@@ -11986,6 +12259,12 @@ game (
 	rom ( name "Lumines (Japan, Korea).iso" size 234422272 crc DCE275C9 md5 09CCF69E76DD1CBACBDC20452CAA514A sha1 AADC790BF6B4AF9B73A64716DC02CD36CE665C8B serial "ULKS-46005" )
 )
 game (
+	name "Lumines (Korea)"
+	region "Korea"
+	serial "ULKS-46005"
+	rom ( name "Lumines (Korea).iso" size 204308480 crc 21FA9261 md5 F68C3CA2F273204564AC040E2DFEBD19 sha1 3840F68746C863018EF159620E08B8492733F981 serial "ULKS-46005" )
+)
+game (
 	name "Lumines - Puzzle Fusion (Europe) (En,Fr,De,Es,It)"
 	region "Europe"
 	serial "ULES-00043"
@@ -12014,6 +12293,12 @@ game (
 	region "Japan"
 	serial "ULJM-05232"
 	rom ( name "Lumines II (Japan).iso" size 1009582080 crc CDED24C9 md5 01EFAB5AD06C4D07C3EA4399777CBD1E sha1 58849766F1847AB4CBE15023CC18EE57910D56E3 serial "ULJM-05232" )
+)
+game (
+	name "Lumines II (Korea)"
+	region "Korea"
+	serial "UCKS-45047"
+	rom ( name "Lumines II (Korea).iso" size 1009582080 crc 725762C9 md5 BB22FA64E548A25D3198C681F32D012C sha1 B89C592085590C8A7ABE8F35964EE7643DFDB7BF serial "UCKS-45047" )
 )
 game (
 	name "Lumines II (USA)"
@@ -12424,6 +12709,12 @@ game (
 	rom ( name "MagusTale Eternity - Sekaiju to Koi Suru Mahoutsukai (Japan).iso" size 1700233216 crc 7EDC9F71 md5 A7DA3454B908608A3E08E13D77C4CAD0 sha1 4C756020F971F7F7F6A9C6E5455E0305F0158776 serial "ULJM-05577" )
 )
 game (
+	name "MagusTale Eternity - Sekaiju to Koi Suru Mahoutsukai (Japan)"
+	region "Japan"
+	serial "ULJM-06055"
+	rom ( name "MagusTale Eternity - Sekaiju to Koi Suru Mahoutsukai (Japan).iso" size 1700233216 crc 7EDC9F71 md5 A7DA3454B908608A3E08E13D77C4CAD0 sha1 4C756020F971F7F7F6A9C6E5455E0305F0158776 serial "ULJM-06055" )
+)
+game (
 	name "Mahjong Fight Club (Japan)"
 	region "Japan"
 	serial "ULJM-05002"
@@ -12518,6 +12809,18 @@ game (
 	region "Japan"
 	serial "ULJS-00430"
 	rom ( name "Mahou Shoujo Madoka Magica Portable (Japan).iso" size 1564049408 crc C1824A2C md5 C62EDBC718367597FEB3DECED5032E4D sha1 71C5AF5F9B86F2CC0DE176E313D00AFA9034B004 serial "ULJS-00430" )
+)
+game (
+	name "Mahou Tsukai to Goshujin-sama - New Ground (Japan)"
+	region "Japan"
+	serial "ROSE-00011"
+	rom ( name "Mahou Tsukai to Goshujin-sama - New Ground (Japan).iso" size 1443430400 crc C109E3E5 md5 BC14C6908837F0F81CF32761498F733C sha1 E4D0F6C72764E51EBC5C9BDCFE187B8F5664C8F5 serial "ROSE-00011" )
+)
+game (
+	name "Mahou Tsukai to Goshujin-sama - New Ground (Japan)"
+	region "Japan"
+	serial "ULJM-05951"
+	rom ( name "Mahou Tsukai to Goshujin-sama - New Ground (Japan).iso" size 1443430400 crc C109E3E5 md5 BC14C6908837F0F81CF32761498F733C sha1 E4D0F6C72764E51EBC5C9BDCFE187B8F5664C8F5 serial "ULJM-05951" )
 )
 game (
 	name "Mai-HiME - Bakuretsu! Fuuka Gakuen Gekitoushi! (Japan)"
@@ -12622,6 +12925,12 @@ game (
 	rom ( name "Makai Senki Disgaea Portable (Japan).iso" size 903380992 crc E6CD4078 md5 471DB350A897FF88736107ABD2C16B29 sha1 CAD0393514758F6BA04065BC9E231719D42277A6 serial "ULJS-00089" )
 )
 game (
+	name "Makai Senki Disgaea Portable (Japan) (Shokai Genteiban)"
+	region "Japan"
+	serial "ULJS-00088"
+	rom ( name "Makai Senki Disgaea Portable (Japan) (Shokai Genteiban).iso" size 903380992 crc FC956490 md5 9190C70C4E936831FAD6B7DAE518A6FE sha1 3F5EF6B3C4635794B3A53062599D37299A5032E0 serial "ULJS-00088" )
+)
+game (
 	name "Makai Senki Disgaea Portable - Tsuushin Taisen Hajimemashita. (Japan, Korea)"
 	region "Japan"
 	serial "UCKS-45079"
@@ -12655,16 +12964,16 @@ game (
 	rom ( name "Mana Khemia - Student Alliance (USA) (Beta) (2008-12-09).iso" size 1084391424 crc 76656557 md5 EC762D00A390FCBE9CDB52058E14761D sha1 8ECA431C8EB081FF6AC278EF41857439874CC60B serial "ULUS-10408" )
 )
 game (
-	name "Mana-Khemia - Gakuen no Renkinjutsushi-tachi Portable + (Japan)"
+	name "Mana-Khemia - Gakuen no Renkinjutsushitachi Portable + (Japan)"
 	region "Japan"
 	serial "ULJM-05345"
-	rom ( name "Mana-Khemia - Gakuen no Renkinjutsushi-tachi Portable + (Japan).iso" size 1369309184 crc 80874FFB md5 099026EEF546D1585292C0E7666397BC sha1 2E36845D242B25893F5212693B787836F107AC23 serial "ULJM-05345" )
+	rom ( name "Mana-Khemia - Gakuen no Renkinjutsushitachi Portable + (Japan).iso" size 1369309184 crc 80874FFB md5 099026EEF546D1585292C0E7666397BC sha1 2E36845D242B25893F5212693B787836F107AC23 serial "ULJM-05345" )
 )
 game (
-	name "Mana-Khemia 2 - Ochita Gakuen to Renkinjutsushi-tachi Portable+ (Japan)"
+	name "Mana-Khemia 2 - Ochita Gakuen to Renkinjutsushitachi Portable+ (Japan)"
 	region "Japan"
 	serial "ULJM-05519"
-	rom ( name "Mana-Khemia 2 - Ochita Gakuen to Renkinjutsushi-tachi Portable+ (Japan).iso" size 1026588672 crc E9248014 md5 C8AA5C4A544CA1EF06AC13713E0C5D7C sha1 AB200E065EB07D3BF5AF2DCDA408DBAEBA8DAC7C serial "ULJM-05519" )
+	rom ( name "Mana-Khemia 2 - Ochita Gakuen to Renkinjutsushitachi Portable+ (Japan).iso" size 1026588672 crc E9248014 md5 C8AA5C4A544CA1EF06AC13713E0C5D7C sha1 AB200E065EB07D3BF5AF2DCDA408DBAEBA8DAC7C serial "ULJM-05519" )
 )
 game (
 	name "Manhunt 2 (Europe) (En,Fr,De,Es,It)"
@@ -12743,6 +13052,12 @@ game (
 	region "Japan"
 	serial "ULJS-00417"
 	rom ( name "Maru Goukaku Shikaku Dasshu! Ouyou Jouhou Gijutsusha Shiken Portable (Japan).iso" size 161972224 crc 0436CB4A md5 2D5D60A7B878096AFD4AC40E6AF6DF0A sha1 A19B45205FA3E5AA25E3C7C464ACB5D5D7A5B40A serial "ULJS-00417" )
+)
+game (
+	name "Maru Goukaku Shikaku Dasshu! Sharoushi Shiken Portable (Japan)"
+	region "Japan"
+	serial "ULJS-00452"
+	rom ( name "Maru Goukaku Shikaku Dasshu! Sharoushi Shiken Portable (Japan).iso" size 140935168 crc 2B430E68 md5 8D5DF1237B384D059ACFD10E9FA5ACF8 sha1 4332836D7506273A10BE1E9919E82698664BEA42 serial "ULJS-00452" )
 )
 game (
 	name "Maru Goukaku Shikaku Dasshu! Shouken Gaimuin Shiken Portable (Japan)"
@@ -12833,6 +13148,12 @@ game (
 	region "Japan"
 	serial "ULJS-00242"
 	rom ( name "Matching Maker 3 x Tousouchuu (Japan).iso" size 146702336 crc AE4033F6 md5 5ED97920D9458EE78282CB6DA7665E92 sha1 CDDB8A7DFBA97462F7526A7C79B41FFBA41337FF serial "ULJS-00242" )
+)
+game (
+	name "Mawaskes (Korea)"
+	region "Korea"
+	serial "UCKS-45068"
+	rom ( name "Mawaskes (Korea).iso" size 130482176 crc 8668C5D2 md5 0E987BD8C386A5A047C267A44E733F12 sha1 3EA00B43F5A3F95AC3CE7816FBD98384B67726DA serial "UCKS-45068" )
 )
 game (
 	name "Mawaskes - Based on Carton-kun (Asia)"
@@ -12947,6 +13268,12 @@ game (
 	region "Europe"
 	serial "ULES-00955"
 	rom ( name "Medal of Honor - Heroes 2 (Europe).iso" size 1226768384 crc 8C5B08A4 md5 8E203DCC18AEA84B4DE28C2C08663511 sha1 98DECFFB3A578A307A75F6E4B6C2A5ABA02EE9C2 serial "ULES-00955" )
+)
+game (
+	name "Medal of Honor - Heroes 2 (Europe) (Fr,De,Es,It)"
+	region "Europe"
+	serial "ULES-00956"
+	rom ( name "Medal of Honor - Heroes 2 (Europe) (Fr,De,Es,It).iso" size 1226768384 crc A7C1C1BC md5 7C472F83140E3AF1A2FCDCDBADEC850A sha1 261898A262CDC8652E8D2C0E978E72C1C34A26FA serial "ULES-00956" )
 )
 game (
 	name "Medal of Honor - Heroes 2 (Europe) (Fr,De,Es,It)"
@@ -13132,6 +13459,12 @@ game (
 	rom ( name "Mercury Meltdown (USA) (En,Fr,Es).iso" size 360611840 crc 68941149 md5 E83007CAB31616E605530EE85781CE7E sha1 FD059FA1B317C1FFC71F8839FF59A5F4890E70F9 serial "ULUS-10133" )
 )
 game (
+	name "Mermaid Gothic (Japan)"
+	region "Japan"
+	serial "ULJM-06387"
+	rom ( name "Mermaid Gothic (Japan).iso" size 1321041920 crc 430ECC45 md5 8D3E01CA66115E015E3C6DCAD9D5833C sha1 ACF84CBCD253D7DAC040F27E3AD5D4446D7F1706 serial "ULJM-06387" )
+)
+game (
 	name "Metal Fight Beyblade Portable - Chouzetsu Tensei! Vulcan Horuseus (Japan)"
 	region "Japan"
 	serial "ULJM-05731"
@@ -13202,6 +13535,12 @@ game (
 	region "USA"
 	serial "ULUS-10108"
 	rom ( name "Metal Gear Solid - Digital Graphic Novel (USA).iso" size 978124800 crc FB7E8C1C md5 37B2012C3C1393FF986DE8240CD048C2 sha1 BCCFADB8CC58B3D53F9BAC9DE481B4227A9F4EF2 serial "ULUS-10108" )
+)
+game (
+	name "Metal Gear Solid - Peace Walker (Asia) (En,Fr,Es)"
+	region "Asia"
+	serial "ULAS-42220"
+	rom ( name "Metal Gear Solid - Peace Walker (Asia) (En,Fr,Es).iso" size 1646002176 crc 588F2E46 md5 A58DAAF34EE8F15D93646498D45256E8 sha1 6963E0A8F167D7375CCD8385C1174B2F411D6B92 serial "ULAS-42220" )
 )
 game (
 	name "Metal Gear Solid - Peace Walker (Europe, Australia) (En,Fr,De,Es,It)"
@@ -13621,6 +13960,12 @@ game (
 	rom ( name "Minna no Chizu 2 Chiikiban - Naka Nihon-hen (Japan).iso" size 1812692992 crc 77DDA78E md5 9DF1A97A03ADF50DDF8A20EB6CC4B1A7 sha1 F4B61D3191CF89B1B23BC67628CC59E5051CC3F5 serial "ULJS-00117" )
 )
 game (
+	name "Minna no Chizu 2 Chiikiban - Nishi Nihon-hen (Japan)"
+	region "Japan"
+	serial "ULJS-00118"
+	rom ( name "Minna no Chizu 2 Chiikiban - Nishi Nihon-hen (Japan).iso" size 1812692992 crc 9E73691B md5 95031AE274AC850640CF1ED1058FA889 sha1 14EE369968DCE72E0DEEB116AFCC81778F5ED748 serial "ULJS-00118" )
+)
+game (
 	name "Minna no Chizu 3 (Japan) (Disc 1)"
 	region "Japan"
 	serial "ULJS-00139"
@@ -13693,6 +14038,18 @@ game (
 	rom ( name "Minna no Golf-jou Vol. 1 (Japan) (Disc 1).iso" size 1619001344 crc A360EDDB md5 BCA6B49D2F98A9DD7BCC2572715FDD3A sha1 8455BA5EE51849787E0B35698931EB66C233E15C serial "UCJS-10058-0" )
 )
 game (
+	name "Minna no Golf-jou Vol. 1 (Japan) (Disc 1) (Doukonban)"
+	region "Japan"
+	serial "UCJS-10055"
+	rom ( name "Minna no Golf-jou Vol. 1 (Japan) (Disc 1) (Doukonban).iso" size 1619001344 crc 7BFF3A29 md5 892E65B62050A4C419EAA2F9AE22C732 sha1 60035DD25FFB74281678A977E20DB9B80C4A65F1 serial "UCJS-10055" )
+)
+game (
+	name "Minna no Golf-jou Vol. 1 (Japan) (Disc 1) (Doukonban)"
+	region "Japan"
+	serial "UCJS-10055-0"
+	rom ( name "Minna no Golf-jou Vol. 1 (Japan) (Disc 1) (Doukonban).iso" size 1619001344 crc 7BFF3A29 md5 892E65B62050A4C419EAA2F9AE22C732 sha1 60035DD25FFB74281678A977E20DB9B80C4A65F1 serial "UCJS-10055-0" )
+)
+game (
 	name "Minna no Golf-jou Vol. 1 (Japan) (Disc 2)"
 	region "Japan"
 	serial "UCJS-10059"
@@ -13729,6 +14086,18 @@ game (
 	rom ( name "Minna no Golf-jou Vol. 2 (Japan) (Disc 1).iso" size 1738833920 crc DE629947 md5 B64EA4303C954E8EDAF14F5ECF6CDDD3 sha1 A88A765F211E2C07C67366F5A9ED995A9EF03649 serial "UCJS-10064-0" )
 )
 game (
+	name "Minna no Golf-jou Vol. 2 (Japan) (Disc 1) (Doukonban)"
+	region "Japan"
+	serial "UCJS-10062"
+	rom ( name "Minna no Golf-jou Vol. 2 (Japan) (Disc 1) (Doukonban).iso" size 1738833920 crc E2F17D51 md5 9E7ED996B523B966A48B938C1D5F3362 sha1 DE064CCBC465C7D74CB9CB2E5A6E5CA563975E5C serial "UCJS-10062" )
+)
+game (
+	name "Minna no Golf-jou Vol. 2 (Japan) (Disc 1) (Doukonban)"
+	region "Japan"
+	serial "UCJS-10062-0"
+	rom ( name "Minna no Golf-jou Vol. 2 (Japan) (Disc 1) (Doukonban).iso" size 1738833920 crc E2F17D51 md5 9E7ED996B523B966A48B938C1D5F3362 sha1 DE064CCBC465C7D74CB9CB2E5A6E5CA563975E5C serial "UCJS-10062-0" )
+)
+game (
 	name "Minna no Golf-jou Vol. 2 (Japan) (Disc 2)"
 	region "Japan"
 	serial "UCJS-10065"
@@ -13741,28 +14110,40 @@ game (
 	rom ( name "Minna no Golf-jou Vol. 2 (Japan) (Disc 2).iso" size 1530200064 crc 31555CF4 md5 66ECFA3E31EA74D3AB636827C263A5AC sha1 E6794326FB5BA1B168C448F02CED761FDD595A45 serial "UCJS-10065-1" )
 )
 game (
-	name "Minna no Golf-jou Vol. 3 (Japan) (Disc 1)"
+	name "Minna no Golf-jou Vol. 2 (Japan) (Disc 2) (Doukonban)"
+	region "Japan"
+	serial "UCJS-10063"
+	rom ( name "Minna no Golf-jou Vol. 2 (Japan) (Disc 2) (Doukonban).iso" size 1530200064 crc 9697EF41 md5 C8865FE2D4EC32198A039FC5DE13AF89 sha1 20D9C60844D55D122B75AE23F7B6886715E4EF08 serial "UCJS-10063" )
+)
+game (
+	name "Minna no Golf-jou Vol. 2 (Japan) (Disc 2) (Doukonban)"
+	region "Japan"
+	serial "UCJS-10063-1"
+	rom ( name "Minna no Golf-jou Vol. 2 (Japan) (Disc 2) (Doukonban).iso" size 1530200064 crc 9697EF41 md5 C8865FE2D4EC32198A039FC5DE13AF89 sha1 20D9C60844D55D122B75AE23F7B6886715E4EF08 serial "UCJS-10063-1" )
+)
+game (
+	name "Minna no Golf-jou Vol. 3 (Japan) (Disc 1) (Doukonban)"
 	region "Japan"
 	serial "UCJS-10067"
-	rom ( name "Minna no Golf-jou Vol. 3 (Japan) (Disc 1).iso" size 1632370688 crc 9C927ABA md5 4243DD29B45559A13DDA3136F0ECDD79 sha1 E900CC79DF8CC52F19CAC996450104DF8C35F07A serial "UCJS-10067" )
+	rom ( name "Minna no Golf-jou Vol. 3 (Japan) (Disc 1) (Doukonban).iso" size 1632370688 crc 9C927ABA md5 4243DD29B45559A13DDA3136F0ECDD79 sha1 E900CC79DF8CC52F19CAC996450104DF8C35F07A serial "UCJS-10067" )
 )
 game (
-	name "Minna no Golf-jou Vol. 3 (Japan) (Disc 1)"
+	name "Minna no Golf-jou Vol. 3 (Japan) (Disc 1) (Doukonban)"
 	region "Japan"
 	serial "UCJS-10067-0"
-	rom ( name "Minna no Golf-jou Vol. 3 (Japan) (Disc 1).iso" size 1632370688 crc 9C927ABA md5 4243DD29B45559A13DDA3136F0ECDD79 sha1 E900CC79DF8CC52F19CAC996450104DF8C35F07A serial "UCJS-10067-0" )
+	rom ( name "Minna no Golf-jou Vol. 3 (Japan) (Disc 1) (Doukonban).iso" size 1632370688 crc 9C927ABA md5 4243DD29B45559A13DDA3136F0ECDD79 sha1 E900CC79DF8CC52F19CAC996450104DF8C35F07A serial "UCJS-10067-0" )
 )
 game (
-	name "Minna no Golf-jou Vol. 3 (Japan) (Disc 2)"
+	name "Minna no Golf-jou Vol. 3 (Japan) (Disc 2) (Doukonban)"
 	region "Japan"
 	serial "UCJS-10068"
-	rom ( name "Minna no Golf-jou Vol. 3 (Japan) (Disc 2).iso" size 1591836672 crc D79AFDEE md5 4FD90072B5DE00BAD7E4B710C9948D83 sha1 27BEA291A8DF473B8B580A2978E11D9E0A791CE2 serial "UCJS-10068" )
+	rom ( name "Minna no Golf-jou Vol. 3 (Japan) (Disc 2) (Doukonban).iso" size 1591836672 crc D79AFDEE md5 4FD90072B5DE00BAD7E4B710C9948D83 sha1 27BEA291A8DF473B8B580A2978E11D9E0A791CE2 serial "UCJS-10068" )
 )
 game (
-	name "Minna no Golf-jou Vol. 3 (Japan) (Disc 2)"
+	name "Minna no Golf-jou Vol. 3 (Japan) (Disc 2) (Doukonban)"
 	region "Japan"
 	serial "UCJS-10068-1"
-	rom ( name "Minna no Golf-jou Vol. 3 (Japan) (Disc 2).iso" size 1591836672 crc D79AFDEE md5 4FD90072B5DE00BAD7E4B710C9948D83 sha1 27BEA291A8DF473B8B580A2978E11D9E0A791CE2 serial "UCJS-10068-1" )
+	rom ( name "Minna no Golf-jou Vol. 3 (Japan) (Disc 2) (Doukonban).iso" size 1591836672 crc D79AFDEE md5 4FD90072B5DE00BAD7E4B710C9948D83 sha1 27BEA291A8DF473B8B580A2978E11D9E0A791CE2 serial "UCJS-10068-1" )
 )
 game (
 	name "Minna no Navi (Japan) (Disc 1)"
@@ -13795,16 +14176,22 @@ game (
 	rom ( name "Minna no Shiatsu - Itami mo Tsukare mo Sukirii! (Japan).iso" size 600932352 crc A2F92344 md5 31406007997FA803D7BD9BB161AA4A55 sha1 8C9D49EEEA5BAD6FF78F1E6AE0B7158B0AC70C34 serial "ULJM-05619" )
 )
 game (
-	name "Minna no Tennis Portable (Japan)"
+	name "Minna no Tennis Portable (Japan, Asia)"
 	region "Japan"
-	serial "UCJS-10101"
-	rom ( name "Minna no Tennis Portable (Japan).iso" size 1235058688 crc B4F51366 md5 22C7821F3E6E8F44E45DEEC829006517 sha1 F2BBF030F47A6C61DBC1651FEC2AA889016E6471 serial "UCJS-10101" )
+	serial "UCAS-40293"
+	rom ( name "Minna no Tennis Portable (Japan, Asia).iso" size 1235058688 crc B4F51366 md5 22C7821F3E6E8F44E45DEEC829006517 sha1 F2BBF030F47A6C61DBC1651FEC2AA889016E6471 serial "UCAS-40293" )
 )
 game (
-	name "Minna no Tennis Portable (Japan)"
+	name "Minna no Tennis Portable (Japan, Asia)"
+	region "Japan"
+	serial "UCJS-10101"
+	rom ( name "Minna no Tennis Portable (Japan, Asia).iso" size 1235058688 crc B4F51366 md5 22C7821F3E6E8F44E45DEEC829006517 sha1 F2BBF030F47A6C61DBC1651FEC2AA889016E6471 serial "UCJS-10101" )
+)
+game (
+	name "Minna no Tennis Portable (Japan, Asia)"
 	region "Japan"
 	serial "UCJS-18049"
-	rom ( name "Minna no Tennis Portable (Japan).iso" size 1235058688 crc B4F51366 md5 22C7821F3E6E8F44E45DEEC829006517 sha1 F2BBF030F47A6C61DBC1651FEC2AA889016E6471 serial "UCJS-18049" )
+	rom ( name "Minna no Tennis Portable (Japan, Asia).iso" size 1235058688 crc B4F51366 md5 22C7821F3E6E8F44E45DEEC829006517 sha1 F2BBF030F47A6C61DBC1651FEC2AA889016E6471 serial "UCJS-18049" )
 )
 game (
 	name "Mirai Nikki - 13-Ninme no Nikki Shoyuusha (Japan)"
@@ -13823,6 +14210,12 @@ game (
 	region "Japan"
 	serial "ULJS-00251"
 	rom ( name "Misshitsu no Sacrifice (Japan).iso" size 638746624 crc C76D9995 md5 406C58343C48979B8622BB75F995595B sha1 9665131D419D93F82137910EE1C8917F9AE53E3A serial "ULJS-00251" )
+)
+game (
+	name "Missing Parts the Tantei Stories Complete (Japan)"
+	region "Japan"
+	serial "ULJS-00552"
+	rom ( name "Missing Parts the Tantei Stories Complete (Japan).iso" size 1607630848 crc EBC19C47 md5 E85D86AEA33C58C21ABA820BE8BACE62 sha1 D384F882A2969AD3E5025ED98F6C7A15AF8E7B1C serial "ULJS-00552" )
 )
 game (
 	name "Mite Kiite Nou de Kanjite Crossword Tengoku (Japan)"
@@ -14833,6 +15226,12 @@ game (
 	rom ( name "NBA Street Showdown (Europe) (En,Fr,De).iso" size 1181679616 crc 04AF5867 md5 A6B14161DCF8140D76683A675133B580 sha1 5AA20D7A3CFBF23AAB2B311E5FC629C215275C60 serial "ULES-00037" )
 )
 game (
+	name "NBA Street Showdown (Japan)"
+	region "Japan"
+	serial "ULJM-05046"
+	rom ( name "NBA Street Showdown (Japan).iso" size 1192165376 crc BE72AF10 md5 C711BE60E8F0833E8A2F1B4295CF4646 sha1 56679DB60F99B1B3E1E400D431F174E8E2828C80 serial "ULJM-05046" )
+)
+game (
 	name "NBA Street Showdown (USA)"
 	region "USA"
 	serial "ULUS-10010"
@@ -14984,6 +15383,12 @@ game (
 	region "Japan"
 	serial "ULJM-05142"
 	rom ( name "Nana - Subete wa Daimaou no Omichibiki (Japan).iso" size 224296960 crc 3297B3D4 md5 00BF2A0087D678B8AC16B1DAE62980EC sha1 D1D3401AAAFB43554FA62A94F912B4CFF3CDF9B4 serial "ULJM-05142" )
+)
+game (
+	name "Nanatama - Chronicle of Dungeon Maker (Japan)"
+	region "Japan"
+	serial "ULJM-05434"
+	rom ( name "Nanatama - Chronicle of Dungeon Maker (Japan).iso" size 189792256 crc 50833C03 md5 595CDD4EFEFEF05FBF20C2CCC1E8D907 sha1 DB614C3F4C6F53ED3EB9B6E49276878CD7848202 serial "ULJM-05434" )
 )
 game (
 	name "Nano Diver (Japan)"
@@ -15541,6 +15946,12 @@ game (
 	rom ( name "Nikoli no Sudoku Lite Daisanshuu (Japan).iso" size 137625600 crc 6C4FD0BC md5 AB74FE50F28FAD8841464B8D1F61A23C sha1 A7DFA77A440C27BB4AFD77BE6D293438CD8592B0 serial "ULJM-06153" )
 )
 game (
+	name "Nikoli no Sudoku Lite Daiyonshuu (Japan)"
+	region "Japan"
+	serial "ULJM-06154"
+	rom ( name "Nikoli no Sudoku Lite Daiyonshuu (Japan).iso" size 137887744 crc 88D9148D md5 CB6E88F5444D3C29ED383092BE3B7A1D sha1 1D87BEDB7B4DB652279987D980096045AF682360 serial "ULJM-06154" )
+)
+game (
 	name "Ninja Katsugeki - Tenchu - Kurenai Portable (Japan)"
 	region "Japan"
 	serial "ULJM-05598"
@@ -15695,6 +16106,12 @@ game (
 	region "Korea"
 	serial "ULKS-46083-1"
 	rom ( name "Oh Seoktae-ui Malhaneun Yeongeo (Korea) (Disc 2).iso" size 1281294336 crc CCC08A57 md5 1CBDFC00D932F809DA510DA4246E6CA0 sha1 13EFF9A54ABD023D70ADD822998E7DAF4EF0C942 serial "ULKS-46083-1" )
+)
+game (
+	name "Okashi na Shima no Peter Pan - Sweet Never Land (Japan)"
+	region "Japan"
+	serial "ULJM-05949"
+	rom ( name "Okashi na Shima no Peter Pan - Sweet Never Land (Japan).iso" size 1020624896 crc 8C86CB62 md5 5E2F75BDA6C1282D429DC60E436E4C8A sha1 DC17DAEE0AA8BB660D21B96F30B9E74454542CBF serial "ULJM-05949" )
 )
 game (
 	name "Omerta - Chinmoku no Okite - The Legacy (Japan)"
@@ -16920,6 +17337,12 @@ game (
 	rom ( name "PixelJunk Monsters - UMD Limited Edition (Asia) (En,Ja).iso" size 165740544 crc D2F41849 md5 7683E54764B9224DE0483AB984604043 sha1 CB3986490E0B683902C60110CFF20088495D5456 serial "UCAS-40261" )
 )
 game (
+	name "PixelJunk Monsters - UMD Limited Edition (Asia) (En,Ja)"
+	region "Asia"
+	serial "UCKS-45122"
+	rom ( name "PixelJunk Monsters - UMD Limited Edition (Asia) (En,Ja).iso" size 165740544 crc D2F41849 md5 7683E54764B9224DE0483AB984604043 sha1 CB3986490E0B683902C60110CFF20088495D5456 serial "UCKS-45122" )
+)
+game (
 	name "Planetarian - Chiisa na Hoshi no Yume (Japan) (v1.02)"
 	region "Japan"
 	serial "ULJM-05383"
@@ -17076,6 +17499,12 @@ game (
 	rom ( name "PoPoLoCrois Monogatari - Pietro Ouji no Bouken (Japan) (v2.01).iso" size 1168572416 crc 5E21D6B9 md5 7CD263EB25237C7D73127315FFD08ED1 sha1 2E9D651A6AE68F2761E6EC98F4015F0ECDAB2B27 serial "UCJS-10005" )
 )
 game (
+	name "PoPoLoCrois Monogatari - Pietro Ouji no Bouken (Japan) (v2.01)"
+	region "Japan"
+	serial "UCJS-18003"
+	rom ( name "PoPoLoCrois Monogatari - Pietro Ouji no Bouken (Japan) (v2.01).iso" size 1168572416 crc 5E21D6B9 md5 7CD263EB25237C7D73127315FFD08ED1 sha1 2E9D651A6AE68F2761E6EC98F4015F0ECDAB2B27 serial "UCJS-18003" )
+)
+game (
 	name "Pocket Pool (USA)"
 	region "USA"
 	serial "ULUS-10151"
@@ -17092,6 +17521,12 @@ game (
 	region "USA"
 	serial "ULUS-10163"
 	rom ( name "Pocket Racers (USA).iso" size 268238848 crc 73756129 md5 E6592F603755CD06C8E3C593C466E26F sha1 8B97606318F947F9B5E5585A32645024CE3D0DC2 serial "ULUS-10163" )
+)
+game (
+	name "Ponkotsu Roman Daikatsugeki Bumpy Trot - Vehicle Battle Tournament (Japan)"
+	region "Japan"
+	serial "ULJS-00130"
+	rom ( name "Ponkotsu Roman Daikatsugeki Bumpy Trot - Vehicle Battle Tournament (Japan).iso" size 226361344 crc AA635464 md5 71A4BE8C2BAB47F60BD398F30F733E49 sha1 3029CF96D7BFCC0E9D3E942B47A2077407DD1DBF serial "ULJS-00130" )
 )
 game (
 	name "Pop'n Music Portable (Japan)"
@@ -17224,6 +17659,12 @@ game (
 	region "Japan"
 	serial "ULJM-06036"
 	rom ( name "Princess Evangile Portable (Japan).iso" size 1302265856 crc 9EC6286A md5 4EE5F98EFF413D8BD6CCBF541CEC3056 sha1 C30BC810B90D6D7E36F1BC6D537B00FB3C4770E4 serial "ULJM-06036" )
+)
+game (
+	name "Princess Frontier Portable (Japan)"
+	region "Japan"
+	serial "ULJM-05852"
+	rom ( name "Princess Frontier Portable (Japan).iso" size 1350991872 crc A96258C6 md5 4923136A9895F4795A2E9754D465CDD3 sha1 53D4305774A9B3F3DA77405ABD429C5B2E33FF38 serial "ULJM-05852" )
 )
 game (
 	name "Prinny - Can I Really Be the Hero (Europe) (En,Fr)"
@@ -17400,6 +17841,15 @@ game (
 	rom ( name "Pursuit Force (Europe) (En,Fr,De,Es,It).iso" size 1352892416 crc E708D084 md5 0CC2ECEDB3C98B04AF6CB029F0F168F8 sha1 C2CC27677C281D31D6100483E0D5185AA6AA9BF1 serial "UCES-00019/9162315" )
 )
 game (
+	name "Pursuit Force (Europe) (En,Fr,De,Es,It) (Beta)"
+	releaseyear "2005"
+	releasemonth "08"
+	releaseday "22"
+	region "Europe"
+	serial "UCET-00007/0.08"
+	rom ( name "Pursuit Force (Europe) (En,Fr,De,Es,It) (Beta) (2005-08-22).iso" size 1241448448 crc A36CF25D md5 BF2A7801221A5B92D1EBE762FCE4AE5A sha1 632FCD6FE7E133A23E6732BBC132864410DDFDBC serial "UCET-00007/0.08" )
+)
+game (
 	name "Pursuit Force (USA)"
 	region "USA"
 	serial "UCUS-98640"
@@ -17428,6 +17878,12 @@ game (
 	region "Europe"
 	serial "UCES-00890"
 	rom ( name "Pursuit Force - Extreme Justice (Europe) (En,Pl,Ru,Cs,Hu).iso" size 1633353728 crc 10B1AB5C md5 31F307FAC918767D82EA46305F78DD31 sha1 F3B54D564A80AF79221B2AF99F848E89EBD1002C serial "UCES-00890" )
+)
+game (
+	name "Pursuit Force - Extreme Justice (Korea) (En,Fr,Es)"
+	region "Korea"
+	serial "UCKS-45057"
+	rom ( name "Pursuit Force - Extreme Justice (Korea) (En,Fr,Es).iso" size 1453457408 crc 7B90BA22 md5 46FFF8D8B769D6E80BB063A01879A447 sha1 EF4913F5BF1CC68D641779D10D348E8D88FFABE0 serial "UCKS-45057" )
 )
 game (
 	name "Pursuit Force - Extreme Justice (USA) (En,Fr,Es)"
@@ -17588,6 +18044,12 @@ game (
 game (
 	name "Queen's Blade - Spiral Chaos (Japan)"
 	region "Japan"
+	serial "ULJS-00189"
+	rom ( name "Queen's Blade - Spiral Chaos (Japan).iso" size 906362880 crc C658C199 md5 B0DC6F02EF7BF7790928E531417DE918 sha1 73C9E8E734FE74CF7F3FA8B07693C1AE29C4DE1C serial "ULJS-00189" )
+)
+game (
+	name "Queen's Blade - Spiral Chaos (Japan)"
+	region "Japan"
 	serial "ULJS-00190"
 	rom ( name "Queen's Blade - Spiral Chaos (Japan).iso" size 906362880 crc C658C199 md5 B0DC6F02EF7BF7790928E531417DE918 sha1 73C9E8E734FE74CF7F3FA8B07693C1AE29C4DE1C serial "ULJS-00190" )
 )
@@ -17686,6 +18148,12 @@ game (
 	region "USA"
 	serial "ULUS-10205"
 	rom ( name "Rainbow Islands Evolution (USA) (En,Fr,Es).iso" size 847020032 crc 6C4AEECD md5 A50B6D4401D0D22C34D4332F01C3EEC9 sha1 8E9DE125FE87A99FF0FB35DD4892FDE9B2C40D72 serial "ULUS-10205" )
+)
+game (
+	name "Rakuen Danshi (Japan)"
+	region "Japan"
+	serial "ULJS-00587"
+	rom ( name "Rakuen Danshi (Japan).iso" size 1233125376 crc 268E99E7 md5 2368A0D22E256385CB94820F9EC8F9E1 sha1 27594495667E47E4E519BEA0DDF69D13E7B3F8C7 serial "ULJS-00587" )
 )
 game (
 	name "Ranshima Monogatari - Lair Land Story - Shoujo no Yakujou (Japan)"
@@ -17811,10 +18279,10 @@ game (
 	rom ( name "Rei Chou Aniki (Japan).iso" size 441450496 crc 803B69C8 md5 5C2B53EB9C17480BB7E1D6E145F188B6 sha1 0278F9258D5A97620E48F6E73DF26925B5BB566F serial "ULJM-05390" )
 )
 game (
-	name "Remember11 - The Age of Infinity (Japan)"
+	name "Remember 11 - The Age of Infinity (Japan)"
 	region "Japan"
 	serial "ULJM-05444"
-	rom ( name "Remember11 - The Age of Infinity (Japan).iso" size 1763475456 crc 9D2F1D13 md5 66F4D4924F50DC10B2E5FD566F95D696 sha1 084AE97CEB0AC7C90D8014B96DD4248B2A2DA0AA serial "ULJM-05444" )
+	rom ( name "Remember 11 - The Age of Infinity (Japan).iso" size 1763475456 crc 9D2F1D13 md5 66F4D4924F50DC10B2E5FD566F95D696 sha1 084AE97CEB0AC7C90D8014B96DD4248B2A2DA0AA serial "ULJM-05444" )
 )
 game (
 	name "Ren'ai Banchou - Inochi Mijikashi, Koi seyo Otome! Love is Power (Japan)"
@@ -17893,6 +18361,12 @@ game (
 	region "Europe"
 	serial "UCES-01184"
 	rom ( name "Resistance - Retribution (Europe) (En,Fr,De,Es,It).iso" size 1737981952 crc 983E40DD md5 DE2B84429CED4E924846772047D270BE sha1 CC2A810CA16EF4F4920A5166C86DE5FBF4CBB985 serial "UCES-01184" )
+)
+game (
+	name "Resistance - Retribution (Korea) (En,Ja,Fr,Es)"
+	region "Korea"
+	serial "UCKS-45113"
+	rom ( name "Resistance - Retribution (Korea) (En,Ja,Fr,Es).iso" size 1669726208 crc 125A466C md5 4FAD79985BD701354F66039D25579DA8 sha1 A8462515ADB23D2ED34707097A529E1EFCFB58DE serial "UCKS-45113" )
 )
 game (
 	name "Resistance - Retribution (USA) (En,Fr,Es)"
@@ -18393,6 +18867,12 @@ game (
 	rom ( name "SOCOM - U.S. Navy SEALs - Fireteam Bravo 2 (Europe) (En,Fr,De,Es,It).iso" size 1672609792 crc 430B91A2 md5 6E596D2F70A4E930B17CCAD24A547DD7 sha1 002A6914578FF62ED8DFD9CB85AC19B4D775970D serial "UCES-00543" )
 )
 game (
+	name "SOCOM - U.S. Navy SEALs - Fireteam Bravo 2 (Europe) (En,Fr,De,Es,It)"
+	region "Europe"
+	serial "UCES-00543/9696087"
+	rom ( name "SOCOM - U.S. Navy SEALs - Fireteam Bravo 2 (Europe) (En,Fr,De,Es,It).iso" size 1672609792 crc 430B91A2 md5 6E596D2F70A4E930B17CCAD24A547DD7 sha1 002A6914578FF62ED8DFD9CB85AC19B4D775970D serial "UCES-00543/9696087" )
+)
+game (
 	name "SOCOM - U.S. Navy SEALs - Fireteam Bravo 2 (Europe) (En,Fr,De,Es,It) (Beta)"
 	releaseyear "2007"
 	releasemonth "03"
@@ -18418,6 +18898,12 @@ game (
 	region "Europe"
 	serial "UCES-01242"
 	rom ( name "SOCOM - U.S. Navy SEALs - Fireteam Bravo 3 (Europe) (En,Fr,De,Es,It,Nl,Pt,Sv,No,Da,Fi,Pl,Ru).iso" size 1791393792 crc 71B97A7A md5 5812B52EB96562D014D99CCD477B9017 sha1 3C048ABB1F6006AF73EC4355CF96A5299141E318 serial "UCES-01242" )
+)
+game (
+	name "SOCOM - U.S. Navy SEALs - Fireteam Bravo 3 (Europe) (En,Fr,De,Es,It,Nl,Pt,Sv,No,Da,Fi,Pl,Ru)"
+	region "Europe"
+	serial "UCES-01242/9154655"
+	rom ( name "SOCOM - U.S. Navy SEALs - Fireteam Bravo 3 (Europe) (En,Fr,De,Es,It,Nl,Pt,Sv,No,Da,Fi,Pl,Ru).iso" size 1791393792 crc 71B97A7A md5 5812B52EB96562D014D99CCD477B9017 sha1 3C048ABB1F6006AF73EC4355CF96A5299141E318 serial "UCES-01242/9154655" )
 )
 game (
 	name "SOCOM - U.S. Navy SEALs - Fireteam Bravo 3 (Europe) (En,Fr,De,Es,It,Nl,Pt,Sv,No,Da,Fi,Pl,Ru)"
@@ -18594,10 +19080,22 @@ game (
 	rom ( name "Sampler Disc for PSP Vol. 1 (USA).iso" size 1779040256 crc 047EEA16 md5 AC7A13EA7D970501E922244ED068DEBA sha1 05F2028B80728973A22A1EB8075E810755D5CBE0 serial "UCJB-98301" )
 )
 game (
-	name "Samurai Dou 2 Portable (Asia)"
-	region "Asia"
+	name "Samurai Dou 2 Portable (Japan, Asia)"
+	region "Japan"
 	serial "UCAS-40277"
-	rom ( name "Samurai Dou 2 Portable (Asia).iso" size 567377920 crc 50ACD736 md5 AD7D277728A070605D85CD16FD1187CA sha1 A54F95B16297F5251956D44D0185136EC515A302 serial "UCAS-40277" )
+	rom ( name "Samurai Dou 2 Portable (Japan, Asia).iso" size 567377920 crc 50ACD736 md5 AD7D277728A070605D85CD16FD1187CA sha1 A54F95B16297F5251956D44D0185136EC515A302 serial "UCAS-40277" )
+)
+game (
+	name "Samurai Dou 2 Portable (Japan, Asia)"
+	region "Japan"
+	serial "ULJS-00217"
+	rom ( name "Samurai Dou 2 Portable (Japan, Asia).iso" size 567377920 crc 50ACD736 md5 AD7D277728A070605D85CD16FD1187CA sha1 A54F95B16297F5251956D44D0185136EC515A302 serial "ULJS-00217" )
+)
+game (
+	name "Samurai Dou 2 Portable (Japan, Asia)"
+	region "Japan"
+	serial "ULJS-19085"
+	rom ( name "Samurai Dou 2 Portable (Japan, Asia).iso" size 567377920 crc 50ACD736 md5 AD7D277728A070605D85CD16FD1187CA sha1 A54F95B16297F5251956D44D0185136EC515A302 serial "ULJS-19085" )
 )
 game (
 	name "Samurai Dou Portable (Japan)"
@@ -18648,6 +19146,24 @@ game (
 	rom ( name "Samurai Warriors - State of War (USA).iso" size 327614464 crc C33E699C md5 3129FF001D3AEA46C070F7B531D07D44 sha1 28CCABB39A5D5F56EC79050895CF9947BFBEA3DC serial "ULUS-10089" )
 )
 game (
+	name "Sangoku Hime - Sangoku Ranse - Haten no Saihai (Japan)"
+	region "Japan"
+	serial "ULJS-00434"
+	rom ( name "Sangoku Hime - Sangoku Ranse - Haten no Saihai (Japan).iso" size 1601601536 crc 837DDDC2 md5 706D32586FE0D486A4438470B9E79638 sha1 97AF6241F032619389BCC9043581CC9ACBC533FF serial "ULJS-00434" )
+)
+game (
+	name "Sangoku Hime - Sangoku Ranse - Haten no Saihai (Japan)"
+	region "Japan"
+	serial "ULJS-00435"
+	rom ( name "Sangoku Hime - Sangoku Ranse - Haten no Saihai (Japan).iso" size 1601601536 crc 837DDDC2 md5 706D32586FE0D486A4438470B9E79638 sha1 97AF6241F032619389BCC9043581CC9ACBC533FF serial "ULJS-00435" )
+)
+game (
+	name "Sangoku Hime 2 - Tenka Hatou - Shishi no Keishousha (Japan)"
+	region "Japan"
+	serial "ULJS-00575"
+	rom ( name "Sangoku Hime 2 - Tenka Hatou - Shishi no Keishousha (Japan).iso" size 1171456000 crc 82E1FCBD md5 02B8B83602838AEC340DF9B2C877B424 sha1 AEFCEC5457BBBD1F2C358B84FED0C2B8A6EEDB82 serial "ULJS-00575" )
+)
+game (
 	name "Sangoku Rensenki - Otome no Heihou! (Japan) (Disc 1)"
 	region "Japan"
 	serial "ULJM-06123"
@@ -18670,18 +19186,6 @@ game (
 	region "Japan"
 	serial "ULJM-06124-1"
 	rom ( name "Sangoku Rensenki - Otome no Heihou! (Japan) (Disc 2).iso" size 1273430016 crc 6EBEDB50 md5 013258E8ED8C84F5E9AFF95F73B2092C sha1 062F0720798DF86772A65F7FCA80A28BCB205CED serial "ULJM-06124-1" )
-)
-game (
-	name "Sangoku-hime - Sangoku Ranse - Haten no Saihai (Japan)"
-	region "Japan"
-	serial "ULJS-00434"
-	rom ( name "Sangoku-hime - Sangoku Ranse - Haten no Saihai (Japan).iso" size 1601601536 crc 837DDDC2 md5 706D32586FE0D486A4438470B9E79638 sha1 97AF6241F032619389BCC9043581CC9ACBC533FF serial "ULJS-00434" )
-)
-game (
-	name "Sangoku-hime 2 - Tenka Hatou - Shishi no Keishousha (Japan)"
-	region "Japan"
-	serial "ULJS-00575"
-	rom ( name "Sangoku-hime 2 - Tenka Hatou - Shishi no Keishousha (Japan).iso" size 1171456000 crc 82E1FCBD md5 02B8B83602838AEC340DF9B2C877B424 sha1 AEFCEC5457BBBD1F2C358B84FED0C2B8A6EEDB82 serial "ULJS-00575" )
 )
 game (
 	name "Sangokushi IX with Power-Up Kit (Japan)"
@@ -18718,6 +19222,12 @@ game (
 	region "Japan"
 	serial "ULJM-05083"
 	rom ( name "Sangokushi VII (Japan).iso" size 199032832 crc 66A72ED6 md5 FE0A203048A6D71B973B40AC2D342E3F sha1 CA9CD225F5B15701CC66A401D971D057A41A9708 serial "ULJM-05083" )
+)
+game (
+	name "Sangokushi VII (Japan)"
+	region "Japan"
+	serial "ULJM-05246"
+	rom ( name "Sangokushi VII (Japan).iso" size 199032832 crc 66A72ED6 md5 FE0A203048A6D71B973B40AC2D342E3F sha1 CA9CD225F5B15701CC66A401D971D057A41A9708 serial "ULJM-05246" )
 )
 game (
 	name "Sangokushi VIII (Japan)"
@@ -18761,6 +19271,12 @@ game (
 game (
 	name "Saru! Get You! P! (Japan, Asia) (v2.00)"
 	region "Japan"
+	serial "UCJS-10004"
+	rom ( name "Saru! Get You! P! (Japan, Asia) (v2.00).iso" size 750747648 crc 1056A1DB md5 82F2FFEC51C64B01A1F7F54C1395C0B4 sha1 B6DB439A142A2A7A44439C181945BFF414D71CD2 serial "UCJS-10004" )
+)
+game (
+	name "Saru! Get You! P! (Japan, Asia) (v2.00)"
+	region "Japan"
 	serial "UCJS-18006"
 	rom ( name "Saru! Get You! P! (Japan, Asia) (v2.00).iso" size 750747648 crc 1056A1DB md5 82F2FFEC51C64B01A1F7F54C1395C0B4 sha1 B6DB439A142A2A7A44439C181945BFF414D71CD2 serial "UCJS-18006" )
 )
@@ -18775,6 +19291,12 @@ game (
 	region "Japan"
 	serial "UCAS-40134"
 	rom ( name "Saru! Get You! Piposaru Racer (Japan, Asia).iso" size 259948544 crc 35DEB473 md5 7BA79450DAA4B917CC349CA46FB801A4 sha1 67E2656BF9269E0D66C0E1FF57F5E4E4492BB9B5 serial "UCAS-40134" )
+)
+game (
+	name "Saru! Get You! Piposaru Racer (Japan, Asia)"
+	region "Japan"
+	serial "UCJS-10032"
+	rom ( name "Saru! Get You! Piposaru Racer (Japan, Asia).iso" size 259948544 crc 35DEB473 md5 7BA79450DAA4B917CC349CA46FB801A4 sha1 67E2656BF9269E0D66C0E1FF57F5E4E4492BB9B5 serial "UCJS-10032" )
 )
 game (
 	name "Saru! Get You! Piposaru Racer (Japan, Asia)"
@@ -19131,6 +19653,12 @@ game (
 	rom ( name "Sengoku Cannon - Sengoku Ace Episode III (Japan, Asia) (En,Ja).iso" size 170459136 crc 610FD571 md5 79B61BBF70B7CC62FF3AE1765F08BFFE sha1 6D9B95DBF6CE7A2D1D88A1F7CF67AD84F1F4F57F serial "ULJM-05021" )
 )
 game (
+	name "Sengoku Cannon - Sengoku Ace Episode III (Korea)"
+	region "Korea"
+	serial "ULKS-46030"
+	rom ( name "Sengoku Cannon - Sengoku Ace Episode III (Korea).iso" size 170721280 crc 250E6681 md5 91C9F8D6D7D448535CB33767FFC3FADC sha1 707D6B82784564093768B1D0C3636953AA40A55F serial "ULKS-46030" )
+)
+game (
 	name "Sengoku Efuda Yuugi - Hototogisu Ran (Japan)"
 	region "Japan"
 	serial "ULJS-00159"
@@ -19141,6 +19669,54 @@ game (
 	region "Japan"
 	serial "ULJS-00326"
 	rom ( name "Sengoku Efuda Yuugi - Hototogisu Tairan (Japan).iso" size 347013120 crc 3E2C5CF5 md5 89C0B15A210988FD983F9390FB503C29 sha1 E81B849615AC64C2C9A88D6BBF522D8CE63A08A8 serial "ULJS-00326" )
+)
+game (
+	name "Sengoku Hime - Senran ni Mau Otometachi (Japan) (v1.02)"
+	region "Japan"
+	serial "ULJM-05531"
+	rom ( name "Sengoku Hime - Senran ni Mau Otometachi (Japan) (v1.02).iso" size 1295384576 crc 24D9F729 md5 34FED600E6C2970C39F467E2047D68E3 sha1 B57AA8C908431E6DFFC802085F9057225F81DC95 serial "ULJM-05531" )
+)
+game (
+	name "Sengoku Hime - Senran ni Mau Otometachi (Japan) (v1.02)"
+	region "Japan"
+	serial "ULJM-05540"
+	rom ( name "Sengoku Hime - Senran ni Mau Otometachi (Japan) (v1.02).iso" size 1295384576 crc 24D9F729 md5 34FED600E6C2970C39F467E2047D68E3 sha1 B57AA8C908431E6DFFC802085F9057225F81DC95 serial "ULJM-05540" )
+)
+game (
+	name "Sengoku Hime - Senran ni Mau Otometachi (Japan) (v2.01)"
+	region "Japan"
+	serial "ULJM-05540"
+	rom ( name "Sengoku Hime - Senran ni Mau Otometachi (Japan) (v2.01).iso" size 1296269312 crc 612D05A8 md5 23278FB8CA598B6574F098785BCAC1B3 sha1 8DC8773FDA15E6B2D5857007FE0211FA6FDABD4F serial "ULJM-05540" )
+)
+game (
+	name "Sengoku Hime - Senran ni Mau Otometachi (Japan) (v2.01)"
+	region "Japan"
+	serial "ULJM-05967"
+	rom ( name "Sengoku Hime - Senran ni Mau Otometachi (Japan) (v2.01).iso" size 1296269312 crc 612D05A8 md5 23278FB8CA598B6574F098785BCAC1B3 sha1 8DC8773FDA15E6B2D5857007FE0211FA6FDABD4F serial "ULJM-05967" )
+)
+game (
+	name "Sengoku Hime 2 - Ran - Hyakka, Senran Tatsukaze no Gotoku (Japan)"
+	region "Japan"
+	serial "ULJM-05773"
+	rom ( name "Sengoku Hime 2 - Ran - Hyakka, Senran Tatsukaze no Gotoku (Japan).iso" size 767983616 crc 84ECC02E md5 321E372AAD9553DEBEB22A3497A23023 sha1 D8C65457A402349358C33B816930FDE52EADCC19 serial "ULJM-05773" )
+)
+game (
+	name "Sengoku Hime 3 - Tenka o Kirisaku Hikari to Kage (Japan)"
+	region "Japan"
+	serial "ULJM-06003"
+	rom ( name "Sengoku Hime 3 - Tenka o Kirisaku Hikari to Kage (Japan).iso" size 1621327872 crc 91DC7FD3 md5 1AA2A05531C3D031951E84C37C64C7E2 sha1 2D166C61ACAAC5261F5666CAA5F012308F63D831 serial "ULJM-06003" )
+)
+game (
+	name "Sengoku Hime 3 - Tenka o Kirisaku Hikari to Kage (Japan)"
+	region "Japan"
+	serial "ULJM-06004"
+	rom ( name "Sengoku Hime 3 - Tenka o Kirisaku Hikari to Kage (Japan).iso" size 1621327872 crc 91DC7FD3 md5 1AA2A05531C3D031951E84C37C64C7E2 sha1 2D166C61ACAAC5261F5666CAA5F012308F63D831 serial "ULJM-06004" )
+)
+game (
+	name "Sengoku Hime 4 - Souhahyakkei, Hana Mamoru Chikai (Japan)"
+	region "Japan"
+	serial "ULJM-06329"
+	rom ( name "Sengoku Hime 4 - Souhahyakkei, Hana Mamoru Chikai (Japan).iso" size 1285849088 crc EF71BC2D md5 3C20445A808330006022A8505A06FD2B sha1 B1941144FF2492F6A0156355E591FCB64794FFFC serial "ULJM-06329" )
 )
 game (
 	name "Sengoku Musou 3 Z Special (Japan)"
@@ -19159,12 +19735,6 @@ game (
 	region "Japan"
 	serial "ULJS-00462"
 	rom ( name "Sengoku Tenka Touitsu (Japan) (v2.00).iso" size 223346688 crc 7EB46EF8 md5 8F01153ED2AA435E222EDF9956A8F99B sha1 9CD3B7FA96FD6A227BD388F11A893978405DAB4F serial "ULJS-00462" )
-)
-game (
-	name "Sengoku-hime - Senran ni Mau Otome-tachi (Japan)"
-	region "Japan"
-	serial "ULJM-05540"
-	rom ( name "Sengoku-hime - Senran ni Mau Otome-tachi (Japan).iso" size 1295384576 crc 24D9F729 md5 34FED600E6C2970C39F467E2047D68E3 sha1 B57AA8C908431E6DFFC802085F9057225F81DC95 serial "ULJM-05540" )
 )
 game (
 	name "Senjou no Valkyria 2 - Gallia Ouritsu Shikan Gakkou (Japan)"
@@ -19428,22 +19998,22 @@ game (
 	rom ( name "Shin Sangoku Musou (Japan, Asia).iso" size 199950336 crc 8F727DBF md5 8BA7409B9AE72D95729184409CCD7CDA sha1 EA8FB5E101F7DE2ECFC9D23C7187F05034D84671 serial "ULJM-08017" )
 )
 game (
-	name "Shin Sangoku Musou - Multi Raid (Japan)"
-	region "Japan"
-	serial "ULJM-05427"
-	rom ( name "Shin Sangoku Musou - Multi Raid (Japan).iso" size 1194098688 crc 82D3BED5 md5 5EE2D615C1F86639DC59781AF8F8D504 sha1 30291C55404333C1DEAC419976F701F366D89FAE serial "ULJM-05427" )
-)
-game (
 	name "Shin Sangoku Musou - Multi Raid (Japan) (Taikenban)"
 	region "Japan"
 	serial "ULJM-91017"
 	rom ( name "Shin Sangoku Musou - Multi Raid (Japan) (Taikenban).iso" size 389349376 crc 6CC4A3F7 md5 530756AD1923F0DAB9E4861B4E1955FA sha1 E91DACFED0F2934306AAB6E9C99E5A12920A5CF5 serial "ULJM-91017" )
 )
 game (
-	name "Shin Sangoku Musou - Multi Raid 2 (Japan)"
+	name "Shin Sangoku Musou - Multi Raid (Japan, Asia)"
 	region "Japan"
-	serial "ULJM-05637"
-	rom ( name "Shin Sangoku Musou - Multi Raid 2 (Japan).iso" size 1703280640 crc 05797F7E md5 1623A293EDCA9A32BC9E768FA5E37233 sha1 36DF858B300051D473295240CD0EE2E50BB0BC2D serial "ULJM-05637" )
+	serial "ULAS-42154"
+	rom ( name "Shin Sangoku Musou - Multi Raid (Japan, Asia).iso" size 1194098688 crc 82D3BED5 md5 5EE2D615C1F86639DC59781AF8F8D504 sha1 30291C55404333C1DEAC419976F701F366D89FAE serial "ULAS-42154" )
+)
+game (
+	name "Shin Sangoku Musou - Multi Raid (Japan, Asia)"
+	region "Japan"
+	serial "ULJM-05427"
+	rom ( name "Shin Sangoku Musou - Multi Raid (Japan, Asia).iso" size 1194098688 crc 82D3BED5 md5 5EE2D615C1F86639DC59781AF8F8D504 sha1 30291C55404333C1DEAC419976F701F366D89FAE serial "ULJM-05427" )
 )
 game (
 	name "Shin Sangoku Musou - Multi Raid 2 (Japan) (Taikenban)"
@@ -19452,16 +20022,34 @@ game (
 	rom ( name "Shin Sangoku Musou - Multi Raid 2 (Japan) (Taikenban).iso" size 753467392 crc 441C2BD6 md5 4071B4B147A4BF1213F58DF291491942 sha1 65EFCB2E3A5510E561130F0F7049CFCFC5609CCF serial "ULJM-91020" )
 )
 game (
-	name "Shin Sangoku Musou 2nd Evolution (Japan)"
+	name "Shin Sangoku Musou - Multi Raid 2 (Japan, Asia)"
 	region "Japan"
-	serial "ULJM-05113"
-	rom ( name "Shin Sangoku Musou 2nd Evolution (Japan).iso" size 312213504 crc 3399B126 md5 F0CBF43214210E3946BA3EDFD87C572D sha1 795ECBEE4F5CBCD35766FBC3A3811F585833D83F serial "ULJM-05113" )
+	serial "ULAS-42224"
+	rom ( name "Shin Sangoku Musou - Multi Raid 2 (Japan, Asia).iso" size 1703280640 crc 05797F7E md5 1623A293EDCA9A32BC9E768FA5E37233 sha1 36DF858B300051D473295240CD0EE2E50BB0BC2D serial "ULAS-42224" )
 )
 game (
-	name "Shin Sangoku Musou 2nd Evolution (Japan)"
+	name "Shin Sangoku Musou - Multi Raid 2 (Japan, Asia)"
+	region "Japan"
+	serial "ULJM-05637"
+	rom ( name "Shin Sangoku Musou - Multi Raid 2 (Japan, Asia).iso" size 1703280640 crc 05797F7E md5 1623A293EDCA9A32BC9E768FA5E37233 sha1 36DF858B300051D473295240CD0EE2E50BB0BC2D serial "ULJM-05637" )
+)
+game (
+	name "Shin Sangoku Musou 2nd Evolution (Japan, Asia)"
+	region "Japan"
+	serial "ULAS-42048"
+	rom ( name "Shin Sangoku Musou 2nd Evolution (Japan, Asia).iso" size 312213504 crc 3399B126 md5 F0CBF43214210E3946BA3EDFD87C572D sha1 795ECBEE4F5CBCD35766FBC3A3811F585833D83F serial "ULAS-42048" )
+)
+game (
+	name "Shin Sangoku Musou 2nd Evolution (Japan, Asia)"
+	region "Japan"
+	serial "ULJM-05113"
+	rom ( name "Shin Sangoku Musou 2nd Evolution (Japan, Asia).iso" size 312213504 crc 3399B126 md5 F0CBF43214210E3946BA3EDFD87C572D sha1 795ECBEE4F5CBCD35766FBC3A3811F585833D83F serial "ULJM-05113" )
+)
+game (
+	name "Shin Sangoku Musou 2nd Evolution (Japan, Asia)"
 	region "Japan"
 	serial "ULJM-08020"
-	rom ( name "Shin Sangoku Musou 2nd Evolution (Japan).iso" size 312213504 crc 3399B126 md5 F0CBF43214210E3946BA3EDFD87C572D sha1 795ECBEE4F5CBCD35766FBC3A3811F585833D83F serial "ULJM-08020" )
+	rom ( name "Shin Sangoku Musou 2nd Evolution (Japan, Asia).iso" size 312213504 crc 3399B126 md5 F0CBF43214210E3946BA3EDFD87C572D sha1 795ECBEE4F5CBCD35766FBC3A3811F585833D83F serial "ULJM-08020" )
 )
 game (
 	name "Shin Sangoku Musou 5 Empires (Japan)"
@@ -19698,6 +20286,12 @@ game (
 	rom ( name "Shirokuma Bell Stars - Happy Holidays! (Japan).iso" size 1807712256 crc 6F95519F md5 1D594353F36CABF3C865373630555B16 sha1 741A316EBD768E4D8F3D2377D974AEC12D3AC63E serial "ULJM-06111" )
 )
 game (
+	name "Shougi World Champion - Gekisashi Portable (Japan)"
+	region "Japan"
+	serial "ULJM-05652"
+	rom ( name "Shougi World Champion - Gekisashi Portable (Japan).iso" size 205455360 crc F2C85412 md5 FFE7D25FCA3AB7CA8034323F06293FA8 sha1 D8FC303A89ADAC52D541F7FEC307DC177DA9C39D serial "ULJM-05652" )
+)
+game (
 	name "Shougi ga Tsuyokunaru - Gekisashi - Jouseki Doujou (Japan)"
 	region "Japan"
 	serial "ULJM-05263"
@@ -19722,10 +20316,10 @@ game (
 	rom ( name "Shutokou Battle (Japan).iso" size 446889984 crc 922AC5B4 md5 D1EE7B50D1036563EB5A1956B9614C8F sha1 B057AE65567F6852590EF0A6744C970616D903DC serial "ULJM-08051" )
 )
 game (
-	name "Shutsugeki!! Otome-tachi no Senjou 2 - Amakakeru Shougeki no Kizuna (Japan)"
+	name "Shutsugeki!! Otometachi no Senjou 2 - Amakakeru Shougeki no Kizuna (Japan)"
 	region "Japan"
 	serial "ULJS-00537"
-	rom ( name "Shutsugeki!! Otome-tachi no Senjou 2 - Amakakeru Shougeki no Kizuna (Japan).iso" size 1637646336 crc B6B492A0 md5 B1A5B5ABBEC6041E57CAB51C1C53020A sha1 D7567C7593EE3F4A3DE59206DA3D015898FCBA6E serial "ULJS-00537" )
+	rom ( name "Shutsugeki!! Otometachi no Senjou 2 - Amakakeru Shougeki no Kizuna (Japan).iso" size 1637646336 crc B6B492A0 md5 B1A5B5ABBEC6041E57CAB51C1C53020A sha1 D7567C7593EE3F4A3DE59206DA3D015898FCBA6E serial "ULJS-00537" )
 )
 game (
 	name "Sid Meier's Pirates! (Europe) (En,Fr,De,Es,It)"
@@ -20006,6 +20600,12 @@ game (
 	rom ( name "Sims 2, The - Castaway (USA) (En,Fr,De,Es,It,Nl,Pt).iso" size 1034158080 crc E6AF06AD md5 F5F6345544D4D8B3D5BB61DFD8D5CA91 sha1 DBD7CD82FA03DF1334B04E8AF6AD4AD13DBB493B serial "ULUS-10296" )
 )
 game (
+	name "Sims 2, The - Dr. Dominic no Inbou (Japan)"
+	region "Japan"
+	serial "ULJM-05065"
+	rom ( name "Sims 2, The - Dr. Dominic no Inbou (Japan).iso" size 1085046784 crc D4CE1AF6 md5 A14BE49C28BDAA8FE7DBAA7FC5E8F036 sha1 DFEDE201E3C4E8F10319694F000E1EBF1B6B4C66 serial "ULJM-05065" )
+)
+game (
 	name "Sims 2, The - Pet Wan Nyan Life (Japan)"
 	region "Japan"
 	serial "ULJM-05212"
@@ -20058,6 +20658,12 @@ game (
 	region "Europe"
 	serial "ULES-00957"
 	rom ( name "Skate Park City (Europe).iso" size 277839872 crc 7FF72789 md5 80497351CEA1349729551F983269C0C8 sha1 3EB3834D28DFF5BA327374263551A774B979DEF0 serial "ULES-00957" )
+)
+game (
+	name "Slotter Mania P - Mach Go Go Go III (Japan)"
+	region "Japan"
+	serial "ULJM-05822"
+	rom ( name "Slotter Mania P - Mach Go Go Go III (Japan).iso" size 1062862848 crc D36F1578 md5 9AC6D22FC28AEBC734E5BC02B5C3DDF7 sha1 DF73BEB58835B835AD7ED0B2225EB20496DFC1A0 serial "ULJM-05822" )
 )
 game (
 	name "Smart Bomb (USA)"
@@ -20249,6 +20855,18 @@ game (
 	rom ( name "Sorayume Portable (Japan).iso" size 1028816896 crc 91928E00 md5 13986397A11A19166E2B99BB9506D0AF sha1 D95B8937FB2396CEBC59B615C2A4E6B1FE5BB8D4 serial "ULJS-00203" )
 )
 game (
+	name "Soreyuke! Burunyanman Portable - Torimodose! Ai to Seigi to Kibou no Tsunyakan (Japan)"
+	region "Japan"
+	serial "ALCH-00035"
+	rom ( name "Soreyuke! Burunyanman Portable - Torimodose! Ai to Seigi to Kibou no Tsunyakan (Japan).iso" size 1589510144 crc 8B165509 md5 689DD0DAD5C62B27A46F1E8AF0EBE4CB sha1 C3A74C451F02485F6DF80F96EE8436E1BBB65013 serial "ALCH-00035" )
+)
+game (
+	name "Soreyuke! Burunyanman Portable - Torimodose! Ai to Seigi to Kibou no Tsunyakan (Japan)"
+	region "Japan"
+	serial "ULJM-05979"
+	rom ( name "Soreyuke! Burunyanman Portable - Torimodose! Ai to Seigi to Kibou no Tsunyakan (Japan).iso" size 1589510144 crc 8B165509 md5 689DD0DAD5C62B27A46F1E8AF0EBE4CB sha1 C3A74C451F02485F6DF80F96EE8436E1BBB65013 serial "ULJM-05979" )
+)
+game (
 	name "Soukoku no Kusabi - Hiiro no Kakera 3 - Ashita e no Tobira (Japan)"
 	region "Japan"
 	serial "ULJM-06071"
@@ -20319,6 +20937,12 @@ game (
 	region "Japan"
 	serial "ULJM-05045"
 	rom ( name "Space Invaders - Galaxy Beat (Japan).iso" size 229507072 crc 028EDB0E md5 022D2DD4FC867FE685D4CD319E058E7B sha1 E4851C4396563EC1689478679214BFC5BD5D07D1 serial "ULJM-05045" )
+)
+game (
+	name "Space Invaders - Galaxy Beat (Korea)"
+	region "Korea"
+	serial "ULKS-46052"
+	rom ( name "Space Invaders - Galaxy Beat (Korea).iso" size 228589568 crc 9C406E8A md5 FA1475B4A8F8499A29FE7C44D7DC9E50 sha1 84A8A5D1876A8152D7DE70303BA34EC9E1FD309D serial "ULKS-46052" )
 )
 game (
 	name "Space Invaders Evolution (Europe) (En,Fr,De,Es,It,Nl)"
@@ -20956,8 +21580,14 @@ game (
 game (
 	name "Sto-Mani - Strobe-Mania (Japan)"
 	region "Japan"
+	serial "ULJS-00607"
+	rom ( name "Sto-Mani - Strobe-Mania (Japan).iso" size 1121353728 crc 8F978984 md5 CAD430B1A039F47D75196FF87BF608BE sha1 42DE4EFA2BA26014BF4EDA571447045DF93866BD serial "ULJS-00607" )
+)
+game (
+	name "Sto-Mani - Strobe-Mania (Japan) (Shokai Seisanban)"
+	region "Japan"
 	serial "ULJS-00439"
-	rom ( name "Sto-Mani - Strobe-Mania (Japan).iso" size 1121353728 crc BBFAEB8D md5 236D1B41400C8392EBD32A570484661B sha1 496E4D8209089921F83E39E7D7AF850D201A883F serial "ULJS-00439" )
+	rom ( name "Sto-Mani - Strobe-Mania (Japan) (Shokai Seisanban).iso" size 1121353728 crc BBFAEB8D md5 236D1B41400C8392EBD32A570484661B sha1 496E4D8209089921F83E39E7D7AF850D201A883F serial "ULJS-00439" )
 )
 game (
 	name "Storm Lover (Japan)"
@@ -21044,10 +21674,16 @@ game (
 	rom ( name "Street Fighter Alpha 3 Max (USA).iso" size 246808576 crc E68C5F62 md5 204E3AC4C2678C4746E7F237BB93E58E sha1 321FF2143B4C3E8AA24EFCF52FFE577C9739F57B serial "ULUS-10062" )
 )
 game (
-	name "Street Fighter Zero 3 Double Upper (Japan)"
+	name "Street Fighter Zero 3 Double Upper (Japan, Asia)"
+	region "Japan"
+	serial "ULAS-42039"
+	rom ( name "Street Fighter Zero 3 Double Upper (Japan, Asia).iso" size 271417344 crc 57D9EB3E md5 D2C5AC0E4398858733C619050E1A6FF9 sha1 86B75C0E299400722D5E4E1F7077730DA0FBAC11 serial "ULAS-42039" )
+)
+game (
+	name "Street Fighter Zero 3 Double Upper (Japan, Asia)"
 	region "Japan"
 	serial "ULJM-05225"
-	rom ( name "Street Fighter Zero 3 Double Upper (Japan).iso" size 271417344 crc 57D9EB3E md5 D2C5AC0E4398858733C619050E1A6FF9 sha1 86B75C0E299400722D5E4E1F7077730DA0FBAC11 serial "ULJM-05225" )
+	rom ( name "Street Fighter Zero 3 Double Upper (Japan, Asia).iso" size 271417344 crc 57D9EB3E md5 D2C5AC0E4398858733C619050E1A6FF9 sha1 86B75C0E299400722D5E4E1F7077730DA0FBAC11 serial "ULJM-05225" )
 )
 game (
 	name "Street Riders (Europe) (En,Fr,De,Es,It)"
@@ -21258,6 +21894,12 @@ game (
 	region "USA"
 	serial "ULUS-10262"
 	rom ( name "Surf's Up (USA) (En,Fr,Es).iso" size 906362880 crc E69DB4DB md5 13B1C7EA0CB737F6D851FE28B31E3C87 sha1 6B166AE87539DA705E4B797C51C96016959F072B serial "ULUS-10262" )
+)
+game (
+	name "Suzukaze no Melt - Days in the Sanctuary (Japan)"
+	region "Japan"
+	serial "ULJM-06053"
+	rom ( name "Suzukaze no Melt - Days in the Sanctuary (Japan).iso" size 1744633856 crc FB17EE1B md5 EB4633503128152D15C21538C6FB7EEC sha1 A5854E0308EF96D948DEF315E9A70C01E59F7D3E serial "ULJM-06053" )
 )
 game (
 	name "Suzumiya Haruhi no Tsuisou (Japan)"
@@ -21503,6 +22145,12 @@ game (
 	rom ( name "Taikou Risshiden V (Japan) (v3.00).iso" size 304840704 crc 9F2A5BD6 md5 DFCE9A0D06256B818F6CE6CD49924B6D sha1 C5471319F253872071BB37678A533BEC584D2D1C serial "ULJM-06158" )
 )
 game (
+	name "Taishou Kitan (Japan)"
+	region "Japan"
+	serial "ULJM-06338"
+	rom ( name "Taishou Kitan (Japan).iso" size 1328054272 crc 55C4D076 md5 018B6CC3502DF8A61B748E33004AFF14 sha1 D12FE73D41CACFE9B0AD161552DE4EF971BD2902 serial "ULJM-06338" )
+)
+game (
 	name "Taishou Kitan - Kotonoha Sakura (Japan)"
 	region "Japan"
 	serial "ULJM-06380"
@@ -21515,10 +22163,10 @@ game (
 	rom ( name "Taishou Mebiusline Portable (Japan).iso" size 1562771456 crc 003DB9C9 md5 5AE31CEE212AAA7AB24F1BD3A63FE84B sha1 7BC699678F4955EFF6213F30D6A555006FF421C3 serial "ULJM-06354" )
 )
 game (
-	name "Taishou Yakyuu Musume. - Otome-tachi no Seishun Nikki (Japan)"
+	name "Taishou Yakyuu Musume. - Otometachi no Seishun Nikki (Japan)"
 	region "Japan"
 	serial "ULJM-05528"
-	rom ( name "Taishou Yakyuu Musume. - Otome-tachi no Seishun Nikki (Japan).iso" size 944570368 crc 5B327C19 md5 B24D9FE06FAB7BAB363A3099390D9522 sha1 60394E03706A24C83F895A6F7FCAFF4F9FCEB65C serial "ULJM-05528" )
+	rom ( name "Taishou Yakyuu Musume. - Otometachi no Seishun Nikki (Japan).iso" size 944570368 crc 5B327C19 md5 B24D9FE06FAB7BAB363A3099390D9522 sha1 60394E03706A24C83F895A6F7FCAFF4F9FCEB65C serial "ULJM-05528" )
 )
 game (
 	name "Taito Legends Power-Up (Europe) (En,Fr,De,Es,It)"
@@ -21537,6 +22185,12 @@ game (
 	region "Japan"
 	serial "ULJM-05076"
 	rom ( name "Taito Memories Pocket (Japan).iso" size 329351168 crc 0003FFB1 md5 71A18AA0556EF12D282F8EF0CC8C2DF3 sha1 712848E30158970E8F471CDD63F0C53C4B0EBA7C serial "ULJM-05076" )
+)
+game (
+	name "Takuyo Mix Box - First Anniversary (Japan)"
+	region "Japan"
+	serial "ULJS-00305"
+	rom ( name "Takuyo Mix Box - First Anniversary (Japan).iso" size 1294434304 crc CAEC2013 md5 76CE1BA66EAE6754037F54B7808285AD sha1 9CC00CD679DD376FC3BD8941B6477C39F9376EBB serial "ULJS-00305" )
 )
 game (
 	name "Tales of Destiny 2 (Japan)"
@@ -21635,22 +22289,28 @@ game (
 	rom ( name "Tales of the World - Radiant Mythology (Europe).iso" size 439648256 crc 0837248F md5 BA38D4905163BD0717B8DDFEAABA1383 sha1 C30433AA65068C998F20321410EBB5944E66E467 serial "ULES-00837" )
 )
 game (
-	name "Tales of the World - Radiant Mythology (Japan)"
-	region "Japan"
-	serial "ULJS-00093"
-	rom ( name "Tales of the World - Radiant Mythology (Japan).iso" size 501481472 crc 3BF10CFF md5 DF9C1CC70A0583C7704F3EE1BC727CCD sha1 2851EC3495FB25F25E73048170253DBDBF44E144 serial "ULJS-00093" )
-)
-game (
-	name "Tales of the World - Radiant Mythology (Japan)"
-	region "Japan"
-	serial "ULJS-19019"
-	rom ( name "Tales of the World - Radiant Mythology (Japan).iso" size 501481472 crc 3BF10CFF md5 DF9C1CC70A0583C7704F3EE1BC727CCD sha1 2851EC3495FB25F25E73048170253DBDBF44E144 serial "ULJS-19019" )
-)
-game (
 	name "Tales of the World - Radiant Mythology (Japan) (PSP System Bundle)"
 	region "Japan"
 	serial "ULJM-95004"
 	rom ( name "Tales of the World - Radiant Mythology (Japan) (PSP System Bundle).iso" size 501481472 crc B5A0F0C3 md5 0E6EB27CF8E1DABDC0724F6FD81A0A2A sha1 ED671CB29700E58BCE0265849B212F69E8C11B55 serial "ULJM-95004" )
+)
+game (
+	name "Tales of the World - Radiant Mythology (Japan, Korea)"
+	region "Japan"
+	serial "UCKS-45040"
+	rom ( name "Tales of the World - Radiant Mythology (Japan, Korea).iso" size 501481472 crc 3BF10CFF md5 DF9C1CC70A0583C7704F3EE1BC727CCD sha1 2851EC3495FB25F25E73048170253DBDBF44E144 serial "UCKS-45040" )
+)
+game (
+	name "Tales of the World - Radiant Mythology (Japan, Korea)"
+	region "Japan"
+	serial "ULJS-00093"
+	rom ( name "Tales of the World - Radiant Mythology (Japan, Korea).iso" size 501481472 crc 3BF10CFF md5 DF9C1CC70A0583C7704F3EE1BC727CCD sha1 2851EC3495FB25F25E73048170253DBDBF44E144 serial "ULJS-00093" )
+)
+game (
+	name "Tales of the World - Radiant Mythology (Japan, Korea)"
+	region "Japan"
+	serial "ULJS-19019"
+	rom ( name "Tales of the World - Radiant Mythology (Japan, Korea).iso" size 501481472 crc 3BF10CFF md5 DF9C1CC70A0583C7704F3EE1BC727CCD sha1 2851EC3495FB25F25E73048170253DBDBF44E144 serial "ULJS-19019" )
 )
 game (
 	name "Tales of the World - Radiant Mythology (USA)"
@@ -21675,6 +22335,15 @@ game (
 	region "Japan"
 	serial "ULJS-00294"
 	rom ( name "Tales of the World - Radiant Mythology 3 (Japan).iso" size 1807089664 crc 7A5CE0BD md5 5D63D1652B851E005D27FE42DB7D6241 sha1 AA1DF96ECFA1B53FDDA9391DC711C239827BFD91 serial "ULJS-00294" )
+)
+game (
+	name "TalkMan (Europe) (En,Ja,Fr,De,Es,It) (Beta)"
+	releaseyear "2006"
+	releasemonth "03"
+	releaseday "13"
+	region "Europe"
+	serial "UCET-00355/0.01"
+	rom ( name "TalkMan (Europe) (En,Ja,Fr,De,Es,It) (Beta) (2006-03-13).iso" size 1628569600 crc 035C7B53 md5 4FAED30C7A150142E4FF6905137F89EA sha1 147509058155AC45B365A47EBF064363A344296C serial "UCET-00355/0.01" )
 )
 game (
 	name "TalkMan (Europe, Australia) (En,Ja,Fr,De,Es,It)"
@@ -21713,22 +22382,28 @@ game (
 	rom ( name "TalkMan (Japan, Asia) (En,Ja,Zh,Ko) (Microphone Doukonban).iso" size 1228505088 crc 49A98873 md5 C12D754C2BB7DCA50354E32D2D9C42F2 sha1 609B038B18A22E709C69E59EA16F13416DCEEFBF serial "UCJS-18017" )
 )
 game (
+	name "TalkMan (Korea) (En,Ja,Zh,Ko)"
+	region "Korea"
+	serial "UCKS-45012"
+	rom ( name "TalkMan (Korea) (En,Ja,Zh,Ko).iso" size 1228439552 crc 8C1E2CD3 md5 887BA1E2659378C3685B29ACBAB32D2E sha1 9B152908C63C1C9033B9FB5B7F7AE00376F39414 serial "UCKS-45012" )
+)
+game (
+	name "TalkMan Euro! TalkMan Europa Gengo Ban (Japan) (En,Ja,Fr,De,Es,It)"
+	region "Japan"
+	serial "UCJS-10034"
+	rom ( name "TalkMan Euro! TalkMan Europa Gengo Ban (Japan) (En,Ja,Fr,De,Es,It).iso" size 1802960896 crc AB5126DF md5 A5AEAC2384409D3427B36A2650C7F321 sha1 3B3868F877F9CD2F904A70F1F30B48156152DEAE serial "UCJS-10034" )
+)
+game (
+	name "TalkMan Euro! TalkMan Europa Gengo Ban (Japan) (En,Ja,Fr,De,Es,It)"
+	region "Japan"
+	serial "UCJS-18020"
+	rom ( name "TalkMan Euro! TalkMan Europa Gengo Ban (Japan) (En,Ja,Fr,De,Es,It).iso" size 1802960896 crc AB5126DF md5 A5AEAC2384409D3427B36A2650C7F321 sha1 3B3868F877F9CD2F904A70F1F30B48156152DEAE serial "UCJS-18020" )
+)
+game (
 	name "TalkMan Euro! TalkMan Europa Gengo Ban (Japan) (En,Ja,Fr,De,Es,It) (Microphone Doukonban)"
 	region "Japan"
 	serial "UCJS-10033"
 	rom ( name "TalkMan Euro! TalkMan Europa Gengo Ban (Japan) (En,Ja,Fr,De,Es,It) (Microphone Doukonban).iso" size 1802960896 crc F0F6F1D2 md5 CC146CB0B9723A38B571037ED278034A sha1 94C54AA0E9F9E2D79665F1DAE41726CCB4903627 serial "UCJS-10033" )
-)
-game (
-	name "TalkMan Euro! TalkMan Europa Gengo-ban (Japan) (En,Ja,Fr,De,Es,It)"
-	region "Japan"
-	serial "UCJS-10034"
-	rom ( name "TalkMan Euro! TalkMan Europa Gengo-ban (Japan) (En,Ja,Fr,De,Es,It).iso" size 1802960896 crc AB5126DF md5 A5AEAC2384409D3427B36A2650C7F321 sha1 3B3868F877F9CD2F904A70F1F30B48156152DEAE serial "UCJS-10034" )
-)
-game (
-	name "TalkMan Euro! TalkMan Europa Gengo-ban (Japan) (En,Ja,Fr,De,Es,It)"
-	region "Japan"
-	serial "UCJS-18020"
-	rom ( name "TalkMan Euro! TalkMan Europa Gengo-ban (Japan) (En,Ja,Fr,De,Es,It).iso" size 1802960896 crc AB5126DF md5 A5AEAC2384409D3427B36A2650C7F321 sha1 3B3868F877F9CD2F904A70F1F30B48156152DEAE serial "UCJS-18020" )
 )
 game (
 	name "TalkMan Travel - Kankoku, Taiwan, Chuugoku (Shanghai) Hen (Japan)"
@@ -21737,16 +22412,22 @@ game (
 	rom ( name "TalkMan Travel - Kankoku, Taiwan, Chuugoku (Shanghai) Hen (Japan).iso" size 113311744 crc 0376C5A1 md5 D8218BD8B8ADE1B4F38532E6EFA923E8 sha1 47C7F40802C0828568B859512E20C366E1822094 serial "UCJS-10066" )
 )
 game (
-	name "TalkMan-shiki - Shabelingual Eikaiwa (Japan) (Microphone Doukonban)"
-	region "Japan"
-	serial "UCJS-10050"
-	rom ( name "TalkMan-shiki - Shabelingual Eikaiwa (Japan) (Microphone Doukonban).iso" size 453640192 crc C568E6AA md5 0352F3A269917E8419CD7F473EED1FFA sha1 88EC6D265DF821AA133BE5990A1438BD9E57ACCA serial "UCJS-10050" )
+	name "TalkMan Yeongeohoehwa Sudajaeng English (Korea)"
+	region "Korea"
+	serial "UCKS-45044"
+	rom ( name "TalkMan Yeongeohoehwa Sudajaeng English (Korea).iso" size 458424320 crc 2088A268 md5 2ACF97F131DFBD62C45CF812B35E3872 sha1 D5DFFFB1C802D6D0D6C295974787E1DBFFBAF56E serial "UCKS-45044" )
 )
 game (
 	name "TalkMan-shiki Shabelingual Eikaiwa (Japan)"
 	region "Japan"
 	serial "UCJS-10051"
 	rom ( name "TalkMan-shiki Shabelingual Eikaiwa (Japan).iso" size 453640192 crc F0AB5B0A md5 9B05CFD0D041714D674908626A440234 sha1 C0CEAF66D75F34D1E5F6F86BABA47460A4E97133 serial "UCJS-10051" )
+)
+game (
+	name "TalkMan-shiki Shabelingual Eikaiwa (Japan) (Microphone Doukonban)"
+	region "Japan"
+	serial "UCJS-10050"
+	rom ( name "TalkMan-shiki Shabelingual Eikaiwa (Japan) (Microphone Doukonban).iso" size 453640192 crc C568E6AA md5 0352F3A269917E8419CD7F473EED1FFA sha1 88EC6D265DF821AA133BE5990A1438BD9E57ACCA serial "UCJS-10050" )
 )
 game (
 	name "TalkMan-shiki Shabelingual Eikaiwa for Kids! (Japan)"
@@ -21761,10 +22442,16 @@ game (
 	rom ( name "TalkMan-shiki Shabelingual Eikaiwa for Kids! (Japan) (En,Ja) (Microphone Doukonban).iso" size 327286784 crc 99D5CA09 md5 5C904027FE5E60AFA8367650153EB166 sha1 1A253AFE213BE838EEC5911BEC3751C95ADA7E13 serial "UCJS-10053" )
 )
 game (
-	name "Talkman Yeongeohoehwa Sudajaeng English (Korea)"
-	region "Korea"
-	serial "UCKS-45044"
-	rom ( name "Talkman Yeongeohoehwa Sudajaeng English (Korea).iso" size 458424320 crc 2088A268 md5 2ACF97F131DFBD62C45CF812B35E3872 sha1 D5DFFFB1C802D6D0D6C295974787E1DBFFBAF56E serial "UCKS-45044" )
+	name "Tama-Run (Japan)"
+	region "Japan"
+	serial "UCJS-10043"
+	rom ( name "Tama-Run (Japan).iso" size 352419840 crc 47329986 md5 9CF2FF6ACC443EC3EC8DDCABF11FA93E sha1 E37C042AAB5FF7F7483C00B1F471AE0A729A5DAB serial "UCJS-10043" )
+)
+game (
+	name "Tamayura - Mitama Okuri no Uta (Japan)"
+	region "Japan"
+	serial "ULJM-05999"
+	rom ( name "Tamayura - Mitama Okuri no Uta (Japan).iso" size 1301184512 crc 6BBAC9EB md5 FD7D57C501BEE12392DFC7E1C6E8B586 sha1 E148C077D5AE779BDCFB488292F5121E3E9BF081 serial "ULJM-05999" )
 )
 game (
 	name "Tantei Jinguuji Saburou - Hai to Diamond (Japan)"
@@ -21791,6 +22478,12 @@ game (
 	rom ( name "Tanteibu - The Detective Club - Angou to Misshitsu to Kaijin to (Japan).iso" size 617807872 crc 925CA09A md5 4D896CFD23B7C606836C2EB20E984340 sha1 13ADA3A7A85A011C0D708A2CAA33469FA353C78A serial "ULJM-05926" )
 )
 game (
+	name "Tanteibu - The Detective Club - Haibu to Kaiga to Bakudan to (Japan)"
+	region "Japan"
+	serial "ULJM-05927"
+	rom ( name "Tanteibu - The Detective Club - Haibu to Kaiga to Bakudan to (Japan).iso" size 675840000 crc 7EC49FE3 md5 0B005D8564BC8C9239189B5225391B62 sha1 DE4E47E87DC1ADDFED5109B87AE91D09E1E169C4 serial "ULJM-05927" )
+)
+game (
 	name "Tanteibu - The Detective Club - Tantei to Yuurei to Kaitou to (Japan)"
 	region "Japan"
 	serial "ULJM-05925"
@@ -21801,6 +22494,12 @@ game (
 	region "Japan"
 	serial "ULJM-06192"
 	rom ( name "Tasogare no Sinsemilla Portable (Japan).iso" size 941785088 crc 2739F35C md5 735CAA7E2B5C87781C6C59F10FF834AF sha1 005139B3AE043AB93040E507A6B257436B6D5A27 serial "ULJM-06192" )
+)
+game (
+	name "Tasogaredoki - Kaidan Romance (Japan)"
+	region "Japan"
+	serial "ULJM-06235"
+	rom ( name "Tasogaredoki - Kaidan Romance (Japan).iso" size 1068335104 crc 94B6FDE7 md5 CD2480D6983CC1F06A3C2B682AAEC984 sha1 5CBE7260A56B4C9186C45B772EFAE474FFAA20B6 serial "ULJM-06235" )
 )
 game (
 	name "Te to Te Try On! Tropical (Japan)"
@@ -22038,6 +22737,12 @@ game (
 	region "Japan"
 	serial "ULJM-05634"
 	rom ( name "Tenshin Ranman - Happy Go Lucky!! (Japan).iso" size 1811611648 crc 58AE22AD md5 D7E4850851AF6BA3B78376981A914D44 sha1 D6D66E35421D8A160A62CA756DFB115D18EB713A serial "ULJM-05634" )
+)
+game (
+	name "Tenshin Ranman - Happy Go Lucky!! (Japan) (Genteiban)"
+	region "Japan"
+	serial "ULJM-05633"
+	rom ( name "Tenshin Ranman - Happy Go Lucky!! (Japan) (Genteiban).iso" size 1811611648 crc F564C4B3 md5 3E813BF8752502FDF57BABAB07350535 sha1 92694A26724A6612838408FF1212549ADA8CE98D serial "ULJM-05633" )
 )
 game (
 	name "Test Drive Unlimited (Europe) (En,Fr,De,Es,It)"
@@ -22280,16 +22985,16 @@ game (
 	rom ( name "To Love Ru - Doki Doki! Rinkai Gakkou Hen (Japan).iso" size 834568192 crc 88BAA5B4 md5 37DBE219C4D95A68C17D34378032546E sha1 FFABC27CF902220760F13A57330909F22574F3E4 serial "ULJS-00153" )
 )
 game (
-	name "ToHeart 2 - Dungeon Travelers (Japan) (NPJH-50771)"
-	region "Japan"
-	serial "ULJM-06267"
-	rom ( name "ToHeart 2 - Dungeon Travelers (Japan) (NPJH-50771).iso" size 1317830656 crc 5950EA73 md5 C430D81CC4854DBFFDB1F31F10DD5F1E sha1 224E95811DDB5C06B86811389C04719E6AC96B6F serial "ULJM-06267" )
-)
-game (
-	name "ToHeart 2 - Dungeon Travelers (Japan) (ULJM-05873)"
+	name "ToHeart 2 - Dungeon Travelers (Japan)"
 	region "Japan"
 	serial "ULJM-05873"
-	rom ( name "ToHeart 2 - Dungeon Travelers (Japan) (ULJM-05873).iso" size 1317830656 crc 8C236019 md5 874B70A7C78DE667994D79826F876902 sha1 F702A3DF4B32EC985963AABB61395E12724C23F8 serial "ULJM-05873" )
+	rom ( name "ToHeart 2 - Dungeon Travelers (Japan).iso" size 1317830656 crc 8C236019 md5 874B70A7C78DE667994D79826F876902 sha1 F702A3DF4B32EC985963AABB61395E12724C23F8 serial "ULJM-05873" )
+)
+game (
+	name "ToHeart 2 - Dungeon Travelers (Japan) (Aquaprice 2800)"
+	region "Japan"
+	serial "ULJM-06267"
+	rom ( name "ToHeart 2 - Dungeon Travelers (Japan) (Aquaprice 2800).iso" size 1317830656 crc 5950EA73 md5 C430D81CC4854DBFFDB1F31F10DD5F1E sha1 224E95811DDB5C06B86811389C04719E6AC96B6F serial "ULJM-06267" )
 )
 game (
 	name "ToHeart 2 Portable (Japan)"
@@ -22580,10 +23285,10 @@ game (
 	rom ( name "Toukiden (Japan).iso" size 1235288064 crc 1FB366CF md5 72E0F5B7993027BB4D778CBF4AFC7107 sha1 FFE611CC928E33DB54309101DE3535694F1EE783 serial "ULJM-06290" )
 )
 game (
-	name "Toukiden Kiwami (Japan)"
+	name "Toukiden - Kiwami (Japan)"
 	region "Japan"
 	serial "ULJM-06376"
-	rom ( name "Toukiden Kiwami (Japan).iso" size 1667203072 crc 2C8F3175 md5 62CEEE266062CDD7FF9B039201E95A3C sha1 D18192564898E671943F4B4C670C1D8350409A41 serial "ULJM-06376" )
+	rom ( name "Toukiden - Kiwami (Japan).iso" size 1667203072 crc 2C8F3175 md5 62CEEE266062CDD7FF9B039201E95A3C sha1 D18192564898E671943F4B4C670C1D8350409A41 serial "ULJM-06376" )
 )
 game (
 	name "Transformers - Die Rache (Germany)"
@@ -22887,6 +23592,18 @@ game (
 	region "Japan"
 	serial "ULJS-00137"
 	rom ( name "Umihara Kawase Portable (Japan).iso" size 288063488 crc A0883DCC md5 B349E6F305BB40F8C5A9CB95FC315EBB sha1 E8838BB66F8C5558115F57FC59EA6BF13F4F39FF serial "ULJS-00137" )
+)
+game (
+	name "Umineko no Naku Koro ni Portable 1 (Japan)"
+	region "Japan"
+	serial "ULJM-05968"
+	rom ( name "Umineko no Naku Koro ni Portable 1 (Japan).iso" size 1183383552 crc 4B81E5A9 md5 E23AF333E3C9C6346EAE05247AB4A42E sha1 5819B5CFA90065C63605E544D3BE0262AF3ACC99 serial "ULJM-05968" )
+)
+game (
+	name "Umineko no Naku Koro ni Portable 2 (Japan)"
+	region "Japan"
+	serial "ULJM-05969"
+	rom ( name "Umineko no Naku Koro ni Portable 2 (Japan).iso" size 1624145920 crc 728D8524 md5 1CCA4CCCB4FB3F732E7572CB5D886AE3 sha1 22A65AF09E1516E6B49A74739D542A56AC43428C serial "ULJM-05969" )
 )
 game (
 	name "UnchainBlades EXXiV (Japan)"
@@ -23552,6 +24269,12 @@ game (
 	rom ( name "Warhammer 40,000 - Squad Command (Europe) (En,Fr,De,Es,It).iso" size 887259136 crc FC88CEEC md5 4FBA4928D18DB959895EDB4E502708A7 sha1 0AE26F6AD7CC8A112CCF13F920BAF03E8CE97C94 serial "ULES-00873" )
 )
 game (
+	name "Warhammer 40,000 - Squad Command (Korea) (En,Fr)"
+	region "Korea"
+	serial "ULKS-46166"
+	rom ( name "Warhammer 40,000 - Squad Command (Korea) (En,Fr).iso" size 498892800 crc 2940F836 md5 B03A724C9D7D4FD148C5CDD6E60C3356 sha1 3216AD47C3816B2BB72395B08DFD71D369E06D9D serial "ULKS-46166" )
+)
+game (
 	name "Warhammer 40,000 - Squad Command (USA) (En,Fr)"
 	region "USA"
 	serial "ULUS-10313"
@@ -24185,6 +24908,15 @@ game (
 	rom ( name "World Tour Soccer (Europe) (En,Fr,De,Es,It).iso" size 331284480 crc 15F85662 md5 0C08E4C58DF822D058F4F2F5DD7D1D6F sha1 4510DD839232D9965EBE9B5D29559482B7A1041F serial "UCES-00003" )
 )
 game (
+	name "World Tour Soccer (Europe) (En,Fr,De,Es,It) (Beta)"
+	releaseyear "2005"
+	releasemonth "01"
+	releaseday "20"
+	region "Europe"
+	serial "UCES-00003/0.01"
+	rom ( name "World Tour Soccer (Europe) (En,Fr,De,Es,It) (Beta) (2005-01-20).iso" size 495845376 crc 1EB35E70 md5 6933B4438FF3E4C8B1B62A40360C6631 sha1 56F9065416009E367B1B30DA53E494D7E87E7C92 serial "UCES-00003/0.01" )
+)
+game (
 	name "World Tour Soccer (USA) (En,Fr,De,Es)"
 	region "USA"
 	serial "UCUS-98613"
@@ -24381,6 +25113,12 @@ game (
 	region "Asia"
 	serial "UCAS-40034"
 	rom ( name "Yarudora Portable - Sampaguita (Asia).iso" size 1250885632 crc 202E8F43 md5 5BA775F1B6A8947C4EDED44C909279E9 sha1 B246D7B9B2B8D9DAF345E933DECC5E589B05CA42 serial "UCAS-40034" )
+)
+game (
+	name "Yarudora Portable - Sampaguita (Japan)"
+	region "Japan"
+	serial "UCJS-10014"
+	rom ( name "Yarudora Portable - Sampaguita (Japan).iso" size 1244135424 crc 643064D6 md5 86C931EAE2F19995D6CEB21302D998E9 sha1 7D25298BCADE489FDCB772C62C4DA46601AF35E7 serial "UCJS-10014" )
 )
 game (
 	name "Yarudora Portable - Yukiwari no Hana (Japan)"
@@ -24647,6 +25385,12 @@ game (
 	rom ( name "Yuusha no Kuse ni Namaiki da. (Japan).iso" size 93126656 crc 340FD0A3 md5 3773E7217C2D40ACC88FD5DFDB5003ED sha1 CD3FA7519490284A232262FF64AD00E39C6583ED serial "UCJS-10076" )
 )
 game (
+	name "Yuusha no Kuse ni Namaiki da. (Japan)"
+	region "Japan"
+	serial "UCJS-18026"
+	rom ( name "Yuusha no Kuse ni Namaiki da. (Japan).iso" size 93126656 crc 340FD0A3 md5 3773E7217C2D40ACC88FD5DFDB5003ED sha1 CD3FA7519490284A232262FF64AD00E39C6583ED serial "UCJS-18026" )
+)
+game (
 	name "Yuusha no Kuse ni Namaikida -3D (Japan)"
 	region "Japan"
 	serial "UCJS-10109"
@@ -24705,6 +25449,12 @@ game (
 	region "Japan"
 	serial "ULJS-19050"
 	rom ( name "Zettai Zetsumei Toshi 3 - Kowareyuku Machi to Kanojo no Uta (Japan) (v2.00).iso" size 1721270272 crc AEE0579C md5 5F038B4777C16035A8D14AC67DE48617 sha1 7AB97C9092B190FEA93988C697DF7538B70A8B05 serial "ULJS-19050" )
+)
+game (
+	name "Zhen Sanguo Wushuang - Multi Raid 2 (Asia)"
+	region "Asia"
+	serial "ULAS-42230"
+	rom ( name "Zhen Sanguo Wushuang - Multi Raid 2 (Asia).iso" size 1703837696 crc 82ABB2B0 md5 EE13A0E6CC301DC1B41D150CD62F15ED sha1 28FBDA58EA9AAEB88BBA0E4C2487CFCDAA453A3B serial "ULAS-42230" )
 )
 game (
 	name "Zhuo Hou La - Hou Zi Ai Zuo Zhan (Asia)"

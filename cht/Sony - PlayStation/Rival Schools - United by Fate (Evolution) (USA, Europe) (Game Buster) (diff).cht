@@ -1,4 +1,4 @@
-cheats = 16 
+cheats = 12 
 
 cheat0_desc = "Joker Command P1"
 cheat0_code = "D01F5E00+????"

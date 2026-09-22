@@ -1,4 +1,4 @@
-cheats = 22 
+cheats = 23 
 
 cheat0_desc = "Infinite Money"
 cheat0_code = "800719A8:FFFF"

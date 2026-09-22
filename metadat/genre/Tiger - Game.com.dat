@@ -53,7 +53,7 @@ game (
 
 game (
 	comment "Indy 500 (USA)"
-	genre "Racing / Driving"
+	genre "Racing"
 	rom (
 		crc 845ED281
 	)
