@@ -38,7 +38,7 @@ from aiomultiprocess.types import ProxyException
 
 from pydantic import AliasChoices, BaseModel, DirectoryPath, Field, FilePath
 from pydantic_settings import BaseSettings, CliSubCommand, SettingsConfigDict, CliApp
-from sqlalchemy import CheckConstraint, ForeignKey, MetaData, Column, Row, Select, String, Index, column, select, text, true, type_coerce
+from sqlalchemy import CheckConstraint, ForeignKey, MetaData, Column, Row, Select, String, Index, case, column, or_, select, text, true, type_coerce
 from sqlalchemy.dialects.sqlite import insert
 from sqlalchemy.ext.asyncio import AsyncConnection, AsyncEngine, create_async_engine
 from sqlalchemy.sql.functions import coalesce, count
@@ -487,10 +487,16 @@ class HasheousLink(NamedTuple):
     dump: str
 
     countries: tuple[str, ...]
-    """The regions that Hasheous says this very ROM was released in, most prominent first."""
+    """
+    The regions that Hasheous says this very ROM was released in, most prominent first.
+    Empty if the ROM was only matched by serial, since that may be a different dump.
+    """
 
     languages: tuple[str, ...]
-    """The languages that Hasheous says this very ROM is in."""
+    """
+    The languages that Hasheous says this very ROM is in.
+    Empty if the ROM was only matched by serial, since that may be a different dump.
+    """
 
 
 @dataclass
@@ -797,6 +803,13 @@ class IndexReader:
         listings = rom_id.table.alias("ignored_listings")
         ignored_roms = select(listings.c[rom_id.name]).where(listings.c[game_id.name].in_(ignored_games))
 
+        # A DAT ROM matched only by serial is a different dump than the Hasheous ROM (see `_insert_allrom_mappings`),
+        # so that ROM's countries and languages don't describe it
+        same_dump = or_(
+            all_roms.c.dat_rom.is_(None),
+            *(all_roms.c[h] == rom.c[h] for h in ("crc", "md5", "sha1", "sha256")),
+        )
+
         return (
             select(
                 all_roms.c.crc,
@@ -806,8 +819,8 @@ class IndexReader:
                 game.c.retroachievements_id,
                 dump.c.dump,
                 # Read as text, so that `hasheous_links` can parse each distinct value just once
-                type_coerce(rom.c.country, String),
-                type_coerce(rom.c.language, String),
+                type_coerce(case((same_dump, rom.c.country)), String),
+                type_coerce(case((same_dump, rom.c.language)), String),
             )
             .join_from(all_roms, rom, rom.c.id == all_roms.c.hasheous_rom)
             .join(rom_id.table, rom_id == all_roms.c.hasheous_rom)
