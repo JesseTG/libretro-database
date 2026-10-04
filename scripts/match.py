@@ -5,7 +5,7 @@ Matches this repo's DAT files to IGDB and Hasheous,
 and derives metadata for RetroArch's `.rdb` databases from them.
 
 - `index` joins all three sources into one SQLite database.
-- `generate` writes one DAT file per playlist to `lookatalldat/`,
+- `generate` writes one DAT file per playlist to `metadat/lookatall/`,
   holding whatever the index can add to the entries that RetroArch's databases already have.
   libretro-super's `libretro-build-database.sh` compiles it after every other DAT file.
 
@@ -44,7 +44,7 @@ from sqlalchemy.ext.asyncio import AsyncConnection, AsyncEngine, create_async_en
 from sqlalchemy.sql.functions import coalesce, count
 from titlecase import titlecase
 
-from dats import DAT_OBJECT_TYPES, ClrMamePro, CompiledEntry, DatTable, ParsedDatFile, compile_dats_async, encode_dat, get_dat_match, index_dats, write_dat_key_index, Game as DatGame, PlaylistGameMapping as DatPlaylistGameMapping, Rom as DatRom
+from dats import DAT_OBJECT_TYPES, LOOKATALL_DIR, ClrMamePro, CompiledEntry, DatTable, ParsedDatFile, compile_dats_async, encode_dat, get_dat_match, index_dats, write_dat_key_index, Game as DatGame, PlaylistGameMapping as DatPlaylistGameMapping, Rom as DatRom
 from igdb import (
     IGDB_OBJECT_TYPES,
     IgdbConfig,
@@ -151,8 +151,6 @@ class MatchConfig:
         )
 
 
-OUTDIR_NAME = "lookatalldat"
-
 BUILD_DAT_DIRS: tuple[str, ...] = (
     "metadat",
     "metadat/goodtools",
@@ -190,6 +188,7 @@ BUILD_DAT_DIRS: tuple[str, ...] = (
     "metadat/libretro-dats",
     "metadat/redump",
     "metadat/no-intro",
+    "metadat/lost-level-archive",
     "dat",
 )
 """
@@ -200,7 +199,7 @@ See https://github.com/libretro/libretro-super/blob/master/libretro-build-databa
 Listed in the order the script passes them to `c_converter`,
 which is also their precedence from lowest to highest:
 when two files describe the same entry, the later one wins.
-The script reads `lookatalldat` last of all, so it isn't listed here.
+The script reads `metadat/lookatall` last of all, so it isn't listed here.
 """
 
 
@@ -1304,7 +1303,7 @@ class GenerateSubCommand(BaseModel, PlaylistArgs, PoolArgs, VerboseArgs):
     )
 
     outdir: Path = Field(
-        default=PARENT_DIR / OUTDIR_NAME,
+        default=LOOKATALL_DIR,
         description="Path to the output directory where generated DAT files will be written.",
         validation_alias=AliasChoices('o', 'outdir'),
         validate_default=True,

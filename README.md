@@ -32,7 +32,6 @@ The non-exhaustive list below serves as a guide to various folders in the reposi
   - Subset data coverage for games or variants that do/did not have contemporary documentation by upstream database groups, e.g. Virtual Console variants of SNES games, fan translations of NEC PC-98 games, and a superceded squib for PSP Minis.
   - Game data for monolithic non-generalized cores, e.g. Cave Story, Doom, Quake, etc.
   - Data adapted from upstream sources that cover a relatively small number of systems and can therefore can be housed together in a single repository folder without conflict, e.g. DOS, ScummVM, and GameTDB coverage of GameCube and Wii data.  (Though many dats from upstream groups reside in [`metadat`](metadat).)
-- [`lookatalldat`](lookatalldat) DAT files generated with [`match.py`](scripts/match.py), aggregating and associating information from IGDB, Hasheous, and the rest of this repo's DAT files. See [Generating `lookatalldat`](#generating-lookatalldat).
 - [`metadat`](metadat) Several principal third-party DATs (e.g. No-Intro, Redump, MAME, TOSEC) that each cover a large number of systems and therefore require their own folders in the repository, plus various collections of metadata (some of which may be deprecated). Examples:
   - [`bbfc`](metadat/bbfc) British Board of Film Classification's ratings for age-appropriateness.
   - [`elspa`](metadat/elspa) Age-appropriateness/content ratings from the Entertainment and Leisure Software Publishers Association aka the Association for UK Interactive Entertainment ("Ukie").
@@ -41,6 +40,7 @@ The non-exhaustive list below serves as a guide to various folders in the reposi
   - [`hacks`](metadat/hacks) Data for modified (or "hacked") versions of commercially released games.  Many of these data are set by direct manual commits on the Libretro Github.
   - [`homebrew`](metadat/homebrew) Data for non-officially-published games created by independent creators/programmers.
   - [`libretro-dats`](metadat/libretro-dats) Ad hoc databases for items that were/are not covered by upstream database groups. Currently includes fan translations of SNES games, and an additional FDS dat that may be redundant with other sources.
+  - [`lookatall`](metadat/lookatall) DAT files generated with [`match.py`](scripts/match.py), aggregating and associating information from IGDB, Hasheous, and the rest of this repo's DAT files. See [Generating `lookatall`](#generating-lookatall).
   - [`no-intro`](metadat/no-intro) Bulk import from upstream No-Intro databases. Generally non-disc-based systems.
   - [`redump`](metadat/redump) Bulk import from upstream Redump databases. Generally disc-based systems.
   - [`tosec`](metadat/tosec) Bulk import from upstream TOSEC databases. TOSEC data overlaps with and goes beyond other data sets (No-Intro, Redump), but has lower [precedence](#precedence) in libretro and so generally serves as a secondary stopgap.
@@ -237,14 +237,14 @@ Alternatively, you can run the following command to rebuild all the RDBs locally
 make build
 ```
 
-### Generating `lookatalldat`
+### Generating `lookatall`
 
 So many data points, you'll want to say "look at all that metadata!"
 
-The DAT files in [`lookatalldat`](lookatalldat) add metadata from [IGDB](https://www.igdb.com) and [Hasheous](https://hasheous.org) to games that the other DAT files already list.
+The DAT files in [`metadat/lookatall`](metadat/lookatall) add metadata from [IGDB](https://www.igdb.com) and [Hasheous](https://hasheous.org) to games that the other DAT files already list.
 [`match.py`](scripts/match.py) matches games only by the [key field](#key-field) that RetroArch uses (CRC or serial), never by name.
 Each generated entry only has fields that no other DAT file gives that game,
-so `lookatalldat` is compiled after all other DATs without overriding any of them.
+so `metadat/lookatall` is compiled after all other DATs without overriding any of them.
 Each entry also names the `igdb_id` and `hasheous_id` of the games it was derived from, for debugging;
 `c_converter` leaves both out of the `.rdb`.
 The `[igdb]`, `[hasheous]`, and `[regions]` sections of [`playlists.toml`](playlists.toml) control how `match.py` interprets each source,
@@ -259,7 +259,7 @@ and words that title-casing would misspell.
 1. Sign up for IGDB and obtain API credentials as described [here](https://api-docs.igdb.com/#getting-started).
 2. Fetch the source data with `scripts/igdb.py fetch` and `scripts/hasheous.py fetch`, which save it to `tmp/igdb` and `tmp/hasheous`.
 3. Run `scripts/match.py index` to join both sources and this repo's DAT files into an intermediate SQLite database at `tmp/index.db`.
-4. Run `scripts/match.py generate` to write one DAT file per system to `lookatalldat`.
+4. Run `scripts/match.py generate` to write one DAT file per system to `metadat/lookatall`.
 5. Run `make build`.
 
 ### Testing
