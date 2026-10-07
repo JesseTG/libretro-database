@@ -757,6 +757,12 @@ class FromJsonSubCommand(BaseModel):
 
 PARENT_DIR = Path(__file__).parent.parent
 
+LOOKATALL_DIR = PARENT_DIR / 'metadat' / 'lookatall'
+"""
+Where `match.py generate` writes its DAT files.
+They're derived from the other DAT files, so `index_dats` leaves them out.
+"""
+
 class LoadedDat(NamedTuple):
     """
     One DAT file expanded into database rows.
@@ -948,9 +954,14 @@ async def index_dats(
     """Load and index DAT files into the database."""
     log = _dats_index_log
 
-    # Recursively find all subdirectories of the requested DAT directories
+    # Recursively find all subdirectories of the requested DAT directories,
+    # except for the generated ones
+    lookatall = LOOKATALL_DIR.resolve()
     nested_dat_paths = chain.from_iterable(p.rglob("*") for p in dat_dirs)
-    dat_subdirs = await aiobuiltins.tuple(p for p in nested_dat_paths if await aiopath.isdir(p))
+    dat_subdirs = await aiobuiltins.tuple(
+        p for p in nested_dat_paths
+        if await aiopath.isdir(p) and not p.resolve().is_relative_to(lookatall)
+    )
     all_dat_dirs = tuple(chain(dat_dirs, dat_subdirs))
 
     async def get_dat_paths(playlist: Playlist) -> tuple[Path, ...]:
